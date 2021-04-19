@@ -14,14 +14,17 @@ import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -39,7 +42,8 @@ import java.util.Locale;
 
 public class MapsActivity extends FragmentActivity implements
         OnMapReadyCallback,
-        View.OnClickListener {
+        View.OnClickListener,
+        LocationListener {
 
     private GoogleMap mMap;
     private String TAG = "MapsActivity";
@@ -68,7 +72,86 @@ public class MapsActivity extends FragmentActivity implements
                     Manifest.permission.CAMERA
             }, 50);
         }
+
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+
+        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        boolean enabledGPS = service.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean enabledWiFi = service.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        if (!enabledGPS) {
+            Toast.makeText(this, "GPS signal not found", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(intent);
+        }
+        else if(!enabledWiFi) {
+            Toast.makeText(this, "Network signal not found", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(intent);
+        }
+
+        initializeMap();
+        // mMap is null, when it created
+        if(mMap != null) {
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            mMap.getUiSettings().setCompassEnabled(true);
+        }
+
+
     }
+
+    private void initializeMap() {
+        // check if map is created
+        if(mMap == null) {
+            //mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap(); // creates the map
+
+            // check if map is created successfully or not
+            if (mMap == null) {
+                Toast.makeText(getApplicationContext(),
+                        "Map could not be created", Toast.LENGTH_SHORT)
+                        .show();
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initializeMap();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mMap.clear();
+        MarkerOptions marker = new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude()));
+        marker.title("Current location");
+        marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+        mMap.addMarker(marker);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
+    }
+
+    @Override
+    public void onProviderDisabled(String arg0) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onProviderEnabled(String arg0) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
+        // TODO Auto-generated method stub
+
+    }
+
+
 
 
 
