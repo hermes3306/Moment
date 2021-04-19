@@ -45,6 +45,9 @@ public class MapsActivity extends FragmentActivity implements
     private String TAG = "MapsActivity";
     private static final int DEFAULT_ZOOM = 15;
 
+    // 1) onCreate
+    // 2) onStart
+    // 3) onMapReady
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,7 +105,6 @@ public class MapsActivity extends FragmentActivity implements
         mMap.getUiSettings().setCompassEnabled(true);
         Toast.makeText(getApplicationContext(), "onMapReady()", Toast.LENGTH_LONG).show();
         refresh();
-
     }
 
     public void refresh(){
