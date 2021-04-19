@@ -87,9 +87,9 @@ public class MapsActivity extends FragmentActivity implements
 
         // Add a marker in Sydney and move the camera
         // Original example
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney12"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney12"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
 
         // +/- Zoom Controls
@@ -99,13 +99,12 @@ public class MapsActivity extends FragmentActivity implements
         // Need to check the below .setCompassEnabled is working well
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
-
         refresh();
-
     }
 
     public void refresh(){
         Location loc = getLocation();
+        if(loc==null) return;
         LatLng defaultLocation = new LatLng(loc.getLatitude(), loc.getLongitude());
         mMap.moveCamera(CameraUpdateFactory
                 .newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
@@ -121,7 +120,6 @@ public class MapsActivity extends FragmentActivity implements
             default:
                 // doesn't work
                 refresh();
-
         }
     }
 
