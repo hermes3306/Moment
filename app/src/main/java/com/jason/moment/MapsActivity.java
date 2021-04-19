@@ -68,6 +68,7 @@ public class MapsActivity extends FragmentActivity implements
                     Manifest.permission.CAMERA
             }, 50);
         }
+        Toast.makeText(getApplicationContext(), "onCreate()", Toast.LENGTH_LONG).show();
     }
 
 
@@ -99,7 +100,7 @@ public class MapsActivity extends FragmentActivity implements
         // Need to check the below .setCompassEnabled is working well
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
-
+        Toast.makeText(getApplicationContext(), "onMapReady()", Toast.LENGTH_LONG).show();
         refresh();
 
     }
@@ -113,6 +114,7 @@ public class MapsActivity extends FragmentActivity implements
         drawMarker(defaultLocation);
     }
 
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -120,6 +122,7 @@ public class MapsActivity extends FragmentActivity implements
                 break;
             default:
                 // doesn't work
+                Toast.makeText(getApplicationContext(), "onClick()", Toast.LENGTH_LONG).show();
                 refresh();
 
         }
@@ -150,7 +153,6 @@ public class MapsActivity extends FragmentActivity implements
             mMarker.setSnippet(body);
         }
     }
-
 
 
     // LocationManager variable declaration
@@ -208,5 +210,48 @@ public class MapsActivity extends FragmentActivity implements
         }
         return addinfo;
     }
+
+    /*
+    OnStart()
+        1) on start
+        2) background to foreground
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //Intent myI = new Intent(this, MyLocationService.class);
+        //bindService(myI, conn, Context.BIND_AUTO_CREATE);
+        //doMyTimeTask();
+        //int size = MyLocationService.getSize();
+        //String str = " - total: ";
+        //if(size == -1) str += " -1(null)";
+        //else str += " " + size + " locations";
+        //str = "SERVICE STARTED" + str;
+        Toast.makeText(getApplicationContext(),"onStart()", Toast.LENGTH_LONG).show();
+    }
+
+    /*
+    OnStop()
+        1) on stop
+        2) foreground to background
+     */
+
+    @Override
+    protected void onStop() {
+        Toast.makeText(getApplicationContext(),"onStop()", Toast.LENGTH_LONG).show();
+        super.onStop();
+    }
+
+    /*
+    OnDestroy()
+    1) on destroy
+    */
+    @Override
+    protected void onDestroy() {
+        // if super.onDestory() commented out, it doesn't work well
+        super.onDestroy();
+        Toast.makeText(getApplicationContext(), "ERR: Moment is about to destroy !", Toast.LENGTH_LONG).show();
+    }
+
 
 }
