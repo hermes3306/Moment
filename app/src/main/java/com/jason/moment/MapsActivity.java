@@ -35,6 +35,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static java.sql.DriverManager.println;
+
 public class MapsActivity extends FragmentActivity implements
         OnMapReadyCallback,
         View.OnClickListener,
@@ -137,7 +139,7 @@ public class MapsActivity extends FragmentActivity implements
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
 
         double dist = CalDistance.dist(location.getLatitude(), location.getLongitude());
-
+        println("onLocationChanged("+dist+"m)");
 
         Toast.makeText(getApplicationContext(),
                 "onLocationChanged("+dist+"m)", Toast.LENGTH_SHORT)

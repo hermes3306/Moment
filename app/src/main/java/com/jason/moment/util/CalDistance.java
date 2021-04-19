@@ -52,12 +52,6 @@ public class CalDistance {
         if(prev_lat==-1) return 0;
         if(prev_lng==-1) return 0;
 
-//        if(prev_lat == lat && prev_lng == lng) {
-//            Log.d(TAG, "Location not Changed!!!");
-//        } else {
-//            Log.d(TAG, "Location Changed!!!");
-//        }
-
         CalDistance cd = new CalDistance(prev_lat, prev_lng, lat, lng);
         double dist = cd.getDistance();
         prev_lat = lat;
