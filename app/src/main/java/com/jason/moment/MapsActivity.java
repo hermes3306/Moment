@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.jason.moment.util.CalDistance;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -85,8 +86,7 @@ public class MapsActivity extends FragmentActivity implements
             Toast.makeText(this, "GPS signal not found", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             startActivity(intent);
-        }
-        else if(!enabledWiFi) {
+        } else if (!enabledWiFi) {
             Toast.makeText(this, "Network signal not found", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             startActivity(intent);
@@ -94,7 +94,7 @@ public class MapsActivity extends FragmentActivity implements
 
         initializeMap();
         // mMap is null, when it created
-        if(mMap != null) {
+        if (mMap != null) {
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
             mMap.getUiSettings().setCompassEnabled(true);
@@ -105,7 +105,7 @@ public class MapsActivity extends FragmentActivity implements
 
     private void initializeMap() {
         // check if map is created
-        if(mMap == null) {
+        if (mMap == null) {
             //mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap(); // creates the map
 
             // check if map is created successfully or not
@@ -123,14 +123,29 @@ public class MapsActivity extends FragmentActivity implements
         initializeMap();
     }
 
+
+
     @Override
     public void onLocationChanged(Location location) {
+//        Toast.makeText(getApplicationContext(),
+//                "onLocationChanged.", Toast.LENGTH_SHORT)
+//                .show();
+
+        String _title = DateToString(new Date(), "hh:mm:ss");
+        String _snippet = getAddress(getApplicationContext(),new LatLng(location.getLatitude(), location.getLongitude()));
+
         mMap.clear();
         MarkerOptions marker = new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude()));
-        marker.title("Current location");
+        marker.title(_title);
+        marker.snippet(_snippet);
         marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
         mMap.addMarker(marker);
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
+
+        double dist = CalDistance.dist(location.getLatitude(), location.getLongitude());
+        Toast.makeText(getApplicationContext(),
+                "onLocationChanged("+dist+"m)", Toast.LENGTH_SHORT)
+                .show();
     }
 
     @Override
@@ -152,9 +167,6 @@ public class MapsActivity extends FragmentActivity implements
     }
 
 
-
-
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -170,19 +182,28 @@ public class MapsActivity extends FragmentActivity implements
 
         // Add a marker in Sydney and move the camera
         // Original example
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney12"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+//        LatLng sydney = new LatLng(-34, 151);
+//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney12"));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
 
-        // +/- Zoom Controls
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        // Toolbar for navigation and map
-        mMap.getUiSettings().setMapToolbarEnabled(true);
-        // Need to check the below .setCompassEnabled is working well
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mMap.getUiSettings().setCompassEnabled(true);
-        refresh();
+        if (mMap != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            mMap.getUiSettings().setCompassEnabled(true);
+            mMap.getUiSettings().setZoomControlsEnabled(true);
+        }
+        //refresh();
     }
 
     public void refresh(){
@@ -207,7 +228,7 @@ public class MapsActivity extends FragmentActivity implements
     }
 
 
-    private Marker mMarker                 = null;
+    private Marker mMarker  = null;
     public void drawMarker(LatLng ll) {
         String _head = DateToString(new Date(), "hh:mm:ss");
         String _body = getAddress(getApplicationContext(),ll);
@@ -224,12 +245,12 @@ public class MapsActivity extends FragmentActivity implements
                     .draggable(true).visible(true).snippet(body);
             mMarker = mMap.addMarker(opt);
             CameraPosition cameraPosition = new CameraPosition.Builder().target(l).zoom(15.0f).build();
-            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         } else {
             mMarker.setPosition(l);
             mMarker.setTitle(head);
             mMarker.setSnippet(body);
         }
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(l, 16));
     }
 
 
