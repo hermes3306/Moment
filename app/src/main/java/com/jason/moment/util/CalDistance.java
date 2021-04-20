@@ -17,6 +17,7 @@ public class CalDistance {
         this.cur_long = cur_long;
     }
     public double getDistance() {
+        Log.d(TAG,"-- getDistance.");
         theta = bef_long - cur_long;
         dist = Math.sin(deg2rad(bef_lat)) * Math.sin(deg2rad(cur_lat)) + Math.cos(deg2rad(bef_lat))
                 * Math.cos(deg2rad(cur_lat))*Math.cos(deg2rad(theta));
@@ -41,6 +42,7 @@ public class CalDistance {
     public static double prev_lng=-1;
 
     public static double dist(double lat1, double lng1, double lat2, double lng2) {
+        Log.d(TAG,"-- dist.");
         if(prev_lat==-1) return 0;
 
         CalDistance cd = new CalDistance(lat1, lng1, lat2, lng2);
@@ -49,6 +51,8 @@ public class CalDistance {
     }
 
     public static double dist(double lat, double lng) {
+        Log.d(TAG,"-- dist.");
+
         if(prev_lat==-1) return 0;
         if(prev_lng==-1) return 0;
 
@@ -56,9 +60,6 @@ public class CalDistance {
         double dist = cd.getDistance();
         prev_lat = lat;
         prev_lng = lng;
-
-
-
         return dist;
     }
 

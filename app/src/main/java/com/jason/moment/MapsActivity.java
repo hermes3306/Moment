@@ -43,7 +43,7 @@ public class MapsActivity extends FragmentActivity implements
         LocationListener {
 
     private GoogleMap mMap;
-    private String TAG = "MapsActivity";
+    private static String TAG = "MapsActivity";
     private static final int DEFAULT_ZOOM = 15;
 
     @Override
@@ -123,6 +123,7 @@ public class MapsActivity extends FragmentActivity implements
 
     @Override
     public void onLocationChanged(Location location) {
+        Log.d(TAG,"-- onLocationChanged.");
 //        Toast.makeText(getApplicationContext(),
 //                "onLocationChanged.", Toast.LENGTH_SHORT)
 //                .show();
@@ -139,10 +140,11 @@ public class MapsActivity extends FragmentActivity implements
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
 
         double dist = CalDistance.dist(location.getLatitude(), location.getLongitude());
-        println("onLocationChanged("+dist+"m)");
+        Log.d(TAG,"-- onLocationChanged("+location.getLatitude()+","+location.getLongitude()+")");
+        Log.d(TAG,"-- onLocationChanged("+dist+"m)");
 
         Toast.makeText(getApplicationContext(),
-                "onLocationChanged("+dist+"m)", Toast.LENGTH_SHORT)
+                "-- onLocationChanged("+dist+"m)", Toast.LENGTH_SHORT)
                 .show();
     }
 
@@ -176,6 +178,7 @@ public class MapsActivity extends FragmentActivity implements
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Log.d(TAG,"-- onMapReady.");
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
@@ -205,6 +208,7 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     public void refresh(){
+        Log.d(TAG,"-- refresh.");
         Location loc = getLocation();
         if(loc==null) return;
         LatLng defaultLocation = new LatLng(loc.getLatitude(), loc.getLongitude());
@@ -216,6 +220,7 @@ public class MapsActivity extends FragmentActivity implements
 
     @Override
     public void onClick(View view) {
+        Log.d(TAG,"-- onClick.");
         switch (view.getId()) {
             case 1:
                 break;
@@ -228,6 +233,7 @@ public class MapsActivity extends FragmentActivity implements
 
     private Marker mMarker  = null;
     public void drawMarker(LatLng ll) {
+        Log.d(TAG,"-- drawMarker.");
         String _head = DateToString(new Date(), "hh:mm:ss");
         String _body = getAddress(getApplicationContext(),ll);
         drawMarker(ll,_head,_body);
@@ -257,6 +263,7 @@ public class MapsActivity extends FragmentActivity implements
     private LocationManager mLocationManager = null;
     // return Location of current location of GPS
     public Location getLocation() {
+        Log.d(TAG,"-- getLocation.");
         String locationProvider =  mLocationManager.GPS_PROVIDER;
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
@@ -293,6 +300,7 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     public static String getAddress(final Context _ctx, LatLng ll) {
+        Log.d(TAG,"-- getAddress.");
         Geocoder geocoder = new Geocoder(_ctx, Locale.getDefault());
         List<Address> addresses = null;
         try {
