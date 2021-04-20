@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jason.moment.util.CalDistance;
+import com.jason.moment.util.db.MyLoc;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -115,12 +116,21 @@ public class MapsActivity extends FragmentActivity implements
 
     @Override
     protected void onResume() {
+        Log.d(TAG,"-- onResume.");
         super.onResume();
         initializeMap();
     }
 
+    @Override
+    protected void onPause() {
+        Log.d(TAG,"-- onPause1().");
+        super.onPause();
+        Log.d(TAG,"-- onPause2().");
+    }
 
 
+
+    public static boolean firstCall = true;
     @Override
     public void onLocationChanged(Location location) {
         Log.d(TAG,"-- onLocationChanged.");
@@ -146,6 +156,17 @@ public class MapsActivity extends FragmentActivity implements
         Toast.makeText(getApplicationContext(),
                 "-- onLocationChanged("+dist+"m)", Toast.LENGTH_SHORT)
                 .show();
+
+        MyLoc myloc = new MyLoc(getApplicationContext());
+        if(firstCall) {
+            firstCall = false;
+            //myloc.createNew();
+            myloc.ins(location.getLatitude(), location.getLongitude());
+        }
+        else {
+            if (dist > (double) 1.0) myloc.ins(location.getLatitude(), location.getLongitude());
+        }
+
     }
 
     @Override
