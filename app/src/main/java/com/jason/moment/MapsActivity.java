@@ -1,21 +1,20 @@
 package com.jason.moment;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -29,25 +28,25 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.jason.moment.util.CalDistance;
+import com.jason.moment.util.db.MyLoc;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static java.sql.DriverManager.println;
+
 public class MapsActivity extends FragmentActivity implements
         OnMapReadyCallback,
-        View.OnClickListener {
+        View.OnClickListener,
+        LocationListener {
 
     private GoogleMap mMap;
-    private String TAG = "MapsActivity";
+    private static String TAG = "MapsActivity";
     private static final int DEFAULT_ZOOM = 15;
 
-    // 1) onCreate
-    // 2) onStart
-    // 3) onMapReady
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,9 +70,122 @@ public class MapsActivity extends FragmentActivity implements
                     Manifest.permission.CAMERA
             }, 50);
         }
-        Toast.makeText(getApplicationContext(), "onCreate()", Toast.LENGTH_LONG).show();
+
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+
+        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        boolean enabledGPS = service.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean enabledWiFi = service.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        if (!enabledGPS) {
+            Toast.makeText(this, "GPS signal not found", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(intent);
+        } else if (!enabledWiFi) {
+            Toast.makeText(this, "Network signal not found", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(intent);
+        }
+
+        initializeMap();
+        // mMap is null, when it created
+        if (mMap != null) {
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            mMap.getUiSettings().setCompassEnabled(true);
+        }
+
+
     }
 
+    private void initializeMap() {
+        // check if map is created
+        if (mMap == null) {
+            //mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap(); // creates the map
+
+            // check if map is created successfully or not
+            if (mMap == null) {
+                Toast.makeText(getApplicationContext(),
+                        "Map could not be created", Toast.LENGTH_SHORT)
+                        .show();
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG,"-- onResume.");
+        super.onResume();
+        initializeMap();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d(TAG,"-- onPause1().");
+        super.onPause();
+        Log.d(TAG,"-- onPause2().");
+    }
+
+
+
+    public static boolean firstCall = true;
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.d(TAG,"-- onLocationChanged.");
+//        Toast.makeText(getApplicationContext(),
+//                "onLocationChanged.", Toast.LENGTH_SHORT)
+//                .show();
+
+        String _title = DateToString(new Date(), "hh:mm:ss");
+        String _snippet = getAddress(getApplicationContext(),new LatLng(location.getLatitude(), location.getLongitude()));
+
+        mMap.clear();
+        MarkerOptions marker = new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude()));
+        marker.title(_title);
+        marker.snippet(_snippet);
+        marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+        mMap.addMarker(marker);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
+
+        double dist = CalDistance.dist(location.getLatitude(), location.getLongitude());
+        Log.d(TAG,"-- onLocationChanged("+location.getLatitude()+","+location.getLongitude()+")");
+        Log.d(TAG,"-- onLocationChanged("+dist+"m)");
+
+        Toast.makeText(getApplicationContext(),
+                "-- onLocationChanged("+dist+"m)", Toast.LENGTH_SHORT)
+                .show();
+
+        MyLoc myloc = new MyLoc(getApplicationContext());
+        if(firstCall) {
+            firstCall = false;
+            //myloc.createNew();
+            myloc.ins(location.getLatitude(), location.getLongitude());
+        }
+        else {
+            if (dist > (double) 1.0) myloc.ins(location.getLatitude(), location.getLongitude());
+        }
+
+    }
+
+    @Override
+    public void onProviderDisabled(String arg0) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onProviderEnabled(String arg0) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
+        // TODO Auto-generated method stub
+
+    }
 
 
     /**
@@ -87,6 +199,7 @@ public class MapsActivity extends FragmentActivity implements
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Log.d(TAG,"-- onMapReady.");
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
@@ -96,19 +209,29 @@ public class MapsActivity extends FragmentActivity implements
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
 
-        // +/- Zoom Controls
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        // Toolbar for navigation and map
-        mMap.getUiSettings().setMapToolbarEnabled(true);
-        // Need to check the below .setCompassEnabled is working well
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mMap.getUiSettings().setCompassEnabled(true);
-        Toast.makeText(getApplicationContext(), "onMapReady()", Toast.LENGTH_LONG).show();
-        refresh();
+        if (mMap != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            mMap.getUiSettings().setCompassEnabled(true);
+            mMap.getUiSettings().setZoomControlsEnabled(true);
+        }
+        //refresh();
     }
 
     public void refresh(){
+        Log.d(TAG,"-- refresh.");
         Location loc = getLocation();
+        if(loc==null) return;
         LatLng defaultLocation = new LatLng(loc.getLatitude(), loc.getLongitude());
         mMap.moveCamera(CameraUpdateFactory
                 .newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
@@ -116,23 +239,22 @@ public class MapsActivity extends FragmentActivity implements
         drawMarker(defaultLocation);
     }
 
-
     @Override
     public void onClick(View view) {
+        Log.d(TAG,"-- onClick.");
         switch (view.getId()) {
             case 1:
                 break;
             default:
                 // doesn't work
-                Toast.makeText(getApplicationContext(), "onClick()", Toast.LENGTH_LONG).show();
                 refresh();
-
         }
     }
 
 
-    private Marker mMarker                 = null;
+    private Marker mMarker  = null;
     public void drawMarker(LatLng ll) {
+        Log.d(TAG,"-- drawMarker.");
         String _head = DateToString(new Date(), "hh:mm:ss");
         String _body = getAddress(getApplicationContext(),ll);
         drawMarker(ll,_head,_body);
@@ -148,19 +270,21 @@ public class MapsActivity extends FragmentActivity implements
                     .draggable(true).visible(true).snippet(body);
             mMarker = mMap.addMarker(opt);
             CameraPosition cameraPosition = new CameraPosition.Builder().target(l).zoom(15.0f).build();
-            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         } else {
             mMarker.setPosition(l);
             mMarker.setTitle(head);
             mMarker.setSnippet(body);
         }
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(l, 16));
     }
+
 
 
     // LocationManager variable declaration
     private LocationManager mLocationManager = null;
     // return Location of current location of GPS
     public Location getLocation() {
+        Log.d(TAG,"-- getLocation.");
         String locationProvider =  mLocationManager.GPS_PROVIDER;
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
@@ -197,6 +321,7 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     public static String getAddress(final Context _ctx, LatLng ll) {
+        Log.d(TAG,"-- getAddress.");
         Geocoder geocoder = new Geocoder(_ctx, Locale.getDefault());
         List<Address> addresses = null;
         try {
@@ -212,48 +337,5 @@ public class MapsActivity extends FragmentActivity implements
         }
         return addinfo;
     }
-
-    /*
-    OnStart()
-        1) on start
-        2) background to foreground
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-        //Intent myI = new Intent(this, MyLocationService.class);
-        //bindService(myI, conn, Context.BIND_AUTO_CREATE);
-        //doMyTimeTask();
-        //int size = MyLocationService.getSize();
-        //String str = " - total: ";
-        //if(size == -1) str += " -1(null)";
-        //else str += " " + size + " locations";
-        //str = "SERVICE STARTED" + str;
-        Toast.makeText(getApplicationContext(),"onStart()", Toast.LENGTH_LONG).show();
-    }
-
-    /*
-    OnStop()
-        1) on stop
-        2) foreground to background
-     */
-
-    @Override
-    protected void onStop() {
-        Toast.makeText(getApplicationContext(),"onStop()", Toast.LENGTH_LONG).show();
-        super.onStop();
-    }
-
-    /*
-    OnDestroy()
-    1) on destroy
-    */
-    @Override
-    protected void onDestroy() {
-        // if super.onDestory() commented out, it doesn't work well
-        super.onDestroy();
-        Toast.makeText(getApplicationContext(), "ERR: Moment is about to destroy !", Toast.LENGTH_LONG).show();
-    }
-
 
 }
