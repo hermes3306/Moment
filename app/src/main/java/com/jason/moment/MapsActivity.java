@@ -245,6 +245,9 @@ public class MapsActivity extends FragmentActivity implements
         switch (view.getId()) {
             case R.id.imPath:
                 Log.d(TAG,"-- image button event.");
+                MyLoc myLoc = new MyLoc(getApplicationContext());
+                myLoc.qry();
+                myLoc.drawPath(mMap);
 
                 break;
             default:

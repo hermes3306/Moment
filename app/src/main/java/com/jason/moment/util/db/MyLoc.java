@@ -4,8 +4,15 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.provider.BaseColumns;
 import android.util.Log;
+
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.db.*;
 
 import java.text.SimpleDateFormat;
@@ -114,9 +121,47 @@ public class MyLoc {
             Log.d(TAG, "-- " + itemId + ", " + lat + ", " + lng + ", " + dt + ", " + ti);
         }
         cursor.close();
-
-
-
     }
 
+    public ArrayList<LatLng> todayPath() {
+        Log.d(TAG, "-- todayPath()");
+        MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String selection = MyLocContract.LocEntry.COLUMN_NAME_CRDATE + " == ?";
+        String order_by = MyLocContract.LocEntry.COLUMN_NAME_CRTIME + " DESC";
+        String today = DateUtil.DateToString(new Date(), "yyyy/MM/dd");
+        Log.d(TAG, "-- Today is " + today);
+        String[] selectionArgs = { today };
+
+        Cursor cursor = db.query(
+                MyLocContract.LocEntry.TABLE_NAME,   // The table to query
+                null,             // The array of columns to return (pass null to get all)
+                selection,              // The columns for the WHERE clause
+                selectionArgs,          // The values for the WHERE clause
+                null,                   // don't group the rows
+                null,                   // don't filter by row groups
+                order_by               // The sort order
+        );
+
+        ArrayList<LatLng> l = new ArrayList<>();
+        while(cursor.moveToNext()) {
+            double lat = cursor.getDouble(
+                    cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_LATITUDE));
+            double lng = cursor.getDouble(
+                    cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_LONGITIDE));
+            l.add(new LatLng(lat, lng));
+        }
+        Log.d(TAG, "-- Total number of locations of today:" + l.size());
+        return l;
+    }
+
+    public void drawPath(GoogleMap gmap) {
+        ArrayList<LatLng> l = todayPath();
+        PolylineOptions plo = new PolylineOptions();
+        plo.color(Color.RED);
+        Polyline line = gmap.addPolyline(plo);
+        line.setWidth(20);
+        line.setPoints(l);
+    }
 }
