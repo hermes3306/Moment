@@ -146,11 +146,18 @@ public class MyLoc {
 
         ArrayList<LatLng> l = new ArrayList<>();
         while(cursor.moveToNext()) {
+            long itemId = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(MyLocContract.LocEntry._ID));
             double lat = cursor.getDouble(
                     cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_LATITUDE));
             double lng = cursor.getDouble(
                     cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_LONGITIDE));
+            String dt = cursor.getString(
+                    cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_CRDATE));
+            String ti = cursor.getString(
+                    cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_CRTIME));
             l.add(new LatLng(lat, lng));
+            Log.d(TAG, "-- " + itemId + ", " + lat + ", " + lng + ", " + dt + ", " + ti);
         }
         Log.d(TAG, "-- Total number of locations of today:" + l.size());
         return l;
@@ -164,4 +171,5 @@ public class MyLoc {
         line.setWidth(20);
         line.setPoints(l);
     }
+
 }
