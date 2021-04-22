@@ -243,7 +243,9 @@ public class MapsActivity extends FragmentActivity implements
     public void onClick(View view) {
         Log.d(TAG,"-- onClick.");
         switch (view.getId()) {
-            case 1:
+            case R.id.imPath:
+                Log.d(TAG,"-- image button event.");
+
                 break;
             default:
                 // doesn't work
