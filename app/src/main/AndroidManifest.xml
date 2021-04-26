@@ -38,6 +38,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service android:name="LocService"></service>
+        <service android:name="LocService2"></service>
+
     </application>
 
 </manifest>

@@ -5,8 +5,10 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -14,6 +16,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -97,6 +100,7 @@ public class MapsActivity extends FragmentActivity implements
             mMap.getUiSettings().setCompassEnabled(true);
         }
 
+        startService(new Intent(MapsActivity.this, LocService2.class)); // 서비스 시작
 
     }
 
@@ -123,11 +127,9 @@ public class MapsActivity extends FragmentActivity implements
 
     @Override
     protected void onPause() {
-        Log.d(TAG,"-- onPause1().");
+        Log.d(TAG,"-- onPause().");
         super.onPause();
-        Log.d(TAG,"-- onPause2().");
     }
-
 
 
     public static boolean firstCall = true;
@@ -239,16 +241,94 @@ public class MapsActivity extends FragmentActivity implements
         drawMarker(defaultLocation);
     }
 
+    private LocService2 mService;
+    private boolean isBind=false;
+
+    ServiceConnection sconn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            LocService2.MyBinder myBinder = (LocService2.MyBinder) service;
+            mService = myBinder.getService();
+            isBind = true;
+            Log.d(TAG, "-- onServiceConnected()");
+        }
+
+        @Override //서비스가 종료될 때 호출
+        public void onServiceDisconnected(ComponentName name) {
+            mService = null;
+            isBind = false;
+            Log.d(TAG, "-- onServiceDisconnected()");
+        }
+    };
+
+    private boolean isStarted=false;
+    public void doBackground() {
+        Log.d(TAG, "-- doBackground()");
+        if(isStarted) return;
+        isStarted = true;
+        // Acquire a reference to the system Location Manager
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        // GPS 프로바이더 사용가능여부
+        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        // 네트워크 프로바이더 사용가능여부
+        boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        Log.d(TAG, "-- isGPSEnabled=" + isGPSEnabled);
+        Log.d(TAG, "-- isNetworkEnabled=" + isNetworkEnabled);
+
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                double lat = location.getLatitude();
+                double lng = location.getLongitude();
+
+                Log.d(TAG, "-- latitude: " + lat + ", longitude: " + lng);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+                Log.d(TAG, "-- onStatusChanged");
+            }
+
+            public void onProviderEnabled(String provider) {
+                Log.d(TAG, "-- onProviderEnabled");
+            }
+
+            public void onProviderDisabled(String provider) {
+                Log.d(TAG, "-- onProviderDisabled");
+            }
+        };
+
+        // Register the listener with the Location Manager to receive location updates
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+    }
+
+
+
     @Override
     public void onClick(View view) {
         Log.d(TAG,"-- onClick.");
         switch (view.getId()) {
             case R.id.imPath:
-                Log.d(TAG,"-- image button event.");
+                Log.d(TAG,"-- image button Path event.");
                 MyLoc myLoc = new MyLoc(getApplicationContext());
                 myLoc.qry();
                 myLoc.drawPath(mMap);
-
+                break;
+            case R.id.imLoc:
+                Log.d(TAG,"-- image button Loc event.");
+                if (!isBind) //해당 액티비이에서 바운딩 중이 아닐때만 호출 - 바운딩 시작
+                    bindService(new Intent(MapsActivity.this, LocService2.class), sconn, BIND_AUTO_CREATE);
                 break;
             default:
                 // doesn't work
