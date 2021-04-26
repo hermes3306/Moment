@@ -1,6 +1,7 @@
 package com.jason.moment;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 
 public class LocService2 extends Service {
     private static final String TAG = "LocService2";
@@ -40,45 +42,25 @@ public class LocService2 extends Service {
     private class LocationListener implements android.location.LocationListener {
         Location mLastLocation;
         public LocationListener(String provider) {
-            Log.e(TAG, "LocationListener " + provider);
+            Log.d(TAG, "LocationListener " + provider);
             mLastLocation = new Location(provider);
         }
 
         @Override
         public void onLocationChanged(Location location) {
-            Log.e(TAG, "onLocationChanged: " + location);
+            Log.d(TAG, "-- onLocationChanged: " + location);
             if(!isBetterLocation(location, mLastLocation)) {
                 Toast.makeText(getApplicationContext(), "!isBetterLocation: " + location, Toast.LENGTH_SHORT).show();
                 return;
             }
 
-//            if(location.getProvider().equalsIgnoreCase(LocationManager.GPS_PROVIDER)) {
-//                if(pdb.getProperty(getApplicationContext(), "GPS_Listener").equalsIgnoreCase("false")) {
-//                    Log.e(TAG, "**** GPS_PROVIDER based location discarded as GPS_Listener is false***");
-//                    return;
-//                }
-//            }
-//
-//            if(location.getProvider().equalsIgnoreCase(LocationManager.NETWORK_PROVIDER)) {
-//                if(pdb.getProperty(getApplicationContext(), "NETWORK_Listener").equalsIgnoreCase("false")) {
-//                    Log.e(TAG, "**** NETWORK_PROVIDER based location discarded as NETWORK_Listener is false***");
-//                    return;
-//                }
-//            }
-
             mLastLocation.set(location);
 //            dbgateway.addLoc(getApplicationContext(), location);
 
             try {
-//                String toastlc = pdb.getProperty(getApplicationContext(), "Toast_LocationChanged");
-//                Log.e(TAG, "****Toast_LocationChanged: " + toastlc);
-
-//                if (toastlc.equalsIgnoreCase("true"))
-//                    Toast.makeText(getApplicationContext(), "onLocationChanged: " + location, Toast.LENGTH_SHORT).show();
-
-                Log.e(TAG, "-- **** Location:" + location);
-                Log.e(TAG, "-- **** Provider:" + location.getProvider());
-                Log.e(TAG, "-- **** LocationManager.GPS_PROVIDER:" + LocationManager.GPS_PROVIDER);
+                Log.d(TAG, "-- **** Location:" + location);
+                Log.d(TAG, "-- **** Provider:" + location.getProvider());
+                Log.d(TAG, "-- **** LocationManager.GPS_PROVIDER:" + LocationManager.GPS_PROVIDER);
 
             }catch(Exception e) {
                 e.printStackTrace();
@@ -87,17 +69,17 @@ public class LocService2 extends Service {
 
         @Override
         public void onProviderDisabled(String provider) {
-            Log.e(TAG, "onProviderDisabled: " + provider);
+            Log.d(TAG, "onProviderDisabled: " + provider);
         }
 
         @Override
         public void onProviderEnabled(String provider) {
-            Log.e(TAG, "onProviderEnabled: " + provider);
+            Log.d(TAG, "onProviderEnabled: " + provider);
         }
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-            Log.e(TAG, "onStatusChanged: " + provider);
+            Log.d(TAG, "onStatusChanged: " + provider);
         }
     }
 
@@ -110,28 +92,28 @@ public class LocService2 extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        Log.e(TAG, "--onBind()");
+        Log.d(TAG, "--onBind()");
         return mIBinder;
     }
 
 
     @Override
     public boolean onUnbind(Intent intent) {
-        Log.e(TAG, "onUnbind()");
+        Log.d(TAG, "-- onUnbind()");
         return super.onUnbind(intent);
     }
 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(TAG, "onStartCommand");
+        Log.d(TAG, "-- onStartCommand");
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
 
     @Override
     public void onCreate() {
-        Log.e(TAG, "onCreate");
+        Log.d(TAG, "-- onCreate");
         initializeLocationManager();
         try {
             mLocationManager.requestLocationUpdates(
@@ -163,7 +145,7 @@ public class LocService2 extends Service {
 
     @Override
     public void onDestroy() {
-        Log.e(TAG, "onDestroy");
+        Log.d(TAG, "onDestroy");
         super.onDestroy();
         if (mLocationManager != null) {
             for (int i = 0; i < mLocationListeners.length; i++) {
@@ -180,7 +162,7 @@ public class LocService2 extends Service {
     }
 
     private void initializeLocationManager() {
-        Log.e(TAG, "initializeLocationManager - LOCATION_INTERVAL: " + LOCATION_INTERVAL + " LOCATION_DISTANCE: " + LOCATION_DISTANCE);
+        Log.d(TAG, "initializeLocationManager - LOCATION_INTERVAL: " + LOCATION_INTERVAL + " LOCATION_DISTANCE: " + LOCATION_DISTANCE);
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
@@ -235,4 +217,9 @@ public class LocService2 extends Service {
         }
         return provider1.equals(provider2);
     }
+
+    private static final int NOTIF_ID = 1;
+    private static final String NOTIF_CHANNEL_ID = "Channel_Id";
+
+
 }
