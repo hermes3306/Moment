@@ -325,9 +325,11 @@ public class MapsActivity extends FragmentActivity implements
                 myLoc.qry();
                 myLoc.drawPath(mMap);
                 break;
+            case R.id.imCloud:
+                Log.d(TAG,"-- image button Cloud event.");
+                break;
             case R.id.imLoc:
                 Log.d(TAG,"-- image button Loc event.");
-
                 break;
             default:
                 // doesn't work

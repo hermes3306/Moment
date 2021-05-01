@@ -32,16 +32,21 @@
             android:src="@drawable/path48" />
 
         <ImageButton
+            android:id="@+id/imCloud"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:src="@drawable/cloudup48"/>
+
+        <ImageButton
             android:id="@+id/imLoc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:onClick="onClick"
             android:src="@drawable/loc48" />
-
-
     </LinearLayout>
-
 </RelativeLayout>
 
 
