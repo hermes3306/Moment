@@ -13,6 +13,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.jason.moment.util.DateUtil;
+import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.db.*;
 
 import java.text.SimpleDateFormat;
@@ -66,6 +67,8 @@ public class MyLoc {
         Log.d(TAG, "-- db.insert");
         qry();
     }
+
+
 
     public void qry() {
         MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
@@ -123,16 +126,60 @@ public class MyLoc {
         cursor.close();
     }
 
-    public ArrayList<LatLng> todayPath() {
-        Log.d(TAG, "-- todayPath()");
+    // qry
+    // selection        = " crdate == ?";
+    // selectionArgs    = " 2021/05/01";
+    // order_by         = " crtime desc";
+    public ArrayList<MyActivity> Path2Activity(String selection,
+                                               String selectionArgs[],
+                                               String order_by) {
+        Log.d(TAG, "-- Path2Activity()");
         MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String selection = MyLocContract.LocEntry.COLUMN_NAME_CRDATE + " == ?";
-        String order_by = MyLocContract.LocEntry.COLUMN_NAME_CRTIME + " DESC";
-        String today = DateUtil.DateToString(new Date(), "yyyy/MM/dd");
-        Log.d(TAG, "-- Today is " + today);
-        String[] selectionArgs = { today };
+        Cursor cursor = db.query(
+                MyLocContract.LocEntry.TABLE_NAME,   // The table to query
+                null,             // The array of columns to return (pass null to get all)
+                selection,              // The columns for the WHERE clause
+                selectionArgs,          // The values for the WHERE clause
+                null,                   // don't group the rows
+                null,                   // don't filter by row groups
+                order_by               // The sort order
+        );
+
+        ArrayList<MyActivity> l = new ArrayList<>();
+        while(cursor.moveToNext()) {
+            long itemId = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(MyLocContract.LocEntry._ID));
+            double lat = cursor.getDouble(
+                    cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_LATITUDE));
+            double lng = cursor.getDouble(
+                    cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_LONGITIDE));
+            String dt = cursor.getString(
+                    cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_CRDATE));
+            String ti = cursor.getString(
+                    cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_CRTIME));
+            l.add(new MyActivity(lat, lng, dt, ti));
+            Log.d(TAG, "-- " + itemId + ", " + lat + ", " + lng + ", " + dt + ", " + ti);
+        }
+        Log.d(TAG, "-- Total number of path:" + l.size());
+        return l;
+
+
+
+    }
+
+    // qry
+    // selection        = " crdate == ?";
+    // selectionArgs    = " 2021/05/01";
+    // order_by         = " crtime desc";
+    public ArrayList<LatLng> Path(String selection,
+                                  String selectionArgs[],
+                                  String order_by
+                                  ) {
+        Log.d(TAG, "-- Path()");
+        MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         Cursor cursor = db.query(
                 MyLocContract.LocEntry.TABLE_NAME,   // The table to query
@@ -159,12 +206,50 @@ public class MyLoc {
             l.add(new LatLng(lat, lng));
             Log.d(TAG, "-- " + itemId + ", " + lat + ", " + lng + ", " + dt + ", " + ti);
         }
-        Log.d(TAG, "-- Total number of locations of today:" + l.size());
+        Log.d(TAG, "-- Total number of path:" + l.size());
         return l;
+    }
+
+    public ArrayList<LatLng> todayPath() {
+        Log.d(TAG, "-- todayPath()");
+        MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String selection = MyLocContract.LocEntry.COLUMN_NAME_CRDATE + " == ?";
+        String order_by = MyLocContract.LocEntry.COLUMN_NAME_CRTIME + " ASC";
+        String today = DateUtil.DateToString(new Date(), "yyyy/MM/dd");
+        Log.d(TAG, "-- Today is " + today);
+        String[] selectionArgs = { today };
+        return Path(selection, selectionArgs, order_by);
+    }
+
+    public ArrayList<MyActivity> todayActivity() {
+        Log.d(TAG, "-- todayActivity()");
+        MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String selection = MyLocContract.LocEntry.COLUMN_NAME_CRDATE + " == ?";
+        String order_by = MyLocContract.LocEntry.COLUMN_NAME_CRTIME + " ASC";
+        String today = DateUtil.DateToString(new Date(), "yyyy/MM/dd");
+        Log.d(TAG, "-- Today is " + today);
+        String[] selectionArgs = { today };
+        return Path2Activity(selection, selectionArgs, order_by);
+    }
+
+    public MyActivity lastActivity() {
+        Log.d(TAG, "-- lastActivity()");
+        MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String order_by = " crdate DESC, crtime DESC";
+
+        ArrayList<MyActivity> mal =  Path2Activity(null, null, order_by);
+        if(mal.size()>0) return mal.get(0);
+        else return null;
     }
 
     public void drawPath(GoogleMap gmap) {
         ArrayList<LatLng> l = todayPath();
+        if(l==null) return;
         PolylineOptions plo = new PolylineOptions();
         plo.color(Color.RED);
         Polyline line = gmap.addPolyline(plo);

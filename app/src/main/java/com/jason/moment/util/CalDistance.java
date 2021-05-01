@@ -43,7 +43,8 @@ public class CalDistance {
 
     public static double dist(double lat1, double lng1, double lat2, double lng2) {
         Log.d(TAG,"-- dist.");
-        if(prev_lat==-1) return 0;
+        prev_lat = lat2;
+        prev_lng = lng2;
 
         CalDistance cd = new CalDistance(lat1, lng1, lat2, lng2);
         double dist = cd.getDistance();
