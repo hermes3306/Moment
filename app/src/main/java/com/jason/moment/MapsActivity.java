@@ -32,12 +32,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jason.moment.util.CalDistance;
+import com.jason.moment.util.Config;
 import com.jason.moment.util.db.MyLoc;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static java.sql.DriverManager.println;
 
@@ -49,6 +52,8 @@ public class MapsActivity extends FragmentActivity implements
     private GoogleMap mMap;
     private static String TAG = "MapsActivity";
     private static final int DEFAULT_ZOOM = 15;
+    public static boolean firstCall = true;
+    public static boolean paused = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +105,25 @@ public class MapsActivity extends FragmentActivity implements
             mMap.getUiSettings().setCompassEnabled(true);
         }
 
-        startService(new Intent(MapsActivity.this, LocService2.class)); // 서비스 시작
+        // ----------------------------------------------------------------------
+        // Configuration here
+        // _start_service : run location service
+        // _start_timer : my Timer
+        // ----------------------------------------------------------------------
+        //
+        if(Config._start_service) {
+            startService(new Intent(MapsActivity.this, LocService2.class)); // 서비스 시작
+        }
+        if(Config._start_timer) {
+            startMyTimer(); // Timer 시작(onPause()에서도 10초마다 실행됨
+        }
 
+    }
+
+    private void startMyTimer() {
+        TimerTask mTask =new MapsActivity.MyTimerTask();
+        Timer mTimer = new Timer();
+        mTimer.schedule(mTask, Config._timer_delay, Config._timer_period);
     }
 
     private void initializeMap() {
@@ -121,6 +143,7 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     protected void onResume() {
         Log.d(TAG,"-- onResume.");
+        paused = false;
         super.onResume();
         initializeMap();
     }
@@ -128,11 +151,11 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     protected void onPause() {
         Log.d(TAG,"-- onPause().");
+        paused = true;
         super.onPause();
     }
 
 
-    public static boolean firstCall = true;
     @Override
     public void onLocationChanged(Location location) {
         Log.d(TAG,"-- onLocationChanged.");
@@ -327,6 +350,11 @@ public class MapsActivity extends FragmentActivity implements
                 break;
             case R.id.imCloud:
                 Log.d(TAG,"-- image button Cloud event.");
+                Location location = getLocation();
+                Log.d(TAG,"-- current location is " + location);
+                Toast.makeText(getApplicationContext(),
+                        "-- current location is " + location, Toast.LENGTH_SHORT)
+                        .show();
                 break;
             case R.id.imLoc:
                 Log.d(TAG,"-- image button Loc event.");
@@ -423,5 +451,43 @@ public class MapsActivity extends FragmentActivity implements
         }
         return addinfo;
     }
+
+    // MyTimerTask can run even though the app run in background
+    public class MyTimerTask extends java.util.TimerTask{
+        public void run() {
+            long start = System.currentTimeMillis();
+            MapsActivity.this.runOnUiThread(new Runnable() {
+                public void run() {
+                    Log.d(TAG,"-- MyTimerTask!");
+                    if(!paused) {
+                        Log.d(TAG,"-- MapApp does not paused!");
+                        return;
+                    }
+
+                    Location location = getLocation();
+                    if(location==null) {
+                        Log.d(TAG,"-- cannot get Location!");
+                        Toast.makeText(getApplicationContext(),
+                                "-- -- cannot get Location!", Toast.LENGTH_SHORT)
+                                .show();
+                        return;
+                    }
+
+                    double dist = CalDistance.dist(location.getLatitude(), location.getLongitude());
+                    if(dist > 1.0) {
+                        MyLoc myloc = new MyLoc(getApplicationContext());
+                        myloc.ins(location.getLatitude(), location.getLongitude());
+                        Log.d(TAG,"-- new Location"+location.getLatitude()+","+location.getLongitude()+")");
+                        Toast.makeText(getApplicationContext(),
+                                "-- Timer add new Location", Toast.LENGTH_SHORT)
+                                .show();
+                    } else {
+                        Log.d(TAG,"-- same Location!");
+                    }
+                }
+            });
+        } /* end of run() */
+    } /* end of MyTimerTask */
+
 
 }

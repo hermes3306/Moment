@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:onClick="onClick"
-            android:src="@drawable/cloudup48"/>
+            android:src="@drawable/cloudup48" />
 
         <ImageButton
             android:id="@+id/imLoc"
