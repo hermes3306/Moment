@@ -39,7 +39,7 @@
             </intent-filter>
         </activity>
 
-        <service android:enamed="true" android:name="LocService2"></service>
+        <service android:enabled="true" android:name="LocService2"></service>
 
     </application>
 
