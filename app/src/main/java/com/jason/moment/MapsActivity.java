@@ -327,8 +327,7 @@ public class MapsActivity extends FragmentActivity implements
                 break;
             case R.id.imLoc:
                 Log.d(TAG,"-- image button Loc event.");
-                if (!isBind) //해당 액티비이에서 바운딩 중이 아닐때만 호출 - 바운딩 시작
-                    bindService(new Intent(MapsActivity.this, LocService2.class), sconn, BIND_AUTO_CREATE);
+
                 break;
             default:
                 // doesn't work
