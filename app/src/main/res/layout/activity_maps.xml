@@ -15,37 +15,55 @@
         android:layout_height="match_parent"
     tools:context=".MapsActivity" />
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="false"
+        android:gravity="right|center_vertical"
         android:orientation="vertical">
 
         <ImageButton
-            android:id="@+id/imPath"
+            android:id="@+id/imGlobe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:onClick="onClick"
-            android:src="@drawable/path48" />
+            android:src="@drawable/globe48" />
 
         <ImageButton
-            android:id="@+id/imCloud"
+            android:id="@+id/imSave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:onClick="onClick"
-            android:src="@drawable/cloudup48" />
+            android:src="@drawable/save48" />
+
 
         <ImageButton
-            android:id="@+id/imLoc"
+            android:id="@+id/imFolder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:onClick="onClick"
-            android:src="@drawable/loc48" />
+            android:src="@drawable/folder48" />
+
+        <ImageButton
+            android:id="@+id/imCamerea"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:src="@drawable/camera_48" />
+
+        <ImageButton
+            android:id="@+id/imGallary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:src="@drawable/gallery48" />
+
+
+
     </LinearLayout>
 </RelativeLayout>
 

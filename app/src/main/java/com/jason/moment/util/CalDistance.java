@@ -3,6 +3,8 @@ package com.jason.moment.util;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+
 public class CalDistance {
     public double theta, dist;
     public double bef_lat, bef_long, cur_lat, cur_long;
@@ -16,6 +18,10 @@ public class CalDistance {
         this.cur_lat = cur_lat;
         this.cur_long = cur_long;
     }
+
+    public CalDistance(LatLng prevpos, LatLng nextpos) {
+    }
+
     public double getDistance() {
         Log.d(TAG,"-- getDistance.");
         theta = bef_long - cur_long;
@@ -62,6 +68,13 @@ public class CalDistance {
         prev_lat = lat;
         prev_lng = lng;
         return dist;
+    }
+
+    public String getDistanceKmStr() {
+        return String.format("%.1fkm",getDistance() / 1000.0);
+    }
+    public String getDistanceMStr(){
+        return String.format("%.0fm",getDistance());
     }
 
 }

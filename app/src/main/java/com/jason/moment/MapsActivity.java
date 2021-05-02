@@ -50,8 +50,6 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static java.sql.DriverManager.println;
-
 public class MapsActivity extends FragmentActivity implements
         OnMapReadyCallback,
         View.OnClickListener,
@@ -353,7 +351,7 @@ public class MapsActivity extends FragmentActivity implements
     public void onClick(View view) {
         Log.d(TAG,"-- onClick.");
         switch (view.getId()) {
-            case R.id.imPath:
+            case R.id.imGlobe:
                 Log.d(TAG,"-- image button Path event.");
                 MyLoc myLoc = new MyLoc(getApplicationContext());
                 myLoc.qry();
@@ -362,22 +360,30 @@ public class MapsActivity extends FragmentActivity implements
                 GooglemapUtil.drawTrack2(mMap, todaypath );
                 GooglemapUtil.drawMarkers(mMap, malist);
                 break;
-            case R.id.imCloud:
+            case R.id.imSave:
+                MyActivityUtil.serialize(new MyLoc(getApplicationContext()).todayActivity(), DateUtil.today()+".mnt");
+                Toast.makeText(getApplicationContext(),
+                        "-- serialized into " + DateUtil.today(), Toast.LENGTH_SHORT)
+                        .show();
+                break;
+            case R.id.imFolder:
                 Log.d(TAG,"-- image button Cloud event.");
                 Location location = getLocation();
                 Log.d(TAG,"-- current location is " + location);
                 Toast.makeText(getApplicationContext(),
                         "-- current location is " + location, Toast.LENGTH_SHORT)
                         .show();
-                break;
-            case R.id.imLoc:
-                Log.d(TAG,"-- image button Loc event.");
-                MyActivityUtil.serialize(new MyLoc(getApplicationContext()).todayActivity(), DateUtil.today());
-                Toast.makeText(getApplicationContext(),
-                        "-- serialized into " + DateUtil.today(), Toast.LENGTH_SHORT)
-                        .show();
-                break;
 
+                Intent intent = new Intent(MapsActivity.this, FileActivity.class);
+                intent.putExtra("file", Config.getAbsolutePath(Config.get_today_filename()));
+                intent.putExtra("pos", 0);
+                Log.d(TAG, "-- before call FileActivity");
+                Log.d(TAG, "-- file:" + Config.getAbsolutePath(Config.get_today_filename()));
+                startActivity(intent);
+                break;
+            case R.id.imGallary:
+                Log.d(TAG,"-- image button Gallery event.");
+                break;
 
             default:
                 // doesn't work
