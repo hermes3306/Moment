@@ -93,8 +93,6 @@ public class FileActivity extends AppCompatActivity {
         mMapView.onCreate(savedInstanceState);  // check required ....
         mMapView.onResume();
 
-
-
         mMapView.getMapAsync(new OnMapReadyCallback() {
             final TextView tv_cursor = (TextView) findViewById(R.id.tv_cursor);
             final TextView tv_heading = (TextView) findViewById(R.id.tv_heading);
@@ -106,6 +104,8 @@ public class FileActivity extends AppCompatActivity {
             final TextView tv_carolies = (TextView) findViewById(R.id.tv_carolies);
             final TextView tv_address = (TextView) findViewById(R.id.tv_address);
             final SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
+            final ImageButton imbt_marker = (ImageButton) findViewById(R.id.imbt_marker);
+            final ImageButton imbt_navi = (ImageButton) findViewById(R.id.imbt_navi);
 
             final File flist[] = MyActivityUtil.getFiles(".mnt",true);
 
@@ -188,7 +188,6 @@ public class FileActivity extends AppCompatActivity {
                     drawStartMarker(googleMap,mActivityList);
                     drawEndMarker(googleMap,mActivityList);
                 }
-
 
                 Display display = getWindowManager().getDefaultDisplay();
                 DisplayMetrics metrics = new DisplayMetrics();
@@ -291,6 +290,38 @@ public class FileActivity extends AppCompatActivity {
                         if (position >= 0 && position < flist.length-1) {
                             position++;
                             GO(googleMap, flist[position]);
+                        }
+                    }
+                });
+
+                imbt_marker.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        nomarker = !nomarker;
+                        googleMap.clear();
+                        if(!nomarker) drawMarkers(googleMap,mActivityList);
+                        if(!notrack) drawTrack(googleMap,mActivityList);
+                        if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                        else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                        if(nomarker || notrack) {
+                            drawStartMarker(googleMap,mActivityList);
+                            drawEndMarker(googleMap,mActivityList);
+                        }
+                    }
+                });
+
+                imbt_navi.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        notrack = !notrack;
+                        googleMap.clear();
+                        if(!nomarker) drawMarkers(googleMap,mActivityList);
+                        if(!notrack) drawTrack(googleMap,mActivityList);
+                        if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                        else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                        if(nomarker || notrack) {
+                            drawStartMarker(googleMap,mActivityList);
+                            drawEndMarker(googleMap,mActivityList);
                         }
                     }
                 });
@@ -573,7 +604,6 @@ public class FileActivity extends AppCompatActivity {
                     int interval = (int)(t_distance / disunit);
                     //Log.e(TAG, "" + interval + unitstr);
                     t_lap += disunit;
-
 
                     Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title(title)
                             .icon(BitmapDescriptorFactory.defaultMarker(color))

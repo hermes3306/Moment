@@ -133,7 +133,7 @@ public class MyLoc {
     public ArrayList<MyActivity> Path2Activity(String selection,
                                                String selectionArgs[],
                                                String order_by) {
-        Log.d(TAG, "-- Path2Activity()");
+        Log.d(TAG, "--Path2Activity ()");
         MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -160,7 +160,7 @@ public class MyLoc {
             String ti = cursor.getString(
                     cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_CRTIME));
             l.add(new MyActivity(lat, lng, dt, ti));
-            Log.d(TAG, "-- " + itemId + ", " + lat + ", " + lng + ", " + dt + ", " + ti);
+            //Log.d(TAG, "-- " + itemId + ", " + lat + ", " + lng + ", " + dt + ", " + ti);
         }
         Log.d(TAG, "-- Total number of path:" + l.size());
         return l;

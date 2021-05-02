@@ -60,6 +60,9 @@ public class MapsActivity extends FragmentActivity implements
     private static final int DEFAULT_ZOOM = 15;
     public static boolean firstCall = true;
     public static boolean paused = false;
+    public static boolean nomarker = false;
+    public static boolean notrack = false;
+    public static boolean satellite = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,10 +167,31 @@ public class MapsActivity extends FragmentActivity implements
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.d(TAG,"-- onLocationChanged.");
-//        Toast.makeText(getApplicationContext(),
-//                "onLocationChanged.", Toast.LENGTH_SHORT)
-//                .show();
+        double dist = CalDistance.dist(location.getLatitude(), location.getLongitude());
+        if(!firstCall && dist < Config._minLocChange) return;
+
+        Log.d(TAG,"-- onLocationChanged("+location.getLatitude()+","+location.getLongitude()+")");
+        Log.d(TAG,"-- onLocationChanged("+dist+"m)");
+        MyLoc myloc = new MyLoc(getApplicationContext());
+
+        if(firstCall) {
+            firstCall = false;
+            //myloc.createNew();
+            MyActivity ma = myloc.lastActivity();
+            if(ma == null) {
+                myloc.ins(location.getLatitude(), location.getLongitude());
+            }
+            double d2 = CalDistance.dist(ma.latitude, ma.longitude, location.getLatitude(), location.getLongitude());
+            if (d2 > Config._minLocChange) myloc.ins(location.getLatitude(), location.getLongitude()); //minLocChange = 5meter
+        }
+        else {
+            if (dist > Config._minLocChange) {
+                myloc.ins(location.getLatitude(), location.getLongitude());
+                Toast.makeText(getApplicationContext(),
+                        "-- onLocationChanged("+dist+"meter)", Toast.LENGTH_SHORT)
+                        .show();
+            } else return;
+        }
 
         String _title = DateToString(new Date(), "hh:mm:ss");
         String _snippet = getAddress(getApplicationContext(),new LatLng(location.getLatitude(), location.getLongitude()));
@@ -179,30 +203,6 @@ public class MapsActivity extends FragmentActivity implements
         marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
         mMap.addMarker(marker);
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
-
-        double dist = CalDistance.dist(location.getLatitude(), location.getLongitude());
-        Log.d(TAG,"-- onLocationChanged("+location.getLatitude()+","+location.getLongitude()+")");
-        Log.d(TAG,"-- onLocationChanged("+dist+"m)");
-
-        Toast.makeText(getApplicationContext(),
-                "-- onLocationChanged("+dist+"m)", Toast.LENGTH_SHORT)
-                .show();
-
-        MyLoc myloc = new MyLoc(getApplicationContext());
-        if(firstCall) {
-            firstCall = false;
-            //myloc.createNew();
-            MyActivity ma = myloc.lastActivity();
-            if(ma == null) {
-                myloc.ins(location.getLatitude(), location.getLongitude());
-            }
-            double d2 = CalDistance.dist(ma.latitude, ma.longitude, location.getLatitude(), location.getLongitude());
-            if (d2 > (double) 1.0) myloc.ins(location.getLatitude(), location.getLongitude());
-        }
-        else {
-            if (dist > (double) 1.0) myloc.ins(location.getLatitude(), location.getLongitude());
-        }
-
     }
 
     @Override
@@ -354,11 +354,23 @@ public class MapsActivity extends FragmentActivity implements
             case R.id.imGlobe:
                 Log.d(TAG,"-- image button Path event.");
                 MyLoc myLoc = new MyLoc(getApplicationContext());
-                myLoc.qry();
+
                 ArrayList<LatLng> todaypath = myLoc.todayPath();
-                ArrayList<MyActivity> malist = myLoc.todayActivity();
-                GooglemapUtil.drawTrack2(mMap, todaypath );
-                GooglemapUtil.drawMarkers(mMap, malist);
+                ArrayList<MyActivity> mActivityList = myLoc.todayActivity();
+                //GooglemapUtil.drawTrack2(mMap, todaypath );
+
+                Log.d(TAG, "-- nomarker = " + nomarker + " notracke = " + notrack);
+                mMap.clear();
+                if(!nomarker) drawMarkers(mMap,mActivityList);
+                if(!notrack) drawTrack(mMap,mActivityList);
+                if(!satellite) mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                else mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                if(nomarker || notrack) {
+                    drawStartMarker(mMap,mActivityList);
+                    drawEndMarker(mMap,mActivityList);
+                }
+                nomarker = !nomarker;
+                notrack = !notrack;
                 break;
             case R.id.imSave:
                 MyActivityUtil.serialize(new MyLoc(getApplicationContext()).todayActivity(), DateUtil.today()+".mnt");
@@ -367,13 +379,6 @@ public class MapsActivity extends FragmentActivity implements
                         .show();
                 break;
             case R.id.imFolder:
-                Log.d(TAG,"-- image button Cloud event.");
-                Location location = getLocation();
-                Log.d(TAG,"-- current location is " + location);
-                Toast.makeText(getApplicationContext(),
-                        "-- current location is " + location, Toast.LENGTH_SHORT)
-                        .show();
-
                 Intent intent = new Intent(MapsActivity.this, FileActivity.class);
                 intent.putExtra("file", Config.getAbsolutePath(Config.get_today_filename()));
                 intent.putExtra("pos", 0);

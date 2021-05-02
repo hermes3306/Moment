@@ -12,6 +12,7 @@ public class Config {
     public static boolean       _start_timer    = true; // start timer background scheduler
     public static String        _default_ext    = ".mnt"; // 기본확장자
     public static String        _filename_fmt   ="yyyyMMdd";
+    public static double        _minLocChange   = (double)5.0;
 
     public static File mediaStorageDir                 =
             new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
