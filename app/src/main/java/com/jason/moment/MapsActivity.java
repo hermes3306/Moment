@@ -1,5 +1,6 @@
 package com.jason.moment;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -20,6 +21,9 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -40,6 +44,7 @@ import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.GooglemapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
+import com.jason.moment.util.UI;
 import com.jason.moment.util.db.MyLoc;
 
 import java.text.SimpleDateFormat;
@@ -50,12 +55,14 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MapsActivity extends FragmentActivity implements
+// 2021/05/03, MapsActivity extends AppCompatActivity instead of FragmentActivity
+public class MapsActivity extends AppCompatActivity implements
         OnMapReadyCallback,
         View.OnClickListener,
         LocationListener {
 
     private GoogleMap mMap;
+    private Context _ctx;
     private static String TAG = "MapsActivity";
     private static final int DEFAULT_ZOOM = 15;
     public static boolean firstCall = true;
@@ -66,6 +73,7 @@ public class MapsActivity extends FragmentActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        this._ctx = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -126,7 +134,6 @@ public class MapsActivity extends FragmentActivity implements
         if(Config._start_timer) {
             startMyTimer(); // Timer 시작(onPause()에서도 10초마다 실행됨
         }
-
     }
 
     private void startMyTimer() {
@@ -373,12 +380,13 @@ public class MapsActivity extends FragmentActivity implements
                 notrack = !notrack;
                 break;
             case R.id.imSave:
-                MyActivityUtil.serialize(new MyLoc(getApplicationContext()).todayActivity(), DateUtil.today()+".mnt");
-                Toast.makeText(getApplicationContext(),
-                        "-- serialized into " + DateUtil.today(), Toast.LENGTH_SHORT)
+                ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).todayActivity();
+                MyActivityUtil.serialize(myal, DateUtil.today()+".mnt");
+                Toast.makeText(getApplicationContext(), "Total " + myal.size() + " activities is serialized into " + DateUtil.today()+".mnt", Toast.LENGTH_SHORT)
                         .show();
                 break;
             case R.id.imFolder:
+                MyActivityUtil.serialize(new MyLoc(getApplicationContext()).todayActivity(), DateUtil.today()+".mnt");
                 Intent intent = new Intent(MapsActivity.this, FileActivity.class);
                 intent.putExtra("file", Config.getAbsolutePath(Config.get_today_filename()));
                 intent.putExtra("pos", 0);
@@ -386,13 +394,37 @@ public class MapsActivity extends FragmentActivity implements
                 Log.d(TAG, "-- file:" + Config.getAbsolutePath(Config.get_today_filename()));
                 startActivity(intent);
                 break;
+
+            case R.id.imCamerea:
+                Log.d(TAG,"-- image button Camera.");
+                break;
+
             case R.id.imGallary:
-                Log.d(TAG,"-- image button Gallery event.");
+                Log.d(TAG,"-- image button Gallery.");
+
                 break;
 
             default:
                 // doesn't work
                 refresh();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                new UI().alertDialog(_ctx,item.getActionView(),"","");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -631,7 +663,7 @@ public class MapsActivity extends FragmentActivity implements
                     }
 
                     double dist = CalDistance.dist(location.getLatitude(), location.getLongitude());
-                    if(dist > 1.0) {
+                    if(dist > Config._minLocChange) { // 5meter
                         MyLoc myloc = new MyLoc(getApplicationContext());
                         myloc.ins(location.getLatitude(), location.getLongitude());
                         Log.d(TAG,"-- new Location"+location.getLatitude()+","+location.getLongitude()+")");
@@ -639,7 +671,7 @@ public class MapsActivity extends FragmentActivity implements
                                 "-- Timer add new Location", Toast.LENGTH_SHORT)
                                 .show();
                     } else {
-                        Log.d(TAG,"-- same Location!");
+                        Log.d(TAG,"-- same Location by MyTimerTask!");
                     }
                 }
             });

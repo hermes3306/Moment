@@ -2,4 +2,6 @@
     <string name="app_name">Moment</string>
     <string name="title_activity_maps">Map</string>
     <string name="qry">qry</string>
+    <string name="menu_settings">"settings..."</string>
+    <string name="hello_world">Hello World</string>
 </resources>

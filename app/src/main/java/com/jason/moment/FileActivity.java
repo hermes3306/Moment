@@ -42,6 +42,7 @@ import com.jason.moment.util.CalcTime;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StringUtil;
+import com.jason.moment.util.UI;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -112,13 +113,16 @@ public class FileActivity extends AppCompatActivity {
             public void GO(final GoogleMap googleMap, File myfile) {
                 googleMap.clear();
                 markers = new ArrayList<Marker>();
-
                 ActivityStat activityStat = null;
 
                 if(myfile != null) mActivityList = deserialize(myfile);
                 if(mActivityList==null) {
-                    Log.e(TAG, "No Activities...");
+                    Log.e(TAG, "" + myfile + " failed to be deserialized");
                     return;
+                } else if(mActivityList.size()==0) {
+                    Log.e(TAG, "" + myfile + " serialized successfully but the size is 0");
+                } else {
+                        Log.d(TAG, "" + myfile + " is deserialized successfully! with # of " + mActivityList.size());
                 }
 
                 if(mActivityList.size()>1) {
@@ -144,10 +148,7 @@ public class FileActivity extends AppCompatActivity {
                     addinfo = addresses.get(0).getAddressLine(0).toString();
                 }
 
-//                String inx_str = "\n" + (position+1)  + "/" + flist.length + "\n" + "Total " + mActivityList.size() + " locations";
-//                tv_cursor.setText(inx_str);
-
-                String inx_str = "" + mActivityList.size() + " visits ("+ (position+1)  + "/" + flist.length +")";
+                String inx_str = "" + mActivityList.size() + " visits ("+ (position+1)  + "/" + (flist.length) +")";
                 tv_cursor.setText(inx_str);
 
                 Log.d(TAG, "-- FileActivity, Tot # of Activity: " + inx_str);
@@ -267,8 +268,8 @@ public class FileActivity extends AppCompatActivity {
 
                         //
                         tv_heading.setText(MyActivityUtil.getTimeStr(mActivityList, marker_pos));
-
                         tv_address.setText(MyActivityUtil.getAddress(_ctx, mActivityList.get(marker_pos)));
+
 //                        String inx_str = "\n" + (position+1)  + "/" + flist.length + "\n" + "" + marker_pos + "/" + mActivityList.size();
                         String inx_str = "" + mActivityList.size() + " visits ("+ (position+1)  + "/" + flist.length +")";
                         tv_cursor.setText(inx_str);
@@ -280,6 +281,8 @@ public class FileActivity extends AppCompatActivity {
                         if (position > 0 && position < flist.length) {
                             position--;
                             GO(googleMap, flist[position]);
+                        } else {
+                            new UI().alertDialog(_ctx, view, "Error","Begin of File");
                         }
                     }
                 });
@@ -290,6 +293,8 @@ public class FileActivity extends AppCompatActivity {
                         if (position >= 0 && position < flist.length-1) {
                             position++;
                             GO(googleMap, flist[position]);
+                        } else {
+                            new UI().alertDialog(_ctx, view, "Error","End of File");
                         }
                     }
                 });
@@ -328,35 +333,17 @@ public class FileActivity extends AppCompatActivity {
 
                 tv_address.setOnClickListener(new View.OnClickListener(){
                     public void onClick(View view) {
-                        myzoom = googleMap.getCameraPosition().zoom;
-
-                        Log.e(TAG, "address clocked !!");
                         if(tog_add) {
-                            tv_address.setText("To:" +  add2);
-                            tv_address.setTextColor(Color.RED);
-                            tv_heading.setText(MyActivityUtil.getEndTime(mActivityList));
-                            Log.e(TAG, "To: " + add2);
-                            tog_add = false;
-                            LatLng lastpos = new LatLng(mActivityList.get(mActivityList.size()-1).latitude,
-                                    mActivityList.get(mActivityList.size()-1).longitude);
-                            moveCamera(googleMap,lastpos);
-                            marker_pos=mActivityList.size()-1;
-                        } else {
-                            tv_address.setText("From:" +  add1);
-                            tv_address.setTextColor(Color.GREEN);
-
-
-                            Log.e(TAG, "From: " + add1);
-                            LatLng lastpos = new LatLng(mActivityList.get(0).latitude,
-                                    mActivityList.get(0).longitude);
-                            moveCamera(googleMap,lastpos);
-                            tog_add = true;
-                            marker_pos = 0;
+                            seekBar.setProgress(0,true);
+                        }else {
+                            seekBar.setProgress(mActivityList.size()-1, true);
                         }
-                        if(bef_last_marker!=null) bef_last_marker.remove();
-                        if(last_marker!=null) last_marker.remove();
+                        tog_add = !tog_add;
                     }
                 });
+
+
+
             } /* on  MapReady */
         });
     } /* onCreate */
@@ -444,9 +431,9 @@ public class FileActivity extends AppCompatActivity {
 
     public ArrayList<MyActivity> deserialize(File file) {
         if(file == null)  {
-            Log.e(TAG, "No File to deserialized");
+            Log.d(TAG, "-- No File to deserialized");
             return null;
-        } else Log.e(TAG, "" + file.getAbsolutePath() + " to be deserialized");
+        } else Log.d(TAG, "-- " + file.getAbsolutePath() + " to be deserialized");
 
         FileInputStream fis = null;
         BufferedInputStream bis = null;
@@ -474,7 +461,7 @@ public class FileActivity extends AppCompatActivity {
             } while(ma != null);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e(TAG, e.toString());
+            Log.e(TAG, "--" + e.toString());
         } finally {
             try {
                 if (in != null) in.close();

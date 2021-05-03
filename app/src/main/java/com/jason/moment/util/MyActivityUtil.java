@@ -73,18 +73,19 @@ public class MyActivityUtil {
     public static void serialize(ArrayList<MyActivity> list, String fileName) {
         if(list == null) return;
         if(!mediaStorageDir.exists()) mediaStorageDir.mkdirs();
-
         File file = new File(mediaStorageDir, fileName);
+
         Log.e(TAG, "-- **** Activity file: " + file.toString());
         try {
             FileOutputStream fos = new FileOutputStream(file);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             ObjectOutputStream out = new ObjectOutputStream(bos);
 
-            for(int i=0;i<= list.size();i++) {
+            for(int i=0;i< list.size();i++) {
                 MyActivity ma = list.get(i);
                 out.writeObject(ma);
             }
+            Log.e(TAG, "-- **** Total " + list.size() + "activities saved in to " + file.toString());
             out.close();
         }catch(Exception e) {
             e.printStackTrace();

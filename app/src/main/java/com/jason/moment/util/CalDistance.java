@@ -23,7 +23,6 @@ public class CalDistance {
     }
 
     public double getDistance() {
-        Log.d(TAG,"-- getDistance.");
         theta = bef_long - cur_long;
         dist = Math.sin(deg2rad(bef_lat)) * Math.sin(deg2rad(cur_lat)) + Math.cos(deg2rad(bef_lat))
                 * Math.cos(deg2rad(cur_lat))*Math.cos(deg2rad(theta));
@@ -34,7 +33,7 @@ public class CalDistance {
         dist = dist * 1.609344;
         dist = dist * 1000.0;  // 단위 Km 에서 m로 변환
 
-        //Log.e(TAG, "Distance:" + dist);
+        Log.d(TAG, "-- getDistance:" + dist + " m");
         return dist; // 단위 m
     }
     private double deg2rad(double deg) {
@@ -48,10 +47,10 @@ public class CalDistance {
     public static double prev_lng=-1;
 
     public static double dist(double lat1, double lng1, double lat2, double lng2) {
-        Log.d(TAG,"-- dist.");
+
         CalDistance cd = new CalDistance(lat1, lng1, lat2, lng2);
         double dist = cd.getDistance();
-
+        Log.d(TAG,"-- dist:" + dist + " prev_lat:" + prev_lat + " prev_lng:" + prev_lng);
         if(dist > Config._minLocChange) { // ex) 5 (5meter)
             prev_lat = lat2;
             prev_lng = lng2;
@@ -60,10 +59,10 @@ public class CalDistance {
     }
 
     public static double dist(double lat, double lng) {
-        Log.d(TAG,"-- dist.");
-
-        if(prev_lat==-1) return 0;
-        if(prev_lng==-1) return 0;
+        if(prev_lat==-1 || prev_lng==-1) {
+            Log.d(TAG,"-- before calculate distance! prev_lat:" + prev_lat + " prev_lng:" + prev_lng);
+            return 0;
+        }
 
         CalDistance cd = new CalDistance(prev_lat, prev_lng, lat, lng);
         double dist = cd.getDistance();

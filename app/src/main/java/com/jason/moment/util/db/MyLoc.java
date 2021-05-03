@@ -73,30 +73,6 @@ public class MyLoc {
     public void qry() {
         MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-// Define a projection that specifies which columns from the database
-// you will actually use after this query.
-//        String[] projection = {
-//                BaseColumns._ID,
-//                MyLocContract.LocEntry.COLUMN_NAME_LATITUDE,
-//                MyLocContract.LocEntry.COLUMN_NAME_LONGITIDE
-//        };
-
-//        String selection = MyLocContract.LocEntry.COLUMN_NAME_LATITUDE + " != ?";
-//        String[] selectionArgs = { "-1" };
-//        String sortOrder =
-//                MyLocContract.LocEntry.COLUMN_NAME_LATITUDE + " DESC";
-
-//        Cursor cursor = db.query(
-//                MyLocContract.LocEntry.TABLE_NAME,   // The table to query
-//                projection,             // The array of columns to return (pass null to get all)
-//                selection,              // The columns for the WHERE clause
-//                selectionArgs,          // The values for the WHERE clause
-//                null,                   // don't group the rows
-//                null,                   // don't filter by row groups
-//                sortOrder               // The sort order
-//        );
-
                 Cursor cursor = db.query(
                 MyLocContract.LocEntry.TABLE_NAME,   // The table to query
                 null,             // The array of columns to return (pass null to get all)
@@ -119,9 +95,8 @@ public class MyLoc {
                     cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_CRDATE));
             String ti = cursor.getString(
                     cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_CRTIME));
-
             itemIds.add(itemId);
-            Log.d(TAG, "-- " + itemId + ", " + lat + ", " + lng + ", " + dt + ", " + ti);
+            //Log.d(TAG, "-- " + itemId + ", " + lat + ", " + lng + ", " + dt + ", " + ti);
         }
         cursor.close();
     }
@@ -164,9 +139,6 @@ public class MyLoc {
         }
         Log.d(TAG, "-- Total number of path:" + l.size());
         return l;
-
-
-
     }
 
     // qry
@@ -204,7 +176,7 @@ public class MyLoc {
             String ti = cursor.getString(
                     cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_CRTIME));
             l.add(new LatLng(lat, lng));
-            Log.d(TAG, "-- " + itemId + ", " + lat + ", " + lng + ", " + dt + ", " + ti);
+            //Log.d(TAG, "-- " + itemId + ", " + lat + ", " + lng + ", " + dt + ", " + ti);
         }
         Log.d(TAG, "-- Total number of path:" + l.size());
         return l;
