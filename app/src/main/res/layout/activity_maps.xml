@@ -60,6 +60,14 @@
             android:src="@drawable/folder48" />
 
         <ImageButton
+            android:id="@+id/imDown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:src="@drawable/down48" />
+
+        <ImageButton
             android:id="@+id/imCamerea"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -46,8 +46,11 @@ import com.jason.moment.util.GooglemapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.UI;
+import com.jason.moment.util.WebUtil;
 import com.jason.moment.util.db.MyLoc;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -346,8 +349,8 @@ public class MapsActivity extends AppCompatActivity implements
                 String _msg = "Total " + myal.size() + " activities is serialized into " + DateUtil.today()+".mnt";
                 tv_status.setText(_msg);
 
-                Toast.makeText(getApplicationContext(), "Total " + myal.size() + " activities is serialized into " + DateUtil.today()+".mnt", Toast.LENGTH_SHORT)
-                        .show();
+//                Toast.makeText(getApplicationContext(), "Total " + myal.size() + " activities is serialized into " + DateUtil.today()+".mnt", Toast.LENGTH_SHORT)
+//                        .show();
                 break;
             case R.id.imFolder:
                 MyActivityUtil.serialize(new MyLoc(getApplicationContext()).todayActivity(), DateUtil.today()+".mnt");
@@ -357,6 +360,29 @@ public class MapsActivity extends AppCompatActivity implements
                 Log.d(TAG, "-- before call FileActivity");
                 Log.d(TAG, "-- file:" + Config.getAbsolutePath(Config.get_today_filename()));
                 startActivity(intent);
+                break;
+
+                //this is used for temporary
+            case R.id.imDown:
+                Log.d(TAG,"-- image button Down.");
+                try {
+                    String _files[] = {
+                            "http://ezehub.club/moment/20210502.mnt"
+                    };
+
+                    //WebUtil.downloadFileAsync(_ctx, _files, Config.getMediaStorageDirPath());
+                    WebUtil.downloadFileAsync(_ctx, _files, _ctx.getCacheDir().getAbsolutePath());
+                    File tfile = new File(_ctx.getCacheDir(),"20210502.mnt");
+                    Toast.makeText(_ctx, "" + tfile.getAbsolutePath() + "("+ tfile.length()+") downloaded", Toast.LENGTH_LONG).show();
+
+
+
+                } catch (Exception e) {
+                    tv_status.setText("Download Fail!" + e.toString());
+                    e.printStackTrace();
+                    return;
+                }
+                tv_status.setText("Download Success!");
                 break;
 
             case R.id.imCamerea:

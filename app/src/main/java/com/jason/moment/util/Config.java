@@ -27,4 +27,8 @@ public class Config {
         return file.getAbsolutePath();
     }
 
+    public static String getMediaStorageDirPath() {
+        return mediaStorageDir.getAbsolutePath();
+    }
+
 }
