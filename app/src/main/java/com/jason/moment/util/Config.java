@@ -15,8 +15,11 @@ public class Config {
     public static double        _minLocChange   = (double)5.0;
     public static String        _backup_url_dir = "http://ezehub.club/moment/";
     public static String[]      _backup_url_files= {
+            "20210420.mnt",
+            "20210430.mnt",
+            "20210501.mnt",
             "20210502.mnt",
-            "20210503.mnt",
+            "20210503.mnt"
     };
 
     public static File mediaStorageDir                 =
