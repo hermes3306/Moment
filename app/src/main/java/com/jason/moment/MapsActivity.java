@@ -25,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -70,6 +71,8 @@ public class MapsActivity extends AppCompatActivity implements
     public static boolean nomarker = false;
     public static boolean notrack = false;
     public static boolean satellite = false;
+
+    public TextView tv_status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,12 +131,18 @@ public class MapsActivity extends AppCompatActivity implements
         // _start_timer : my Timer
         // ----------------------------------------------------------------------
         //
+        tv_status = (TextView) findViewById(R.id.tv_status);
         if(Config._start_service) {
             startService(new Intent(MapsActivity.this, LocService2.class)); // 서비스 시작
+            tv_status.setText("LocService2 started...");
         }
         if(Config._start_timer) {
             startMyTimer(); // Timer 시작(onPause()에서도 10초마다 실행됨
+            tv_status.setText("Timer started...");
         }
+
+        tv_status = (TextView) findViewById(R.id.tv_status);
+
     }
 
     private void startMyTimer() {
@@ -194,9 +203,10 @@ public class MapsActivity extends AppCompatActivity implements
         else {
             if (dist > Config._minLocChange) {
                 myloc.ins(location.getLatitude(), location.getLongitude());
-                Toast.makeText(getApplicationContext(),
-                        "-- onLocationChanged("+dist+"meter)", Toast.LENGTH_SHORT)
-                        .show();
+                tv_status.setText("onLocationChanged...");
+//                Toast.makeText(getApplicationContext(),
+//                        "-- onLocationChanged("+dist+"meter)", Toast.LENGTH_SHORT)
+//                        .show();
             } else return;
         }
 
@@ -302,57 +312,6 @@ public class MapsActivity extends AppCompatActivity implements
         }
     };
 
-    private boolean isStarted=false;
-    public void doBackground() {
-        Log.d(TAG, "-- doBackground()");
-        if(isStarted) return;
-        isStarted = true;
-        // Acquire a reference to the system Location Manager
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-        // GPS 프로바이더 사용가능여부
-        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        // 네트워크 프로바이더 사용가능여부
-        boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-        Log.d(TAG, "-- isGPSEnabled=" + isGPSEnabled);
-        Log.d(TAG, "-- isNetworkEnabled=" + isNetworkEnabled);
-
-        LocationListener locationListener = new LocationListener() {
-            public void onLocationChanged(Location location) {
-                double lat = location.getLatitude();
-                double lng = location.getLongitude();
-
-                Log.d(TAG, "-- latitude: " + lat + ", longitude: " + lng);
-            }
-
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-                Log.d(TAG, "-- onStatusChanged");
-            }
-
-            public void onProviderEnabled(String provider) {
-                Log.d(TAG, "-- onProviderEnabled");
-            }
-
-            public void onProviderDisabled(String provider) {
-                Log.d(TAG, "-- onProviderDisabled");
-            }
-        };
-
-        // Register the listener with the Location Manager to receive location updates
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-    }
 
     @Override
     public void onClick(View view) {
@@ -378,10 +337,15 @@ public class MapsActivity extends AppCompatActivity implements
                 }
                 nomarker = !nomarker;
                 notrack = !notrack;
+                tv_status.setText("Total " + mActivityList.size() + " activities...");
                 break;
             case R.id.imSave:
                 ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).todayActivity();
                 MyActivityUtil.serialize(myal, DateUtil.today()+".mnt");
+
+                String _msg = "Total " + myal.size() + " activities is serialized into " + DateUtil.today()+".mnt";
+                tv_status.setText(_msg);
+
                 Toast.makeText(getApplicationContext(), "Total " + myal.size() + " activities is serialized into " + DateUtil.today()+".mnt", Toast.LENGTH_SHORT)
                         .show();
                 break;
@@ -580,8 +544,6 @@ public class MapsActivity extends AppCompatActivity implements
             }
         }
     }
-
-
 
     // LocationManager variable declaration
     private LocationManager mLocationManager = null;
