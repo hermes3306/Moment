@@ -153,6 +153,8 @@ public class FileActivity extends AppCompatActivity {
 
                 Log.d(TAG, "-- FileActivity, Tot # of Activity: " + inx_str);
 
+                if(mActivityList.size()==0) return;
+
                 MyActivity ta = mActivityList.get(0);
                 String date_str = ta.cr_date + " " + ta.cr_time;
                 Log.d(TAG, "-- FileActivity, getStartTime: " + date_str);

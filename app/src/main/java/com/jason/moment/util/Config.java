@@ -13,10 +13,15 @@ public class Config {
     public static String        _default_ext    = ".mnt"; // 기본확장자
     public static String        _filename_fmt   ="yyyyMMdd";
     public static double        _minLocChange   = (double)5.0;
+    public static String        _backup_url_dir = "http://ezehub.club/moment/";
+    public static String[]      _backup_url_files= {
+            "20210502.mnt",
+            "20210503.mnt",
+    };
 
     public static File mediaStorageDir                 =
             new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                    "Moment1.0");
+                    "Moment1.1");
 
     public static String get_today_filename() {
         return StringUtil.DateToString(new Date(), _filename_fmt) + _default_ext;

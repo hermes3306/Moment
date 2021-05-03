@@ -19,6 +19,7 @@ public class WebUtil {
 
     public static void download(String fileURL, String saveDir)
             throws IOException {
+        Log.e(TAG, "-- Download URL:" + fileURL);
         URL url = new URL(fileURL);
         HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
         int responseCode = httpConn.getResponseCode();
@@ -43,10 +44,10 @@ public class WebUtil {
                         fileURL.length());
             }
 
-            Log.e(TAG,"Content-Type = " + contentType);
-            Log.e(TAG,"Content-Disposition = " + disposition);
-            Log.e(TAG,"Content-Length = " + contentLength);
-            Log.e(TAG,"fileName = " + fileName);
+            Log.e(TAG,"--Content-Type = " + contentType);
+            Log.e(TAG,"--Content-Disposition = " + disposition);
+            Log.e(TAG,"--Content-Length = " + contentLength);
+            Log.e(TAG,"--fileName = " + fileName);
 
             // opens input stream from the HTTP connection
             InputStream inputStream = httpConn.getInputStream();
@@ -64,9 +65,9 @@ public class WebUtil {
             outputStream.close();
             inputStream.close();
 
-            Log.e(TAG,"File downloaded");
+            Log.e(TAG,"--File downloaded");
         } else {
-            Log.e(TAG,"No file to download. Server replied HTTP code: " + responseCode);
+            Log.e(TAG,"--No file to download. Server replied HTTP code: " + responseCode);
         }
         httpConn.disconnect();
     }
@@ -84,7 +85,8 @@ public class WebUtil {
                         asyncDialog.setProgress(i);
                     }
                 }catch(Exception e) {
-                    Log.e(TAG, e.toString());
+                    Log.e(TAG, "--" + e.toString());
+                    e.printStackTrace();
                     return false;
                 }
                 return true;
@@ -109,7 +111,7 @@ public class WebUtil {
         int countdown = 10;
         while (aTask.getStatus() != AsyncTask.Status.FINISHED && countdown >0) {
             try {
-                Log.e(TAG, "waiting for file download....");
+                Log.e(TAG, "--waiting for file download....");
                 Thread.sleep(100); //0.1초 기다림
                 countdown--;
             } catch (Exception e) {

@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -20,6 +21,7 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Writer;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +46,39 @@ public class MyActivityUtil {
     }
 
     public static void serializeIntoJason(ArrayList<MyActivity> list, int start, int end, String fileName) {
+        if(start <0 || end >= list.size()) return;
+        if(!mediaStorageDir.exists()) mediaStorageDir.mkdirs();
+        File file = new File(mediaStorageDir, fileName);
+        Log.d(TAG, " -- **** Activity Jason file: " + file.toString());
+        try {
+            JSONArray jsonArr = new JSONArray();
+            for(int i=start;i<= end;i++) {
+                MyActivity ma = list.get(i);
+                JSONObject obj = new JSONObject();
+                obj.put("latitude", ma.latitude);
+                obj.put("longitude", ma.longitude);
+                obj.put("crdate", ma.cr_date);
+                obj.put("crtime", ma.cr_time);
+                jsonArr.put(obj);
+            }
+
+            JSONObject jobj = new JSONObject();
+            jobj.put("activities", jsonArr);
+
+            Writer output = null;
+            File jfile = new File(mediaStorageDir,fileName);
+            output = new BufferedWriter(new FileWriter(jfile));
+            output.write(jobj.toString());
+            output.close();
+
+            Log.d(TAG, jobj.toString());
+        }catch(Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, e.toString());
+        }
+    }
+
+    public static void deserializeFromJason(ArrayList<MyActivity> list, int start, int end, String fileName) {
         if(start <0 || end >= list.size()) return;
         if(!mediaStorageDir.exists()) mediaStorageDir.mkdirs();
         File file = new File(mediaStorageDir, fileName);

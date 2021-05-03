@@ -366,17 +366,37 @@ public class MapsActivity extends AppCompatActivity implements
             case R.id.imDown:
                 Log.d(TAG,"-- image button Down.");
                 try {
-                    String _files[] = {
-                            "http://ezehub.club/moment/20210502.mnt"
-                    };
+                    String _url_dir = Config._backup_url_dir; //"http://ezehub.club/moment/";
+                    String _files[] = Config._backup_url_files;
+                    String _urls[] = new String[_files.length];
+                    for(int x=0;x<_files.length;x++) {
+                        _urls[x] = _url_dir + _files[x];
+                    }
 
-                    //WebUtil.downloadFileAsync(_ctx, _files, Config.getMediaStorageDirPath());
-                    WebUtil.downloadFileAsync(_ctx, _files, _ctx.getCacheDir().getAbsolutePath());
-                    File tfile = new File(_ctx.getCacheDir(),"20210502.mnt");
-                    Toast.makeText(_ctx, "" + tfile.getAbsolutePath() + "("+ tfile.length()+") downloaded", Toast.LENGTH_LONG).show();
+                    WebUtil.downloadFileAsync(_ctx, _urls, _ctx.getCacheDir().getAbsolutePath());
+                    for(int i=0;i<_files.length;i++) {
+                        File tf = new File(_ctx.getCacheDir(), _files[i]);
+                        Log.d(TAG, "-- " + _files[i] + " will be deserialzied.");
+                        ArrayList<MyActivity> mal = MyActivityUtil.deserializeActivity(tf);
 
+                        Log.d(TAG, "-- " + _files[i] + " is deserialzied into " + mal.size() + " activities.");
+                        MyLoc myl = new MyLoc(_ctx);
+                        myl.deleteAll(); // Delete all the DB contents
+                        for(int j=0;j<mal.size();j++) {
+                            myl.ins(mal.get(j).latitude, mal.get(j).longitude);
+                        }
+                        Log.d(TAG, "-- " + "Activities in" + _files[i] + " inserted into DB!");
+                        Toast.makeText(_ctx, "Activities in" + _files[i] + " inserted into DB!", Toast.LENGTH_LONG).show();
+                        MyActivityUtil.serialize(mal, _files[i]);
+                        Log.d(TAG, "-- " + "Activities in" + _files[i] + " serialized again!");
+                        Toast.makeText(_ctx, "Activities in" + _files[i] + " serialized again!", Toast.LENGTH_LONG).show();
 
+                        String jfname = _files[i].substring(0,_files[i].length()-4) + ".jsn";
+                        MyActivityUtil.serializeIntoJason(mal,0,mal.size()-1, jfname);
 
+                        Log.d(TAG, "-- " + "Activities in" + jfname + " serialized into JSON file!");
+                        Toast.makeText(_ctx, "Activities in" + jfname + " serialized into JSON file", Toast.LENGTH_LONG).show();
+                    }
                 } catch (Exception e) {
                     tv_status.setText("Download Fail!" + e.toString());
                     e.printStackTrace();
