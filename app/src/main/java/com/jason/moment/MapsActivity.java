@@ -39,6 +39,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.snackbar.Snackbar;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
@@ -179,6 +180,9 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         Log.d(TAG,"-- onPause().");
+        ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).todayActivity();
+        MyActivityUtil.serialize(myal, DateUtil.today()+".mnt");
+        Toast.makeText(_ctx,"saved into " + DateUtil.today()+".mnt", Toast.LENGTH_LONG ).show();
         paused = true;
         super.onPause();
     }
@@ -348,9 +352,8 @@ public class MapsActivity extends AppCompatActivity implements
 
                 String _msg = "Total " + myal.size() + " activities is serialized into " + DateUtil.today()+".mnt";
                 tv_status.setText(_msg);
+                Snackbar.make(view, _msg, Snackbar.LENGTH_SHORT).show();
 
-//                Toast.makeText(getApplicationContext(), "Total " + myal.size() + " activities is serialized into " + DateUtil.today()+".mnt", Toast.LENGTH_SHORT)
-//                        .show();
                 break;
             case R.id.imFolder:
                 MyActivityUtil.serialize(new MyLoc(getApplicationContext()).todayActivity(), DateUtil.today()+".mnt");
