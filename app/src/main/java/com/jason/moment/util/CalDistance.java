@@ -61,6 +61,8 @@ public class CalDistance {
     public static double dist(double lat, double lng) {
         if(prev_lat==-1 || prev_lng==-1) {
             Log.d(TAG,"-- before calculate distance! prev_lat:" + prev_lat + " prev_lng:" + prev_lng);
+            prev_lat = lat;
+            prev_lng = lng;
             return 0;
         }
 

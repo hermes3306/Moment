@@ -12,6 +12,7 @@ public class Config {
     public static boolean       _start_timer    = false; // start timer background scheduler
     public static String        _default_ext    = ".mnt"; // 기본확장자
     public static String        _filename_fmt   ="yyyyMMdd";
+    public static boolean       _save_onPause = false;
     public static double        _minLocChange   = (double)5.0;
     public static String        _backup_url_dir = "http://ezehub.club/moment/";
     public static String[]      _backup_url_files= {

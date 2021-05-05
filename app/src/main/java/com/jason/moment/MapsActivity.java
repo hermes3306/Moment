@@ -3,7 +3,7 @@ package com.jason.moment;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
+import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.content.ComponentName;
@@ -17,14 +17,18 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,9 +45,10 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.snackbar.Snackbar;
 import com.jason.moment.util.CalDistance;
+import com.jason.moment.util.CameraUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
-import com.jason.moment.util.GooglemapUtil;
+import com.jason.moment.util.FileUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.UI;
@@ -52,6 +57,7 @@ import com.jason.moment.util.db.MyLoc;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,6 +65,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static androidx.core.app.ActivityCompat.startActivityForResult;
 
 // 2021/05/03, MapsActivity extends AppCompatActivity instead of FragmentActivity
 public class MapsActivity extends AppCompatActivity implements
@@ -76,7 +84,10 @@ public class MapsActivity extends AppCompatActivity implements
     public static boolean notrack = false;
     public static boolean satellite = false;
 
+    private static final int PICK_FROM_CAMERA = 2;
+
     public TextView tv_status;
+    public ImageButton imb_snap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,18 +147,19 @@ public class MapsActivity extends AppCompatActivity implements
         // ----------------------------------------------------------------------
         //
         tv_status = (TextView) findViewById(R.id.tv_status);
-        if(Config._start_service) {
+        imb_snap = (ImageButton) findViewById(R.id.imbSnap);
+
+        if (Config._start_service) {
             startService(new Intent(MapsActivity.this, LocService2.class)); // 서비스 시작
             tv_status.setText("LocService2 started...");
         }
-        if(Config._start_timer) {
+        if (Config._start_timer) {
             startMyTimer(); // Timer 시작(onPause()에서도 10초마다 실행됨
             tv_status.setText("Timer started...");
         }
-
-        tv_status = (TextView) findViewById(R.id.tv_status);
-
     }
+
+
 
     private void startMyTimer() {
         TimerTask mTask =new MapsActivity.MyTimerTask();
@@ -180,9 +192,11 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         Log.d(TAG,"-- onPause().");
-        ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).todayActivity();
-        MyActivityUtil.serialize(myal, DateUtil.today()+".mnt");
-        Toast.makeText(_ctx,"saved into " + DateUtil.today()+".mnt", Toast.LENGTH_LONG ).show();
+        if(Config._save_onPause) {
+            ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).todayActivity();
+            MyActivityUtil.serialize(myal, DateUtil.today()+".mnt");
+            Toast.makeText(_ctx,"saved into " + DateUtil.today()+".mnt", Toast.LENGTH_LONG ).show();
+        }
         paused = true;
         super.onPause();
     }
@@ -409,18 +423,99 @@ public class MapsActivity extends AppCompatActivity implements
                 break;
 
             case R.id.imCamerea:
-                Log.d(TAG,"-- image button Camera.");
+                Log.d(TAG,"-- image button Snap.");
+                dispatchTakePictureIntent();
+//                galleryAddPic();
+                break;
+            case R.id.imbSnap:
+                Log.d(TAG,"-- image button Snap.");
+                //dispatchTakePictureIntent();
+                //galleryAddPic();
+                CameraUtil cu = new CameraUtil(_ctx, this);
+                cu.takePhoto();
                 break;
 
             case R.id.imGallary:
                 Log.d(TAG,"-- image button Gallery.");
+                File folder= _ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                Log.d(TAG, "-- folder name to find pictures in:" + folder.getAbsolutePath());
 
+                File files[] = FileUtil.getFilesStartsWith(folder,"IMG", true);
+                if(files==null) {
+                    Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
+                    break;
+                } else if (files.length==0) {
+                    Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
+                    break;
+                }
+
+                Intent picIntent = new Intent(MapsActivity.this, PicActivity.class);
+                ArrayList<File> fileArrayList= new ArrayList<File>();
+                for(int i=0;i< files.length;i++) {
+                    fileArrayList.add(files[i]);
+                }
+
+                picIntent.putExtra("files", fileArrayList);
+                Log.d(TAG, "-- before call PicActivity");
+                Log.d(TAG, "-- # of file:" + fileArrayList.size());
+                startActivity(picIntent);
                 break;
 
             default:
                 // doesn't work
                 refresh();
         }
+    }
+
+
+
+
+    // 사진 촬영 기능
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    String currentPhotoPath;
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                Log.e(TAG,"-- before createImageFile");
+                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                String imageFileName = "IMG_" + timeStamp + ".jpeg";
+                photoFile = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), imageFileName);
+                Toast.makeText(_ctx, "photoFile " + photoFile.getAbsolutePath() + " is used for this picture!", Toast.LENGTH_LONG).show();
+                Log.d(TAG,"-- >>>>after createImageFile" + photoFile.getAbsolutePath());
+            } catch (Exception ex) {
+                // Error occurred while creating the File
+                Log.d(TAG,"-- >>>>" +ex.toString());
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.jason.moment.fileprovider",
+                        photoFile);
+
+                Log.d(TAG, "-- >>>> photoURI is " + photoURI.getPath());
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, PICK_FROM_CAMERA);
+                //startActivity(takePictureIntent);
+                currentPhotoPath = photoFile.getAbsolutePath();
+                Log.d(TAG, "-- >>>> currentPhotoPath is " + currentPhotoPath);
+                Log.d(TAG, "-- >>>> photoURI is " + photoURI.getPath());
+                Log.d(TAG,">>>> -- Gallary Added...!");
+            }
+        }
+    }
+
+    // check how to use this galleryAddPic
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(currentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        Log.d(TAG,"-- >>>>contentUri to be added to Gallary " + contentUri);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
     }
 
     @Override
