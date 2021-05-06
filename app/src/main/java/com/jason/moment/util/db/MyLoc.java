@@ -26,28 +26,37 @@ import static java.security.AccessController.getContext;
 public class MyLoc {
     private static String TAG = "MyLoc";
     private Context ctx;
+
+
+    private static MyLocDbHelper dbHelper = null;
+    private static SQLiteDatabase db = null;
+    private static SQLiteDatabase dbr = null;
+
     public MyLoc(Context ctx) {
         this.ctx = ctx;
+        if(dbHelper == null) dbHelper = new MyLocDbHelper(ctx);
+        if(db == null) this.db = dbHelper.getWritableDatabase();
+        if(dbr == null) this.dbr = dbHelper.getReadableDatabase();
     }
 
     public void createNew() {
-        MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
+        // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         // Gets the data repository in write mode
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        // SQLiteDatabase db = dbHelper.getWritableDatabase();
         dbHelper.createNew(db);
     }
 
     public void deleteAll() {
-        MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
+        // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         // Gets the data repository in write mode
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        // SQLiteDatabase db = dbHelper.getWritableDatabase();
         dbHelper.deleteAll(db);
     }
 
     public void ins(double lat, double lng) {
-        MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
+        // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         // Gets the data repository in write mode
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        // SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         Date today = new Date();
         SimpleDateFormat format1,format2;
@@ -65,15 +74,14 @@ public class MyLoc {
 // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(MyLocContract.LocEntry.TABLE_NAME, null, values);
         Log.d(TAG, "-- db.insert");
-        qry();
     }
 
 
 
     public void qry() {
-        MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-                Cursor cursor = db.query(
+        // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
+        // SQLiteDatabase dbr = dbHelper.getReadableDatabase();
+                Cursor cursor = dbr.query(
                 MyLocContract.LocEntry.TABLE_NAME,   // The table to query
                 null,             // The array of columns to return (pass null to get all)
                 null,              // The columns for the WHERE clause
@@ -109,10 +117,10 @@ public class MyLoc {
                                                String selectionArgs[],
                                                String order_by) {
         Log.d(TAG, "--Path2Activity ()");
-        MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        //MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
+        //SQLiteDatabase dbr = dbHelper.getReadableDatabase();
 
-        Cursor cursor = db.query(
+        Cursor cursor = dbr.query(
                 MyLocContract.LocEntry.TABLE_NAME,   // The table to query
                 null,             // The array of columns to return (pass null to get all)
                 selection,              // The columns for the WHERE clause
@@ -150,10 +158,9 @@ public class MyLoc {
                                   String order_by
                                   ) {
         Log.d(TAG, "-- Path()");
-        MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-        Cursor cursor = db.query(
+        // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
+        // SQLiteDatabase dbr = dbHelper.getReadableDatabase();
+        Cursor cursor = dbr.query(
                 MyLocContract.LocEntry.TABLE_NAME,   // The table to query
                 null,             // The array of columns to return (pass null to get all)
                 selection,              // The columns for the WHERE clause
@@ -184,8 +191,8 @@ public class MyLoc {
 
     public ArrayList<LatLng> todayPath() {
         Log.d(TAG, "-- todayPath()");
-        MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
+        // SQLiteDatabase dbr = dbHelper.getReadableDatabase();
 
         String selection = MyLocContract.LocEntry.COLUMN_NAME_CRDATE + " == ?";
         String order_by = MyLocContract.LocEntry.COLUMN_NAME_CRTIME + " ASC";
@@ -197,8 +204,8 @@ public class MyLoc {
 
     public ArrayList<MyActivity> todayActivity() {
         Log.d(TAG, "-- todayActivity()");
-        MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
+        // SQLiteDatabase dbr = dbHelper.getReadableDatabase();
 
         String selection = MyLocContract.LocEntry.COLUMN_NAME_CRDATE + " == ?";
         String order_by = MyLocContract.LocEntry.COLUMN_NAME_CRTIME + " ASC";
@@ -210,8 +217,8 @@ public class MyLoc {
 
     public MyActivity lastActivity() {
         Log.d(TAG, "-- lastActivity()");
-        MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
+        // SQLiteDatabase dbr = dbHelper.getReadableDatabase();
         String order_by = " crdate DESC, crtime DESC";
 
         ArrayList<MyActivity> mal =  Path2Activity(null, null, order_by);

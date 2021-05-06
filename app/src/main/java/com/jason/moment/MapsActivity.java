@@ -45,7 +45,6 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.snackbar.Snackbar;
 import com.jason.moment.util.CalDistance;
-import com.jason.moment.util.CameraUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.FileUtil;
@@ -56,8 +55,6 @@ import com.jason.moment.util.WebUtil;
 import com.jason.moment.util.db.MyLoc;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,8 +62,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import static androidx.core.app.ActivityCompat.startActivityForResult;
 
 // 2021/05/03, MapsActivity extends AppCompatActivity instead of FragmentActivity
 public class MapsActivity extends AppCompatActivity implements
@@ -408,11 +403,10 @@ public class MapsActivity extends AppCompatActivity implements
                         Log.d(TAG, "-- " + "Activities in" + _files[i] + " serialized again!");
                         Toast.makeText(_ctx, "Activities in" + _files[i] + " serialized again!", Toast.LENGTH_LONG).show();
 
-                        String jfname = _files[i].substring(0,_files[i].length()-4) + ".jsn";
-                        MyActivityUtil.serializeIntoJason(mal,0,mal.size()-1, jfname);
-
-                        Log.d(TAG, "-- " + "Activities in" + jfname + " serialized into JSON file!");
-                        Toast.makeText(_ctx, "Activities in" + jfname + " serialized into JSON file", Toast.LENGTH_LONG).show();
+//                        String jfname = _files[i].substring(0,_files[i].length()-4) + ".jsn";
+//                        MyActivityUtil.serializeIntoJason(mal,0,mal.size()-1, jfname);
+//                        Log.d(TAG, "-- " + "Activities in" + jfname + " serialized into JSON file!");
+//                        Toast.makeText(_ctx, "Activities in" + jfname + " serialized into JSON file", Toast.LENGTH_LONG).show();
                     }
                 } catch (Exception e) {
                     tv_status.setText("Download Fail!" + e.toString());
@@ -423,16 +417,9 @@ public class MapsActivity extends AppCompatActivity implements
                 break;
 
             case R.id.imCamerea:
-                Log.d(TAG,"-- image button Snap.");
-                dispatchTakePictureIntent();
-//                galleryAddPic();
-                break;
             case R.id.imbSnap:
                 Log.d(TAG,"-- image button Snap.");
-                //dispatchTakePictureIntent();
-                //galleryAddPic();
-                CameraUtil cu = new CameraUtil(_ctx, this);
-                cu.takePhoto();
+                dispatchTakePictureIntent();
                 break;
 
             case R.id.imGallary:
@@ -467,9 +454,6 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-
-
-
     // 사진 촬영 기능
     static final int REQUEST_IMAGE_CAPTURE = 1;
     String currentPhotoPath;
@@ -498,15 +482,35 @@ public class MapsActivity extends AppCompatActivity implements
 
                 Log.d(TAG, "-- >>>> photoURI is " + photoURI.getPath());
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, PICK_FROM_CAMERA);
-                //startActivity(takePictureIntent);
+
+                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                    Log.d(TAG, "-- >>>> resolveActivity called!");
+                    startActivityForResult(takePictureIntent, PICK_FROM_CAMERA);
+                }
+
                 currentPhotoPath = photoFile.getAbsolutePath();
                 Log.d(TAG, "-- >>>> currentPhotoPath is " + currentPhotoPath);
                 Log.d(TAG, "-- >>>> photoURI is " + photoURI.getPath());
-                Log.d(TAG,">>>> -- Gallary Added...!");
             }
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "-- onActivityResult called!");
+        if (requestCode == PICK_FROM_CAMERA && resultCode == RESULT_OK) {
+            Log.d(TAG, "-- resultCode - PICK_FROM_CAMERA");
+            if(data==null) {
+                Log.d(TAG, "-- Intent data is NULL!!!!");
+                return;
+            }
+            Bundle extras = data.getExtras();
+//            Bitmap imageBitmap = (Bitmap) extras.get("data");
+//            imageView.setImageBitmap(imageBitmap);
+        }
+    }
+
+
 
     // check how to use this galleryAddPic
     private void galleryAddPic() {
