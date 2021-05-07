@@ -200,9 +200,9 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     public void onLocationChanged(Location location) {
         double dist = CalDistance.dist(location.getLatitude(), location.getLongitude());
+        Log.d(TAG,"-- onLocationChanged("+location.getLatitude()+","+location.getLongitude()+")");
         if(!firstCall && dist < Config._minLocChange) return;
 
-        Log.d(TAG,"-- onLocationChanged("+location.getLatitude()+","+location.getLongitude()+")");
         Log.d(TAG,"-- onLocationChanged("+dist+"m)");
         MyLoc myloc = new MyLoc(getApplicationContext());
 
@@ -547,7 +547,9 @@ public class MapsActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                new UI().alertDialog(_ctx,item.getActionView(),"","");
+                Intent intent = new Intent(MapsActivity.this, RunActivity.class);
+                intent.putExtra("1", 1);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

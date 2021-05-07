@@ -235,7 +235,9 @@ public class MyLoc {
         Log.d(TAG, "-- lastActivity()");
         // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         // SQLiteDatabase dbr = dbHelper.getReadableDatabase();
-        String order_by = " crdate DESC, crtime DESC";
+
+        //String order_by = " crdate DESC, crtime DESC";
+        String order_by = " crdate DESC, crtime DESC limit 1";
 
         ArrayList<MyActivity> mal =  Path2Activity(null, null, order_by);
         if(mal.size()>0) return mal.get(0);

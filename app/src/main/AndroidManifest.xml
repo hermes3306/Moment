@@ -11,13 +11,10 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <!-- for Camera -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- for Camera -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
-
-
 
     <application
         android:allowBackup="true"
@@ -28,10 +25,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Moment"
         android:usesCleartextTraffic="true">
-        <activity android:name=".PicActivity"
+        <activity android:name=".RunActivity"
             android:theme="@style/Theme.AppCompat"></activity>
-        <activity android:name=".FileActivity"
-            android:theme="@style/Theme.AppCompat"/>
+        <activity
+            android:name=".PicActivity"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name=".FileActivity"
+            android:theme="@style/Theme.AppCompat" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -43,7 +44,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" /> <!-- android:name="androidx.core.content.FileProvider" -->
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -56,8 +56,8 @@
 
         <activity
             android:name=".MapsActivity"
-            android:theme="@style/Theme.AppCompat"
-            android:label="@string/title_activity_maps">
+            android:label="@string/title_activity_maps"
+            android:theme="@style/Theme.AppCompat">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -67,7 +67,7 @@
 
         <service
             android:name=".LocService2"
-            android:enabled="true" />
+            android:enabled="false" />
     </application>
 
 </manifest>
