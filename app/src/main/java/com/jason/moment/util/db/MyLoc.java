@@ -76,6 +76,22 @@ public class MyLoc {
         Log.d(TAG, "-- db.insert");
     }
 
+    public void ins(double lat, double lng, String dt, String ti) {
+        // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
+        // Gets the data repository in write mode
+        // SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(MyLocContract.LocEntry.COLUMN_NAME_LATITUDE, lat);
+        values.put(MyLocContract.LocEntry.COLUMN_NAME_LONGITIDE, lng);
+        values.put(MyLocContract.LocEntry.COLUMN_NAME_CRDATE, dt);
+        values.put(MyLocContract.LocEntry.COLUMN_NAME_CRTIME, ti);
+
+// Insert the new row, returning the primary key value of the new row
+        long newRowId = db.insert(MyLocContract.LocEntry.TABLE_NAME, null, values);
+        //Log.d(TAG, "-- db.insert rowid(" + newRowId +")");
+    }
+
 
 
     public void qry() {

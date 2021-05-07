@@ -96,6 +96,9 @@ public class FileActivity extends AppCompatActivity {
 
         mMapView.getMapAsync(new OnMapReadyCallback() {
             final TextView tv_cursor = (TextView) findViewById(R.id.tv_cursor);
+            final TextView tv_cursor2 = (TextView) findViewById(R.id.tv_cursor2);
+
+            final TextView tv_file = (TextView) findViewById(R.id.tv_file);
             final TextView tv_heading = (TextView) findViewById(R.id.tv_heading);
             final ImageButton imbt_prev = (ImageButton) findViewById(R.id.imbt_prev);
             final ImageButton imbt_next = (ImageButton) findViewById(R.id.imbt_next);
@@ -148,8 +151,12 @@ public class FileActivity extends AppCompatActivity {
                     addinfo = addresses.get(0).getAddressLine(0).toString();
                 }
 
-                String inx_str = "" + mActivityList.size() + " visits ("+ (position+1)  + "/" + (flist.length) +")";
+                String inx_str= "" + seekBar.getProgress() + "/" + seekBar.getMax();
+                String inx_str2= "" + (position+1)  + "/" + (flist.length);
+
                 tv_cursor.setText(inx_str);
+                tv_cursor2.setText(inx_str2);
+                tv_file.setText(myfile.getName().substring(0, myfile.getName().length()-4));
 
                 Log.d(TAG, "-- FileActivity, Tot # of Activity: " + inx_str);
 
@@ -272,32 +279,40 @@ public class FileActivity extends AppCompatActivity {
                         tv_heading.setText(MyActivityUtil.getTimeStr(mActivityList, marker_pos));
                         tv_address.setText(MyActivityUtil.getAddress(_ctx, mActivityList.get(marker_pos)));
 
-//                        String inx_str = "\n" + (position+1)  + "/" + flist.length + "\n" + "" + marker_pos + "/" + mActivityList.size();
-                        String inx_str = "" + mActivityList.size() + " visits ("+ (position+1)  + "/" + flist.length +")";
+                        String inx_str= "" + seekBar.getProgress() + "/" + seekBar.getMax();
+                        String inx_str2= "" + (position+1)  + "/" + (flist.length);
                         tv_cursor.setText(inx_str);
+                        tv_cursor2.setText(inx_str2);
+                        tv_file.setText(_file.getName().substring(0, _file.getName().length()-4));
+
                     }
                 });
 
                 imbt_prev.setOnClickListener(new View.OnClickListener(){
-                    public void onClick (View view) {
-                        if (position > 0 && position < flist.length) {
-                            position--;
-                            GO(googleMap, flist[position]);
-                        } else {
-                            new UI().alertDialog(_ctx, view, "Error","Begin of File");
-                        }
+                    public void onClick(View view) {
+                        File flist[] = MyActivityUtil.getFiles();
+                        if (position > 0 && position <= flist.length) position--;
+                        else position=flist.length-1;
+                        GO(googleMap, flist[position]);
                     }
                 });
+
+                tv_cursor2.setOnClickListener(new View.OnClickListener(){
+                    public void onClick(View view) {
+                        File flist[] = MyActivityUtil.getFiles();
+                        if (position >= 0 && position < flist.length-1) position++;
+                        else position=0;
+                        GO(googleMap, flist[position]);
+                    }
+                });
+
 
                 imbt_next.setOnClickListener(new View.OnClickListener(){
                     public void onClick (View view) {
                         File flist[] = MyActivityUtil.getFiles();
-                        if (position >= 0 && position < flist.length-1) {
-                            position++;
-                            GO(googleMap, flist[position]);
-                        } else {
-                            new UI().alertDialog(_ctx, view, "Error","End of File");
-                        }
+                        if (position >= 0 && position < flist.length-1) position++;
+                        else position=0;
+                        GO(googleMap, flist[position]);
                     }
                 });
 

@@ -25,7 +25,7 @@ public class Config {
 
     public static File mediaStorageDir                 =
             new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                    "Moment1.1");
+                    "Moment1.2");
 
     public static String get_today_filename() {
         return StringUtil.DateToString(new Date(), _filename_fmt) + _default_ext;

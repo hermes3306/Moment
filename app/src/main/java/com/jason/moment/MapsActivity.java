@@ -83,6 +83,7 @@ public class MapsActivity extends AppCompatActivity implements
 
     public TextView tv_status;
     public ImageButton imb_snap;
+    public TextView tv_map_address;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,6 +144,7 @@ public class MapsActivity extends AppCompatActivity implements
         //
         tv_status = (TextView) findViewById(R.id.tv_status);
         imb_snap = (ImageButton) findViewById(R.id.imbSnap);
+        tv_map_address = (TextView) findViewById(R.id.tv_map_address);
 
         if (Config._start_service) {
             startService(new Intent(MapsActivity.this, LocService2.class)); // 서비스 시작
@@ -153,8 +155,6 @@ public class MapsActivity extends AppCompatActivity implements
             tv_status.setText("Timer started...");
         }
     }
-
-
 
     private void startMyTimer() {
         TimerTask mTask =new MapsActivity.MyTimerTask();
@@ -230,12 +230,14 @@ public class MapsActivity extends AppCompatActivity implements
         String _snippet = getAddress(getApplicationContext(),new LatLng(location.getLatitude(), location.getLongitude()));
 
         mMap.clear();
+        tv_map_address.setText(_snippet);
         MarkerOptions marker = new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude()));
         marker.title(_title);
         marker.snippet(_snippet);
         marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
         mMap.addMarker(marker);
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
+
     }
 
     @Override
@@ -386,28 +388,40 @@ public class MapsActivity extends AppCompatActivity implements
                     }
 
                     WebUtil.downloadFileAsync(_ctx, _urls, _ctx.getCacheDir().getAbsolutePath());
+                    MyLoc myl = new MyLoc(_ctx);
+                    ArrayList<MyActivity> todayal = new MyLoc(getApplicationContext()).todayActivity();
+
+                    myl.deleteAll(); // Delete all the DB contents
+
                     for(int i=0;i<_files.length;i++) {
                         File tf = new File(_ctx.getCacheDir(), _files[i]);
                         Log.d(TAG, "-- " + _files[i] + " will be deserialzied.");
                         ArrayList<MyActivity> mal = MyActivityUtil.deserializeActivity(tf);
-
                         Log.d(TAG, "-- " + _files[i] + " is deserialzied into " + mal.size() + " activities.");
-                        MyLoc myl = new MyLoc(_ctx);
-                        myl.deleteAll(); // Delete all the DB contents
                         for(int j=0;j<mal.size();j++) {
-                            myl.ins(mal.get(j).latitude, mal.get(j).longitude);
+                            myl.ins(mal.get(j).latitude, mal.get(j).longitude, mal.get(j).cr_date, mal.get(j).cr_time);
                         }
                         Log.d(TAG, "-- " + "Activities in" + _files[i] + " inserted into DB!");
-                        Toast.makeText(_ctx, "Activities in" + _files[i] + " inserted into DB!", Toast.LENGTH_LONG).show();
+                        tv_status.setText("Activities in" + _files[i] + " inserted into DB!");
+                        //Toast.makeText(_ctx, "Activities in" + _files[i] + " inserted into DB!", Toast.LENGTH_SHORT).show();
                         MyActivityUtil.serialize(mal, _files[i]);
-                        Log.d(TAG, "-- " + "Activities in" + _files[i] + " serialized again!");
-                        Toast.makeText(_ctx, "Activities in" + _files[i] + " serialized again!", Toast.LENGTH_LONG).show();
-
+                        Log.d(TAG, "-- " + "Activities in" + _files[i] + " serialized!");
+                        tv_status.setText("Activities in" + _files[i] + " serialized again!");
+                        //Toast.makeText(_ctx, "Activities in" + _files[i] + " serialized again!", Toast.LENGTH_SHORT).show();
+//
 //                        String jfname = _files[i].substring(0,_files[i].length()-4) + ".jsn";
 //                        MyActivityUtil.serializeIntoJason(mal,0,mal.size()-1, jfname);
 //                        Log.d(TAG, "-- " + "Activities in" + jfname + " serialized into JSON file!");
 //                        Toast.makeText(_ctx, "Activities in" + jfname + " serialized into JSON file", Toast.LENGTH_LONG).show();
                     }
+
+                    Log.d(TAG, "-- " + "going to insert today activity ("+ todayal.size()+")");
+                    for(int j=0;j<todayal.size();j++) {
+                        myl.ins(todayal.get(j).latitude, todayal.get(j).longitude, todayal.get(j).cr_date, todayal.get(j).cr_time);
+                    }
+                    Log.d(TAG, "-- " + "going to serialize today activity into ("+ DateUtil.today()+".mnt");
+                    MyActivityUtil.serialize(todayal, DateUtil.today()+".mnt");
+
                 } catch (Exception e) {
                     tv_status.setText("Download Fail!" + e.toString());
                     e.printStackTrace();
