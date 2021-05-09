@@ -4,20 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     tools:context=".RunActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="top|fill_horizontal">
+        android:gravity="top|fill_horizontal"
+        android:orientation="vertical">
+
         <TextView
             android:id="@+id/tv_run_activity_address"
-            android:textSize="14sp"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
             android:gravity="center"
             android:textColor="@color/teal_200"
-            android:layout_width="match_parent"
-            android:layout_height="60dp" />
+            android:background="@color/cardview_dark_background"
+            android:textSize="14sp" />
+
         <com.google.android.gms.maps.MapView
             android:id="@+id/mapView"
             android:layout_width="match_parent"
@@ -29,54 +33,67 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:layout_marginBottom="2dp"
         android:gravity="bottom|fill_horizontal"
-        android:layout_marginBottom="2dp">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="70dp"
                 android:layout_weight="1"
-                android:textSize="15sp"
-                android:text = "활동\n달리기"/>
+                android:background="@drawable/btn_background"
+                android:textColor="#000000"
+                android:text="활동\n달리기"
+                android:textSize="15sp" />
+
             <Button
                 android:id="@+id/bt_run_setting"
                 android:layout_width="wrap_content"
                 android:layout_height="70dp"
                 android:layout_weight="1"
-                android:textSize="15sp"
-                android:text = "운동\n설정"/>
+                android:textColor="#000000"
+                android:background="@drawable/btn_background"
+                android:text="운동\n설정"
+                android:textSize="15sp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="70dp"
                 android:layout_weight="1"
-                android:textSize="15sp"
-                android:text = "오디오\n시간"/>
+                android:textColor="#000000"
+                android:background="@drawable/btn_background"
+                android:text="오디오\n시간"
+                android:textSize="15sp" />
+
             <Button
                 android:id="@+id/bt_quit"
                 android:layout_width="wrap_content"
                 android:layout_height="70dp"
                 android:layout_weight="1"
-                android:textSize="15sp"
-                android:text = "활동\n종료"/>
+                android:textColor="#000000"
+                android:background="@drawable/btn_background"
+                android:text="활동\n종료"
+                android:textSize="15sp" />
         </LinearLayout>
 
         <Button
             android:id="@+id/bt_start"
             android:layout_width="match_parent"
             android:layout_height="65dp"
-            android:textSize="20sp"
-            android:text="시작" />
+            android:background="#FFCF56"
+            android:text="시작"
+            android:textSize="20sp" />
     </LinearLayout>
 
 
