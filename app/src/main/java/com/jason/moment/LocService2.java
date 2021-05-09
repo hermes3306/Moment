@@ -19,17 +19,14 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
+import com.jason.moment.util.Config;
+
 public class LocService2 extends Service {
     private static final String TAG = "LocService2";
 
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 0;   //orig 3000
-    private static final float LOCATION_DISTANCE = 0f;   //orig 10f
     private static final int TWO_MINUTES = 1000 * 60 * 2;
-    //    private static DBGateway dbgateway=new DBGateway();
-//    private static PropsDB pdb = new PropsDB();
     private static final int storageopt = 0; //0: DB, 1: Memory
-
 
     private IBinder mIBinder = new MyBinder();
     class MyBinder extends Binder{
@@ -55,7 +52,6 @@ public class LocService2 extends Service {
             }
 
             mLastLocation.set(location);
-//            dbgateway.addLoc(getApplicationContext(), location);
 
             try {
                 Log.d(TAG, "-- **** Location:" + location);
@@ -118,8 +114,8 @@ public class LocService2 extends Service {
         try {
             mLocationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER,
-                    LOCATION_INTERVAL,
-                    LOCATION_DISTANCE,
+                    Config._loc_interval,
+                    Config._loc_distance,
                     mLocationListeners[0]
             );
         } catch (java.lang.SecurityException ex) {
@@ -131,8 +127,8 @@ public class LocService2 extends Service {
         try {
             mLocationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER,
-                    LOCATION_INTERVAL,
-                    LOCATION_DISTANCE,
+                    Config._loc_interval,
+                    Config._loc_distance,
                     mLocationListeners[1]
             );
 
@@ -162,7 +158,6 @@ public class LocService2 extends Service {
     }
 
     private void initializeLocationManager() {
-        Log.d(TAG, "initializeLocationManager - LOCATION_INTERVAL: " + LOCATION_INTERVAL + " LOCATION_DISTANCE: " + LOCATION_DISTANCE);
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }

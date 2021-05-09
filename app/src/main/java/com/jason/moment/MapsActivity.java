@@ -68,9 +68,10 @@ public class MapsActivity extends AppCompatActivity implements
         OnMapReadyCallback,
         View.OnClickListener,
         LocationListener {
-
     private GoogleMap mMap;
     private Context _ctx;
+    private LocationManager mLocManager = null;
+
     private static String TAG = "MapsActivity";
     private static final int DEFAULT_ZOOM = 15;
     public static boolean firstCall = true;
@@ -78,8 +79,6 @@ public class MapsActivity extends AppCompatActivity implements
     public static boolean nomarker = false;
     public static boolean notrack = false;
     public static boolean satellite = false;
-
-    private static final int PICK_FROM_CAMERA = 2;
 
     public TextView tv_status;
     public ImageButton imb_snap;
@@ -110,25 +109,6 @@ public class MapsActivity extends AppCompatActivity implements
             }, 50);
         }
 
-        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
-
-        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-        boolean enabledGPS = service.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        boolean enabledWiFi = service.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-        if (!enabledGPS) {
-            Toast.makeText(this, "GPS signal not found", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(intent);
-        } else if (!enabledWiFi) {
-            Toast.makeText(this, "Network signal not found", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(intent);
-        }
-
-        initializeMap();
         // mMap is null, when it created
         if (mMap != null) {
             mMap.setMyLocationEnabled(true);
@@ -157,28 +137,65 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     private void startMyTimer() {
-        TimerTask mTask =new MapsActivity.MyTimerTask();
+        TimerTask mTask = new MapsActivity.MyTimerTask();
         Timer mTimer = new Timer();
         mTimer.schedule(mTask, Config._timer_delay, Config._timer_period);
     }
+
 
     private void initializeMap() {
         // check if map is created
         if (mMap == null) {
             //mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap(); // creates the map
-
             // check if map is created successfully or not
             if (mMap == null) {
-                Toast.makeText(getApplicationContext(),
-                        "Map could not be created", Toast.LENGTH_SHORT)
-                        .show();
+                Log.e(TAG,"-- Map cannot not be created. because the map is not ready!");
+//                Toast.makeText(getApplicationContext(),
+//                        "Map could not be created", Toast.LENGTH_SHORT)
+//                        .show();
             }
+        }
+    }
+
+    private void deleteLocationManager() {
+        if(mLocManager!=null) {
+            mLocManager.removeUpdates(this);
+            mLocManager = null;
+        }
+    }
+
+    private void initializeLocationManager() {
+        mLocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mLocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Config._loc_interval, Config._loc_distance, this);
+        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
+        boolean enabledGPS = service.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean enabledWiFi = service.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        if (!enabledGPS) {
+            Toast.makeText(this, "GPS signal not found", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(intent);
+        } else if (!enabledWiFi) {
+            Toast.makeText(this, "Network signal not found", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(intent);
         }
     }
 
     @Override
     protected void onResume() {
         Log.d(TAG,"-- onResume.");
+        initializeMap();
+        if(mLocManager==null) initializeLocationManager();
         paused = false;
         super.onResume();
         initializeMap();
@@ -187,6 +204,7 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         Log.d(TAG,"-- onPause().");
+        deleteLocationManager();
         if(Config._save_onPause) {
             ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).todayActivity();
             MyActivityUtil.serialize(myal, DateUtil.today()+".mnt");
@@ -431,9 +449,14 @@ public class MapsActivity extends AppCompatActivity implements
                 break;
 
             case R.id.imCamerea:
+                Log.d(TAG,"-- image button Camera.");
+                dispatchTakePictureIntent();
+                break;
             case R.id.imbSnap:
                 Log.d(TAG,"-- image button Snap.");
-                dispatchTakePictureIntent();
+                Intent runIntent = new Intent(MapsActivity.this, RunActivity.class);
+                runIntent.putExtra("1", 1);
+                startActivityForResult(runIntent, Config.CALL_RUN_ACTIVITY);
                 break;
 
             case R.id.imGallary:
@@ -499,7 +522,7 @@ public class MapsActivity extends AppCompatActivity implements
 
                 if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
                     Log.d(TAG, "-- >>>> resolveActivity called!");
-                    startActivityForResult(takePictureIntent, PICK_FROM_CAMERA);
+                    startActivityForResult(takePictureIntent, Config.PICK_FROM_CAMERA);
                 }
 
                 currentPhotoPath = photoFile.getAbsolutePath();
@@ -512,7 +535,7 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "-- onActivityResult called!");
-        if (requestCode == PICK_FROM_CAMERA && resultCode == RESULT_OK) {
+        if (requestCode == Config.PICK_FROM_CAMERA && resultCode == RESULT_OK) {
             Log.d(TAG, "-- resultCode - PICK_FROM_CAMERA");
             if(data==null) {
                 Log.d(TAG, "-- Intent data is NULL!!!!");
@@ -521,6 +544,17 @@ public class MapsActivity extends AppCompatActivity implements
             Bundle extras = data.getExtras();
 //            Bitmap imageBitmap = (Bitmap) extras.get("data");
 //            imageView.setImageBitmap(imageBitmap);
+        }
+
+        if(requestCode == Config.CALL_RUN_ACTIVITY && resultCode == RESULT_OK) {
+            Log.d(TAG, "-- after Call RunActivity and get the return");
+            if(data==null) {
+                Log.d(TAG, "-- Intent data is NULL!!!!");
+                return;
+            } else {
+                Log.d(TAG, "-- " +data);
+            }
+            return;
         }
     }
 
@@ -549,7 +583,7 @@ public class MapsActivity extends AppCompatActivity implements
             case R.id.action_settings:
                 Intent intent = new Intent(MapsActivity.this, RunActivity.class);
                 intent.putExtra("1", 1);
-                startActivity(intent);
+                startActivityForResult(intent, Config.CALL_RUN_ACTIVITY);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

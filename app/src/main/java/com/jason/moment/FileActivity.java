@@ -37,6 +37,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.jason.moment.util.ActivityStat;
+import com.jason.moment.util.AddressUtil;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CalcTime;
 import com.jason.moment.util.MyActivity;
@@ -129,8 +130,8 @@ public class FileActivity extends AppCompatActivity {
                 }
 
                 if(mActivityList.size()>1) {
-                    add1 = MyActivityUtil.getAddress(_ctx, mActivityList.get(0));
-                    add2 = MyActivityUtil.getAddress(_ctx, mActivityList.get(mActivityList.size()-1));
+                    add1 = AddressUtil.getAddress(_ctx, mActivityList.get(0));
+                    add2 = AddressUtil.getAddress(_ctx, mActivityList.get(mActivityList.size()-1));
                     marker_pos = mActivityList.size()-1;
                     seekBar.setMax(mActivityList.size()-1);
                 }
@@ -261,7 +262,7 @@ public class FileActivity extends AppCompatActivity {
                         moveCamera(googleMap, nextpos);
 
                         float color = (marker_pos==0? BitmapDescriptorFactory.HUE_ROSE:BitmapDescriptorFactory.HUE_CYAN);
-                        Marker marker = googleMap.addMarker(new MarkerOptions().position(nextpos).title(MyActivityUtil.getAddressDong(_ctx, mActivityList.get(marker_pos)))
+                        Marker marker = googleMap.addMarker(new MarkerOptions().position(nextpos).title(AddressUtil.getAddressDong(_ctx, mActivityList.get(marker_pos)))
                                 .icon(BitmapDescriptorFactory.defaultMarker(color))
                                 .draggable(true)
                                 .visible(true)
@@ -277,7 +278,7 @@ public class FileActivity extends AppCompatActivity {
 
                         //
                         tv_heading.setText(MyActivityUtil.getTimeStr(mActivityList, marker_pos));
-                        tv_address.setText(MyActivityUtil.getAddress(_ctx, mActivityList.get(marker_pos)));
+                        tv_address.setText(AddressUtil.getAddress(_ctx, mActivityList.get(marker_pos)));
 
                         String inx_str= "" + seekBar.getProgress() + "/" + seekBar.getMax();
                         String inx_str2= "" + (position+1)  + "/" + (flist.length);

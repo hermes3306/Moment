@@ -240,6 +240,7 @@ public class MyLoc {
         String order_by = " crdate DESC, crtime DESC limit 1";
 
         ArrayList<MyActivity> mal =  Path2Activity(null, null, order_by);
+        Log.d(TAG,"-- lastActivity called, the size of activities  " + mal.size());
         if(mal.size()>0) return mal.get(0);
         else return null;
     }

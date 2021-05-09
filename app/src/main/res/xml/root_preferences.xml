@@ -1,0 +1,29 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Runner">
+        <EditTextPreference
+            app:key="your_name"
+            app:title="Your Name"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Activity">
+        <ListPreference
+            app:defaultValue="Running"
+            app:entries="@array/activity_types"
+            app:entryValues="@array/activity_types"
+            app:key="activity_type"
+            app:title="Activity Type"
+            app:useSimpleSummaryProvider="true" />
+        <SwitchPreferenceCompat
+            app:key="sound_alert"
+            app:title="Sound alert when running" />
+        <SwitchPreferenceCompat
+            app:dependency="sound_alert"
+            app:key="attachment"
+            app:summaryOff="Background music off"
+            app:summaryOn="Background music on"
+            app:title="Background music... " />
+    </PreferenceCategory>
+
+</PreferenceScreen>

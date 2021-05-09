@@ -6,8 +6,11 @@ import java.io.File;
 import java.util.Date;
 
 public class Config {
-    public static final long    _timer_period   = 10000; // 1 sec (최초이후 실행 주기)
-    public static final long    _timer_delay    = 1000; // 1 sec (최초실행)
+    public static final long    _timer_period   = 10000;    // 1 sec (최초이후 실행 주기)
+    public static final long    _timer_delay    = 1000;     // 1 sec (최초실행)
+
+    public static final int     _loc_interval   = 3000;     // 3 sec
+    public static final float   _loc_distance   = 1f;       // 1 meter
     public static boolean       _start_service  = false; // start location service
     public static boolean       _start_timer    = false; // start timer background scheduler
     public static String        _default_ext    = ".mnt"; // 기본확장자
@@ -20,12 +23,23 @@ public class Config {
             "20210430.mnt",
             "20210501.mnt",
             "20210502.mnt",
-            "20210503.mnt"
+            "20210503.mnt",
+            "20210507.mnt",
+            "20210508.mnt"
     };
+
+
+    public static final int PICK_FROM_CAMERA = 1;
+    public static final int CALL_RUN_ACTIVITY = 2;
+    public static final int CALL_SETTING_ACTIVITY = 3;
+    public static final int CALL_START_ACTIVITY = 4;
+
+
+
 
     public static File mediaStorageDir                 =
             new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                    "Moment1.2");
+                    "Moment1.3");
 
     public static String get_today_filename() {
         return StringUtil.DateToString(new Date(), _filename_fmt) + _default_ext;

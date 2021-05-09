@@ -25,8 +25,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Moment"
         android:usesCleartextTraffic="true">
-        <activity android:name=".RunActivity"
-            android:theme="@style/Theme.AppCompat"></activity>
+
+        <activity
+            android:name=".StartActivity"
+            android:theme="@style/Theme.AppCompat"/>
+        <activity
+            android:name=".ConfigActivity"
+            android:label="@string/title_activity_config"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name=".RunActivity"
+            android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".PicActivity"
             android:theme="@style/Theme.AppCompat" />
