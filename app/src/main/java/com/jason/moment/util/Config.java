@@ -11,6 +11,7 @@ public class Config {
 
     public static final int     _loc_interval   = 3000;     // 3 sec
     public static final float   _loc_distance   = 1f;       // 1 meter
+
     public static boolean       _start_service  = false; // start location service
     public static boolean       _start_timer    = false; // start timer background scheduler
     public static String        _default_ext    = ".mnt"; // 기본확장자

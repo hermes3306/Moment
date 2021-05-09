@@ -47,7 +47,6 @@ public class CalDistance {
     public static double prev_lng=-1;
 
     public static double dist(double lat1, double lng1, double lat2, double lng2) {
-
         CalDistance cd = new CalDistance(lat1, lng1, lat2, lng2);
         double dist = cd.getDistance();
         Log.d(TAG,"-- dist:" + dist + " prev_lat:" + prev_lat + " prev_lng:" + prev_lng);
@@ -76,7 +75,7 @@ public class CalDistance {
     public String getDistanceKmStr() {
         return String.format("%.1fkm",getDistance() / 1000.0);
     }
-    public String getDistanceMStr(){
+    public  String getDistanceMStr() {
         return String.format("%.0fm",getDistance());
     }
 

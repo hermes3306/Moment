@@ -42,8 +42,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:layout_marginBottom="50dp"
+            android:layout_marginTop="100dp"
+            android:layout_marginBottom="100dp"
             android:orientation="vertical">
 
             <TextView
@@ -55,7 +55,7 @@
                 android:text="12"
                 android:textAlignment="center"
                 android:textColor="#00BCD4"
-                android:textSize="250dp" />
+                android:textSize="200dp" />
 
             <TextView
                 android:id="@+id/tv_start_km_str"
@@ -102,26 +102,30 @@
             android:background="@color/teal_200"
             android:orientation="horizontal">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/imageView3"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/circlearrowup48" />
+                android:background="@drawable/transparent48"
+                android:gravity="center"
+                app:srcCompat="@drawable/camw48" />
 
             <ImageView
                 android:id="@+id/imageView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/down48" />
+                app:srcCompat="@drawable/pausey64" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/imageView"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/camera_48" />
+                android:gravity="center"
+                android:background="@drawable/transparent48"
+                app:srcCompat="@drawable/setw48" />
         </LinearLayout>
 
 
