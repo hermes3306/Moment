@@ -180,19 +180,19 @@ public class StartActivity extends AppCompatActivity {
                         tv_start_km_str.setText("킬로미터");
                     }
 
-                    long sec = (d.getTime()-start_time.getTime())/1000;//초
-                    Log.d(TAG,"-- min:" + sec);
+                    long min = (d.getTime()-start_time.getTime())/1000/60;//초
+                    Log.d(TAG,"-- min:" + min);
                     double km = (double)dist/1000; //km
                     Log.d(TAG,"-- km:" + km);
-                    double secpkm;
+                    double minpkm;
                     if(km==0) {
-                        secpkm = 0;
+                        minpkm = 0;
                     }else {
-                        secpkm = (double)sec/km;
+                        minpkm = (double)min/km;
                     }
-                    Log.d(TAG,"-- min/km:" + secpkm);
-
-                    String tt = StringUtil.elapsedStr((long)secpkm);
+                    Log.d(TAG,"-- min/km:" + minpkm);
+                    // String tt = StringUtil.elapsedStr((long)secpkm);
+                    String tt = String.format("%.1f", minpkm);
                     tv_start_avg.setText("" + tt);
                 }
             });
