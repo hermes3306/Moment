@@ -261,5 +261,32 @@ public class MyActivityUtil {
         return date_str;
     }
 
+    public static double getTotalDistanceDouble(ArrayList<MyActivity> list) {
+        if(list == null) return 0;
+        if(list.size()==1) return 0;
+
+        double dist_meter = 0;
+        for(int i=0; i<list.size()-1; i++) {
+            double bef_lat = list.get(i).latitude;
+            double bef_lon = list.get(i).longitude;
+            double aft_lat = list.get(i+1).latitude;
+            double aft_lon = list.get(i+1).longitude;
+
+            CalDistance cd = new CalDistance(bef_lat, bef_lon, aft_lat, aft_lon);
+            double dist_2 = cd.getDistance();
+            if(Double.isNaN(dist_2)) {
+                Log.e(TAG, "Double.NaN between ("+bef_lat + ","+ bef_lon +") ~ ("+ aft_lat + ","+ aft_lon + ")" ) ;
+                continue;
+            } else if ( Double.isNaN(dist_meter + dist_2)) {
+                Log.e(TAG, "Double.NaN between ("+bef_lat + ","+ bef_lon +") ~ ("+ aft_lat + ","+ aft_lon + ")" ) ;
+                continue;
+            }
+            dist_meter = dist_meter + dist_2;
+            //Log.e(TAG, "" + i + "]" +  list.get(i).added_on + dist_2 + " sum: " + dist_meter +  " ("+bef_lat + ","+ bef_lon +") ~ ("+ aft_lat + ","+ aft_lon + ")");
+            //Log.e(TAG, "" + dist_2 + " sum: " + dist_meter);
+        }
+        return dist_meter;
+    }
+
 
 }

@@ -428,7 +428,7 @@ public class FileActivity extends AppCompatActivity {
         Log.e(TAG, "-- 출발:" + start.toString());
         Log.e(TAG, "-- 종료:" + stop.toString());
 
-        String duration = StringUtil.Duration(start_date, stop_date); // <- Error code
+        String duration = StringUtil.elapsedStr(start_date, stop_date); // <- Error code
         Log.e(TAG, duration);
 
         double total_distM = getTotalDistanceDouble(list);  // <-

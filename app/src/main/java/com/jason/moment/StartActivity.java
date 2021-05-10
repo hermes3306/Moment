@@ -17,6 +17,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.MyActivity;
+import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StringUtil;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class StartActivity extends AppCompatActivity {
     public TextView tv_start_km;
     public TextView tv_start_km_str;
     public TextView tv_start_time;
+    public TextView tv_start_avg;
 
     public Date start_time;
     public double dist=0;
@@ -38,8 +40,6 @@ public class StartActivity extends AppCompatActivity {
     public ArrayList list = null;
     public MyActivity first = null;
     public MyActivity last = null;
-    public int pos = -1;
-    public int cpos = 0;
 
     public LocationManager mLocManager = null;
 
@@ -57,12 +57,6 @@ public class StartActivity extends AppCompatActivity {
 
             last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
             list.add(last);
-            pos++;
-            if(pos==0) {
-                first = new MyActivity(last.latitude, last.longitude, last.cr_date, last.cr_time);
-                start_time = d;
-                dist = 0;
-            }
         }
 
         @Override
@@ -127,6 +121,7 @@ public class StartActivity extends AppCompatActivity {
         tv_start_km = (TextView)findViewById(R.id.tv_start_km);
         tv_start_km_str = (TextView)findViewById(R.id.tv_start_km_str);
         tv_start_time = (TextView)findViewById(R.id.tv_start_time);
+        tv_start_avg = (TextView)findViewById(R.id.tv_start_avg);
 
         startMyTimer();
     }
@@ -171,20 +166,12 @@ public class StartActivity extends AppCompatActivity {
             StartActivity.this.runOnUiThread(new Runnable() {
                 public void run() {
                     Date d = new Date();
-                    String elapsed = StringUtil.Duration(start_time,d);
+                    String elapsed = StringUtil.elapsedStr(start_time,d);
                     tv_start_time.setText(elapsed);
-
-                    if(pos==0) dist = 0;
-                    else if(pos>0 && cpos<pos) {
-                        MyActivity ma1 = (MyActivity)list.get(cpos);
-                        MyActivity ma2 = (MyActivity)list.get(pos);
-                        LatLng ll1 = ma1.toLatLng();
-                        LatLng ll2 = ma2.toLatLng();
-                        CalDistance cal = new CalDistance(ll1, ll2);
-                        dist += cal.getDistance();
-                        cpos=pos;
-                    }
-
+                    long t1 = System.currentTimeMillis();
+                    dist = MyActivityUtil.getTotalDistanceDouble(list);
+                    long t2 = System.currentTimeMillis();
+                    Log.d(TAG, "-- Time to check all distance: " + (t2-t1));
                     if(dist<1000) {
                         tv_start_km.setText(String.format("%.0f", dist));
                         tv_start_km_str.setText("미터");
@@ -192,6 +179,21 @@ public class StartActivity extends AppCompatActivity {
                         tv_start_km.setText(String.format("%.1f", dist / 1000.0));
                         tv_start_km_str.setText("킬로미터");
                     }
+
+                    long sec = (d.getTime()-start_time.getTime())/1000;//초
+                    Log.d(TAG,"-- min:" + sec);
+                    double km = (double)dist/1000; //km
+                    Log.d(TAG,"-- km:" + km);
+                    double secpkm;
+                    if(km==0) {
+                        secpkm = 0;
+                    }else {
+                        secpkm = (double)sec/km;
+                    }
+                    Log.d(TAG,"-- min/km:" + secpkm);
+
+                    String tt = StringUtil.elapsedStr((long)secpkm);
+                    tv_start_avg.setText("" + tt);
                 }
             });
         } /* end of run() */

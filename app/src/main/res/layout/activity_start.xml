@@ -42,8 +42,33 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
-            android:layout_marginBottom="100dp"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:text="TIME"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="20dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:text="CAL"
+                android:textAlignment="center"
+                android:textColor="#00E5FF"
+                android:textSize="20dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
             android:orientation="vertical">
 
             <TextView
@@ -55,7 +80,7 @@
                 android:text="12"
                 android:textAlignment="center"
                 android:textColor="#00BCD4"
-                android:textSize="200dp" />
+                android:textSize="250dp" />
 
             <TextView
                 android:id="@+id/tv_start_km_str"
@@ -74,7 +99,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/tv_start_avg1"
+                android:id="@+id/tv_start_cur"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -85,7 +110,7 @@
                 android:textSize="50dp" />
 
             <TextView
-                android:id="@+id/tv_start_avg2"
+                android:id="@+id/tv_start_avg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -94,6 +119,31 @@
                 android:textAlignment="center"
                 android:textColor="#9C27B0"
                 android:textSize="50dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:text="CURRENT PACE"
+                android:textAlignment="center"
+                android:textColor="#8BC34A"
+                android:textSize="20dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:text="AVG PACE"
+                android:textAlignment="center"
+                android:textColor="#9C27B0"
+                android:textSize="20dp" />
         </LinearLayout>
 
         <LinearLayout
