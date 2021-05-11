@@ -289,4 +289,81 @@ public class MyActivityUtil {
     }
 
 
+    public static double MinPerKm(ArrayList<MyActivity> list) {
+        return MinPerMeasure(list,Config.perKM);
+    }
+
+    public static double MinPerMile(ArrayList<MyActivity> list) {
+        return MinPerMeasure(list,Config.perMile);
+    }
+
+    public static double MinPer1Km(ArrayList<MyActivity> list) {
+        return MinPerMeasure(list,Config.per1KM);
+    }
+
+    public static double MinPer1Mile(ArrayList<MyActivity> list) {
+        return MinPerMeasure(list,Config.per1Mile);
+    }
+    public static double MinPerMeasure(ArrayList<MyActivity> list, int type) {
+        if(list==null) return 0;
+        if(list.size() == 0 || list.size() == 1) return 0;
+
+        double targetDist = 0;
+        double unitMeasure = 1000;  //km
+        switch(type) {
+            case Config.perKM:
+                targetDist = Double.MAX_VALUE;
+                break;
+            case Config.perMile:
+                targetDist = Double.MAX_VALUE;
+                unitMeasure = 1609.344;
+                break;
+            case Config.per1KM:
+                targetDist = 1000;
+                break;
+            case Config.per1Mile:
+                targetDist = 1609.344;
+                unitMeasure = 1609.344;
+                break;
+        }
+
+        double dist_meter = 0;
+        int pos=0;
+        for(int i=list.size()-1; i> 0; i--) {
+            double bef_lat = list.get(i-1).latitude;
+            double bef_lon = list.get(i-1).longitude;
+            double aft_lat = list.get(i).latitude;
+            double aft_lon = list.get(i).longitude;
+
+            CalDistance cd = new CalDistance(bef_lat, bef_lon, aft_lat, aft_lon);
+            double dist_2 = cd.getDistance();
+            if(Double.isNaN(dist_2)) {
+                Log.e(TAG, "Double.NaN between ("+bef_lat + ","+ bef_lon +") ~ ("+ aft_lat + ","+ aft_lon + ")" ) ;
+                continue;
+            } else if ( Double.isNaN(dist_meter + dist_2)) {
+                Log.e(TAG, "Double.NaN between ("+bef_lat + ","+ bef_lon +") ~ ("+ aft_lat + ","+ aft_lon + ")" ) ;
+                continue;
+            }
+            dist_meter = dist_meter + dist_2;
+            pos = i-1;
+            if (dist_meter >= targetDist ) {
+                break;
+            }
+        }
+        long t1 = list.get(list.size()-1).toDate().getTime();
+        long t2 = list.get(pos).toDate().getTime();
+        return( (double)(t1-t2)/1000/60.0    /  (double)(dist_meter/unitMeasure) );
+    }
+
+    public static long durationInSeconds(MyActivity before, MyActivity after) {
+        return (after.toDate().getTime() - before.toDate().getTime()) / 1000;
+    }
+
+    public static int durationInSeconds(ArrayList<MyActivity> list) {
+        if(list==null) return 0;
+        if(list.size() == 0 || list.size() == 1) return 0;
+        MyActivity after = list.get(list.size()-1);
+        MyActivity before = list.get(0);
+        return((int)durationInSeconds(before, after));
+    }
 }

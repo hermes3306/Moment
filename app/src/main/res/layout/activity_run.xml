@@ -17,9 +17,9 @@
             android:id="@+id/tv_run_activity_address"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:gravity="center"
-            android:textColor="@color/teal_200"
             android:background="@color/cardview_dark_background"
+            android:gravity="center"
+            android:textColor="@color/teal_700"
             android:textSize="14sp" />
 
         <com.google.android.gms.maps.MapView
@@ -47,8 +47,8 @@
                 android:layout_height="70dp"
                 android:layout_weight="1"
                 android:background="@drawable/btn_background"
-                android:textColor="#000000"
                 android:text="활동\n달리기"
+                android:textColor="#2979FF"
                 android:textSize="15sp" />
 
             <Button
@@ -56,9 +56,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="70dp"
                 android:layout_weight="1"
-                android:textColor="#000000"
                 android:background="@drawable/btn_background"
                 android:text="운동\n설정"
+                android:textColor="#FF9100"
                 android:textSize="15sp" />
         </LinearLayout>
 
@@ -71,9 +71,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="70dp"
                 android:layout_weight="1"
-                android:textColor="#000000"
                 android:background="@drawable/btn_background"
                 android:text="오디오\n시간"
+                android:textColor="#00B0FF"
                 android:textSize="15sp" />
 
             <Button
@@ -81,9 +81,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="70dp"
                 android:layout_weight="1"
-                android:textColor="#000000"
                 android:background="@drawable/btn_background"
                 android:text="활동\n종료"
+                android:textColor="#00E676"
                 android:textSize="15sp" />
         </LinearLayout>
 

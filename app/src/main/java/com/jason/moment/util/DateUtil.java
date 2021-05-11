@@ -20,4 +20,11 @@ public class DateUtil {
         String date_to_string = dateformatyyyyMMdd.format(d);
         return date_to_string;
     }
+
+    public static boolean isLongerThan1Min(Date before, Date after) {
+        if(after.getTime()-before.getTime() > 1000 * 60) return true;
+        return false;
+    }
+
+
 }

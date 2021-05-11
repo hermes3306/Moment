@@ -9,13 +9,17 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.snackbar.Snackbar;
 import com.jason.moment.util.CalDistance;
+import com.jason.moment.util.CaloryUtil;
 import com.jason.moment.util.Config;
+import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StringUtil;
@@ -32,6 +36,8 @@ public class StartActivity extends AppCompatActivity {
     public TextView tv_start_km_str;
     public TextView tv_start_time;
     public TextView tv_start_avg;
+    public TextView tv_start_cur;
+    public TextView tv_start_calory;
 
     public Date start_time;
     public double dist=0;
@@ -40,6 +46,7 @@ public class StartActivity extends AppCompatActivity {
     public ArrayList list = null;
     public MyActivity first = null;
     public MyActivity last = null;
+    public String filename;
 
     public LocationManager mLocManager = null;
 
@@ -122,7 +129,10 @@ public class StartActivity extends AppCompatActivity {
         tv_start_km_str = (TextView)findViewById(R.id.tv_start_km_str);
         tv_start_time = (TextView)findViewById(R.id.tv_start_time);
         tv_start_avg = (TextView)findViewById(R.id.tv_start_avg);
+        tv_start_cur = (TextView)findViewById(R.id.tv_start_cur);
+        tv_start_calory = (TextView)findViewById(R.id.tv_start_calory);
 
+        filename = StringUtil.DateToString(new Date(),"yyyyMMdd_HHmmss") + ".mnt";
         startMyTimer();
     }
 
@@ -139,6 +149,8 @@ public class StartActivity extends AppCompatActivity {
         builder.setPositiveButton("중지",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        MyActivityUtil.serialize(list, filename );
+                        Toast.makeText(getApplicationContext(), "활동이 저장되었습니다!" + filename, Toast.LENGTH_SHORT).show();
                         deleteLocationManager();
                         StartActivity.this.quit = true;
                         StartActivity.this.finish();
@@ -161,6 +173,7 @@ public class StartActivity extends AppCompatActivity {
 
     // MyTimerTask can run even though the app run in background
     public class MyTimerTask extends java.util.TimerTask{
+        public Date last=null;
         public void run() {
             long start = System.currentTimeMillis();
             StartActivity.this.runOnUiThread(new Runnable() {
@@ -170,30 +183,54 @@ public class StartActivity extends AppCompatActivity {
                     tv_start_time.setText(elapsed);
                     long t1 = System.currentTimeMillis();
                     dist = MyActivityUtil.getTotalDistanceDouble(list);
+
                     long t2 = System.currentTimeMillis();
                     Log.d(TAG, "-- Time to check all distance: " + (t2-t1));
                     if(dist<1000) {
-                        tv_start_km.setText(String.format("%.0f", dist));
+                        String s1 = String.format("%.1f", dist);
+                        if(s1.length()>4) s1=String.format("%.0f", dist);
+                        tv_start_km.setText(s1);
                         tv_start_km_str.setText("미터");
                     } else {
-                        tv_start_km.setText(String.format("%.1f", dist / 1000.0));
+                        String s1 = String.format("%.2f", dist/1000.0);
+                        if(s1.length()==4) s1=String.format("%.1f", dist);
+                        if(s1.length()==5) s1=String.format("%.0f", dist);
+                        tv_start_km.setText(s1);
                         tv_start_km_str.setText("킬로미터");
                     }
 
-                    long min = (d.getTime()-start_time.getTime())/1000/60;//초
-                    Log.d(TAG,"-- min:" + min);
-                    double km = (double)dist/1000; //km
-                    Log.d(TAG,"-- km:" + km);
-                    double minpkm;
-                    if(km==0) {
-                        minpkm = 0;
+                    double  minpkm = MyActivityUtil.MinPerKm(list);
+                    String tt1 = StringUtil.elapsedStr2((long) (minpkm*1000*60.0));
+                    tv_start_avg.setText("" + tt1);
+
+                    double  minp1km = MyActivityUtil.MinPer1Km(list);
+                    String tt2 = StringUtil.elapsedStr2((long) (minp1km*1000*60.0));
+                    tv_start_cur.setText("" + tt2);
+
+                    float burntkCal;
+                    int durationInSeconds = MyActivityUtil.durationInSeconds(list);
+                    int stepsTaken = (int) (dist / Config._strideLengthInMeters);
+                    burntkCal = CaloryUtil.calculateEnergyExpenditure(
+                        Config._height,
+                        Config._age,
+                        Config._weight,
+                        Config.GENDER_MALE,
+                        durationInSeconds,
+                        stepsTaken,
+                        Config._strideLengthInMeters
+                    );
+                    tv_start_calory.setText("" + String.format("%.3f", burntkCal));
+                    if(last==null) {
+                        last = new Date();
+                        MyActivityUtil.serialize(list, filename );
                     }else {
-                        minpkm = (double)min/km;
+                        Date now = new Date();
+                        if(DateUtil.isLongerThan1Min(last, now)) {
+                            MyActivityUtil.serialize(list, filename );
+                            last = now;
+                        }
                     }
-                    Log.d(TAG,"-- min/km:" + minpkm);
-                    // String tt = StringUtil.elapsedStr((long)secpkm);
-                    String tt = String.format("%.1f", minpkm);
-                    tv_start_avg.setText("" + tt);
+
                 }
             });
         } /* end of run() */

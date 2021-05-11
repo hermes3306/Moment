@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="onClick"
-            android:background="@android:color/transparent"
+            android:background="@color/teal_200"
             android:src="@drawable/camera64"
             />
 

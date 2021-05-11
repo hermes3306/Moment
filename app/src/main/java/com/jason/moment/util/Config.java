@@ -1,11 +1,18 @@
 package com.jason.moment.util;
 
 import android.os.Environment;
+import android.view.animation.LinearInterpolator;
 
 import java.io.File;
 import java.util.Date;
 
 public class Config {
+
+    public static final float   _height         = 175;
+    public static final Date    _age            = StringUtil.StringToDate("19700409","yyyyMMdd");
+    public static final float   _weight         = 75;
+    public static final float   _strideLengthInMeters = 1;
+
     public static final long    _timer_period   = 10000;    // 1 sec (최초이후 실행 주기)
     public static final long    _timer_delay    = 1000;     // 1 sec (최초실행)
 
@@ -35,8 +42,13 @@ public class Config {
     public static final int CALL_SETTING_ACTIVITY = 3;
     public static final int CALL_START_ACTIVITY = 4;
 
+    public static final int perKM = 1;
+    public static final int perMile = 2;
+    public static final int per1KM = 3;
+    public static final int per1Mile = 4;
 
-
+    public static final int GENDER_MALE=1;
+    public static final int GENDER_FEMALE=2;
 
     public static File mediaStorageDir                 =
             new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
