@@ -16,15 +16,16 @@ public class Config {
     public static final long    _timer_period   = 10000;    // 1 sec (최초이후 실행 주기)
     public static final long    _timer_delay    = 1000;     // 1 sec (최초실행)
 
-    public static final int     _loc_interval   = 3000;     // 3 sec
-    public static final float   _loc_distance   = 1f;       // 1 meter
+    public static final int     _loc_interval   = 5000;     // 3 sec
+    public static final float   _loc_distance   = 5f;       // 5 meter
+    public static double        _minLocChange   = _loc_distance;
 
     public static boolean       _start_service  = false; // start location service
     public static boolean       _start_timer    = false; // start timer background scheduler
     public static String        _default_ext    = ".mnt"; // 기본확장자
     public static String        _filename_fmt   ="yyyyMMdd";
     public static boolean       _save_onPause = false;
-    public static double        _minLocChange   = (double)5.0;
+
     public static String        _backup_url_dir = "http://ezehub.club/moment/";
     public static String[]      _backup_url_files= {
             "20210420.mnt",

@@ -8,6 +8,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +30,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class StartActivity extends AppCompatActivity {
+public class StartActivity extends AppCompatActivity implements View.OnClickListener{
     public String TAG = "StartActivity";
 
     public TextView tv_start_km;
@@ -50,10 +51,26 @@ public class StartActivity extends AppCompatActivity {
 
     public LocationManager mLocManager = null;
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.iv_start_pause:
+                alertQuitDialog();
+                break;
+            case R.id.imb_start_camera:
+                int i=10;
+                break;
+            case R.id.imb_start_env:
+                int j;
+                break;
+        }
+    }
+
     private class GPSListener implements LocationListener {
         public GPSListener(String gpsProvider) {
         }
 
+        private Location lastloc = null;
         @Override
         public void onLocationChanged(@NonNull Location location) {
             Log.d(TAG,"-- onLocationChanged! [StartActivity] " + location.getLatitude() + "," + location.getLongitude());
@@ -61,9 +78,20 @@ public class StartActivity extends AppCompatActivity {
             if(list==null) {
                 list = new ArrayList<MyActivity>();
             }
-
-            last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
-            list.add(last);
+            double dist;
+            if(lastloc==null) {
+                dist = 0;
+                last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
+                list.add(last);
+                lastloc = location;
+            }else {
+                dist = CalDistance.dist(lastloc.getLatitude(), lastloc.getLongitude(), location.getLatitude(), location.getLongitude());
+                if(dist > Config._minLocChange) {
+                    last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
+                    list.add(last);
+                    lastloc = location;
+                }
+            }
         }
 
         @Override
@@ -142,6 +170,8 @@ public class StartActivity extends AppCompatActivity {
         alertQuitDialog();
     }
 
+
+
     public void alertQuitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("활동을 중지하시겠습니까?");
@@ -185,7 +215,7 @@ public class StartActivity extends AppCompatActivity {
                     dist = MyActivityUtil.getTotalDistanceDouble(list);
 
                     long t2 = System.currentTimeMillis();
-                    Log.d(TAG, "-- Time to check all distance: " + (t2-t1));
+//                    Log.d(TAG, "-- Time to check all distance: " + (t2-t1));
                     if(dist<1000) {
                         String s1 = String.format("%.1f", dist);
                         if(s1.length()>4) s1=String.format("%.0f", dist);
@@ -193,8 +223,8 @@ public class StartActivity extends AppCompatActivity {
                         tv_start_km_str.setText("미터");
                     } else {
                         String s1 = String.format("%.2f", dist/1000.0);
-                        if(s1.length()==4) s1=String.format("%.1f", dist);
-                        if(s1.length()==5) s1=String.format("%.0f", dist);
+                        if(s1.length()==4) s1=String.format("%.1f", dist/1000.0);
+                        if(s1.length()==5) s1=String.format("%.0f", dist/1000.0);
                         tv_start_km.setText(s1);
                         tv_start_km_str.setText("킬로미터");
                     }

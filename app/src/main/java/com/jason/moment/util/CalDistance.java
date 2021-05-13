@@ -43,32 +43,10 @@ public class CalDistance {
         return (double)(rad * (double)180d / Math.PI);
     }
 
-    public static double prev_lat=-1;
-    public static double prev_lng=-1;
-
     public static double dist(double lat1, double lng1, double lat2, double lng2) {
         CalDistance cd = new CalDistance(lat1, lng1, lat2, lng2);
         double dist = cd.getDistance();
-        Log.d(TAG,"-- dist:" + dist + " prev_lat:" + prev_lat + " prev_lng:" + prev_lng);
-        if(dist > Config._minLocChange) { // ex) 5 (5meter)
-            prev_lat = lat2;
-            prev_lng = lng2;
-        }
-        return dist;
-    }
-
-    public static double dist(double lat, double lng) {
-        if(prev_lat==-1 || prev_lng==-1) {
-            Log.d(TAG,"-- before calculate distance! prev_lat:" + prev_lat + " prev_lng:" + prev_lng);
-            prev_lat = lat;
-            prev_lng = lng;
-            return 0;
-        }
-
-        CalDistance cd = new CalDistance(prev_lat, prev_lng, lat, lng);
-        double dist = cd.getDistance();
-        prev_lat = lat;
-        prev_lng = lng;
+        Log.d(TAG, "-- getDistance:" + dist + " m");
         return dist;
     }
 

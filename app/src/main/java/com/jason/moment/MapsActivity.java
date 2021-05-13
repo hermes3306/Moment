@@ -214,10 +214,17 @@ public class MapsActivity extends AppCompatActivity implements
         super.onPause();
     }
 
-
+    private Location lastloc = null;
     @Override
     public void onLocationChanged(Location location) {
-        double dist = CalDistance.dist(location.getLatitude(), location.getLongitude());
+        double dist;
+        if(lastloc==null) {
+            dist = 0;
+        }else {
+            dist = CalDistance.dist(lastloc.getLatitude(), lastloc.getLongitude(), location.getLatitude(), location.getLongitude());
+        }
+        lastloc = location;
+
         Log.d(TAG,"-- onLocationChanged("+location.getLatitude()+","+location.getLongitude()+")");
         if(!firstCall && dist < Config._minLocChange) return;
 
@@ -822,7 +829,14 @@ public class MapsActivity extends AppCompatActivity implements
                         return;
                     }
 
-                    double dist = CalDistance.dist(location.getLatitude(), location.getLongitude());
+                    double dist;
+                    if(lastloc==null) {
+                        dist = 0;
+                    }else {
+                        dist = CalDistance.dist(lastloc.getLatitude(), lastloc.getLongitude(), location.getLatitude(), location.getLongitude());
+                    }
+                    lastloc = location;
+
                     if(dist > Config._minLocChange) { // 5meter
                         MyLoc myloc = new MyLoc(getApplicationContext());
                         myloc.ins(location.getLatitude(), location.getLongitude());
