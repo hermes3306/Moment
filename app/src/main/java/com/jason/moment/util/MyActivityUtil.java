@@ -211,8 +211,43 @@ public class MyActivityUtil {
         return files;
     }
 
-    public static File[] getFiles() {
+    public static File[] getOnlyActivityFiles() {
+        File files[] = getAllFiles();
+        ArrayList<File> afiles = new ArrayList();
+        for(int i=0;i<files.length;i++) {
+            if(files[i].getName().contains("_")) afiles.add(files[i]);
+        }
+        if(afiles.size()>0) {
+            File result[] = new File[afiles.size()];
+            for(int i=0;i<afiles.size();i++) result[i] = afiles.get(i);
+            return result;
+        }
+        return null;
+    }
+
+    public static File[] getOnlyDayFiles() {
+        File files[] = getAllFiles();
+        ArrayList<File> afiles = new ArrayList();
+        for(int i=0;i<files.length;i++) {
+            if(!files[i].getName().contains("_")) afiles.add(files[i]);
+        }
+        if(afiles.size()>0) {
+            File result[] = new File[afiles.size()];
+            for(int i=0;i<afiles.size();i++) result[i] = afiles.get(i);
+            return result;
+        }
+        return null;
+    }
+
+
+    public static File[] getAllFiles() {
         return getFiles(_default_extension, _default_reverse_order);
+    }
+
+    public static File[] getFiles(int type) {
+        if(type == Config._file_type_activity) return getOnlyActivityFiles();
+        else if(type == Config._file_type_day) return getOnlyDayFiles();
+        else return getAllFiles();
     }
 
     public static final Comparator<MyActivity> ALPHA_COMPARATOR  = new Comparator<MyActivity>() {
@@ -261,34 +296,6 @@ public class MyActivityUtil {
         return date_str;
     }
 
-    public static double getTotalDistanceDouble(ArrayList<MyActivity> list) {
-        if(list == null) return 0;
-        if(list.size()==1) return 0;
-
-        double dist_meter = 0;
-        for(int i=0; i<list.size()-1; i++) {
-            double bef_lat = list.get(i).latitude;
-            double bef_lon = list.get(i).longitude;
-            double aft_lat = list.get(i+1).latitude;
-            double aft_lon = list.get(i+1).longitude;
-
-            CalDistance cd = new CalDistance(bef_lat, bef_lon, aft_lat, aft_lon);
-            double dist_2 = cd.getDistance();
-            if(Double.isNaN(dist_2)) {
-                Log.e(TAG, "Double.NaN between ("+bef_lat + ","+ bef_lon +") ~ ("+ aft_lat + ","+ aft_lon + ")" ) ;
-                continue;
-            } else if ( Double.isNaN(dist_meter + dist_2)) {
-                Log.e(TAG, "Double.NaN between ("+bef_lat + ","+ bef_lon +") ~ ("+ aft_lat + ","+ aft_lon + ")" ) ;
-                continue;
-            }
-            dist_meter = dist_meter + dist_2;
-            //Log.e(TAG, "" + i + "]" +  list.get(i).added_on + dist_2 + " sum: " + dist_meter +  " ("+bef_lat + ","+ bef_lon +") ~ ("+ aft_lat + ","+ aft_lon + ")");
-            //Log.e(TAG, "" + dist_2 + " sum: " + dist_meter);
-        }
-        return dist_meter;
-    }
-
-
     public static double MinPerKm(ArrayList<MyActivity> list) {
         return MinPerMeasure(list,Config.perKM);
     }
@@ -304,6 +311,25 @@ public class MyActivityUtil {
     public static double MinPer1Mile(ArrayList<MyActivity> list) {
         return MinPerMeasure(list,Config.per1Mile);
     }
+
+    public static double getMinPerKm(Date start, Date end, double km) {
+        long dur_sec = (end.getTime() - start.getTime())/1000;
+        long dur_min = dur_sec/60;
+        double minpk = (double)(dur_min / km);
+        return minpk;
+    }
+
+    public static double getMinPerKm(MyActivity start, MyActivity end, double dist) {
+        return getMinPerKm(start.toDate(), end.toDate(), dist/1000);
+    }
+
+    public static double getMinPerKm(ArrayList<MyActivity> list) {
+        if(list==null) return 0;
+        if(list.size() == 0 || list.size() == 1) return 0;
+        double dist = getTotalDistanceInDouble(list);
+        return getMinPerKm(list.get(0), list.get(list.size()-1), dist);
+    }
+
     public static double MinPerMeasure(ArrayList<MyActivity> list, int type) {
         if(list==null) return 0;
         if(list.size() == 0 || list.size() == 1) return 0;
@@ -366,4 +392,32 @@ public class MyActivityUtil {
         MyActivity before = list.get(0);
         return((int)durationInSeconds(before, after));
     }
+
+    public static double getTotalDistanceInDouble(ArrayList<MyActivity> list) {
+        if(list == null) return 0;
+        if(list.size() ==2) return 0;
+
+        double dist_meter = 0;
+        for(int i=0; i<list.size()-1; i++) {
+            double bef_lat = list.get(i).latitude;
+            double bef_lon = list.get(i).longitude;
+            double aft_lat = list.get(i+1).latitude;
+            double aft_lon = list.get(i+1).longitude;
+
+            CalDistance cd = new CalDistance(bef_lat, bef_lon, aft_lat, aft_lon);
+            double dist_2 = cd.getDistance();
+            if(Double.isNaN(dist_2)) {
+                Log.e(TAG, "Double.NaN between ("+bef_lat + ","+ bef_lon +") ~ ("+ aft_lat + ","+ aft_lon + ")" ) ;
+                continue;
+            } else if ( Double.isNaN(dist_meter + dist_2)) {
+                Log.e(TAG, "Double.NaN between ("+bef_lat + ","+ bef_lon +") ~ ("+ aft_lat + ","+ aft_lon + ")" ) ;
+                continue;
+            }
+            dist_meter = dist_meter + dist_2;
+            //Log.e(TAG, "" + i + "]" +  list.get(i).added_on + dist_2 + " sum: " + dist_meter +  " ("+bef_lat + ","+ bef_lon +") ~ ("+ aft_lat + ","+ aft_lon + ")");
+            //Log.e(TAG, "" + dist_2 + " sum: " + dist_meter);
+        }
+        return dist_meter;
+    }
+
 }

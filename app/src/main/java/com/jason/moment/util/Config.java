@@ -11,13 +11,13 @@ public class Config {
     public static final float   _height         = 175;
     public static final Date    _age            = StringUtil.StringToDate("19700409","yyyyMMdd");
     public static final float   _weight         = 75;
-    public static final float   _strideLengthInMeters = 1;
+    public static final float   _strideLengthInMeters = 0.5f;
 
     public static final long    _timer_period   = 10000;    // 1 sec (최초이후 실행 주기)
     public static final long    _timer_delay    = 1000;     // 1 sec (최초실행)
 
     public static final int     _loc_interval   = 5000;     // 3 sec
-    public static final float   _loc_distance   = 5f;       // 5 meter
+    public static final float   _loc_distance   = 10f;       // 5 meter
     public static double        _minLocChange   = _loc_distance;
 
     public static boolean       _start_service  = false; // start location service
@@ -25,6 +25,10 @@ public class Config {
     public static String        _default_ext    = ".mnt"; // 기본확장자
     public static String        _filename_fmt   ="yyyyMMdd";
     public static boolean       _save_onPause = false;
+
+    public static int           _file_type_all  = 1;
+    public static int           _file_type_day  = 2;
+    public static int           _file_type_activity  = 3;
 
     public static String        _backup_url_dir = "http://ezehub.club/moment/";
     public static String[]      _backup_url_files= {

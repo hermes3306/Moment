@@ -48,7 +48,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/btn_background"
                 android:text="활동\n달리기"
-                android:textColor="#2979FF"
+                android:textColor="#FFCF56"
                 android:textSize="15sp" />
 
             <Button
@@ -58,7 +58,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/btn_background"
                 android:text="운동\n설정"
-                android:textColor="#FF9100"
+                android:textColor="#FFCF56"
                 android:textSize="15sp" />
         </LinearLayout>
 
@@ -73,17 +73,17 @@
                 android:layout_weight="1"
                 android:background="@drawable/btn_background"
                 android:text="오디오\n시간"
-                android:textColor="#00B0FF"
+                android:textColor="#FFCF56"
                 android:textSize="15sp" />
 
             <Button
-                android:id="@+id/bt_quit"
+                android:id="@+id/bt_list_activity"
                 android:layout_width="wrap_content"
                 android:layout_height="70dp"
                 android:layout_weight="1"
                 android:background="@drawable/btn_background"
-                android:text="활동\n종료"
-                android:textColor="#00E676"
+                android:text="활동\n내역"
+                android:textColor="#FFCF56"
                 android:textSize="15sp" />
         </LinearLayout>
 

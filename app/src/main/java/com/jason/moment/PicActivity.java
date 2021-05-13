@@ -12,8 +12,6 @@ import android.widget.ImageView;
 import java.io.File;
 import java.util.ArrayList;
 
-import static com.jason.moment.FileActivity.fname;
-
 public class PicActivity extends AppCompatActivity {
     private String TAG = "PicActivity";
 

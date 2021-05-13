@@ -237,6 +237,7 @@ public class MapsActivity extends AppCompatActivity implements
             MyActivity ma = myloc.lastActivity();
             if(ma == null) {
                 myloc.ins(location.getLatitude(), location.getLongitude());
+                return;
             }
             double d2 = CalDistance.dist(ma.latitude, ma.longitude, location.getLatitude(), location.getLongitude());
             if (d2 > Config._minLocChange) myloc.ins(location.getLatitude(), location.getLongitude()); //minLocChange = 5meter
@@ -394,9 +395,11 @@ public class MapsActivity extends AppCompatActivity implements
             case R.id.imFolder:
                 MyActivityUtil.serialize(new MyLoc(getApplicationContext()).todayActivity(), DateUtil.today()+".mnt");
                 Intent intent = new Intent(MapsActivity.this, FileActivity.class);
-                intent.putExtra("file", Config.getAbsolutePath(Config.get_today_filename()));
                 intent.putExtra("pos", 0);
+                intent.putExtra("filetype", Config._file_type_day);
+
                 Log.d(TAG, "-- before call FileActivity");
+
                 Log.d(TAG, "-- file:" + Config.getAbsolutePath(Config.get_today_filename()));
                 startActivity(intent);
                 break;

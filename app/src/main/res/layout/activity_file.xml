@@ -199,13 +199,14 @@
         android:gravity="top|fill_horizontal"
         android:layout_marginTop="150dp"
         android:orientation="vertical">
+
         <ImageButton
             android:id="@+id/imbt_marker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
             android:layout_gravity="right"
-            app:srcCompat="@drawable/marker0_48" />
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/marker2_48" />
         <ImageButton
             android:id="@+id/imbt_navi"
             android:layout_width="wrap_content"
@@ -213,6 +214,13 @@
             android:background="@android:color/transparent"
             android:layout_gravity="right"
             app:srcCompat="@drawable/check48" />
+        <ImageButton
+            android:id="@+id/imbt_trash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:layout_gravity="right"
+            app:srcCompat="@drawable/trash_48" />
 
     </LinearLayout>
 

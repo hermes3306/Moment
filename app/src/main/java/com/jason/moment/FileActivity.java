@@ -36,10 +36,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.snackbar.Snackbar;
 import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.AddressUtil;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CalcTime;
+import com.jason.moment.util.CaloryUtil;
+import com.jason.moment.util.Config;
+import com.jason.moment.util.FileUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StringUtil;
@@ -58,12 +62,14 @@ import java.util.Locale;
 public class FileActivity extends AppCompatActivity {
     public static String TAG = "FileActivity";
     public static int position = 0;
+    public static int filetype = -1;
+
     public static ArrayList<Marker> markers = null;
     public static ArrayList<MyActivity> mActivityList = new ArrayList<MyActivity>();
     public static String add1 = null;
     public static String add2 = null;
     public static boolean tog_add = true;
-    public static String fname = null;
+
     public static int marker_pos = 0;
     public static int marker_pos_prev =0;
     public static Polyline line_prev = null;
@@ -76,6 +82,8 @@ public class FileActivity extends AppCompatActivity {
     public static boolean notrack = false;
     public static boolean satellite = false;
 
+    File _file_list[] = null;
+    File _file = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,12 +91,22 @@ public class FileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_file);
 
         Intent intent = getIntent();
-        fname = intent.getExtras().getString("file");
         position = intent.getExtras().getInt("pos");
+        filetype = intent.getExtras().getInt("filetype");
+
+        _file_list = MyActivityUtil.getFiles(filetype);
+        if(_file_list == null) {
+            Toast.makeText(getApplicationContext(),"No files found!", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        } else if(_file_list.length==0) {
+            Toast.makeText(getApplicationContext(), "No files found!", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+        _file = _file_list[0];
 
         final Context _ctx = this;
-        final File _file = new File(fname);
-
         final MapView mMapView = (MapView) findViewById(R.id.mapView);
         MapsInitializer.initialize(this);
 
@@ -111,8 +129,9 @@ public class FileActivity extends AppCompatActivity {
             final SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
             final ImageButton imbt_marker = (ImageButton) findViewById(R.id.imbt_marker);
             final ImageButton imbt_navi = (ImageButton) findViewById(R.id.imbt_navi);
+            final ImageButton imbt_trash = (ImageButton) findViewById(R.id.imbt_trash);
 
-            final File flist[] = MyActivityUtil.getFiles(".mnt",true);
+            final File flist[] = MyActivityUtil.getFiles(filetype);
 
             public void GO(final GoogleMap googleMap, File myfile) {
                 googleMap.clear();
@@ -291,7 +310,13 @@ public class FileActivity extends AppCompatActivity {
 
                 imbt_prev.setOnClickListener(new View.OnClickListener(){
                     public void onClick(View view) {
-                        File flist[] = MyActivityUtil.getFiles();
+
+                        File flist[] = MyActivityUtil.getFiles(filetype);
+                        if(flist==null) {
+                            Toast.makeText(getApplicationContext(),"No more files!",Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
                         if (position > 0 && position <= flist.length) position--;
                         else position=flist.length-1;
                         GO(googleMap, flist[position]);
@@ -300,7 +325,7 @@ public class FileActivity extends AppCompatActivity {
 
                 tv_cursor2.setOnClickListener(new View.OnClickListener(){
                     public void onClick(View view) {
-                        File flist[] = MyActivityUtil.getFiles();
+                        File flist[] = MyActivityUtil.getFiles(filetype);
                         if (position >= 0 && position < flist.length-1) position++;
                         else position=0;
                         GO(googleMap, flist[position]);
@@ -310,7 +335,11 @@ public class FileActivity extends AppCompatActivity {
 
                 imbt_next.setOnClickListener(new View.OnClickListener(){
                     public void onClick (View view) {
-                        File flist[] = MyActivityUtil.getFiles();
+                        File flist[] = MyActivityUtil.getFiles(filetype);
+                        if(flist==null) {
+                            Toast.makeText(getApplicationContext(),"No more files!",Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         if (position >= 0 && position < flist.length-1) position++;
                         else position=0;
                         GO(googleMap, flist[position]);
@@ -346,6 +375,22 @@ public class FileActivity extends AppCompatActivity {
                             drawStartMarker(googleMap,mActivityList);
                             drawEndMarker(googleMap,mActivityList);
                         }
+                    }
+                });
+
+                imbt_trash.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        File flist[] = MyActivityUtil.getFiles(filetype);
+                        try {
+                            flist[position].delete();
+                        }catch(Exception e) {
+                            e.printStackTrace();
+                            Log.d(TAG, "-- file delete err: " + e.toString());
+                        }
+                        if (flist.length > 1) position=position;
+                        else position=0;
+                        GO(googleMap, flist[position]);
                     }
                 });
 
@@ -431,21 +476,28 @@ public class FileActivity extends AppCompatActivity {
         String duration = StringUtil.elapsedStr(start_date, stop_date); // <- Error code
         Log.e(TAG, duration);
 
-        double total_distM = getTotalDistanceDouble(list);  // <-
+        double total_distM = MyActivityUtil.getTotalDistanceInDouble(list);  // <-
         double total_distKm = total_distM / 1000f;
-        double minpk = getMinPerKm(start_date, stop_date, total_distKm); // <-
+        double minpk = MyActivityUtil.getMinPerKm(start_date, stop_date, total_distKm); // <-
 
-        ActivityStat as = new ActivityStat(start_date, stop_date, duration, total_distM, total_distKm, minpk, 0);
+        float burntkCal;
+        int durationInSeconds = MyActivityUtil.durationInSeconds(list);
+        int stepsTaken = (int) (total_distM / Config._strideLengthInMeters);
+        burntkCal = CaloryUtil.calculateEnergyExpenditure(
+                Config._height,
+                Config._age,
+                Config._weight,
+                Config.GENDER_MALE,
+                durationInSeconds,
+                stepsTaken,
+                Config._strideLengthInMeters
+        );
+
+        ActivityStat as = new ActivityStat(start_date, stop_date, duration, total_distM, total_distKm, minpk, (int)burntkCal);
         return as;
     }
 
-    public static double getMinPerKm(Date start, Date end, double km) {
-        long dur_sec = (end.getTime() - start.getTime())/1000;
-        long dur_min = dur_sec/60;
 
-        double minpk = (double)(dur_min / km);
-        return minpk;
-    }
 
     public ArrayList<MyActivity> deserialize(File file) {
         if(file == null)  {
@@ -497,33 +549,6 @@ public class FileActivity extends AppCompatActivity {
         if(list ==null) return null;
         return list;
 
-    }
-
-    public static double getTotalDistanceDouble(ArrayList<MyActivity> list) {
-        if(list == null) return 0;
-        if(list.size() ==2) return 0;
-
-        double dist_meter = 0;
-        for(int i=0; i<list.size()-1; i++) {
-            double bef_lat = list.get(i).latitude;
-            double bef_lon = list.get(i).longitude;
-            double aft_lat = list.get(i+1).latitude;
-            double aft_lon = list.get(i+1).longitude;
-
-            CalDistance cd = new CalDistance(bef_lat, bef_lon, aft_lat, aft_lon);
-            double dist_2 = cd.getDistance();
-            if(Double.isNaN(dist_2)) {
-                Log.e(TAG, "Double.NaN between ("+bef_lat + ","+ bef_lon +") ~ ("+ aft_lat + ","+ aft_lon + ")" ) ;
-                continue;
-            } else if ( Double.isNaN(dist_meter + dist_2)) {
-                Log.e(TAG, "Double.NaN between ("+bef_lat + ","+ bef_lon +") ~ ("+ aft_lat + ","+ aft_lon + ")" ) ;
-                continue;
-            }
-            dist_meter = dist_meter + dist_2;
-            //Log.e(TAG, "" + i + "]" +  list.get(i).added_on + dist_2 + " sum: " + dist_meter +  " ("+bef_lat + ","+ bef_lon +") ~ ("+ aft_lat + ","+ aft_lon + ")");
-            //Log.e(TAG, "" + dist_2 + " sum: " + dist_meter);
-        }
-        return dist_meter;
     }
 
     public static void drawTrack(GoogleMap gmap, ArrayList<MyActivity> list) {
@@ -580,7 +605,7 @@ public class FileActivity extends AppCompatActivity {
     }
 
     public static void drawMarkers(GoogleMap gmap, ArrayList<MyActivity> list) {
-        double tot_distance = getTotalDistanceDouble(list);
+        double tot_distance = MyActivityUtil.getTotalDistanceInDouble(list);
 
         int disunit = 1000;
         String unitstr = "미터";

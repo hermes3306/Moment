@@ -1,9 +1,12 @@
 package com.jason.moment.util;
 
+import android.util.Log;
+
 import java.util.Calendar;
 import java.util.Date;
 
 public class CaloryUtil {
+    private static String TAG = "CaloryUtil";
     /**
      * Calculated the energy expenditure for an activity. Adapted from the following website https://sites.google.com/site/compendiumofphysicalactivities/corrected-mets
      *
@@ -19,17 +22,25 @@ public class CaloryUtil {
     public static float calculateEnergyExpenditure(float height, Date age, float weight, int gender, int durationInSeconds, int stepsTaken, float strideLengthInMetres) {
 
         float ageCalculated = getAgeFromDateOfBirth(age);
+        Log.d(TAG, "ageCalculated:" + ageCalculated);
 
         float harrisBenedictRmR = convertKilocaloriesToMlKmin(harrisBenedictRmr(gender, weight, ageCalculated,   convertMetresToCentimetre(height)), weight);
-
+        Log.d(TAG, "harrisBenedictRmR:" + harrisBenedictRmR);
         float kmTravelled = calculateDistanceTravelledInKM(stepsTaken, strideLengthInMetres);
+        Log.d(TAG, "kmTravelled:" + kmTravelled);
+
         float hours = UnitConverter.convertSecondsToHours(durationInSeconds);
+        Log.d(TAG, "hours:" + hours);
         float speedInMph = UnitConverter.convertKilometersToMiles(kmTravelled) / hours;
+        Log.d(TAG, "speedInMph:" + speedInMph);
         float metValue = getMetForActivity(speedInMph);
+        Log.d(TAG, "metValue:" + metValue);
 
         float constant = 3.5f;
 
         float correctedMets = metValue * (constant / harrisBenedictRmR);
+        Log.d(TAG, "correctedMets:" + correctedMets);
+
         return correctedMets * hours * weight;
     }
     /**

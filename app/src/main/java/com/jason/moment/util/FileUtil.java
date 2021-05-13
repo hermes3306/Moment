@@ -53,5 +53,14 @@ public class FileUtil {
         return files;
     }
 
+    public static void deleteFile(String file) {
+        File f = new File(file);
+        try {
+           f.delete();
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
 

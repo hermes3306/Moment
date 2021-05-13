@@ -212,24 +212,22 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                     String elapsed = StringUtil.elapsedStr(start_time,d);
                     tv_start_time.setText(elapsed);
                     long t1 = System.currentTimeMillis();
-                    dist = MyActivityUtil.getTotalDistanceDouble(list);
+                    dist = MyActivityUtil.getTotalDistanceInDouble(list);
 
                     long t2 = System.currentTimeMillis();
-//                    Log.d(TAG, "-- Time to check all distance: " + (t2-t1));
                     if(dist<1000) {
-                        String s1 = String.format("%.1f", dist);
-                        if(s1.length()>4) s1=String.format("%.0f", dist);
+                        String s1 = String.format("%.2f", dist);
+                        if(s1.length()>4) s1=String.format("%.1f", dist);
                         tv_start_km.setText(s1);
                         tv_start_km_str.setText("미터");
                     } else {
                         String s1 = String.format("%.2f", dist/1000.0);
-                        if(s1.length()==4) s1=String.format("%.1f", dist/1000.0);
-                        if(s1.length()==5) s1=String.format("%.0f", dist/1000.0);
+                        if(s1.length()>4) s1=String.format("%.1f", dist/1000.0);
                         tv_start_km.setText(s1);
                         tv_start_km_str.setText("킬로미터");
                     }
 
-                    double  minpkm = MyActivityUtil.MinPerKm(list);
+                    double  minpkm = MyActivityUtil.getMinPerKm(list);
                     String tt1 = StringUtil.elapsedStr2((long) (minpkm*1000*60.0));
                     tv_start_avg.setText("" + tt1);
 
@@ -249,6 +247,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                         stepsTaken,
                         Config._strideLengthInMeters
                     );
+
                     tv_start_calory.setText("" + String.format("%.3f", burntkCal));
                     if(last==null) {
                         last = new Date();

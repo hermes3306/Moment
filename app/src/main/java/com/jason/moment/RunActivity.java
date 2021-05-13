@@ -169,11 +169,15 @@ public class RunActivity extends AppCompatActivity {
         });
 
         // *** Quit button
-        Button bt_quit = (Button)findViewById(R.id.bt_quit);
-        bt_quit.setOnClickListener(new View.OnClickListener(){
+        Button bt_list_activity = (Button)findViewById(R.id.bt_list_activity);
+        bt_list_activity.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view) {
-                Log.d(TAG,"-- Activity will be finished!");
-                alertQuitDialog();
+                Intent intent = new Intent(RunActivity.this, FileActivity.class);
+                intent.putExtra("pos", 0);
+                intent.putExtra("filetype", Config._file_type_activity);
+                Log.d(TAG, "-- before call FileActivity");
+                Log.d(TAG, "-- file:" + Config.getAbsolutePath(Config.get_today_filename()));
+                startActivity(intent);
             }
         });
 
