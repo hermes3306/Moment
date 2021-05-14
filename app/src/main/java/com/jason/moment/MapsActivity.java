@@ -176,7 +176,10 @@ public class MapsActivity extends AppCompatActivity implements
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        mLocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Config._loc_interval, Config._loc_distance, this);
+
+        if(Config._enable_network_provider) mLocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Config._loc_interval, Config._loc_distance, this);
+        mLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Config._loc_interval, Config._loc_distance, this);
+
         LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
         boolean enabledGPS = service.isProviderEnabled(LocationManager.GPS_PROVIDER);
         boolean enabledWiFi = service.isProviderEnabled(LocationManager.NETWORK_PROVIDER);

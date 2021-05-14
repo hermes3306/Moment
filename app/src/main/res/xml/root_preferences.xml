@@ -1,5 +1,26 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <PreferenceCategory app:title="Location">
+        <SwitchPreferenceCompat
+            app:key="NetworkProvider"
+            app:title="Enable Network Provider..." />
+        <ListPreference
+            app:defaultValue="Interval"
+            app:entries="@array/interval"
+            app:entryValues="@array/interval_values"
+            app:key="interval"
+            app:title="Interval"
+            app:useSimpleSummaryProvider="true" />
+        <ListPreference
+            app:defaultValue="Distance"
+            app:entries="@array/distance"
+            app:entryValues="@array/distance_values"
+            app:key="distance"
+            app:title="Distance"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+
     <PreferenceCategory app:title="Runner">
         <EditTextPreference
             app:key="your_name"

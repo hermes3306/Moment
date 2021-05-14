@@ -3,6 +3,7 @@ package com.jason.moment;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.snackbar.Snackbar;
@@ -29,6 +31,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static java.lang.Float.parseFloat;
+import static java.lang.Integer.parseInt;
 
 public class StartActivity extends AppCompatActivity implements View.OnClickListener{
     public String TAG = "StartActivity";
@@ -117,6 +122,21 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void initializeLocationManager() {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
+        Config._enable_network_provider = sharedPreferences.getBoolean("NetworkProvider", Config._enable_network_provider);
+        String _loc_interval = sharedPreferences.getString("interval", "");
+        String _loc_distance = sharedPreferences.getString("distance", "");
+
+        Config._loc_interval = parseInt(_loc_interval);
+        Config._loc_distance = parseFloat(_loc_distance);
+
+        String t = "Loc_interval:"+ Config._loc_interval / 1000 + " sec\n" +
+                "Loc_distance:" + Config._loc_distance + " meter\n" +
+                "Network provider: " + Config._enable_network_provider;
+        Toast.makeText(getApplicationContext(),t, Toast.LENGTH_LONG).show();
+
+
         if (mLocManager == null) {
             mLocManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
@@ -132,17 +152,19 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         } catch (IllegalArgumentException ex) {
             Log.d(TAG, "gps provider does not exist " + ex.getMessage());
         }
-        try {
-            mLocManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER,
-                    Config._loc_interval,
-                    Config._loc_distance,
-                    mLocationListeners[1]
-            );
-        } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+        if(Config._enable_network_provider) {
+            try {
+                mLocManager.requestLocationUpdates(
+                        LocationManager.NETWORK_PROVIDER,
+                        Config._loc_interval,
+                        Config._loc_distance,
+                        mLocationListeners[1]
+                );
+            } catch (java.lang.SecurityException ex) {
+                Log.i(TAG, "fail to request location update, ignore", ex);
+            } catch (IllegalArgumentException ex) {
+                Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+            }
         }
     }
 

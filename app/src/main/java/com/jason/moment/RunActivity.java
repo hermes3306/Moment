@@ -112,17 +112,20 @@ public class RunActivity extends AppCompatActivity {
         } catch (IllegalArgumentException ex) {
             Log.d(TAG, "gps provider does not exist " + ex.getMessage());
         }
-        try {
-            mLocManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER,
-                    Config._loc_interval,
-                    Config._loc_distance,
-                    mLocationListeners[1]
-            );
-        } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+
+        if(Config._enable_network_provider) {
+            try {
+                mLocManager.requestLocationUpdates(
+                        LocationManager.NETWORK_PROVIDER,
+                        Config._loc_interval,
+                        Config._loc_distance,
+                        mLocationListeners[1]
+                );
+            } catch (java.lang.SecurityException ex) {
+                Log.i(TAG, "fail to request location update, ignore", ex);
+            } catch (IllegalArgumentException ex) {
+                Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+            }
         }
     }
 
