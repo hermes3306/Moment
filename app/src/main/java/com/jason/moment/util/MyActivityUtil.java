@@ -213,6 +213,9 @@ public class MyActivityUtil {
 
     public static File[] getOnlyActivityFiles() {
         File files[] = getAllFiles();
+        if (files==null) return null;
+        if(files.length==0) return null;
+
         ArrayList<File> afiles = new ArrayList();
         for(int i=0;i<files.length;i++) {
             if(files[i].getName().contains("_")) afiles.add(files[i]);

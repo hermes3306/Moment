@@ -7,20 +7,20 @@
     android:background="#FFFFFF"
     tools:context=".RunActivity">
 
+    <TextView
+        android:id="@+id/tv_run_activity_address"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/cardview_dark_background"
+        android:gravity="center"
+        android:textColor="#C0C0C0"
+        android:textSize="14sp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="top|fill_horizontal"
         android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/tv_run_activity_address"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@color/cardview_dark_background"
-            android:gravity="center"
-            android:textColor="@color/teal_700"
-            android:textSize="14sp" />
 
         <com.google.android.gms.maps.MapView
             android:id="@+id/mapView"
@@ -44,21 +44,21 @@
 
             <Button
                 android:layout_width="wrap_content"
-                android:layout_height="70dp"
+                android:layout_height="60dp"
                 android:layout_weight="1"
                 android:background="@drawable/btn_background"
                 android:text="활동\n달리기"
-                android:textColor="#FFCF56"
+                android:textColor="#C0C0C0"
                 android:textSize="15sp" />
 
             <Button
                 android:id="@+id/bt_run_setting"
                 android:layout_width="wrap_content"
-                android:layout_height="70dp"
+                android:layout_height="60dp"
                 android:layout_weight="1"
                 android:background="@drawable/btn_background"
                 android:text="운동\n설정"
-                android:textColor="#FFCF56"
+                android:textColor="#C0C0C0"
                 android:textSize="15sp" />
         </LinearLayout>
 
@@ -69,21 +69,21 @@
 
             <Button
                 android:layout_width="wrap_content"
-                android:layout_height="70dp"
+                android:layout_height="60dp"
                 android:layout_weight="1"
                 android:background="@drawable/btn_background"
                 android:text="오디오\n시간"
-                android:textColor="#FFCF56"
+                android:textColor="#C0C0C0"
                 android:textSize="15sp" />
 
             <Button
                 android:id="@+id/bt_list_activity"
                 android:layout_width="wrap_content"
-                android:layout_height="70dp"
+                android:layout_height="60dp"
                 android:layout_weight="1"
                 android:background="@drawable/btn_background"
                 android:text="활동\n내역"
-                android:textColor="#FFCF56"
+                android:textColor="#C0C0C0"
                 android:textSize="15sp" />
         </LinearLayout>
 
@@ -91,9 +91,10 @@
             android:id="@+id/bt_start"
             android:layout_width="match_parent"
             android:layout_height="65dp"
-            android:background="#FFCF56"
+            android:background="#C0C0C0"
             android:text="시작"
-            android:textSize="20sp" />
+            android:textColor="@color/white"
+            android:textSize="25dp" />
     </LinearLayout>
 
 

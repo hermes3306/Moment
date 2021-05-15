@@ -3,11 +3,14 @@ package com.jason.moment.util;
 import android.os.Environment;
 import android.view.animation.LinearInterpolator;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.io.File;
 import java.util.Date;
 
 public class Config {
 
+    public static final LatLng  _olympic_park   = new LatLng(37.519019,127.124820 );
     public static final float   _height         = 175;
     public static final Date    _age            = StringUtil.StringToDate("19700409","yyyyMMdd");
     public static final float   _weight         = 75;
@@ -47,6 +50,7 @@ public class Config {
     public static final int CALL_RUN_ACTIVITY = 2;
     public static final int CALL_SETTING_ACTIVITY = 3;
     public static final int CALL_START_ACTIVITY = 4;
+    public static final int CALL_QUOTE_ACTIVITY = 5;
 
     public static final int perKM = 1;
     public static final int perMile = 2;

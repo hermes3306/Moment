@@ -29,6 +29,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -81,7 +82,7 @@ public class MapsActivity extends AppCompatActivity implements
     public static boolean satellite = false;
 
     public TextView tv_status;
-    public ImageButton imb_snap;
+    public ImageView imv_start;
     public TextView tv_map_address;
 
     @Override
@@ -123,7 +124,7 @@ public class MapsActivity extends AppCompatActivity implements
         // ----------------------------------------------------------------------
         //
         tv_status = (TextView) findViewById(R.id.tv_status);
-        imb_snap = (ImageButton) findViewById(R.id.imbSnap);
+        imv_start = (ImageView) findViewById(R.id.imvStart);
         tv_map_address = (TextView) findViewById(R.id.tv_map_address);
 
         if (Config._start_service) {
@@ -134,6 +135,7 @@ public class MapsActivity extends AppCompatActivity implements
             startMyTimer(); // Timer 시작(onPause()에서도 10초마다 실행됨
             tv_status.setText("Timer started...");
         }
+
     }
 
     private void startMyTimer() {
@@ -149,7 +151,7 @@ public class MapsActivity extends AppCompatActivity implements
             //mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap(); // creates the map
             // check if map is created successfully or not
             if (mMap == null) {
-                Log.e(TAG,"-- Map cannot not be created. because the map is not ready!");
+                //      Log.e(TAG,"-- Map cannot not be created. because the map is not ready!");
 //                Toast.makeText(getApplicationContext(),
 //                        "Map could not be created", Toast.LENGTH_SHORT)
 //                        .show();
@@ -325,6 +327,10 @@ public class MapsActivity extends AppCompatActivity implements
             mMap.getUiSettings().setCompassEnabled(true);
             mMap.getUiSettings().setZoomControlsEnabled(true);
         }
+        MyLoc myloc = new MyLoc(_ctx);
+        MyActivity a = myloc.lastActivity();
+        if(a==null) mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Config._olympic_park, 14));
+        else mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(a.toLatLng(), 14));
         //refresh();
     }
 
@@ -465,11 +471,11 @@ public class MapsActivity extends AppCompatActivity implements
                 Log.d(TAG,"-- image button Camera.");
                 dispatchTakePictureIntent();
                 break;
-            case R.id.imbSnap:
-                Log.d(TAG,"-- image button Snap.");
-                Intent runIntent = new Intent(MapsActivity.this, RunActivity.class);
+            case R.id.imvStart:
+                Log.d(TAG,"-- image View start.");
+                Intent runIntent = new Intent(MapsActivity.this, StartActivity.class);
                 runIntent.putExtra("1", 1);
-                startActivityForResult(runIntent, Config.CALL_RUN_ACTIVITY);
+                startActivityForResult(runIntent, Config.CALL_START_ACTIVITY);
                 break;
 
             case R.id.imGallary:
@@ -594,9 +600,24 @@ public class MapsActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                Intent intent = new Intent(MapsActivity.this, RunActivity.class);
-                intent.putExtra("1", 1);
-                startActivityForResult(intent, Config.CALL_RUN_ACTIVITY);
+                Log.d(TAG,"-- Setting Activities!");
+                Intent configIntent = new Intent(MapsActivity.this, ConfigActivity.class);
+                configIntent.putExtra("1", 1);
+                startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
+                return true;
+
+            case R.id.run_activity:
+                Log.d(TAG,"-- Run Activity!");
+                Intent runIntent = new Intent(MapsActivity.this, RunActivity.class);
+                runIntent.putExtra("1", 1);
+                startActivityForResult(runIntent, Config.CALL_RUN_ACTIVITY);
+                return true;
+
+            case R.id.quote_activity:
+                Log.d(TAG,"-- Quote Activity!");
+                Intent quoteIntent = new Intent(MapsActivity.this, QuoteActivity.class);
+                quoteIntent.putExtra("1", 1);
+                startActivityForResult(quoteIntent, Config.CALL_QUOTE_ACTIVITY);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

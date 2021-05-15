@@ -71,7 +71,7 @@ public class RunActivity extends AppCompatActivity {
             marker.snippet(_snippet);
             marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
             _googleMap.addMarker(marker);
-            _googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
+            _googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 14));
         }
 
         @Override
@@ -154,7 +154,9 @@ public class RunActivity extends AppCompatActivity {
                 _googleMap.getUiSettings().setCompassEnabled(true);
                 _googleMap.getUiSettings().setZoomControlsEnabled(true);
 
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(a.latitude, a.longitude), 16));
+
+                if(a==null) googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Config._olympic_park, 14));
+                else googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(a.latitude, a.longitude), 14));
 //                googleMap.addMarker(new MarkerOptions()
 //                        .position(new LatLng(a.latitude, a.longitude))
 //                        .title("OnMapReady() callback"));
