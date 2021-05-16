@@ -236,6 +236,13 @@ public class RunActivity extends AppCompatActivity {
         paused = false;
         if(mLocManager==null) initializeLocationManager();
         super.onResume();
+
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
+        String _filetype = sharedPreferences.getString("filetype", "");
+        Config._default_ext = parseInt(_filetype);
+        MyActivityUtil.initialize();
+
     }
 
     @Override

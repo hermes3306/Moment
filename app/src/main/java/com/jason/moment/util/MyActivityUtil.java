@@ -65,10 +65,7 @@ public class MyActivityUtil {
         try(BufferedReader in = new BufferedReader(new FileReader(file))) {
             String str;
             String head = in.readLine();
-            if(!head.equals("x,y,d,t")) {
-                Log.d(TAG, "CSV file should be started with x,y,d,t!!!");
-                return null;
-            }
+
             while ((str = in.readLine()) != null) {
                 System.out.println(str);
                 String[] tokens = str.split(",");
@@ -86,8 +83,6 @@ public class MyActivityUtil {
             System.out.println("File Read Error");
         }
         return mal;
-
-
     }
 
     public static ArrayList<MyActivity> deserializeFromCSV(String fileName) {

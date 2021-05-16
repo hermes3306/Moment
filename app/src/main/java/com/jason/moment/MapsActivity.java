@@ -210,6 +210,13 @@ public class MapsActivity extends AppCompatActivity implements
         if(mLocManager==null) initializeLocationManager();
         paused = false;
         super.onResume();
+
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
+        String _filetype = sharedPreferences.getString("filetype", "");
+        Config._default_ext = parseInt(_filetype);
+        MyActivityUtil.initialize();
+
         initializeMap();
     }
 
@@ -430,26 +437,18 @@ public class MapsActivity extends AppCompatActivity implements
                         _urls[x] = _url_dir + _files[x];
                     }
 
-                    WebUtil.downloadFileAsync(_ctx, _urls, _ctx.getCacheDir().getAbsolutePath());
+                    WebUtil.downloadFileAsync2(_ctx, _urls);
                     MyLoc myl = new MyLoc(_ctx);
                     ArrayList<MyActivity> todayal = new MyLoc(getApplicationContext()).todayActivity();
 
                     myl.deleteAll(); // Delete all the DB contents
 
                     for(int i=0;i<_files.length;i++) {
-                        File tf = new File(_ctx.getCacheDir(), _files[i]);
-                        Log.d(TAG, "-- " + _files[i] + " will be deserialzied.");
-                        ArrayList<MyActivity> mal = MyActivityUtil.deserialize(tf);
-                        Log.d(TAG, "-- " + _files[i] + " is deserialzied into " + mal.size() + " activities.");
+                        ArrayList<MyActivity> mal = MyActivityUtil.deserializeActivityFromMnt(new File(Config.mediaStorageDir, _files[i]));
                         for(int j=0;j<mal.size();j++) {
                             myl.ins(mal.get(j).latitude, mal.get(j).longitude, mal.get(j).cr_date, mal.get(j).cr_time);
                         }
-                        Log.d(TAG, "-- " + "Activities in" + _files[i] + " inserted into DB!");
                         tv_status.setText("Activities in" + _files[i] + " inserted into DB!");
-                        //Toast.makeText(_ctx, "Activities in" + _files[i] + " inserted into DB!", Toast.LENGTH_SHORT).show();
-                        MyActivityUtil.serialize(mal, _files[i]);
-                        Log.d(TAG, "-- " + "Activities in" + _files[i] + " serialized!");
-                        tv_status.setText("Activities in" + _files[i] + " serialized again!");
                     }
 
                     Log.d(TAG, "-- " + "going to insert today activity ("+ todayal.size()+")");
@@ -457,8 +456,6 @@ public class MapsActivity extends AppCompatActivity implements
                         myl.ins(todayal.get(j).latitude, todayal.get(j).longitude, todayal.get(j).cr_date, todayal.get(j).cr_time);
                     }
                     Log.d(TAG, "-- " + "going to serialize today activity into ("+ DateUtil.today()+".mnt");
-                    MyActivityUtil.serialize(todayal, DateUtil.today());
-
                 } catch (Exception e) {
                     tv_status.setText("Download Fail!" + e.toString());
                     e.printStackTrace();
@@ -577,13 +574,8 @@ public class MapsActivity extends AppCompatActivity implements
             return;
         }
 
-        if (requestCode == Config.CALL_SETTING_ACTIVITY&& resultCode == RESULT_OK) {
+        if (requestCode == Config.CALL_SETTING_ACTIVITY && resultCode == RESULT_OK) {
             Log.d(TAG, "-- after Call SETTING_ACTIVITY and get the return");
-            SharedPreferences sharedPreferences =
-                    PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
-            String _filetype = sharedPreferences.getString("filetype", "");
-            Config._default_ext = parseInt(_filetype);
-            MyActivityUtil.initialize();
             return;
         }
 
@@ -626,15 +618,33 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivityForResult(runIntent, Config.CALL_RUN_ACTIVITY);
                 return true;
 
+            case R.id.downloadcsv:
+                Log.d(TAG,"-- Download Activity!");
+                try {
+                    downloadCSV();
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+                return true;
+
             case R.id.quote_activity:
                 Log.d(TAG,"-- Quote Activity!");
                 Intent quoteIntent = new Intent(MapsActivity.this, QuoteActivity.class);
                 quoteIntent.putExtra("1", 1);
                 startActivityForResult(quoteIntent, Config.CALL_QUOTE_ACTIVITY);
                 return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void downloadCSV() throws Exception{
+        String _url_dir = Config._backup_csv_dir; //"http://ezehub.club/moment/csv";
+        String _files[] = Config._backup_csv_files;
+        String _urls[] = new String[_files.length];
+        for(int x=0;x<_files.length;x++) _urls[x] = _url_dir + _files[x];
+        WebUtil.downloadFileAsync2(_ctx, _urls);
     }
 
 

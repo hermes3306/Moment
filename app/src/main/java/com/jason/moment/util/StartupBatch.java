@@ -12,6 +12,7 @@ public class StartupBatch {
         try{
             Log.d(TAG,"-- Startup Batch Started...");
             //if(genCVSfiles()) Log.d(TAG, "-- Success");
+            //if(genMNTfiles()) Log.d(TAG, "-- Success");
             //deserializeTest();
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
@@ -22,6 +23,28 @@ public class StartupBatch {
             Log.d(TAG,"-- Startup Batch End...");
         }
         return;
+    }
+
+    public static boolean genMNTfiles() {
+        Log.d(TAG, "-- genMNTfiles call...");
+        int original_setup = Config._default_ext;
+
+        // setup
+        Config._default_ext = Config._csv;
+        MyActivityUtil.initialize();
+
+        File flist[] = MyActivityUtil.getAllFiles();
+        for (int i=0;i<flist.length;i++) {
+            Log.e(TAG, "-- VVVV orig files " + i + " " + flist[i].getName());
+        }
+        for(int i=0;i<flist.length;i++) {
+            ArrayList<MyActivity> mal = MyActivityUtil.deserializeFromCSV(flist[i]);
+            String mntfname = MyActivityUtil.renameExt(flist[i], "mnt");
+            MyActivityUtil.serializeIntoMnt(mal, mntfname);
+        }
+        Config._default_ext = original_setup;
+        MyActivityUtil.initialize();
+        return true;
     }
 
     public static boolean genCVSfiles() {

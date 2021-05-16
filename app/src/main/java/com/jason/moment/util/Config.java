@@ -13,7 +13,7 @@ public class Config {
     public static final int     _csv            = 0;
     public static final int     _ser            = 1;
     public static final int     _jsn            = 2;
-    public static int           _default_ext    = _csv;
+    public static int           _default_ext    = _ser;
 
     public static final LatLng  _olympic_park   = new LatLng(37.519019,127.124820 );
     public static final float   _height         = 175;
@@ -50,6 +50,33 @@ public class Config {
             "20210508.mnt"
     };
 
+    public static String        _backup_csv_dir = "http://ezehub.club/moment/csv/";
+    public static String[]      _backup_csv_files={
+            "20210418_174252.csv",
+            "20210418_175000.csv",
+            "20210420_132406.csv",
+            "20210420_132557.csv",
+            "20210420_132903.csv",
+            "20210420_132954.csv",
+            "20210420_133000.csv",
+            "20210420_133132.csv",
+            "20210420_133304.csv",
+            "20210420_133528.csv",
+            "20210420_133530.csv",
+            "20210420_133636.csv",
+            "20210420_134000.csv",
+            "20210420_135445.csv",
+            "20210420_135454.csv",
+            "20210420_135455.csv",
+            "20210501_201904.csv",
+            "20210501_201925.csv",
+            "20210501_202000.csv",
+            "20210502_092000.csv",
+            "20210502_092412.csv",
+            "20210502_092423.csv",
+            "20210515_185425.csv",
+            "20210515.csv"
+    };
 
     public static final int PICK_FROM_CAMERA = 1;
     public static final int CALL_RUN_ACTIVITY = 2;
@@ -71,7 +98,7 @@ public class Config {
 
     public static File mediaStorageDir4csv             =
             new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                    "CVS1.4");
+                    "CSV1.4");
 
     public static String get_today_filename() {
         return StringUtil.DateToString(new Date(), _filename_fmt) + ((_default_ext==_csv)? ".csv" : ".mnt");
