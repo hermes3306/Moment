@@ -58,7 +58,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-
 public class FileActivity extends AppCompatActivity {
     public static String TAG = "FileActivity";
     public static int position = 0;
@@ -134,18 +133,20 @@ public class FileActivity extends AppCompatActivity {
             final File flist[] = MyActivityUtil.getFiles(filetype);
 
             public void GO(final GoogleMap googleMap, File myfile) {
+                Log.e(TAG, "-- filename to see: " + myfile.getAbsolutePath());
                 googleMap.clear();
                 markers = new ArrayList<Marker>();
                 ActivityStat activityStat = null;
 
-                if(myfile != null) mActivityList = deserialize(myfile);
+                if(myfile != null) mActivityList = MyActivityUtil.deserialize(myfile);
+
                 if(mActivityList==null) {
-                    Log.e(TAG, "" + myfile + " failed to be deserialized");
+                    Log.e(TAG, "-- " + myfile + " failed to be deserialized");
                     return;
                 } else if(mActivityList.size()==0) {
-                    Log.e(TAG, "" + myfile + " serialized successfully but the size is 0");
+                    Log.e(TAG, "-- " + myfile + " serialized successfully but the size is 0");
                 } else {
-                        Log.d(TAG, "" + myfile + " is deserialized successfully! with # of " + mActivityList.size());
+                        Log.d(TAG, "-- " + myfile + " is deserialized successfully! with # of " + mActivityList.size());
                 }
 
                 if(mActivityList.size()>1) {
@@ -497,59 +498,6 @@ public class FileActivity extends AppCompatActivity {
         return as;
     }
 
-
-
-    public ArrayList<MyActivity> deserialize(File file) {
-        if(file == null)  {
-            Log.d(TAG, "-- No File to deserialized");
-            return null;
-        } else Log.d(TAG, "-- " + file.getAbsolutePath() + " to be deserialized");
-
-        FileInputStream fis = null;
-        BufferedInputStream bis = null;
-        ObjectInputStream in = null;
-
-        ArrayList list = null;
-
-        try {
-            fis = new FileInputStream(file);
-            bis = new BufferedInputStream(fis);
-            in = new ObjectInputStream(bis);
-
-            list = new ArrayList<MyActivity>();
-            MyActivity ma=null;
-
-            do {
-                try {
-                    ma = (MyActivity) in.readObject();
-                    list.add(ma);
-                }catch(Exception ex) {
-                    ex.printStackTrace();
-                    Log.e(TAG, ex.toString());
-                    break;
-                }
-            } while(ma != null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, "--" + e.toString());
-        } finally {
-            try {
-                if (in != null) in.close();
-                if (bis !=null) in.close();
-                if (fis !=null) fis.close();
-
-                if(list.size()==0) {
-                    Log.e(TAG, "File ("+ file.getAbsolutePath() +") corrupted !!!!");
-                    file.delete();
-                    Log.e(TAG, "File ("+ file.getAbsolutePath() +") deleted  !!!!");
-                }
-            }catch(Exception e) {}
-        }
-
-        if(list ==null) return null;
-        return list;
-
-    }
 
     public static void drawTrack(GoogleMap gmap, ArrayList<MyActivity> list) {
         if(list == null) return;

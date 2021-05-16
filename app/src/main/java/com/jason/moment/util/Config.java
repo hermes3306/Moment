@@ -10,6 +10,11 @@ import java.util.Date;
 
 public class Config {
 
+    public static final int     _csv            = 0;
+    public static final int     _ser            = 1;
+    public static final int     _jsn            = 2;
+    public static int           _default_ext    = _csv;
+
     public static final LatLng  _olympic_park   = new LatLng(37.519019,127.124820 );
     public static final float   _height         = 175;
     public static final Date    _age            = StringUtil.StringToDate("19700409","yyyyMMdd");
@@ -26,7 +31,7 @@ public class Config {
 
     public static boolean       _start_service  = false; // start location service
     public static boolean       _start_timer    = false; // start timer background scheduler
-    public static String        _default_ext    = ".mnt"; // 기본확장자
+
     public static String        _filename_fmt   ="yyyyMMdd";
     public static boolean       _save_onPause = false;
 
@@ -64,17 +69,28 @@ public class Config {
             new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
                     "Moment1.4");
 
+    public static File mediaStorageDir4csv             =
+            new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                    "CVS1.4");
+
     public static String get_today_filename() {
-        return StringUtil.DateToString(new Date(), _filename_fmt) + _default_ext;
+        return StringUtil.DateToString(new Date(), _filename_fmt) + ((_default_ext==_csv)? ".csv" : ".mnt");
     }
 
     public static String getAbsolutePath(String fname) {
-        File file = new File(MyActivityUtil.getMediaStorageDirectory(), fname);
+        File file;
+        if(_default_ext == _ser) {
+            file = new File(mediaStorageDir, fname);
+        }else if(_default_ext == _csv) {
+            file = new File(mediaStorageDir4csv, fname);
+        }else return null;
         return file.getAbsolutePath();
     }
 
     public static String getMediaStorageDirPath() {
-        return mediaStorageDir.getAbsolutePath();
+        if(_default_ext == _ser) return mediaStorageDir.getAbsolutePath();
+        else if(_default_ext == _csv) return mediaStorageDir4csv.getAbsolutePath();
+        return null;
     }
 
 }

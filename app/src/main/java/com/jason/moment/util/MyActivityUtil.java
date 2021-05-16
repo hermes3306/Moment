@@ -1,10 +1,14 @@
 package com.jason.moment.util;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
+
+import androidx.preference.PreferenceManager;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -13,12 +17,15 @@ import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Writer;
@@ -31,18 +38,95 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static com.jason.moment.util.Config.mediaStorageDir4csv;
+
 public class MyActivityUtil {
     private static String TAG = "MyActivityUtil";
-    private static File mediaStorageDir = null;
-    private static String _default_extension = ".mnt";
-    private static boolean _default_reverse_order = true;
+    private static File mediaStorageDir;
+    private static File mediaStorageDir4csv;
+    private static int  _default_ext;
+    private static String _default_extension;
+    private static boolean _default_reverse_order;
 
     static {
-        mediaStorageDir = Config.mediaStorageDir;
+        initialize();
     }
 
-    public static File getMediaStorageDirectory() {
-        return mediaStorageDir;
+    public static void initialize() {
+        mediaStorageDir = Config.mediaStorageDir;
+        mediaStorageDir4csv = Config.mediaStorageDir4csv;
+        _default_ext = Config._default_ext;
+        _default_extension = (_default_ext==Config._csv)? ".csv" : ".mnt";
+        _default_reverse_order = true;
+    }
+
+    public static ArrayList<MyActivity> deserializeFromCSV(File file) {
+        ArrayList<MyActivity> mal = new ArrayList<MyActivity>();
+        try(BufferedReader in = new BufferedReader(new FileReader(file))) {
+            String str;
+            String head = in.readLine();
+            if(!head.equals("x,y,d,t")) {
+                Log.d(TAG, "CSV file should be started with x,y,d,t!!!");
+                return null;
+            }
+            while ((str = in.readLine()) != null) {
+                System.out.println(str);
+                String[] tokens = str.split(",");
+
+                double latitude = Double.parseDouble(tokens[0]);
+                double longitude = Double.parseDouble(tokens[1]);
+                String cr_date = tokens[2];
+                String cr_time = tokens[3];
+
+                MyActivity ma = new MyActivity(latitude, longitude, cr_date, cr_time);
+                mal.add(ma);
+            }
+        }
+        catch (IOException e) {
+            System.out.println("File Read Error");
+        }
+        return mal;
+
+
+    }
+
+    public static ArrayList<MyActivity> deserializeFromCSV(String fileName) {
+        return deserializeFromCSV(new File(mediaStorageDir4csv, fileName));
+    }
+
+    public static Date getActivityTime(MyActivity ma) {
+        return ma.toDate();
+    }
+
+    public static void serializeIntoCSV(ArrayList<MyActivity> list, String fileName) {
+        if(list == null) return;
+        if(list.size()==0) return;
+        if(!mediaStorageDir4csv.exists()) mediaStorageDir4csv.mkdirs();
+
+        try {
+            File f = new File(mediaStorageDir4csv, fileName);
+            FileWriter file = new FileWriter(f);
+            BufferedWriter output = new BufferedWriter(file);
+            Log.e(TAG, "-- **** CSV Activity file: " + fileName);
+
+            System.out.println(f.getAbsolutePath());
+
+            output.write("x,y,d,t\n");
+            for(int i=0;i<list.size();i++ ) {
+                MyActivity a = list.get(i);
+                output.write("" + a.latitude);
+                output.write("," + a.longitude);
+
+                Date d = getActivityTime(a);
+                String crd = com.jason.moment.util.StringUtil.DateToString(d, "yyyy/MM/dd");
+                String crt = com.jason.moment.util.StringUtil.DateToString(d, "HH:mm:ss");
+                output.write("," + crd + "," + crt + "\n");
+                output.flush();
+            }
+            output.close();
+        }catch(Exception e) {
+            e.getStackTrace();
+        }
     }
 
     public static void serializeIntoJason(ArrayList<MyActivity> list, int start, int end, String fileName) {
@@ -78,38 +162,26 @@ public class MyActivityUtil {
         }
     }
 
-    public static void deserializeFromJason(ArrayList<MyActivity> list, int start, int end, String fileName) {
-        if(start <0 || end >= list.size()) return;
-        if(!mediaStorageDir.exists()) mediaStorageDir.mkdirs();
-        File file = new File(mediaStorageDir, fileName);
-        Log.d(TAG, " -- **** Activity Jason file: " + file.toString());
-        try {
-            JSONArray jsonArr = new JSONArray();
-            for(int i=start;i<= end;i++) {
-                MyActivity ma = list.get(i);
-                JSONObject obj = new JSONObject();
-                obj.put("lat", ma.latitude);
-                obj.put("lon", ma.longitude);
-                obj.put("crdate", ma.cr_date);
-                obj.put("crtime", ma.cr_time);
-                jsonArr.put(obj);
-            }
-            JSONObject jobj = new JSONObject();
-            jobj.put("activities", jsonArr);
-            FileWriter fwriter = new FileWriter(new File(mediaStorageDir,fileName));
-            fwriter.write(jobj.toString());
-            Log.d(TAG, jobj.toString());
-        }catch(Exception e) {
-            e.printStackTrace();
-            Log.d(TAG, e.toString());
+    public static ArrayList<MyActivity> deserializeFromJason(String fileName) {
+        return null;
+    }
+
+    public static void serialize(ArrayList<MyActivity> list, String _filename) {
+        String filename = _filename;
+        if(filename.endsWith(".mnt") || filename.endsWith(".csv")) {
+            filename =  filename.substring(0,filename.length()-4);
+        }
+        if(_default_ext == Config._csv) {
+            serializeIntoCSV(list,filename + ".csv");
+        }else if(_default_ext == Config._ser) {
+            serializeIntoMnt(list,filename + ".mnt");
         }
     }
 
-    public static void serialize(ArrayList<MyActivity> list, String fileName) {
+    public static void serializeIntoMnt(ArrayList<MyActivity> list, String fileName) {
         if(list == null) return;
         if(!mediaStorageDir.exists()) mediaStorageDir.mkdirs();
         File file = new File(mediaStorageDir, fileName);
-
         Log.e(TAG, "-- **** Activity file: " + file.toString());
         try {
             FileOutputStream fos = new FileOutputStream(file);
@@ -128,7 +200,15 @@ public class MyActivityUtil {
         }
     }
 
-    public static ArrayList<MyActivity> deserializeActivity(File file) {
+    public static ArrayList<MyActivity> deserialize(File file) {
+        if(_default_ext == Config._csv) {
+            return deserializeFromCSV(file);
+        }else if(_default_ext == Config._ser) {
+            return deserializeActivityFromMnt(file);
+        } else return null;
+    }
+
+    public static ArrayList<MyActivity> deserializeActivityFromMnt(File file) {
         if(file == null)  return null;
         FileInputStream fis = null;
         BufferedInputStream bis = null;
@@ -160,9 +240,9 @@ public class MyActivityUtil {
                 if (fis !=null) fis.close();
 
                 if(list.size()==0) {
-                    Log.d(TAG, "File ("+ file.getAbsolutePath() +") corrupted !!!!");
+                    Log.d(TAG, "-- File ("+ file.getAbsolutePath() +") corrupted !!!!");
                     file.delete();
-                    Log.d(TAG, "File ("+ file.getAbsolutePath() +") deleted  !!!!");
+                    Log.d(TAG, "-- File ("+ file.getAbsolutePath() +") deleted  !!!!");
                 }
             }catch(Exception e) {}
         }
@@ -176,7 +256,10 @@ public class MyActivityUtil {
                 return s.toLowerCase().startsWith(prefix);
             }
         };
-        File[] flist  = mediaStorageDir.listFiles(fnf);
+        File[] flist=null;
+        if(_default_ext==Config._csv) flist = mediaStorageDir4csv.listFiles(fnf);
+        else if(_default_ext==Config._ser) flist = mediaStorageDir.listFiles(fnf);
+
         if(reverserorder) Arrays.sort(flist, Collections.<File>reverseOrder());
         else Arrays.sort(flist);
         return flist;
@@ -189,7 +272,7 @@ public class MyActivityUtil {
                 return s.toLowerCase().endsWith(postfix);
             }
         };
-        File[] flist  = mediaStorageDir.listFiles(fnf);
+        File[] flist  = (_default_ext==Config._ser)? mediaStorageDir.listFiles(fnf) : mediaStorageDir4csv.listFiles(fnf);
         if(reverserorder) Arrays.sort(flist, Collections.<File>reverseOrder());
         else Arrays.sort(flist);
         return flist;
@@ -203,11 +286,11 @@ public class MyActivityUtil {
             }
         };
 
-        File[] files  = mediaStorageDir.listFiles(fnf);
+        File[] files  = null;
+        files = (_default_ext==Config._ser)? mediaStorageDir.listFiles(fnf) : mediaStorageDir4csv.listFiles(fnf);
         if (files == null) return null;
         if(reverse_order) Arrays.sort(files, Collections.reverseOrder());
         else Arrays.sort(files);
-
         return files;
     }
 
@@ -245,6 +328,10 @@ public class MyActivityUtil {
 
     public static File[] getAllFiles() {
         return getFiles(_default_extension, _default_reverse_order);
+    }
+
+    public static String renameExt(File _file, String ext) {
+        return _file.getName().substring(0, _file.getName().length()-4) + "." + ext;
     }
 
     public static File[] getFiles(int type) {

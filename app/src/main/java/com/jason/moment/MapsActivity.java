@@ -4,12 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.preference.PreferenceManager;
 
 import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
@@ -51,6 +53,7 @@ import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.FileUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
+import com.jason.moment.util.StartupBatch;
 import com.jason.moment.util.UI;
 import com.jason.moment.util.WebUtil;
 import com.jason.moment.util.db.MyLoc;
@@ -63,6 +66,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static java.lang.Integer.parseInt;
 
 // 2021/05/03, MapsActivity extends AppCompatActivity instead of FragmentActivity
 public class MapsActivity extends AppCompatActivity implements
@@ -87,6 +92,8 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        StartupBatch.execute();
+
         this._ctx = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
@@ -212,8 +219,8 @@ public class MapsActivity extends AppCompatActivity implements
         deleteLocationManager();
         if(Config._save_onPause) {
             ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).todayActivity();
-            MyActivityUtil.serialize(myal, DateUtil.today()+".mnt");
-            Toast.makeText(_ctx,"saved into " + DateUtil.today()+".mnt", Toast.LENGTH_LONG ).show();
+            MyActivityUtil.serialize(myal, DateUtil.today());
+            Toast.makeText(_ctx,"saved into " + DateUtil.today(), Toast.LENGTH_SHORT ).show();
         }
         paused = true;
         super.onPause();
@@ -394,22 +401,21 @@ public class MapsActivity extends AppCompatActivity implements
                 break;
             case R.id.imSave:
                 ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).todayActivity();
-                MyActivityUtil.serialize(myal, DateUtil.today()+".mnt");
+                MyActivityUtil.serialize(myal, DateUtil.today());
 
-                String _msg = "Total " + myal.size() + " activities is serialized into " + DateUtil.today()+".mnt";
+                String _msg = "Total " + myal.size() + " activities is serialized into " + DateUtil.today();
                 tv_status.setText(_msg);
                 Snackbar.make(view, _msg, Snackbar.LENGTH_SHORT).show();
 
                 break;
             case R.id.imFolder:
-                MyActivityUtil.serialize(new MyLoc(getApplicationContext()).todayActivity(), DateUtil.today()+".mnt");
+                String myext = (Config._default_ext == Config._csv) ? ".csv" : ".mnt";
+                MyActivityUtil.serialize(new MyLoc(getApplicationContext()).todayActivity(), DateUtil.today());
                 Intent intent = new Intent(MapsActivity.this, FileActivity.class);
                 intent.putExtra("pos", 0);
                 intent.putExtra("filetype", Config._file_type_day);
 
                 Log.d(TAG, "-- before call FileActivity");
-
-                Log.d(TAG, "-- file:" + Config.getAbsolutePath(Config.get_today_filename()));
                 startActivity(intent);
                 break;
 
@@ -433,7 +439,7 @@ public class MapsActivity extends AppCompatActivity implements
                     for(int i=0;i<_files.length;i++) {
                         File tf = new File(_ctx.getCacheDir(), _files[i]);
                         Log.d(TAG, "-- " + _files[i] + " will be deserialzied.");
-                        ArrayList<MyActivity> mal = MyActivityUtil.deserializeActivity(tf);
+                        ArrayList<MyActivity> mal = MyActivityUtil.deserialize(tf);
                         Log.d(TAG, "-- " + _files[i] + " is deserialzied into " + mal.size() + " activities.");
                         for(int j=0;j<mal.size();j++) {
                             myl.ins(mal.get(j).latitude, mal.get(j).longitude, mal.get(j).cr_date, mal.get(j).cr_time);
@@ -444,12 +450,6 @@ public class MapsActivity extends AppCompatActivity implements
                         MyActivityUtil.serialize(mal, _files[i]);
                         Log.d(TAG, "-- " + "Activities in" + _files[i] + " serialized!");
                         tv_status.setText("Activities in" + _files[i] + " serialized again!");
-                        //Toast.makeText(_ctx, "Activities in" + _files[i] + " serialized again!", Toast.LENGTH_SHORT).show();
-//
-//                        String jfname = _files[i].substring(0,_files[i].length()-4) + ".jsn";
-//                        MyActivityUtil.serializeIntoJason(mal,0,mal.size()-1, jfname);
-//                        Log.d(TAG, "-- " + "Activities in" + jfname + " serialized into JSON file!");
-//                        Toast.makeText(_ctx, "Activities in" + jfname + " serialized into JSON file", Toast.LENGTH_LONG).show();
                     }
 
                     Log.d(TAG, "-- " + "going to insert today activity ("+ todayal.size()+")");
@@ -457,7 +457,7 @@ public class MapsActivity extends AppCompatActivity implements
                         myl.ins(todayal.get(j).latitude, todayal.get(j).longitude, todayal.get(j).cr_date, todayal.get(j).cr_time);
                     }
                     Log.d(TAG, "-- " + "going to serialize today activity into ("+ DateUtil.today()+".mnt");
-                    MyActivityUtil.serialize(todayal, DateUtil.today()+".mnt");
+                    MyActivityUtil.serialize(todayal, DateUtil.today());
 
                 } catch (Exception e) {
                     tv_status.setText("Download Fail!" + e.toString());
@@ -553,10 +553,11 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "-- onActivityResult called!");
         if (requestCode == Config.PICK_FROM_CAMERA && resultCode == RESULT_OK) {
             Log.d(TAG, "-- resultCode - PICK_FROM_CAMERA");
-            if(data==null) {
+            if (data == null) {
                 Log.d(TAG, "-- Intent data is NULL!!!!");
                 return;
             }
@@ -565,16 +566,28 @@ public class MapsActivity extends AppCompatActivity implements
 //            imageView.setImageBitmap(imageBitmap);
         }
 
-        if(requestCode == Config.CALL_RUN_ACTIVITY && resultCode == RESULT_OK) {
+        if (requestCode == Config.CALL_RUN_ACTIVITY && resultCode == RESULT_OK) {
             Log.d(TAG, "-- after Call RunActivity and get the return");
-            if(data==null) {
+            if (data == null) {
                 Log.d(TAG, "-- Intent data is NULL!!!!");
                 return;
             } else {
-                Log.d(TAG, "-- " +data);
+                Log.d(TAG, "-- " + data);
             }
             return;
         }
+
+        if (requestCode == Config.CALL_SETTING_ACTIVITY&& resultCode == RESULT_OK) {
+            Log.d(TAG, "-- after Call SETTING_ACTIVITY and get the return");
+            SharedPreferences sharedPreferences =
+                    PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
+            String _filetype = sharedPreferences.getString("filetype", "");
+            Config._default_ext = parseInt(_filetype);
+            MyActivityUtil.initialize();
+            return;
+        }
+
+
     }
 
 

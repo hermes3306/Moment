@@ -28,11 +28,26 @@
         <item>10000</item>
     </string-array>
 
+    <string-array name="filetype">
+        <item>CVS</item>
+        <item>MNT</item>
+        <item>JSN</item>
+    </string-array>
+
+    <string-array name="filetype_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
     <string-array name="activity_types">
         <item>Running</item>
         <item>Walking</item>
         <item>Hiking</item>
         <item>Riding a bicycle</item>
     </string-array>
+
+
+
 
 </resources>

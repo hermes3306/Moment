@@ -33,7 +33,7 @@ public class CalDistance {
         dist = dist * 1.609344;
         dist = dist * 1000.0;  // 단위 Km 에서 m로 변환
 
-        Log.d(TAG, "-- getDistance:" + dist + " m");
+        //Log.d(TAG, "-- getDistance:" + dist + " m");
         return dist; // 단위 m
     }
     private double deg2rad(double deg) {
@@ -46,7 +46,7 @@ public class CalDistance {
     public static double dist(double lat1, double lng1, double lat2, double lng2) {
         CalDistance cd = new CalDistance(lat1, lng1, lat2, lng2);
         double dist = cd.getDistance();
-        Log.d(TAG, "-- getDistance:" + dist + " m");
+        //Log.d(TAG, "-- getDistance:" + dist + " m");
         return dist;
     }
 

@@ -2,11 +2,13 @@ package com.jason.moment;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -37,6 +39,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static java.lang.Integer.parseInt;
+
 public class RunActivity extends AppCompatActivity {
     String TAG = "RunActivity";
     Context _ctx = null;
@@ -44,8 +48,6 @@ public class RunActivity extends AppCompatActivity {
     public LocationManager mLocManager = null;
     boolean quit=false;
     boolean paused;
-
-
 
     private class GPSListener implements LocationListener {
         public GPSListener(String gpsProvider) {
@@ -244,6 +246,20 @@ public class RunActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Config.CALL_SETTING_ACTIVITY&& resultCode == RESULT_OK) {
+            Log.d(TAG, "-- after Call SETTING_ACTIVITY and get the return");
+            SharedPreferences sharedPreferences =
+                    PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
+            String _filetype = sharedPreferences.getString("filetype", "");
+            Config._default_ext = parseInt(_filetype);
+            MyActivityUtil.initialize();
+            return;
+        }
+    }
 
 
 

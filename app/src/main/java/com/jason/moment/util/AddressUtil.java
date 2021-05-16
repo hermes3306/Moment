@@ -29,12 +29,12 @@ public class AddressUtil {
         }else {
             addinfo = addresses.get(0).getAddressLine(0).toString();
 
-            Log.d(TAG, "--getAddress[0] = " + addinfo);
+//            Log.d(TAG, "--getAddress[0] = " + addinfo);
             String dong = addresses.get(0).getSubThoroughfare() ;
-            Log.d(TAG, "--getSubThroughFare = " + dong);
-            Log.d(TAG, "--Phone = " + addresses.get(0).getPhone());
-            Log.d(TAG, "--Url = " + addresses.get(0).getUrl());
-            Log.d(TAG, "--getPremises = " + addresses.get(0).getPremises());
+//            Log.d(TAG, "--getSubThroughFare = " + dong);
+//            Log.d(TAG, "--Phone = " + addresses.get(0).getPhone());
+//            Log.d(TAG, "--Url = " + addresses.get(0).getUrl());
+//            Log.d(TAG, "--getPremises = " + addresses.get(0).getPremises());
         }
         return addinfo;
     }

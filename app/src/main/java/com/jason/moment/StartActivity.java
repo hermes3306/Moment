@@ -182,7 +182,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         tv_start_cur = (TextView)findViewById(R.id.tv_start_cur);
         tv_start_calory = (TextView)findViewById(R.id.tv_start_calory);
 
-        filename = StringUtil.DateToString(new Date(),"yyyyMMdd_HHmmss") + ".mnt";
+        filename = StringUtil.DateToString(new Date(),"yyyyMMdd_HHmmss");
         startMyTimer();
     }
 
@@ -281,7 +281,6 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                             last = now;
                         }
                     }
-
                 }
             });
         } /* end of run() */
