@@ -1,7 +1,9 @@
 package com.jason.moment;
 
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
@@ -177,7 +179,9 @@ public class FileActivity extends AppCompatActivity {
 
                 tv_cursor.setText(inx_str);
                 tv_cursor2.setText(inx_str2);
-                tv_file.setText(myfile.getName().substring(0, myfile.getName().length()-4));
+                //tv_file.setText(myfile.getName().substring(0, myfile.getName().length()-4));
+                tv_file.setText(myfile.getName());
+
 
                 Log.d(TAG, "-- FileActivity, Tot # of Activity: " + inx_str);
 
@@ -240,6 +244,24 @@ public class FileActivity extends AppCompatActivity {
                     }
                 }while(!got_bound_wo_error && try_cnt < 3);
                 if(!got_bound_wo_error) { myzoom = 16; moveCamera(googleMap, myzoom); }
+            }
+
+            public void alertDeleteDialog(File file) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
+                builder.setTitle("파일을 삭제하시겠습니까?");
+                builder.setMessage("파일을 삭제하시겠습니까?");
+                builder.setPositiveButton("삭제",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                file.delete();
+                            }
+                        });
+                builder.setNegativeButton("취소",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                builder.show();
             }
 
             @Override
@@ -384,13 +406,14 @@ public class FileActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         File flist[] = MyActivityUtil.getFiles(filetype);
                         try {
-                            flist[position].delete();
+                            alertDeleteDialog(flist[position]);
+                            flist = MyActivityUtil.getFiles(filetype);
+                            if (flist.length > 1) position=position;
+                            else position=0;
                         }catch(Exception e) {
                             e.printStackTrace();
                             Log.d(TAG, "-- file delete err: " + e.toString());
                         }
-                        if (flist.length > 1) position=position;
-                        else position=0;
                         GO(googleMap, flist[position]);
                     }
                 });

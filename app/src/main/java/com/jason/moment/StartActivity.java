@@ -17,8 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.material.snackbar.Snackbar;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CaloryUtil;
 import com.jason.moment.util.Config;
@@ -65,7 +63,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
             case R.id.imb_start_camera:
                 int i=10;
                 break;
-            case R.id.imb_start_env:
+            case R.id.imb_start_list:
                 int j;
                 break;
         }
@@ -128,9 +126,13 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         String _loc_interval = sharedPreferences.getString("interval", "");
         String _loc_distance = sharedPreferences.getString("distance", "");
 
-        Config._loc_interval = parseInt(_loc_interval);
-        Config._loc_distance = parseFloat(_loc_distance);
-
+        try {
+            Config._loc_interval = parseInt(_loc_interval);
+            Config._loc_distance = parseFloat(_loc_distance);
+        }catch(Exception e) {
+            Log.e(TAG,"-- " + e);
+            e.printStackTrace();
+        }
         String t = "Loc_interval:"+ Config._loc_interval / 1000 + " sec\n" +
                 "Loc_distance:" + Config._loc_distance + " meter\n" +
                 "Network provider: " + Config._enable_network_provider;

@@ -94,11 +94,11 @@ public class Config {
 
     public static File mediaStorageDir                 =
             new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                    "Moment1.4");
+                    "Moment1.5");
 
     public static File mediaStorageDir4csv             =
             new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                    "CSV1.4");
+                    "CSV1.5");
 
     public static String get_today_filename() {
         return StringUtil.DateToString(new Date(), _filename_fmt) + ((_default_ext==_csv)? ".csv" : ".mnt");

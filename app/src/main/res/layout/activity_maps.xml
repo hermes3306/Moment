@@ -3,22 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
-
-    <TextView
-        android:id="@+id/tv_map_address"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:gravity="center"
-        android:text=""
-        android:textSize="14sp"
-        android:textColor="@color/purple_200" />
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_map_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:text="TEXT"
+            android:gravity="center_horizontal" />
+
 
         <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
             android:id="@+id/map"
@@ -26,54 +25,46 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            tools:context=".MapsActivity" />
-
-        <TextView
-            android:id="@+id/tv_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#FFFFFF"
-            android:text="@string/hello_world"
-            android:textColor="@color/teal_200"
-            android:textSize="16sp" />
-
+            tools:context=".MapsActivity" >
+        </fragment>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/teal_200"
+            android:layout_height="60dp"
+            android:background="@color/white"
+            android:gravity="center_horizontal"
+            android:layout_alignParentBottom="true"
             android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/imb_start_camera"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/transparent48"
+                android:background="@color/white"
                 android:gravity="center"
                 android:onClick="onClick"
-                app:srcCompat="@drawable/camw48" />
+                app:srcCompat="@drawable/camera_48" />
 
             <ImageView
                 android:id="@+id/imvStart"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical|center_horizontal"
                 android:onClick="onClick"
-                app:srcCompat="@drawable/start64" />
+                app:srcCompat="@drawable/run48" />
 
             <ImageButton
-                android:id="@+id/imb_start_env"
+                android:id="@+id/imb_start_list"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/transparent48"
+                android:background="@color/white"
                 android:gravity="center"
                 android:onClick="onClick"
-                app:srcCompat="@drawable/setw48" />
+                app:srcCompat="@drawable/actlist48" />
         </LinearLayout>
-
 
     </LinearLayout>
 
@@ -81,6 +72,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="right|center_vertical"
+        android:layout_alignParentBottom="true"
         android:orientation="vertical">
 
         <ImageButton
@@ -101,28 +93,12 @@
 
 
         <ImageButton
-            android:id="@+id/imFolder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:onClick="onClick"
-            android:src="@drawable/folder48" />
-
-        <ImageButton
             android:id="@+id/imDown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:onClick="onClick"
             android:src="@drawable/down48" />
-
-        <ImageButton
-            android:id="@+id/imCamerea"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:onClick="onClick"
-            android:src="@drawable/camera_48" />
 
         <ImageButton
             android:id="@+id/imGallary"
@@ -132,8 +108,6 @@
             android:onClick="onClick"
             android:src="@drawable/gallery48" />
     </LinearLayout>
-
-
 
 
 </RelativeLayout>

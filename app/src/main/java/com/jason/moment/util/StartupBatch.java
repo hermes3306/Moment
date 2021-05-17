@@ -12,7 +12,7 @@ public class StartupBatch {
         try{
             Log.d(TAG,"-- Startup Batch Started...");
             //if(genCVSfiles()) Log.d(TAG, "-- Success");
-            //if(genMNTfiles()) Log.d(TAG, "-- Success");
+            if(genMNTfiles()) Log.d(TAG, "-- Success");
             //deserializeTest();
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");

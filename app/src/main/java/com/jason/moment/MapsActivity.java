@@ -86,7 +86,6 @@ public class MapsActivity extends AppCompatActivity implements
     public static boolean notrack = false;
     public static boolean satellite = false;
 
-    public TextView tv_status;
     public ImageView imv_start;
     public TextView tv_map_address;
 
@@ -130,17 +129,14 @@ public class MapsActivity extends AppCompatActivity implements
         // _start_timer : my Timer
         // ----------------------------------------------------------------------
         //
-        tv_status = (TextView) findViewById(R.id.tv_status);
         imv_start = (ImageView) findViewById(R.id.imvStart);
         tv_map_address = (TextView) findViewById(R.id.tv_map_address);
 
         if (Config._start_service) {
             startService(new Intent(MapsActivity.this, LocService2.class)); // 서비스 시작
-            tv_status.setText("LocService2 started...");
         }
         if (Config._start_timer) {
             startMyTimer(); // Timer 시작(onPause()에서도 10초마다 실행됨
-            tv_status.setText("Timer started...");
         }
 
     }
@@ -214,7 +210,14 @@ public class MapsActivity extends AppCompatActivity implements
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
         String _filetype = sharedPreferences.getString("filetype", "");
-        Config._default_ext = parseInt(_filetype);
+
+        try {
+            Config._default_ext = parseInt(_filetype);
+        }catch(Exception e) {
+            Log.d(TAG,"-- parseInt filetype error!");
+            Log.d(TAG, "--" + e);
+        }
+
         MyActivityUtil.initialize();
 
         initializeMap();
@@ -264,10 +267,6 @@ public class MapsActivity extends AppCompatActivity implements
         else {
             if (dist > Config._minLocChange) {
                 myloc.ins(location.getLatitude(), location.getLongitude());
-                tv_status.setText("onLocationChanged...");
-//                Toast.makeText(getApplicationContext(),
-//                        "-- onLocationChanged("+dist+"meter)", Toast.LENGTH_SHORT)
-//                        .show();
             } else return;
         }
 
@@ -404,24 +403,24 @@ public class MapsActivity extends AppCompatActivity implements
                 }
                 nomarker = !nomarker;
                 notrack = !notrack;
-                tv_status.setText("Total " + mActivityList.size() + " activities...");
                 break;
             case R.id.imSave:
                 ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).todayActivity();
                 MyActivityUtil.serialize(myal, DateUtil.today());
 
                 String _msg = "Total " + myal.size() + " activities is serialized into " + DateUtil.today();
-                tv_status.setText(_msg);
                 Snackbar.make(view, _msg, Snackbar.LENGTH_SHORT).show();
 
                 break;
-            case R.id.imFolder:
-                String myext = (Config._default_ext == Config._csv) ? ".csv" : ".mnt";
-                MyActivityUtil.serialize(new MyLoc(getApplicationContext()).todayActivity(), DateUtil.today());
+            case R.id.imb_start_list:
+                ArrayList<MyActivity> mal = new MyLoc(getApplicationContext()).todayActivity();
+                if(mal != null) {
+                    if(mal.size() > 1)  MyActivityUtil.serialize(mal, DateUtil.today());
+                }
+
                 Intent intent = new Intent(MapsActivity.this, FileActivity.class);
                 intent.putExtra("pos", 0);
-                intent.putExtra("filetype", Config._file_type_day);
-
+                intent.putExtra("filetype", Config._file_type_all);
                 Log.d(TAG, "-- before call FileActivity");
                 startActivity(intent);
                 break;
@@ -444,11 +443,10 @@ public class MapsActivity extends AppCompatActivity implements
                     myl.deleteAll(); // Delete all the DB contents
 
                     for(int i=0;i<_files.length;i++) {
-                        ArrayList<MyActivity> mal = MyActivityUtil.deserializeActivityFromMnt(new File(Config.mediaStorageDir, _files[i]));
+                        mal = MyActivityUtil.deserializeActivityFromMnt(new File(Config.mediaStorageDir, _files[i]));
                         for(int j=0;j<mal.size();j++) {
                             myl.ins(mal.get(j).latitude, mal.get(j).longitude, mal.get(j).cr_date, mal.get(j).cr_time);
                         }
-                        tv_status.setText("Activities in" + _files[i] + " inserted into DB!");
                     }
 
                     Log.d(TAG, "-- " + "going to insert today activity ("+ todayal.size()+")");
@@ -457,14 +455,12 @@ public class MapsActivity extends AppCompatActivity implements
                     }
                     Log.d(TAG, "-- " + "going to serialize today activity into ("+ DateUtil.today()+".mnt");
                 } catch (Exception e) {
-                    tv_status.setText("Download Fail!" + e.toString());
                     e.printStackTrace();
                     return;
                 }
-                tv_status.setText("Download Success!");
                 break;
 
-            case R.id.imCamerea:
+            case R.id.imb_start_camera:
                 Log.d(TAG,"-- image button Camera.");
                 dispatchTakePictureIntent();
                 break;
