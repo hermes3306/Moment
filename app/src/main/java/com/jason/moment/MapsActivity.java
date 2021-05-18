@@ -216,6 +216,8 @@ public class MapsActivity extends AppCompatActivity implements
         }catch(Exception e) {
             Log.d(TAG,"-- parseInt filetype error!");
             Log.d(TAG, "--" + e);
+            Config._default_ext = Config._csv;
+            Log.d(TAG,"-- set default ext as csv!");
         }
 
         MyActivityUtil.initialize();
@@ -476,7 +478,9 @@ public class MapsActivity extends AppCompatActivity implements
                 File folder= _ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                 Log.d(TAG, "-- folder name to find pictures in:" + folder.getAbsolutePath());
 
-                File files[] = FileUtil.getFilesStartsWith(folder,"IMG", true);
+                //File files[] = FileUtil.getFilesStartsWith(folder,"IMG", true);
+                File files[] = folder.listFiles();
+
                 if(files==null) {
                     Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
                     break;
