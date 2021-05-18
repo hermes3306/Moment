@@ -75,7 +75,8 @@ public class Config {
             "20210502_092412.csv",
             "20210502_092423.csv",
             "20210515_185425.csv",
-            "20210515.csv"
+            "20210515.csv",
+            "2021018.csv"
     };
 
     public static final int PICK_FROM_CAMERA = 1;
@@ -83,6 +84,7 @@ public class Config {
     public static final int CALL_SETTING_ACTIVITY = 3;
     public static final int CALL_START_ACTIVITY = 4;
     public static final int CALL_QUOTE_ACTIVITY = 5;
+    public static final int CALL_PIC3_ACTIVITY = 6;
 
     public static final int perKM = 1;
     public static final int perMile = 2;
@@ -94,11 +96,11 @@ public class Config {
 
     public static File mediaStorageDir                 =
             new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                    "Moment1.5");
+                    "Moment1.1");
 
     public static File mediaStorageDir4csv             =
             new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                    "CSV1.5");
+                    "CSV1.1");
 
     public static String get_today_filename() {
         return StringUtil.DateToString(new Date(), _filename_fmt) + ((_default_ext==_csv)? ".csv" : ".mnt");

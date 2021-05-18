@@ -38,10 +38,9 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
     Context _ctx;
     TextView tv;
 
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pic);
+        setContentView(R.layout.activity_pic2);
         tv = (TextView)findViewById(R.id.picinfo);
 
 
@@ -85,10 +84,11 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
 
     public void show1() {
         String filepath = _files.get(pos).getAbsolutePath();
+        currentFileName = _files.get(pos).getName();
+
         Log.d(TAG, "-- pos=" + pos + " size=" + size + " file =" +  filepath);
         ImageView iv_pic = (ImageView) findViewById(R.id.iv_pic);
         Bitmap bitmap = BitmapFactory.decodeFile(filepath);
-
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
         mDegree = 90;
@@ -159,12 +159,15 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
             case R.id.imTrash:
                 deletePic();
                 break;
+            case R.id.imShare:
+                sharePic();
+                break;
         }
     }
 
     // 사진 촬영 기능
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    String currentPhotoPath;
+    String currentFileName;
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
@@ -196,8 +199,8 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
                     startActivityForResult(takePictureIntent, Config.PICK_FROM_CAMERA);
                 }
 
-                currentPhotoPath = photoFile.getAbsolutePath();
-                Log.d(TAG, "-- >>>> currentPhotoPath is " + currentPhotoPath);
+                currentFileName = photoFile.getName();
+                Log.d(TAG, "-- >>>> currentPhotoPath is " + photoFile.getAbsolutePath());
                 Log.d(TAG, "-- >>>> photoURI is " + photoURI.getPath());
             }
         }
@@ -216,20 +219,29 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
 //            Bitmap imageBitmap = (Bitmap) extras.get("data");
 //            imageView.setImageBitmap(imageBitmap);
             }
-
             reload();
-            galleryAddPic();
-
-
-        }
+            galleryAddPic(currentFileName); }
     }
 
-
+    private void sharePic() {
+        File photoFile = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), currentFileName);
+        Uri photoURI = FileProvider.getUriForFile(this,
+                "com.jason.moment.fileprovider",
+                photoFile);
+        Intent sendIntent = new Intent(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "Hello!");
+        // (Optional) Here we're setting the title of the content
+        sendIntent.putExtra(Intent.EXTRA_TITLE, "Send message");
+        sendIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        sendIntent.setType("image/jpg");
+        sendIntent.putExtra(Intent.EXTRA_STREAM, photoURI);
+        startActivity(Intent.createChooser(sendIntent, null));
+    }
 
     // check how to use this galleryAddPic
-    private void galleryAddPic() {
+    private void galleryAddPic(String filename) {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(currentPhotoPath);
+        File f = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), filename);
         Uri contentUri = Uri.fromFile(f);
         Log.d(TAG,"-- >>>>contentUri to be added to Gallary " + contentUri);
         mediaScanIntent.setData(contentUri);

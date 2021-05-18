@@ -22,6 +22,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/pic3_activity"
+        android:orderInCategory="100"
+        android:title="Quote"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/quote_activity"
         android:orderInCategory="100"
         android:title="Quote"

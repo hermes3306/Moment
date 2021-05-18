@@ -634,6 +634,13 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivityForResult(quoteIntent, Config.CALL_QUOTE_ACTIVITY);
                 return true;
 
+            case R.id.pic3_activity:
+                Log.d(TAG,"-- Pic3 Activity!");
+                Intent pic3Intent = new Intent(MapsActivity.this, Pic3Activity.class);
+                pic3Intent.putExtra("1", 1);
+                startActivityForResult(pic3Intent, Config.CALL_PIC3_ACTIVITY);
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }

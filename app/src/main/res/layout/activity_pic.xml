@@ -77,7 +77,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:onClick="onClick"
-            android:src="@drawable/frotate48" />
+            android:src="@drawable/rotate48" />
         <ImageButton
             android:id="@+id/imTrash"
             android:layout_width="wrap_content"
@@ -85,6 +85,13 @@
             android:background="@android:color/transparent"
             android:onClick="onClick"
             android:src="@drawable/trash_48" />
+        <ImageButton
+            android:id="@+id/imShare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:src="@drawable/share2_48" />
 
     </LinearLayout>
 
