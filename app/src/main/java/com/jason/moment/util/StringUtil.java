@@ -17,7 +17,6 @@ public class StringUtil {
     public static String getDateTimeString(MyActivity a) {
         return a.cr_date + "_" + a.cr_time;
     }
-
     public static String DateToString(Date date, String format) { // eg) format = "yyyy/MM/dd_HH:mm:ss");
         if(date==null) {
             Log.d(TAG, "-- date null");

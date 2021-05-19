@@ -84,7 +84,8 @@ public class Config {
     public static final int CALL_SETTING_ACTIVITY = 3;
     public static final int CALL_START_ACTIVITY = 4;
     public static final int CALL_QUOTE_ACTIVITY = 5;
-    public static final int CALL_PIC3_ACTIVITY = 6;
+    public static final int CALL_PIC_ACTIVITY = 6;
+    public static final int CALL_PIC3_ACTIVITY = 7;
 
     public static final int perKM = 1;
     public static final int perMile = 2;
@@ -96,11 +97,11 @@ public class Config {
 
     public static File mediaStorageDir                 =
             new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                    "Moment1.1");
+                    "Moment1.0");
 
     public static File mediaStorageDir4csv             =
             new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                    "CSV1.1");
+                    "CSV1.0");
 
     public static String get_today_filename() {
         return StringUtil.DateToString(new Date(), _filename_fmt) + ((_default_ext==_csv)? ".csv" : ".mnt");

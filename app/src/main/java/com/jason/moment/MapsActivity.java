@@ -47,10 +47,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.snackbar.Snackbar;
+import com.jason.moment.util.AddressUtil;
 import com.jason.moment.util.CalDistance;
+import com.jason.moment.util.CalcTime;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.FileUtil;
+import com.jason.moment.util.GooglemapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StartupBatch;
@@ -82,18 +85,21 @@ public class MapsActivity extends AppCompatActivity implements
     private static final int DEFAULT_ZOOM = 15;
     public static boolean firstCall = true;
     public static boolean paused = false;
-    public static boolean nomarker = false;
+    public static boolean nomarkers = true;
     public static boolean notrack = false;
     public static boolean satellite = false;
 
     public ImageView imv_start;
     public TextView tv_map_address;
+    public ImageButton imbt_prev = null;
+    public ImageButton imbt_next = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        StartupBatch.execute();
-
         this._ctx = this;
+        StartupBatch sb = new StartupBatch(_ctx);
+        sb.execute();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -131,6 +137,8 @@ public class MapsActivity extends AppCompatActivity implements
         //
         imv_start = (ImageView) findViewById(R.id.imvStart);
         tv_map_address = (TextView) findViewById(R.id.tv_map_address);
+        imbt_prev = (ImageButton) findViewById(R.id.imbt_prev);
+        imbt_next = (ImageButton) findViewById(R.id.imbt_next);
 
         if (Config._start_service) {
             startService(new Intent(MapsActivity.this, LocService2.class)); // 서비스 시작
@@ -138,7 +146,6 @@ public class MapsActivity extends AppCompatActivity implements
         if (Config._start_timer) {
             startMyTimer(); // Timer 시작(onPause()에서도 10초마다 실행됨
         }
-
     }
 
     private void startMyTimer() {
@@ -146,7 +153,6 @@ public class MapsActivity extends AppCompatActivity implements
         Timer mTimer = new Timer();
         mTimer.schedule(mTask, Config._timer_delay, Config._timer_period);
     }
-
 
     private void initializeMap() {
         // check if map is created
@@ -221,7 +227,6 @@ public class MapsActivity extends AppCompatActivity implements
         }
 
         MyActivityUtil.initialize();
-
         initializeMap();
     }
 
@@ -242,6 +247,7 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     public void onLocationChanged(Location location) {
         double dist;
+        LatLng ll = new LatLng(location.getLatitude(), location.getLongitude());
         if(lastloc==null) {
             dist = 0;
         }else {
@@ -274,16 +280,10 @@ public class MapsActivity extends AppCompatActivity implements
 
         String _title = DateToString(new Date(), "hh:mm:ss");
         String _snippet = getAddress(getApplicationContext(),new LatLng(location.getLatitude(), location.getLongitude()));
-
-        mMap.clear();
         tv_map_address.setText(_snippet);
-        MarkerOptions marker = new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude()));
-        marker.title(_title);
-        marker.snippet(_snippet);
-        marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-        mMap.addMarker(marker);
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
+        showActivities();
 
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, mMap.getCameraPosition().zoom));
     }
 
     @Override
@@ -342,10 +342,13 @@ public class MapsActivity extends AppCompatActivity implements
             mMap.getUiSettings().setCompassEnabled(true);
             mMap.getUiSettings().setZoomControlsEnabled(true);
         }
+
+        showActivities();
+
         MyLoc myloc = new MyLoc(_ctx);
         MyActivity a = myloc.lastActivity();
-        if(a==null) mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Config._olympic_park, 14));
-        else mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(a.toLatLng(), 14));
+        if(a==null) mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Config._olympic_park, DEFAULT_ZOOM));
+        else mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(a.toLatLng(), DEFAULT_ZOOM));
         //refresh();
     }
 
@@ -380,39 +383,54 @@ public class MapsActivity extends AppCompatActivity implements
         }
     };
 
+    ArrayList<MyActivity> mActivityList=null;
+    int cntofactivities=100;
+    int marker_pos_prev=0;
+    int marker_pos=0;
+    public static Marker last_marker=null;
+    public static Marker bef_last_marker=null;
 
     @Override
     public void onClick(View view) {
         Log.d(TAG,"-- onClick.");
+        int step = 10;
         switch (view.getId()) {
+            case R.id.imbt_prev:
+                Log.d(TAG,"-- marker_pos:" + marker_pos + " cntofactivities:" + cntofactivities );
+                step = cntofactivities / 10;
+                if (marker_pos - step > 0) {
+                    marker_pos -= step;
+                }
+                else break;
+                showNavigate();
+                LatLng ll1 = mActivityList.get(marker_pos).toLatLng();
+                float myzoom = mMap.getCameraPosition().zoom;
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll1, myzoom));
+                break;
+            case R.id.imbt_next:
+                Log.d(TAG,"-- marker_pos:" + marker_pos + " cntofactivities:" + cntofactivities );
+                step = cntofactivities / 10;
+                if(marker_pos + step  < cntofactivities-1) {
+                    marker_pos+= step;
+                }
+                else break;
+                showNavigate();
+                LatLng ll2 = mActivityList.get(marker_pos).toLatLng();
+                float myzoom2 = mMap.getCameraPosition().zoom;
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll2, myzoom2));
+                break;
+
             case R.id.imGlobe:
-                Log.d(TAG,"-- image button Path event.");
-                MyLoc myLoc = new MyLoc(getApplicationContext());
-
-                ArrayList<LatLng> todaypath = myLoc.todayPath();
-                ArrayList<MyActivity> mActivityList = myLoc.todayActivity();
-                //GooglemapUtil.drawTrack2(mMap, todaypath );
-
-                Log.d(TAG, "-- nomarker = " + nomarker + " notracke = " + notrack);
-                mMap.clear();
-                if(!nomarker) drawMarkers(mMap,mActivityList);
-                if(!notrack) drawTrack(mMap,mActivityList);
+                satellite = !satellite;
                 if(!satellite) mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 else mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                if(nomarker || notrack) {
-                    drawStartMarker(mMap,mActivityList);
-                    drawEndMarker(mMap,mActivityList);
-                }
-                nomarker = !nomarker;
-                notrack = !notrack;
+                //showActivities();
                 break;
             case R.id.imSave:
                 ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).todayActivity();
                 MyActivityUtil.serialize(myal, DateUtil.today());
-
                 String _msg = "Total " + myal.size() + " activities is serialized into " + DateUtil.today();
                 Snackbar.make(view, _msg, Snackbar.LENGTH_SHORT).show();
-
                 break;
             case R.id.imb_start_list:
                 ArrayList<MyActivity> mal = new MyLoc(getApplicationContext()).todayActivity();
@@ -474,36 +492,94 @@ public class MapsActivity extends AppCompatActivity implements
                 break;
 
             case R.id.imGallary:
-                Log.d(TAG,"-- image button Gallery.");
-                File folder= _ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                Log.d(TAG, "-- folder name to find pictures in:" + folder.getAbsolutePath());
-
-                //File files[] = FileUtil.getFilesStartsWith(folder,"IMG", true);
-                File files[] = folder.listFiles();
-
-                if(files==null) {
-                    Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
-                    break;
-                } else if (files.length==0) {
-                    Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
-                    break;
-                }
-
-                Intent picIntent = new Intent(MapsActivity.this, PicActivity.class);
-                ArrayList<File> fileArrayList= new ArrayList<File>();
-                for(int i=0;i< files.length;i++) {
-                    fileArrayList.add(files[i]);
-                }
-
-                picIntent.putExtra("files", fileArrayList);
-                Log.d(TAG, "-- before call PicActivity");
-                Log.d(TAG, "-- # of file:" + fileArrayList.size());
-                startActivity(picIntent);
+                Intent picIntent = new Intent(MapsActivity.this, Pic3Activity.class);
+                startActivityForResult(picIntent, Config.CALL_PIC3_ACTIVITY);
                 break;
 
             default:
                 // doesn't work
                 refresh();
+        }
+    }
+
+    private void showNavigate() {
+        if(mActivityList == null) {
+            MyLoc myloc = new MyLoc(_ctx);
+            mActivityList =  myloc.todayActivity();
+            cntofactivities = mActivityList.size();
+            if(mActivityList==null) return;
+        }
+
+        LatLng nextpos = mActivityList.get(marker_pos).toLatLng();
+        LatLng prevpos = mActivityList.get(marker_pos_prev).toLatLng();
+        Log.d(TAG,"-- marker_pos=" + marker_pos + ", marker_pos_prev=" + marker_pos_prev);
+
+        CalDistance cd =  new CalDistance(prevpos, nextpos);
+        double dist = cd.getDistance();
+        Log.d(TAG,"-- distance between prevpos to nextpost: " + dist);
+
+        String diststr = null;
+        String elapsedstr=null;
+        if(dist > 1000.0f) diststr = cd.getDistanceKmStr();
+        else diststr = cd.getDistanceMStr();
+
+        CalcTime ct = new CalcTime(mActivityList.get(marker_pos_prev), mActivityList.get(marker_pos));
+        long elapsed = ct.getElapsed();
+        Log.d(TAG,"-- Elapsed time between prevpos to nextpost: " + elapsed);
+
+        if(elapsed > 60*60000) elapsedstr = ct.getElapsedHourStr();
+        else if(elapsed > 60000) elapsedstr = ct.getElapsedMinStr();
+        else elapsedstr = ct.getElapsedSecStr();
+
+        float myzoom = mMap.getCameraPosition().zoom;
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(nextpos).zoom(myzoom).build();
+
+        float color = (marker_pos==0? BitmapDescriptorFactory.HUE_ROSE:BitmapDescriptorFactory.HUE_CYAN);
+        Marker marker = mMap.addMarker(new MarkerOptions().position(nextpos).title(AddressUtil.getAddressDong(_ctx, mActivityList.get(marker_pos)))
+                .icon(BitmapDescriptorFactory.defaultMarker(color))
+                .draggable(true)
+                .visible(true)
+                .snippet(elapsedstr + " ("+diststr+")"));
+
+        if(bef_last_marker!=null) bef_last_marker.remove();
+        if(last_marker!=null) last_marker.remove();
+        last_marker = marker;
+        marker_pos_prev = marker_pos;
+
+        marker.showInfoWindow();
+
+        drawTrack(mMap,mActivityList,0,marker_pos);
+
+        //
+//                tv_heading.setText(MyActivityUtil.getTimeStr(mActivityList, marker_pos));
+        String addinfo = AddressUtil.getAddress(_ctx, mActivityList.get(marker_pos));
+        addinfo += " (" + (marker_pos+1) + "/" + cntofactivities +")";
+        tv_map_address.setText(addinfo);
+
+//                String inx_str= "" + seekBar.getProgress() + "/" + seekBar.getMax();
+//                String inx_str2= "" + (position+1)  + "/" + (flist.length);
+//                tv_cursor.setText(inx_str);
+//                tv_cursor2.setText(inx_str2);
+//                tv_file.setText(_file.getName().substring(0, _file.getName().length()-4));
+    }
+
+    private void showActivities() {
+        MyLoc myLoc = new MyLoc(getApplicationContext());
+        if(myLoc==null) return;
+        ArrayList<LatLng> todaypath = myLoc.todayPath();
+        if(todaypath==null) return;
+        ArrayList<MyActivity> mActivityList = myLoc.todayActivity();
+        if(mActivityList==null) return;
+        GooglemapUtil.drawTrack2(mMap, todaypath );
+        Log.d(TAG, "-- nomarkers = " + nomarkers + " notrack = " + notrack);
+        //mMap.clear();
+        if(!nomarkers) drawMarkers(mMap,mActivityList);
+        if(!notrack) drawTrack(mMap,mActivityList);
+        if(!satellite) mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        else mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        if(nomarkers || notrack) {
+            drawStartMarker(mMap,mActivityList);
+            drawEndMarker(mMap,mActivityList);
         }
     }
 
@@ -634,13 +710,25 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivityForResult(quoteIntent, Config.CALL_QUOTE_ACTIVITY);
                 return true;
 
-            case R.id.pic3_activity:
-                Log.d(TAG,"-- Pic3 Activity!");
-                Intent pic3Intent = new Intent(MapsActivity.this, Pic3Activity.class);
-                pic3Intent.putExtra("1", 1);
-                startActivityForResult(pic3Intent, Config.CALL_PIC3_ACTIVITY);
+            case R.id.pic_activity:
+                Log.d(TAG,"-- Pic Activity!");
+                File folder= _ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                File files[] = folder.listFiles();
+                if(files==null) {
+                    Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
+                    return false;
+                } else if (files.length==0) {
+                    Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
+                    return false;
+                }
+                Intent picIntent = new Intent(MapsActivity.this, PicActivity.class);
+                ArrayList<File> fileArrayList= new ArrayList<File>();
+                for(int i=0;i< files.length;i++) {
+                    fileArrayList.add(files[i]);
+                }
+                picIntent.putExtra("files", fileArrayList);
+                startActivity(picIntent);
                 return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -678,7 +766,7 @@ public class MapsActivity extends AppCompatActivity implements
             mMarker.setTitle(head);
             mMarker.setSnippet(body);
         }
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(l, 16));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(l, mMap.getCameraPosition().zoom));
     }
 
 
@@ -697,7 +785,12 @@ public class MapsActivity extends AppCompatActivity implements
         for(int i=0; i<list.size();i++) {
             l.add(new LatLng(list.get(i).latitude, list.get(i).longitude));
         }
-        drawTrack2(gmap, l);
+
+        PolylineOptions plo = new PolylineOptions();
+        plo.color(Color.RED);
+        Polyline line = gmap.addPolyline(plo);
+        line.setWidth(20);
+        line.setPoints(l);
     }
 
     public static Polyline line_prev = null;
@@ -713,9 +806,12 @@ public class MapsActivity extends AppCompatActivity implements
         Polyline line = map.addPolyline(plo);
         line.setWidth(20);
         line.setPoints(l);
+
         if(line_prev!=null) line_prev.remove();
         line_prev = line;
     }
+
+
 
     public static ArrayList<Marker> markers = null;
     public static void drawStartMarker(GoogleMap gmap, ArrayList<MyActivity> list) {

@@ -13,9 +13,12 @@
         <TextView
             android:id="@+id/tv_map_address"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:textAlignment="center"
-            android:text="TEXT"
+            android:textSize="24dp"
+            android:background="@color/black_overlay"
+            android:textColor="@color/DarkGray"
+            android:text="Looking for the current location..."
             android:gravity="center_horizontal" />
 
 
@@ -79,8 +82,39 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="right|center_vertical"
-        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/imbt_prev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:alpha="0.6"
+            android:onClick="onClick"
+            android:background="@android:color/transparent"
+            android:contentDescription=""
+            app:srcCompat="@drawable/arrow_left128" />
+        <TextView
+            android:layout_width="100sp"
+            android:layout_height="wrap_content"
+            android:text=""/>
+        <ImageButton
+            android:id="@+id/imbt_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:alpha="0.6"
+            android:onClick="onClick"
+            android:background="@android:color/transparent"
+            android:contentDescription="TODO"
+            app:srcCompat="@drawable/arrow_right128" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top|right|fill_horizontal"
+        android:layout_marginTop="150dp"
         android:orientation="vertical">
 
         <ImageButton
@@ -88,6 +122,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
+            android:layout_gravity="right"
             android:onClick="onClick"
             android:src="@drawable/globe48" />
 
@@ -96,6 +131,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
+            android:layout_gravity="right"
             android:onClick="onClick"
             android:src="@drawable/save48" />
 
@@ -105,6 +141,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
+            android:layout_gravity="right"
             android:onClick="onClick"
             android:src="@drawable/down48" />
 

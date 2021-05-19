@@ -20,6 +20,12 @@ public class CalDistance {
     }
 
     public CalDistance(LatLng prevpos, LatLng nextpos) {
+        this.theta = 0;
+        this.dist = 0;
+        this.bef_lat = prevpos.latitude;
+        this.bef_long = prevpos.longitude;
+        this.cur_lat = nextpos.latitude;
+        this.cur_long = nextpos.longitude;
     }
 
     public double getDistance() {

@@ -37,6 +37,6 @@
     <string name="title_activity_quote">FullscreenActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="title_activity_pic2">FullscreenActivity</string>
-    <string name="title_activity_pic3">FullscreenActivity</string>
+    <string name="title_activity_pic2">My Pictures</string>
+    <string name="title_activity_pic3">My Pictures</string>
 </resources>

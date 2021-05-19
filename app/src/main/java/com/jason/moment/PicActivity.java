@@ -40,8 +40,8 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pic2);
-        tv = (TextView)findViewById(R.id.picinfo);
+        setContentView(R.layout.activity_pic);
+        tv = (TextView)findViewById(R.id.tv_picinfo);
 
 
         _ctx = this;

@@ -22,9 +22,9 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/pic3_activity"
+        android:id="@+id/pic_activity"
         android:orderInCategory="100"
-        android:title="Quote"
+        android:title="Picture"
         app:showAsAction="never" />
 
     <item

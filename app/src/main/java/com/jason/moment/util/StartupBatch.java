@@ -1,19 +1,29 @@
 package com.jason.moment.util;
 
+import android.content.Context;
 import android.util.Log;
+
+import com.jason.moment.util.db.MyLoc;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class StartupBatch {
+    private Context _ctx;
+    public StartupBatch(Context ctx) {
+        _ctx = ctx;
+    }
     static boolean _executed = false;
     static String TAG = "StartupBatch";
-    public static void execute() {
+    public void execute() {
         try{
             Log.d(TAG,"-- Startup Batch Started...");
             //if(genCVSfiles()) Log.d(TAG, "-- Success");
-            if(genMNTfiles()) Log.d(TAG, "-- Success");
+            //if(genMNTfiles()) Log.d(TAG, "-- Success");
             //deserializeTest();
+            //genTodayDB4Sample();
+            //deleteDB();
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             Log.d(TAG,"-- Err: " + e);
@@ -25,7 +35,28 @@ public class StartupBatch {
         return;
     }
 
-    public static boolean genMNTfiles() {
+    public boolean deleteDB() {
+        MyLoc myloc=new MyLoc(_ctx);
+        myloc.deleteAll();
+        return true;
+    }
+
+    public boolean genTodayDB4Sample() {
+        ArrayList<MyActivity> mal = MyActivityUtil.deserializeFromCSV("20210502_092412.csv");
+        if(mal==null) {
+            Log.d(TAG, "Sample cvs file does not exist!!");
+            return false;
+        }
+        MyLoc myloc=new MyLoc(_ctx);
+        myloc.deleteAll();
+        for(int i=0;i<mal.size();i++) {
+            MyActivity a = mal.get(i);
+            myloc.ins(a.latitude,a.longitude,DateUtil.DateToString(new Date(),"yyyy/MM/dd"),a.cr_time);
+        }
+        return true;
+    }
+
+    public boolean genMNTfiles() {
         Log.d(TAG, "-- genMNTfiles call...");
         int original_setup = Config._default_ext;
 
@@ -47,7 +78,7 @@ public class StartupBatch {
         return true;
     }
 
-    public static boolean genCVSfiles() {
+    public boolean genCVSfiles() {
         Log.d(TAG, "-- genCVSfiles call...");
         int original_setup = Config._default_ext;
 
@@ -69,7 +100,7 @@ public class StartupBatch {
         return true;
     }
 
-    public static void deserializeTest() {
+    public void deserializeTest() {
         ArrayList<MyActivity> mal = MyActivityUtil.deserializeFromCSV("20210515.csv");
         for(int i=0;i<mal.size();i++) Log.e(TAG, "-- " + mal.get(i).toString());
     }
