@@ -1,51 +1,59 @@
 package com.jason.moment;
 
-import android.annotation.SuppressLint;
+        import android.annotation.SuppressLint;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
+        import androidx.annotation.RequiresApi;
+        import androidx.appcompat.app.ActionBar;
+        import androidx.appcompat.app.AppCompatActivity;
+        import androidx.core.content.FileProvider;
+        import androidx.core.widget.NestedScrollView;
+        import androidx.core.widget.NestedScrollView.OnScrollChangeListener;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+        import android.app.AlertDialog;
+        import android.content.Context;
+        import android.content.DialogInterface;
+        import android.content.Intent;
+        import android.graphics.Bitmap;
+        import android.graphics.BitmapFactory;
+        import android.graphics.Matrix;
+        import android.net.Uri;
+        import android.os.Build;
+        import android.os.Bundle;
+        import android.os.Environment;
+        import android.os.Handler;
+        import android.provider.MediaStore;
+        import android.util.Log;
+        import android.view.MotionEvent;
+        import android.view.View;
+        import android.view.ViewTreeObserver;
+        import android.widget.HorizontalScrollView;
+        import android.widget.ImageView;
+        import android.widget.ScrollView;
+        import android.widget.TextView;
+        import android.widget.Toast;
 
-import com.jason.moment.util.Config;
+        import com.jason.moment.util.Config;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
+        import java.io.File;
+        import java.text.SimpleDateFormat;
+        import java.util.ArrayList;
+        import java.util.Arrays;
+        import java.util.Comparator;
+        import java.util.Date;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class Pic3Activity extends AppCompatActivity implements View.OnClickListener{
-    private String TAG = "PicActivity";
+public class ScrollPicActivity extends AppCompatActivity implements View.OnClickListener{
+    private String TAG = "ScrollPicActivity";
     ArrayList<File> _files=null;
     int pos=0;
     int size=0;
     int mDegree=0;
     Context _ctx;
     TextView tv;
+    ScrollView hsv;
 
 
     /**
@@ -131,17 +139,19 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_pic);
+        setContentView(R.layout.activity_scrollpic);
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mControlsView2 = findViewById(R.id.fullscreen_content_controls2);
         mControlsView3 = findViewById(R.id.fullscreen_content_controls3);
-        mContentView = findViewById(R.id.iv_pic);
+        mContentView = findViewById(R.id.gallery);
+        hsv = findViewById(R.id.hsv);
         tv = findViewById(R.id.tv_picinfo);
 
         // Set up the user interaction to manually show or hide the system UI.
@@ -157,6 +167,19 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
+        hsv.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                int scrollX = hsv.getScrollX(); //for horizontalScrollView
+                int scrollY = hsv.getScrollY(); //for verticalScrollView
+                int scrollWidth = hsv.getWidth();
+                int scrollHeight = hsv.getHeight();
+
+                //DO SOMETHING WITH THE SCROLL COORDINATES
+                Log.d(TAG,"-- scrollX:" + scrollX + ", scrollY:"+scrollY  );
+                Log.d(TAG,"-- scroll width:" + scrollWidth + ", scrollHeight:"+scrollHeight  );
+            }
+        });
         _ctx = this;
         pos=0;
         reload();
@@ -238,18 +261,39 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void show1() {
+    public void showpic(ImageView iv_pic, int pos){
         String filepath = _files.get(pos).getAbsolutePath();
         currentFileName = _files.get(pos).getName();
-
         Log.d(TAG, "-- pos=" + pos + " size=" + size + " file =" +  filepath);
-        ImageView iv_pic = (ImageView) findViewById(R.id.iv_pic);
+
         Bitmap bitmap = BitmapFactory.decodeFile(filepath);
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
         mDegree = 90;
         bitmap = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(), bitmap.getHeight(),matrix,true);
         iv_pic.setImageBitmap(bitmap);
+    }
+
+    public void show1() {
+        ImageView iv_pic1 = (ImageView) findViewById(R.id.iv_pic1);
+        ImageView iv_pic2 = (ImageView) findViewById(R.id.iv_pic2);
+        ImageView iv_pic3 = (ImageView) findViewById(R.id.iv_pic3);
+
+        if(pos==0 && _files.size() >1) {
+            iv_pic1.setVisibility(View.GONE);
+            showpic(iv_pic2,0);
+            showpic(iv_pic3, 1);
+        }else if(pos>0 && _files.size() > pos+1) {
+            if(iv_pic1.getVisibility()==View.GONE) iv_pic1.setVisibility(View.VISIBLE);
+            if(iv_pic3.getVisibility()==View.GONE) iv_pic3.setVisibility(View.VISIBLE);
+            showpic(iv_pic1,pos-1);
+            showpic(iv_pic2,pos);
+            showpic(iv_pic3, pos+1);
+        }else if(pos>0 && _files.size() == pos+1) {
+            showpic(iv_pic1,pos-1);
+            showpic(iv_pic2,pos);
+            iv_pic1.setVisibility(View.GONE);
+        }
         tv.setText("" + (pos+1) + "/" + size);
     }
 

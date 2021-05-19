@@ -86,6 +86,7 @@ public class Config {
     public static final int CALL_QUOTE_ACTIVITY = 5;
     public static final int CALL_PIC_ACTIVITY = 6;
     public static final int CALL_PIC3_ACTIVITY = 7;
+    public static final int CALL_SCROLL_PIC_ACTIVITY = 8;
 
     public static final int perKM = 1;
     public static final int perMile = 2;

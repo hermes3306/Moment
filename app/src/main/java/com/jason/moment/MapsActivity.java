@@ -710,6 +710,12 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivityForResult(quoteIntent, Config.CALL_QUOTE_ACTIVITY);
                 return true;
 
+            case R.id.scrollpic_activity:
+                Log.d(TAG,"-- Scroll Pic Activity!");
+                Intent scrollPicIntent = new Intent(MapsActivity.this, ScrollPicActivity.class);
+                startActivityForResult(scrollPicIntent, Config.CALL_SCROLL_PIC_ACTIVITY);
+
+                return true;
             case R.id.pic_activity:
                 Log.d(TAG,"-- Pic Activity!");
                 File folder= _ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES);

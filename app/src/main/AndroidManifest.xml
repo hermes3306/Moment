@@ -27,6 +27,11 @@
         android:theme="@style/Theme.Moment"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ScrollPicActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_pic3"
+            android:theme="@style/Theme.AppCompat"></activity>
+        <activity
             android:name=".Pic3Activity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_pic3"
