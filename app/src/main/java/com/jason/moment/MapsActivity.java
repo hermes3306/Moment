@@ -50,6 +50,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.jason.moment.util.AddressUtil;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CalcTime;
+import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.FileUtil;
@@ -444,40 +445,13 @@ public class MapsActivity extends AppCompatActivity implements
                 Log.d(TAG, "-- before call FileActivity");
                 startActivity(intent);
                 break;
-
+            case R.id.uploadall:
+                CloudUtil cu = new CloudUtil();
+                cu.UploadAll(_ctx, Config._default_ext);
+                break;
                 //this is used for temporary
             case R.id.imDown:
-                Log.d(TAG,"-- image button Down.");
-                try {
-                    String _url_dir = Config._backup_url_dir; //"http://ezehub.club/moment/";
-                    String _files[] = Config._backup_url_files;
-                    String _urls[] = new String[_files.length];
-                    for(int x=0;x<_files.length;x++) {
-                        _urls[x] = _url_dir + _files[x];
-                    }
-
-                    WebUtil.downloadFileAsync2(_ctx, _urls);
-                    MyLoc myl = new MyLoc(_ctx);
-                    ArrayList<MyActivity> todayal = new MyLoc(getApplicationContext()).todayActivity();
-
-                    myl.deleteAll(); // Delete all the DB contents
-
-                    for(int i=0;i<_files.length;i++) {
-                        mal = MyActivityUtil.deserializeActivityFromMnt(new File(Config.mediaStorageDir, _files[i]));
-                        for(int j=0;j<mal.size();j++) {
-                            myl.ins(mal.get(j).latitude, mal.get(j).longitude, mal.get(j).cr_date, mal.get(j).cr_time);
-                        }
-                    }
-
-                    Log.d(TAG, "-- " + "going to insert today activity ("+ todayal.size()+")");
-                    for(int j=0;j<todayal.size();j++) {
-                        myl.ins(todayal.get(j).latitude, todayal.get(j).longitude, todayal.get(j).cr_date, todayal.get(j).cr_time);
-                    }
-                    Log.d(TAG, "-- " + "going to serialize today activity into ("+ DateUtil.today()+".mnt");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return;
-                }
+                new CloudUtil().DownloadAll(_ctx, Config._default_ext);
                 break;
 
             case R.id.imb_start_camera:

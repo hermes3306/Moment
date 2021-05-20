@@ -25,6 +25,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 
 import java.io.File;
@@ -46,7 +48,6 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
     int mDegree=0;
     Context _ctx;
     TextView tv;
-
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -134,7 +135,6 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_pic);
 
         mVisible = true;
@@ -378,6 +378,11 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
         this.sendBroadcast(mediaScanIntent);
     }
 
+    private void upload() {
+        CloudUtil cu = new CloudUtil();
+        cu.UploadAll(_ctx, Config._img);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -402,6 +407,12 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.imShare:
                 sharePic();
+                break;
+            case R.id.uploadall:
+                upload();
+                break;
+            case R.id.imDown:
+                new CloudUtil().DownloadAll(_ctx, Config._img);
                 break;
         }
     }

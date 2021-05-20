@@ -5,7 +5,10 @@ import android.util.Log;
 
 import com.jason.moment.util.db.MyLoc;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -24,6 +27,7 @@ public class StartupBatch {
             //deserializeTest();
             //genTodayDB4Sample();
             //deleteDB();
+            geturl();
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             Log.d(TAG,"-- Err: " + e);
@@ -33,6 +37,20 @@ public class StartupBatch {
             Log.d(TAG,"-- Startup Batch End...");
         }
         return;
+    }
+
+    public void geturl() throws Exception{
+        String urlstr = "http://ezehub.club/moment/list.php?dir=upload&&ext=mnt";
+
+        String fullString="";
+        URL url = new URL(urlstr);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            fullString += line;
+        }
+        reader.close();
+        Log.e(TAG, "-- geturl() " + fullString);
     }
 
     public boolean deleteDB() {

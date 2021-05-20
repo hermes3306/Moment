@@ -140,10 +140,19 @@
             android:id="@+id/imDown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:src="@drawable/clouddownload48" />
+
+        <ImageButton
+            android:id="@+id/uploadall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:layout_gravity="right"
             android:onClick="onClick"
-            android:src="@drawable/down48" />
+            android:src="@drawable/circlearrowup48" />
 
 
     </LinearLayout>

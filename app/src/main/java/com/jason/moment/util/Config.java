@@ -9,10 +9,20 @@ import java.io.File;
 import java.util.Date;
 
 public class Config {
+    public static String _ver="0.9";
+
+    public static String        _serverURL      = "http://ezehub.club/moment";
+    public static String        _serverFolder   = "/upload";
+    public static String        _uploadURL       = _serverURL + "/upload.php";
+    public static String        _listFiles       = _serverURL + "/list.php";
+    public static String        _listImageFiles  = _serverURL + "/list.php?dir=upload&&ext=jpeg";
+    public static String        _listCSVFiles  = _serverURL + "/list.php?dir=upload&&ext=csv";
+    public static String        _listSerFiles  = _serverURL + "/list.php?dir=upload&&ext=mnt";
 
     public static final int     _csv            = 0;
     public static final int     _ser            = 1;
     public static final int     _jsn            = 2;
+    public static final int     _img            = 3;
     public static int           _default_ext    = _ser;
 
     public static final LatLng  _olympic_park   = new LatLng(37.519019,127.124820 );
@@ -98,11 +108,15 @@ public class Config {
 
     public static File mediaStorageDir                 =
             new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                    "Moment1.0");
-
+                    "Moment" + _ver);
     public static File mediaStorageDir4csv             =
             new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                    "CSV1.0");
+                    "CSV" + _ver);
+
+    static {
+        if(!mediaStorageDir.exists()) mediaStorageDir.mkdirs();
+        if(!mediaStorageDir4csv.exists()) mediaStorageDir4csv.mkdirs();
+    }
 
     public static String get_today_filename() {
         return StringUtil.DateToString(new Date(), _filename_fmt) + ((_default_ext==_csv)? ".csv" : ".mnt");

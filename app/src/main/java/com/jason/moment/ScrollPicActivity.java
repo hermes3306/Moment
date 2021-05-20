@@ -178,6 +178,14 @@ public class ScrollPicActivity extends AppCompatActivity implements View.OnClick
                 //DO SOMETHING WITH THE SCROLL COORDINATES
                 Log.d(TAG,"-- scrollX:" + scrollX + ", scrollY:"+scrollY  );
                 Log.d(TAG,"-- scroll width:" + scrollWidth + ", scrollHeight:"+scrollHeight  );
+
+                ImageView iv_pic1 = (ImageView) findViewById(R.id.iv_pic1);
+                ImageView iv_pic2 = (ImageView) findViewById(R.id.iv_pic2);
+                ImageView iv_pic3 = (ImageView) findViewById(R.id.iv_pic3);
+
+                Log.d(TAG,"--iv_pic1 width:" + iv_pic1.getWidth() + ",height:" + iv_pic1.getHeight()  );
+                Log.d(TAG,"--iv_pic2 width:" + iv_pic2.getWidth() + ",height:" + iv_pic2.getHeight()  );
+                Log.d(TAG,"--iv_pic3 width:" + iv_pic3.getWidth() + ",height:" + iv_pic3.getHeight()  );
             }
         });
         _ctx = this;
@@ -394,7 +402,7 @@ public class ScrollPicActivity extends AppCompatActivity implements View.OnClick
 //            imageView.setImageBitmap(imageBitmap);
             }
             reload();
-            galleryAddPic(currentFileName); }
+        }
     }
 
     private void sharePic() {
@@ -410,16 +418,6 @@ public class ScrollPicActivity extends AppCompatActivity implements View.OnClick
         sendIntent.setType("image/jpg");
         sendIntent.putExtra(Intent.EXTRA_STREAM, photoURI);
         startActivity(Intent.createChooser(sendIntent, null));
-    }
-
-    // check how to use this galleryAddPic
-    private void galleryAddPic(String filename) {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), filename);
-        Uri contentUri = Uri.fromFile(f);
-        Log.d(TAG,"-- >>>>contentUri to be added to Gallary " + contentUri);
-        mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
     }
 
     @Override
