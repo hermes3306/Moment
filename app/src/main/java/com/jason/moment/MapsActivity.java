@@ -352,8 +352,8 @@ public class MapsActivity extends AppCompatActivity implements
 
         MyLoc myloc = new MyLoc(_ctx);
         MyActivity a = myloc.lastActivity();
-        if(a==null) mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Config._olympic_park, DEFAULT_ZOOM));
-        else mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(a.toLatLng(), DEFAULT_ZOOM));
+        if(a==null) mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Config._olympic_park, DEFAULT_ZOOM));
+        else mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(a.toLatLng(), DEFAULT_ZOOM));
         //refresh();
     }
 
