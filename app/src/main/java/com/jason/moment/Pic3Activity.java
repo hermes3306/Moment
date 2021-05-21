@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -30,6 +31,8 @@ import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,7 +45,7 @@ import java.util.Date;
  * status bar and navigation/system bar) with user interaction.
  */
 public class Pic3Activity extends AppCompatActivity implements View.OnClickListener{
-    private String TAG = "PicActivity";
+    private static String TAG = "PicActivity";
     ArrayList<File> _files=null;
     int pos=0;
     int size=0;
@@ -244,18 +247,121 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    // From Andriod Tutorial
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+        return inSampleSize;
+    }
+
+    // From Andriod Tutorial
+    public static Bitmap decodeSampledBitmapFromResource(String file_path,
+                                                         int reqWidth, int reqHeight) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(file_path, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        Log.d(TAG,"--options.inSampleSize=" +options.inSampleSize);
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(file_path, options);
+    }
+
+    // From Android Tutorial
+    // Decodes image and scales it to reduce memory consumption
+    private Bitmap decodeFile(File f) {
+        try {
+            // Decode image size
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(new FileInputStream(f), null, o);
+            // The new size we want to scale to
+            int REQUIRED_SIZE= Config.PIC_REQUIRED_SIZE;
+            // Find the correct scale value. It should be the power of 2.
+            int scale = 1;
+            while(o.outWidth / scale / 2 >= REQUIRED_SIZE &&
+                    o.outHeight / scale / 2 >= REQUIRED_SIZE) {
+                scale *= 2;
+            }
+
+            // Decode with inSampleSize
+            BitmapFactory.Options o2 = new BitmapFactory.Options();
+            o2.inSampleSize = scale;
+            return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+        } catch (FileNotFoundException e) {}
+        return null;
+    }
+
     public void show1() {
-        String filepath = _files.get(pos).getAbsolutePath();
+        String file_path = _files.get(pos).getAbsolutePath();
         currentFileName = _files.get(pos).getName();
 
-        Log.d(TAG, "-- pos=" + pos + " size=" + size + " file =" +  filepath);
+        Log.d(TAG, "-- pos=" + pos + " size=" + size + " file =" +  file_path);
         ImageView iv_pic = (ImageView) findViewById(R.id.iv_pic);
-        Bitmap bitmap = BitmapFactory.decodeFile(filepath);
+
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
         mDegree = 90;
+
+        Bitmap bitmap = decodeFile(new File(file_path));
+
         bitmap = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(), bitmap.getHeight(),matrix,true);
         iv_pic.setImageBitmap(bitmap);
+
+        tv.setText("" + (pos+1) + "/" + size);
+    }
+
+    public void show1_old() {
+        String file_path = _files.get(pos).getAbsolutePath();
+        currentFileName = _files.get(pos).getName();
+
+        Log.d(TAG, "-- pos=" + pos + " size=" + size + " file =" +  file_path);
+        ImageView iv_pic = (ImageView) findViewById(R.id.iv_pic);
+
+        // BitmapFactory.Options로 이미지 사이즈 확인
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+
+        /* 이미지 정보를 얻는 함수 */
+        BitmapFactory.decodeFile(file_path, options);
+        int imageHeight = options.outHeight;
+        int imageWidth = options.outWidth;
+        String imageType = options.outMimeType;
+        Log.d(TAG, "-- imageHeight:" + imageHeight);
+        Log.d(TAG, "-- imageWidth:" + imageWidth);
+        Log.d(TAG, "-- imageType:" + imageType);
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+        mDegree = 90;
+
+        // From Android Tutorial
+        decodeSampledBitmapFromResource(file_path, 100, 100);
+
+        Bitmap bitmap = BitmapFactory.decodeFile(file_path);
+        bitmap = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(), bitmap.getHeight(),matrix,true);
+        iv_pic.setImageBitmap(bitmap);
+
         tv.setText("" + (pos+1) + "/" + size);
     }
 
@@ -324,7 +430,7 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
             // Continue only if the File was successfully created
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.jason.moment.fileprovider",
+                        "com.jason.moment.file_provider",
                         photoFile);
 
                 Log.d(TAG, "-- >>>> photoURI is " + photoURI.getPath());
@@ -362,7 +468,7 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
     private void sharePic() {
         File photoFile = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), currentFileName);
         Uri photoURI = FileProvider.getUriForFile(this,
-                "com.jason.moment.fileprovider",
+                "com.jason.moment.file_provider",
                 photoFile);
         Intent sendIntent = new Intent(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, "Hello!");
