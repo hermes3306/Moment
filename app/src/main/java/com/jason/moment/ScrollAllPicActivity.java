@@ -6,8 +6,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
-import androidx.core.widget.NestedScrollView;
-import androidx.core.widget.NestedScrollView.OnScrollChangeListener;
+
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -27,29 +26,29 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.jason.moment.util.Config;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
 public class ScrollAllPicActivity extends AppCompatActivity implements View.OnClickListener{
-    private String TAG = "ScrollAllPic";
+    public String TAG = "ScrollAllPic";
     ArrayList<File> _files=null;
     int pos=0;
     int size=0;
@@ -178,14 +177,73 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
                 int scrollWidth = hsv.getWidth();
                 int scrollHeight = hsv.getHeight();
 
+
+                //ImageView iv = (ImageView)hsv.getFocusedChild();
+                //tv.setText(""+hsv.getScrollY() + "ImageView" + iv.getId());
+                tv.setText("" + hsv.getScrollY());
+
                 //DO SOMETHING WITH THE SCROLL COORDINATES
                 Log.d(TAG,"-- scrollX:" + scrollX + ", scrollY:"+scrollY  );
                 Log.d(TAG,"-- scroll width:" + scrollWidth + ", scrollHeight:"+scrollHeight  );
+
             }
         });
         _ctx = this;
-        pos=0;
-        reload();
+        build_all_Image_Views();
+    }
+
+    int file_height[] = null;
+    private void build_all_Image_Views() {
+        File folder= Config.PIC_SAVE_DIR;
+        File[] files = folder.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith("jpeg");
+            }
+        });
+        Log.d(TAG,"-- files.length:" + files.length);
+
+        Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
+
+        file_height = new int[files.length];
+        for(int i=0;i<files.length;i++) {
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            ImageView imageView = (ImageView)inflater.inflate(R.layout.layout_imageitem, null);
+            imageView.setId(i);
+            Log.d(TAG,"-- ImageView id:" + i);
+
+            /*
+            imageView.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    Snackbar.make(v,"ImageView" + v.getId(), Snackbar.LENGTH_SHORT).show();
+                }
+            });
+            */
+
+            /* Set Bitmap for the image view */
+            Matrix matrix = new Matrix();
+            matrix.postRotate(90);
+            mDegree = 90;
+            Bitmap bitmap = decodeFile(new File(files[i].getAbsolutePath()));
+            bitmap = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(), bitmap.getHeight(),matrix,true);
+            imageView.setImageBitmap(bitmap);
+            /* add to LinearLayer, gallery  */
+            LinearLayout gallery = findViewById(R.id.gallery);
+            gallery.addView(imageView);
+            //file_height[i] = bitmap.getHeight(); // numbers
+            // file_height[i] = hsv.getMaxScrollAmount();  //all 0
+            file_height[i] = hsv.getBottom();
+            Log.d(TAG, "-- hsv.getTop()" + hsv.getTop());
+            Log.d(TAG, "-- hsv.getBottom()" + hsv.getBottom());
+        }
+
+        int s=0;
+        for(int i=0;i<file_height.length;i++) {
+            Log.d(TAG, "-- " + String.format("%5d",i) + ":" + file_height[i]);
+            s+= file_height[i];
+        }
+        Log.d(TAG,"-- Total:" + s);
     }
 
     @Override
@@ -243,86 +301,41 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    public void reload() {
-        File folder= Config.PIC_SAVE_DIR;
-        File[] files = folder.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith("jpeg");
-            }
-        });
 
-        Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
-        //Arrays.sort(files, Comparator.comparingLong(File::lastModified));
-
-        ArrayList<File> fileArrayList= new ArrayList<File>();
-        for(int i=0;i< files.length;i++) {
-            fileArrayList.add(files[i]);
-        }
-        _files = fileArrayList;
-        if(_files.size() > 0) {
-            size = _files.size();
-            if(pos>size-1) pos=size-1;
-            show1();
-        }
-    }
-
-    public void showpic(ImageView iv_pic, int pos){
-        String filepath = _files.get(pos).getAbsolutePath();
-        currentFileName = _files.get(pos).getName();
-        Log.d(TAG, "-- pos=" + pos + " size=" + size + " file =" +  filepath);
-
-        Bitmap bitmap = BitmapFactory.decodeFile(filepath);
-        Matrix matrix = new Matrix();
-        matrix.postRotate(90);
-        mDegree = 90;
+    // From Android Tutorial
+    // Decodes image and scales it to reduce memory consumption
+    private Bitmap decodeFile(File f) {
         try {
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            iv_pic.setImageBitmap(bitmap);
-        }catch(Exception e) {
-            Log.e(TAG,"-- error:" + e.toString());
-            Log.e(TAG, "-- try to delete:" + currentFileName);
-            _files.get(pos).deleteOnExit();
-        }
-    }
-
-    public void show1() {
-        LinearLayout containerLayout = findViewById(R.id.gallery);
-        File folder= _ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File files[] = folder.listFiles();
-
-
-        for(int i=0; i<files.length;i++ ) {
-            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View inflatedView = inflater.inflate(R.layout.layout_imageitem, null);
-            containerLayout.addView(inflatedView);
-            inflatedView.setVisibility(View.VISIBLE);
-            showpic((ImageView)inflatedView, i);
-            if(i>20) break;
-        }
+            // Decode image size
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(new FileInputStream(f), null, o);
+            // The new size we want to scale to
+            int REQUIRED_SIZE= Config.PIC_REQUIRED_SIZE;
+            // Find the correct scale value. It should be the power of 2.
+            int scale = 1;
+            while(o.outWidth / scale / 2 >= REQUIRED_SIZE &&
+                    o.outHeight / scale / 2 >= REQUIRED_SIZE) {
+                scale *= 2;
+            }
+            // Decode with inSampleSize
+            BitmapFactory.Options o2 = new BitmapFactory.Options();
+            o2.inSampleSize = scale;
+            return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+        } catch (FileNotFoundException e) {}
+        return null;
     }
 
     public void rotate1() {
-        String filepath = _files.get(pos).getAbsolutePath();
-        Log.d(TAG, "-- pos=" + pos + " size=" + size + " file =" +  filepath);
-        ImageView iv_pic = (ImageView) findViewById(R.id.iv_pic);
-        iv_pic.setImageBitmap(BitmapFactory.decodeFile(filepath));
-        mDegree = mDegree+90;
-        Matrix matrix = new Matrix();
-        matrix.postRotate(mDegree);
-        Bitmap bitmap = BitmapFactory.decodeFile(filepath);
-        bitmap = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(), bitmap.getHeight(),matrix,true);
-        iv_pic.setImageBitmap(bitmap);
-        tv.setText("" + (pos+1) + "/" + size);
     }
 
     public void deletePic() {
         if(_files.size()==0) {
-            Toast.makeText(_ctx,"No files to be deleted!",0).show();
+            Toast.makeText(_ctx,"No files to be deleted!",Toast.LENGTH_SHORT).show();
             return;
         }
         if(size==1) {
-            Toast.makeText(_ctx,"At least 1 file needed to be located in the folder!",0).show();
+            Toast.makeText(_ctx,"At least 1 file needed to be located in the folder!",Toast.LENGTH_SHORT).show();
             return;
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
@@ -332,7 +345,6 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         _files.get(pos).delete();
-                        reload();
                     }
                 });
         builder.setNegativeButton("취소",
@@ -348,7 +360,7 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
         currentFileName = Config.getPicName();
         File mediaFile = new File(Config.PIC_SAVE_DIR, currentFileName);
         Uri mediaUri = FileProvider.getUriForFile(this,
-                "com.jason.moment.fileprovider",
+                "com.jason.moment.file_provider",
                 mediaFile);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, mediaUri);
@@ -368,14 +380,13 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
 //            Bitmap imageBitmap = (Bitmap) extras.get("data");
 //            imageView.setImageBitmap(imageBitmap);
             }
-            reload();
         }
     }
 
     private void sharePic() {
         File photoFile = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), currentFileName);
         Uri photoURI = FileProvider.getUriForFile(this,
-                "com.jason.moment.fileprovider",
+                "com.jason.moment.file_provider",
                 photoFile);
         Intent sendIntent = new Intent(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, "Hello!");
@@ -394,23 +405,27 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
                 takePic();
                 break;
             case R.id.imb_next:
-                if (pos < size - 1) pos++;
-                else pos = 0;
-                show1();
+                hsv.post(new Runnable() {
+                    public void run() {
+                        hsv.fullScroll(hsv.FOCUS_DOWN);
+                    }
+                });
                 break;
             case R.id.imb_prev:
-                if (pos > 0) pos--;
-                else pos = size - 1;
-                show1();
+                hsv.post(new Runnable() {
+                    public void run() {
+                        hsv.fullScroll(hsv.FOCUS_UP);
+                    }
+                });
                 break;
             case R.id.imRotate:
-                rotate1();
+                //rotate1();
                 break;
             case R.id.imTrash:
-                deletePic();
+                //deletePic();
                 break;
             case R.id.imShare:
-                sharePic();
+                //sharePic();
                 break;
         }
     }

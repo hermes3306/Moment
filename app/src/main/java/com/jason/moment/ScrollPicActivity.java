@@ -35,6 +35,8 @@ package com.jason.moment;
         import com.jason.moment.util.Config;
 
         import java.io.File;
+        import java.io.FileInputStream;
+        import java.io.FileNotFoundException;
         import java.text.SimpleDateFormat;
         import java.util.ArrayList;
         import java.util.Arrays;
@@ -269,12 +271,38 @@ public class ScrollPicActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
-    public void showpic(ImageView iv_pic, int pos){
+
+    // From Android Tutorial
+    // Decodes image and scales it to reduce memory consumption
+    private Bitmap decodeFile(File f) {
+        try {
+            // Decode image size
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(new FileInputStream(f), null, o);
+            // The new size we want to scale to
+            int REQUIRED_SIZE= Config.PIC_REQUIRED_SIZE;
+            // Find the correct scale value. It should be the power of 2.
+            int scale = 1;
+            while(o.outWidth / scale / 2 >= REQUIRED_SIZE &&
+                    o.outHeight / scale / 2 >= REQUIRED_SIZE) {
+                scale *= 2;
+            }
+
+            // Decode with inSampleSize
+            BitmapFactory.Options o2 = new BitmapFactory.Options();
+            o2.inSampleSize = scale;
+            return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+        } catch (FileNotFoundException e) {}
+        return null;
+    }
+
+    public void show_pic(ImageView iv_pic, int pos){
         String filepath = _files.get(pos).getAbsolutePath();
         currentFileName = _files.get(pos).getName();
         Log.d(TAG, "-- pos=" + pos + " size=" + size + " file =" +  filepath);
 
-        Bitmap bitmap = BitmapFactory.decodeFile(filepath);
+        Bitmap bitmap = decodeFile(new File(filepath));
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
         mDegree = 90;
@@ -296,17 +324,17 @@ public class ScrollPicActivity extends AppCompatActivity implements View.OnClick
 
         if(pos==0 && _files.size() >1) {
             iv_pic1.setVisibility(View.GONE);
-            showpic(iv_pic2,0);
-            showpic(iv_pic3, 1);
+            show_pic(iv_pic2,0);
+            show_pic(iv_pic3, 1);
         }else if(pos>0 && _files.size() > pos+1) {
             if(iv_pic1.getVisibility()==View.GONE) iv_pic1.setVisibility(View.VISIBLE);
             if(iv_pic3.getVisibility()==View.GONE) iv_pic3.setVisibility(View.VISIBLE);
-            showpic(iv_pic1,pos-1);
-            showpic(iv_pic2,pos);
-            showpic(iv_pic3, pos+1);
+            show_pic(iv_pic1,pos-1);
+            show_pic(iv_pic2,pos);
+            show_pic(iv_pic3, pos+1);
         }else if(pos>0 && _files.size() == pos+1) {
-            showpic(iv_pic1,pos-1);
-            showpic(iv_pic2,pos);
+            show_pic(iv_pic1,pos-1);
+            show_pic(iv_pic2,pos);
             iv_pic1.setVisibility(View.GONE);
         }
         tv.setText("" + (pos+1) + "/" + size);
@@ -377,7 +405,7 @@ public class ScrollPicActivity extends AppCompatActivity implements View.OnClick
             // Continue only if the File was successfully created
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.jason.moment.fileprovider",
+                        "com.jason.moment.file_provider",
                         photoFile);
 
                 Log.d(TAG, "-- >>>> photoURI is " + photoURI.getPath());
@@ -415,7 +443,7 @@ public class ScrollPicActivity extends AppCompatActivity implements View.OnClick
     private void sharePic() {
         File photoFile = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), currentFileName);
         Uri photoURI = FileProvider.getUriForFile(this,
-                "com.jason.moment.fileprovider",
+                "com.jason.moment.file_provider",
                 photoFile);
         Intent sendIntent = new Intent(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, "Hello!");

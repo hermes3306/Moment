@@ -14,6 +14,11 @@ import java.util.Date;
 public class Config {
 
     static String TAG = "Config";
+    static String _ver= "0.91";
+
+    /* 파일 디코딩시 목표 크기 지정 100:흐림 400:보통 800:또렷 */
+    public static int PIC_REQUIRED_SIZE = 400;
+
     static File cache_path = null;                  /* 0. 내부저장소 */
     static File file_path  = null;                  /* 1. 내부저장소 */
     static File external_path = null;               /* 2. 외부 저장소 */
@@ -31,7 +36,7 @@ public class Config {
     public static File CVS_SAVE_DIR   = null;
     public static File MNT_SAVE_DIR   = null;
 
-    static String _ver="0.9";
+
 
     public static String        _serverURL      = "http://ezehub.club/moment";
     public static String        _serverFolder   = "/upload";

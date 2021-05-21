@@ -567,7 +567,7 @@ public class MapsActivity extends AppCompatActivity implements
         currentFileName = Config.getPicName();
         File mediaFile = new File(Config.PIC_SAVE_DIR, currentFileName);
         Uri mediaUri = FileProvider.getUriForFile(this,
-                "com.jason.moment.fileprovider",
+                "com.jason.moment.file_provider",
                 mediaFile);
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

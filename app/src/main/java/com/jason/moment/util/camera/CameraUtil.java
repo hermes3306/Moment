@@ -24,7 +24,6 @@ import com.jason.moment.util.Config;
 
 import java.io.File;
 
-
 public class CameraUtil {
     static String TAG = "CameraUtil";
 
@@ -67,7 +66,7 @@ public class CameraUtil {
 
         File mediaFile = new File(Config.VIDEO_SAVE_DIR, currentFileName);
         Uri mediaUri = FileProvider.getUriForFile(parentContext,
-                "com.jason.moment.fileprovider",
+                "com.jason.moment.file_provider",
                 mediaFile);
         vv.setVideoURI(mediaUri);
         vv.start();
