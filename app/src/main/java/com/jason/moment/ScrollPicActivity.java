@@ -377,7 +377,7 @@ public class ScrollPicActivity extends AppCompatActivity implements View.OnClick
             // Continue only if the File was successfully created
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.jason.moment.fileprovider",
+                        "com.jason.moment.file_provider",
                         photoFile);
 
                 Log.d(TAG, "-- >>>> photoURI is " + photoURI.getPath());
@@ -415,7 +415,7 @@ public class ScrollPicActivity extends AppCompatActivity implements View.OnClick
     private void sharePic() {
         File photoFile = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), currentFileName);
         Uri photoURI = FileProvider.getUriForFile(this,
-                "com.jason.moment.fileprovider",
+                "com.jason.moment.file_provider",
                 photoFile);
         Intent sendIntent = new Intent(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, "Hello!");

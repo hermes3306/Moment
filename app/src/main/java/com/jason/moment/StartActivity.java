@@ -85,7 +85,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         currentFileName = Config.getVideoName();
         File mediaFile = new File(Config.VIDEO_SAVE_DIR, currentFileName);
         Uri mediaUri = FileProvider.getUriForFile(this,
-                "com.jason.moment.fileprovider",
+                "com.jason.moment.file_provider",
                 mediaFile);
 
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
@@ -97,7 +97,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         currentFileName = Config.getPicName();
         File mediaFile = new File(Config.PIC_SAVE_DIR, currentFileName);
         Uri mediaUri = FileProvider.getUriForFile(this,
-                "com.jason.moment.fileprovider",
+                "com.jason.moment.file_provider",
                 mediaFile);
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -167,7 +167,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
 
         File mediaFile = new File(Config.VIDEO_SAVE_DIR, currentFileName);
         Uri mediaUri = FileProvider.getUriForFile(this,
-                "com.jason.moment.fileprovider",
+                "com.jason.moment.file_provider",
                 mediaFile);
         vv.setVideoURI(mediaUri);
         vv.start();

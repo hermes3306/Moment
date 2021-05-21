@@ -14,7 +14,7 @@ import java.util.Date;
 public class Config {
 
     static String TAG = "Config";
-    static String _ver= "0.91";
+    static String _ver= "0.92";
 
     /* 파일 디코딩시 목표 크기 지정 100:흐림 400:보통 800:또렷 */
     public static int PIC_REQUIRED_SIZE = 400;
