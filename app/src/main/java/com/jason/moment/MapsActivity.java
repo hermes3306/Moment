@@ -60,9 +60,11 @@ import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StartupBatch;
 import com.jason.moment.util.UI;
 import com.jason.moment.util.WebUtil;
+import com.jason.moment.util.camera.CameraUtil;
 import com.jason.moment.util.db.MyLoc;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -98,6 +100,8 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this._ctx = this;
+        Config.initialize(_ctx);
+
         StartupBatch sb = new StartupBatch(_ctx);
         sb.execute();
 
@@ -456,7 +460,7 @@ public class MapsActivity extends AppCompatActivity implements
 
             case R.id.imb_start_camera:
                 Log.d(TAG,"-- image button Camera.");
-                dispatchTakePictureIntent();
+                takePic();
                 break;
             case R.id.imvStart:
                 Log.d(TAG,"-- image View start.");
@@ -558,90 +562,38 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     // 사진 촬영 기능
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    String currentPhotoPath;
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                Log.e(TAG,"-- before createImageFile");
-                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                String imageFileName = "IMG_" + timeStamp + ".jpeg";
-                photoFile = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), imageFileName);
-                Toast.makeText(_ctx, "photoFile " + photoFile.getAbsolutePath() + " is used for this picture!", Toast.LENGTH_LONG).show();
-                Log.d(TAG,"-- >>>>after createImageFile" + photoFile.getAbsolutePath());
-            } catch (Exception ex) {
-                // Error occurred while creating the File
-                Log.d(TAG,"-- >>>>" +ex.toString());
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.jason.moment.fileprovider",
-                        photoFile);
+    String currentFileName;
+    private void takePic() {
+        currentFileName = Config.getPicName();
+        File mediaFile = new File(Config.PIC_SAVE_DIR, currentFileName);
+        Uri mediaUri = FileProvider.getUriForFile(this,
+                "com.jason.moment.fileprovider",
+                mediaFile);
 
-                Log.d(TAG, "-- >>>> photoURI is " + photoURI.getPath());
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-
-                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                    Log.d(TAG, "-- >>>> resolveActivity called!");
-                    startActivityForResult(takePictureIntent, Config.PICK_FROM_CAMERA);
-                }
-
-                currentPhotoPath = photoFile.getAbsolutePath();
-                Log.d(TAG, "-- >>>> currentPhotoPath is " + currentPhotoPath);
-                Log.d(TAG, "-- >>>> photoURI is " + photoURI.getPath());
-            }
-        }
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, mediaUri);
+        startActivityForResult(intent, Config.PICK_FROM_CAMERA);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "-- onActivityResult called!");
-        if (requestCode == Config.PICK_FROM_CAMERA && resultCode == RESULT_OK) {
-            Log.d(TAG, "-- resultCode - PICK_FROM_CAMERA");
-            if (data == null) {
-                Log.d(TAG, "-- Intent data is NULL!!!!");
-                return;
-            }
-            Bundle extras = data.getExtras();
-//            Bitmap imageBitmap = (Bitmap) extras.get("data");
-//            imageView.setImageBitmap(imageBitmap);
+        switch(requestCode) {
+            case Config.PICK_FROM_CAMERA:
+                Log.d(TAG, "-- PIC_FROM_CAMERA: ");
+                CameraUtil.showImg(_ctx, currentFileName);
+                break;
+            case Config.PICK_FROM_VIDEO:
+                Log.d(TAG, "-- PICK_FROM_VIDEO: ");
+                CameraUtil.showVideo(_ctx, currentFileName);
+                break;
         }
-
-        if (requestCode == Config.CALL_RUN_ACTIVITY && resultCode == RESULT_OK) {
-            Log.d(TAG, "-- after Call RunActivity and get the return");
-            if (data == null) {
-                Log.d(TAG, "-- Intent data is NULL!!!!");
-                return;
-            } else {
-                Log.d(TAG, "-- " + data);
-            }
-            return;
-        }
-
-        if (requestCode == Config.CALL_SETTING_ACTIVITY && resultCode == RESULT_OK) {
-            Log.d(TAG, "-- after Call SETTING_ACTIVITY and get the return");
-            return;
-        }
-
-
     }
 
 
 
     // check how to use this galleryAddPic
     private void galleryAddPic() {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(currentPhotoPath);
-        Uri contentUri = Uri.fromFile(f);
-        Log.d(TAG,"-- >>>>contentUri to be added to Gallary " + contentUri);
-        mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
     }
 
     @Override
@@ -690,10 +642,25 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivityForResult(scrollPicIntent, Config.CALL_SCROLL_PIC_ACTIVITY);
 
                 return true;
+
+            case R.id.scrollAllpic_activity:
+                Log.d(TAG,"-- Scroll Pic Activity!");
+                Intent scrollAllPicIntent = new Intent(MapsActivity.this, ScrollAllPicActivity.class);
+                startActivityForResult(scrollAllPicIntent, Config.CALL_SCROLL_ALL_PIC_ACTIVITY);
+
+                return true;
+
             case R.id.pic_activity:
                 Log.d(TAG,"-- Pic Activity!");
                 File folder= _ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                File files[] = folder.listFiles();
+
+                File[] files = folder.listFiles(new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        return name.endsWith("jpeg");
+                    }
+                });
+
                 if(files==null) {
                     Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
                     return false;
@@ -714,11 +681,12 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
+    // just test purpose
     public void downloadCSV() throws Exception{
-        String _url_dir = Config._backup_csv_dir; //"http://ezehub.club/moment/csv";
-        String _files[] = Config._backup_csv_files;
-        String _urls[] = new String[_files.length];
-        for(int x=0;x<_files.length;x++) _urls[x] = _url_dir + _files[x];
+        String _urls[] = new String[] {
+                "http://ezehub.club/moment/upload/20210520.csv",
+                "http://ezehub.club/moment/upload/20210521.csv"
+        };
         WebUtil.downloadFileAsync2(_ctx, _urls);
     }
 

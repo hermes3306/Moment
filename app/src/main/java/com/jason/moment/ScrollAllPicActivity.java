@@ -2,9 +2,12 @@ package com.jason.moment;
 
 import android.annotation.SuppressLint;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.core.widget.NestedScrollView;
+import androidx.core.widget.NestedScrollView.OnScrollChangeListener;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,19 +17,23 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
-import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 
 import java.io.File;
@@ -41,14 +48,16 @@ import java.util.Date;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class Pic3Activity extends AppCompatActivity implements View.OnClickListener{
-    private String TAG = "PicActivity";
+public class ScrollAllPicActivity extends AppCompatActivity implements View.OnClickListener{
+    private String TAG = "ScrollAllPic";
     ArrayList<File> _files=null;
     int pos=0;
     int size=0;
     int mDegree=0;
     Context _ctx;
     TextView tv;
+    ScrollView hsv;
+
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -133,16 +142,19 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pic);
+
+        setContentView(R.layout.activity_scroll_all_pic);
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mControlsView2 = findViewById(R.id.fullscreen_content_controls2);
         mControlsView3 = findViewById(R.id.fullscreen_content_controls3);
-        mContentView = findViewById(R.id.iv_pic);
+        mContentView = findViewById(R.id.gallery);
+        hsv = findViewById(R.id.hsv);
         tv = findViewById(R.id.tv_picinfo);
 
         // Set up the user interaction to manually show or hide the system UI.
@@ -158,6 +170,19 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
+        hsv.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                int scrollX = hsv.getScrollX(); //for horizontalScrollView
+                int scrollY = hsv.getScrollY(); //for verticalScrollView
+                int scrollWidth = hsv.getWidth();
+                int scrollHeight = hsv.getHeight();
+
+                //DO SOMETHING WITH THE SCROLL COORDINATES
+                Log.d(TAG,"-- scrollX:" + scrollX + ", scrollY:"+scrollY  );
+                Log.d(TAG,"-- scroll width:" + scrollWidth + ", scrollHeight:"+scrollHeight  );
+            }
+        });
         _ctx = this;
         pos=0;
         reload();
@@ -218,10 +243,8 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-
-
     public void reload() {
-        File folder= _ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File folder= Config.PIC_SAVE_DIR;
         File[] files = folder.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -244,19 +267,39 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void show1() {
+    public void showpic(ImageView iv_pic, int pos){
         String filepath = _files.get(pos).getAbsolutePath();
         currentFileName = _files.get(pos).getName();
-
         Log.d(TAG, "-- pos=" + pos + " size=" + size + " file =" +  filepath);
-        ImageView iv_pic = (ImageView) findViewById(R.id.iv_pic);
+
         Bitmap bitmap = BitmapFactory.decodeFile(filepath);
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
         mDegree = 90;
-        bitmap = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(), bitmap.getHeight(),matrix,true);
-        iv_pic.setImageBitmap(bitmap);
-        tv.setText("" + (pos+1) + "/" + size);
+        try {
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            iv_pic.setImageBitmap(bitmap);
+        }catch(Exception e) {
+            Log.e(TAG,"-- error:" + e.toString());
+            Log.e(TAG, "-- try to delete:" + currentFileName);
+            _files.get(pos).deleteOnExit();
+        }
+    }
+
+    public void show1() {
+        LinearLayout containerLayout = findViewById(R.id.gallery);
+        File folder= _ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File files[] = folder.listFiles();
+
+
+        for(int i=0; i<files.length;i++ ) {
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View inflatedView = inflater.inflate(R.layout.layout_imageitem, null);
+            containerLayout.addView(inflatedView);
+            inflatedView.setVisibility(View.VISIBLE);
+            showpic((ImageView)inflatedView, i);
+            if(i>20) break;
+        }
     }
 
     public void rotate1() {
@@ -300,46 +343,16 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
         builder.show();
     }
 
-
-    // 사진 촬영 기능
-    static final int REQUEST_IMAGE_CAPTURE = 1;
     String currentFileName;
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                Log.e(TAG,"-- before createImageFile");
-                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                String imageFileName = "IMG_" + timeStamp + ".jpeg";
-                photoFile = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), imageFileName);
-                Toast.makeText(_ctx, "photoFile " + photoFile.getAbsolutePath() + " is used for this picture!", Toast.LENGTH_LONG).show();
-                Log.d(TAG,"-- >>>>after createImageFile" + photoFile.getAbsolutePath());
-            } catch (Exception ex) {
-                // Error occurred while creating the File
-                Log.d(TAG,"-- >>>>" +ex.toString());
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.jason.moment.fileprovider",
-                        photoFile);
-
-                Log.d(TAG, "-- >>>> photoURI is " + photoURI.getPath());
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-
-                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                    Log.d(TAG, "-- >>>> resolveActivity called!");
-                    startActivityForResult(takePictureIntent, Config.PICK_FROM_CAMERA);
-                }
-
-                currentFileName = photoFile.getName();
-                Log.d(TAG, "-- >>>> currentPhotoPath is " + photoFile.getAbsolutePath());
-                Log.d(TAG, "-- >>>> photoURI is " + photoURI.getPath());
-            }
-        }
+    private void takePic() {
+        currentFileName = Config.getPicName();
+        File mediaFile = new File(Config.PIC_SAVE_DIR, currentFileName);
+        Uri mediaUri = FileProvider.getUriForFile(this,
+                "com.jason.moment.fileprovider",
+                mediaFile);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, mediaUri);
+        startActivityForResult(intent, Config.PICK_FROM_CAMERA);
     }
 
     @Override
@@ -356,7 +369,7 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
 //            imageView.setImageBitmap(imageBitmap);
             }
             reload();
-            galleryAddPic(currentFileName); }
+        }
     }
 
     private void sharePic() {
@@ -374,26 +387,11 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
         startActivity(Intent.createChooser(sendIntent, null));
     }
 
-    // check how to use this galleryAddPic
-    private void galleryAddPic(String filename) {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), filename);
-        Uri contentUri = Uri.fromFile(f);
-        Log.d(TAG,"-- >>>>contentUri to be added to Gallary " + contentUri);
-        mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
-    }
-
-    private void upload() {
-        CloudUtil cu = new CloudUtil();
-        cu.UploadAll(_ctx, Config._img);
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.imvCamera:
-                dispatchTakePictureIntent();
+                takePic();
                 break;
             case R.id.imb_next:
                 if (pos < size - 1) pos++;
@@ -413,12 +411,6 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.imShare:
                 sharePic();
-                break;
-            case R.id.uploadall:
-                upload();
-                break;
-            case R.id.imDown:
-                new CloudUtil().DownloadAll(_ctx, Config._img);
                 break;
         }
     }

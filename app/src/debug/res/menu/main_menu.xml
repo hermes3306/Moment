@@ -28,6 +28,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/scrollAllpic_activity"
+        android:orderInCategory="100"
+        android:title="Scroll All Picture"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/pic_activity"
         android:orderInCategory="100"
         android:title="Picture"

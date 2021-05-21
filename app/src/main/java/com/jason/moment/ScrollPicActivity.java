@@ -278,8 +278,15 @@ public class ScrollPicActivity extends AppCompatActivity implements View.OnClick
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
         mDegree = 90;
-        bitmap = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(), bitmap.getHeight(),matrix,true);
-        iv_pic.setImageBitmap(bitmap);
+        try {
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            iv_pic.setImageBitmap(bitmap);
+        }catch(Exception e) {
+            Log.e(TAG,"-- error:" + e.toString());
+            Log.e(TAG, "-- try to delete:" + currentFileName);
+            _files.get(pos).deleteOnExit();
+        }
+
     }
 
     public void show1() {
