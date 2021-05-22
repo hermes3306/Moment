@@ -1,5 +1,7 @@
 package com.example.jason;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -18,6 +20,7 @@ import com.example.jason.databinding.ActivityMainBinding;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -70,11 +73,37 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_100) {
+            util.F100_alert(this,"인사말","반갑습니다.");
             return true;
         }
 
-        return super.onOptionsItemSelected(item);
+        if (id ==R.id.action_101) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("인사말").setMessage("반갑습니다");
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
+
+        if (id ==R.id.action_102) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("리스트 추가 예제");
+            String str[] = new String[]{
+                "a","b","c"
+            };
+            builder.setItems(str, new DialogInterface.OnClickListener(){
+                @Override
+                public void onClick(DialogInterface dialog, int pos)
+                {
+                    String[] items = str;
+                    Toast.makeText(getApplicationContext(),items[pos],Toast.LENGTH_LONG).show();
+                }
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     @Override
