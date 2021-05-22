@@ -30,13 +30,26 @@
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
-
-
-
     <PreferenceCategory app:title="Runner">
         <EditTextPreference
+            app:defaultValue="Jason Park "
             app:key="your_name"
             app:title="Your Name"
+            app:useSimpleSummaryProvider="true" />
+        <SwitchPreferenceCompat
+            app:key="Gender"
+            app:title="Female" />
+        <EditTextPreference
+            app:dependency="your_name"
+            appLdefaultValue="175"
+            app:key="Height"
+            app:title="Height"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            app:dependency="your_name"
+            appLdefaultValue="75"
+            app:key="Weight"
+            app:title="Weight"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
@@ -48,15 +61,6 @@
             app:key="activity_type"
             app:title="Activity Type"
             app:useSimpleSummaryProvider="true" />
-        <SwitchPreferenceCompat
-            app:key="sound_alert"
-            app:title="Sound alert when running" />
-        <SwitchPreferenceCompat
-            app:dependency="sound_alert"
-            app:key="attachment"
-            app:summaryOff="Background music off"
-            app:summaryOn="Background music on"
-            app:title="Background music... " />
     </PreferenceCategory>
 
 </PreferenceScreen>
