@@ -94,7 +94,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void takePic() {
-        currentFileName = Config.getPicName();
+        currentFileName = Config.getTmpPicName();
         File mediaFile = new File(Config.PIC_SAVE_DIR, currentFileName);
         Uri mediaUri = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",
@@ -444,12 +444,12 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                         String s1 = String.format("%.2f", dist);
                         if(s1.length()>4) s1=String.format("%.1f", dist);
                         tv_start_km.setText(s1);
-                        tv_start_km_str.setText("미터");
+                        tv_start_km_str.setText("Meters");
                     } else {
-                        String s1 = String.format("%.2f", dist/1000.0);
-                        if(s1.length()>4) s1=String.format("%.1f", dist/1000.0);
+                        String s1 = String.format("%.1f", dist/1000.0);
+                        if(s1.length()>3) s1=String.format("%.1f", dist/1000.0);
                         tv_start_km.setText(s1);
-                        tv_start_km_str.setText("킬로미터");
+                        tv_start_km_str.setText("Kilometers");
                     }
 
                     double  minpkm = MyActivityUtil.getMinPerKm(list);
@@ -463,15 +463,8 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                     float burntkCal;
                     int durationInSeconds = MyActivityUtil.durationInSeconds(list);
                     int stepsTaken = (int) (dist / Config._strideLengthInMeters);
-                    burntkCal = CaloryUtil.calculateEnergyExpenditure(
-                        Config._height,
-                        Config._age,
-                        Config._weight,
-                        Config.GENDER_MALE,
-                        durationInSeconds,
-                        stepsTaken,
-                        Config._strideLengthInMeters
-                    );
+
+                    burntkCal = CaloryUtil.calculateEnergyExpenditure((float)dist / 1000f, durationInSeconds);
 
                     tv_start_calory.setText("" + String.format("%.3f", burntkCal));
                     if(last==null) {

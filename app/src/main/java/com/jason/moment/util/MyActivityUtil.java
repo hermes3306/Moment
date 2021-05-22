@@ -53,7 +53,7 @@ public class MyActivityUtil {
     }
 
     public static void initialize() {
-        mediaStorageDir = Config.mediaStorageDir;
+        mediaStorageDir = Config.mediaStorageDir4mnt;
         mediaStorageDir4csv = Config.mediaStorageDir4csv;
         _default_ext = Config._default_ext;
         _default_extension = (_default_ext==Config._csv)? ".csv" : ".mnt";

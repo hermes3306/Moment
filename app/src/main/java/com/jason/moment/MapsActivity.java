@@ -287,7 +287,6 @@ public class MapsActivity extends AppCompatActivity implements
         String _snippet = getAddress(getApplicationContext(),new LatLng(location.getLatitude(), location.getLongitude()));
         tv_map_address.setText(_snippet);
         showActivities();
-
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, mMap.getCameraPosition().zoom));
     }
 
@@ -347,7 +346,6 @@ public class MapsActivity extends AppCompatActivity implements
             mMap.getUiSettings().setCompassEnabled(true);
             mMap.getUiSettings().setZoomControlsEnabled(true);
         }
-
         showActivities();
 
         MyLoc myloc = new MyLoc(_ctx);
@@ -550,7 +548,7 @@ public class MapsActivity extends AppCompatActivity implements
         if(mActivityList==null) return;
         GooglemapUtil.drawTrack2(mMap, todaypath );
         Log.d(TAG, "-- nomarkers = " + nomarkers + " notrack = " + notrack);
-        //mMap.clear();
+        mMap.clear();
         if(!nomarkers) drawMarkers(mMap,mActivityList);
         if(!notrack) drawTrack(mMap,mActivityList);
         if(!satellite) mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
@@ -564,7 +562,7 @@ public class MapsActivity extends AppCompatActivity implements
     // 사진 촬영 기능
     String currentFileName;
     private void takePic() {
-        currentFileName = Config.getPicName();
+        currentFileName = Config.getTmpPicName();
         File mediaFile = new File(Config.PIC_SAVE_DIR, currentFileName);
         Uri mediaUri = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",

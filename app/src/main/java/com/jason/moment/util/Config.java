@@ -13,38 +13,37 @@ import java.util.Date;
 
 public class Config {
 
-    static String TAG = "Config";
-    static String _ver= "0.92";
+
+    static String TAG                       = "Config";
+    static String _ver                      = "0.92";
 
     /* 파일 디코딩시 목표 크기 지정 100:흐림 400:보통 800:또렷 */
-    public static int PIC_REQUIRED_SIZE = 400;
+    public static int PIC_REQUIRED_SIZE     = 400;
 
-    static File cache_path = null;                  /* 0. 내부저장소 */
-    static File file_path  = null;                  /* 1. 내부저장소 */
-    static File external_path = null;               /* 2. 외부 저장소 */
-    static File external_cache_path = null;         /* 3. 외부 저장소 */
-    static File external_files_path1 = null;        /* 4. 외부 저장소 (PIC)*/
-    static File external_files_path2 = null;        /* 5. 외부 저장소 (VIDEO)*/
-    static File external_pub_files_path1 = null;    /* 6. 외부 공유저장소 */
-    static File external_pub_files_path2 = null;    /* 7. 외부 공유저장소 */
+    static File cache_path                  = null;    /* 0. 내부저장소 */
+    static File file_path                   = null;    /* 1. 내부저장소 */
+    static File external_path               = null;    /* 2. 외부 저장소 */
+    static File external_cache_path         = null;    /* 3. 외부 저장소 */
+    static File external_files_path1        = null;    /* 4. 외부 저장소 (PIC)*/
+    static File external_files_path2        = null;    /* 5. 외부 저장소 (VIDEO)*/
+    static File external_pub_files_path1    = null;    /* 6. 외부 공유저장소 */
+    static File external_pub_files_path2    = null;    /* 7. 외부 공유저장소 */
     static File external_pub_files_path_csv = null;    /* 8. 외부 공유저장소 (CSV)*/
     static File external_pub_files_path_mnt = null;    /* 9. 외부 공유저장소 (MNT) */
 
-    static File _SAVE_DIRS[]   = null;
-    public static File PIC_SAVE_DIR   = null;
-    public static File VIDEO_SAVE_DIR = null;
-    public static File CVS_SAVE_DIR   = null;
-    public static File MNT_SAVE_DIR   = null;
-
-
+    static File _SAVE_DIRS[]                = null;
+    public static File PIC_SAVE_DIR         = null;
+    public static File VIDEO_SAVE_DIR       = null;
+    public static File CVS_SAVE_DIR         = null;
+    public static File MNT_SAVE_DIR         = null;
 
     public static String        _serverURL      = "http://ezehub.club/moment";
     public static String        _serverFolder   = "/upload";
-    public static String        _uploadURL       = _serverURL + "/upload.php";
-    public static String        _listFiles       = _serverURL + "/list.php";
-    public static String        _listImageFiles  = _serverURL + "/list.php?dir=upload&&ext=jpeg";
-    public static String        _listCSVFiles  = _serverURL + "/list.php?dir=upload&&ext=csv";
-    public static String        _listSerFiles  = _serverURL + "/list.php?dir=upload&&ext=mnt";
+    public static String        _uploadURL      = _serverURL + "/upload.php";
+    public static String        _listFiles      = _serverURL + "/list.php";
+    public static String        _listImageFiles = _serverURL + "/list.php?dir=upload&&ext=jpeg";
+    public static String        _listCSVFiles   = _serverURL + "/list.php?dir=upload&&ext=csv";
+    public static String        _listSerFiles   = _serverURL + "/list.php?dir=upload&&ext=mnt";
 
     public static final int     _csv            = 0;
     public static final int     _ser            = 1;
@@ -53,10 +52,13 @@ public class Config {
     public static int           _default_ext    = _ser;
 
     public static final LatLng  _olympic_park   = new LatLng(37.519019,127.124820 );
-    public static final float   _height         = 175;
+    public static final float   _height         = 1.75f;  // in meters
     public static final Date    _age            = StringUtil.StringToDate("19700409","yyyyMMdd");
     public static final float   _weight         = 75;
     public static final float   _strideLengthInMeters = 0.5f;
+    public static final int     GENDER_MALE     =1;
+    public static final int     GENDER_FEMALE   =2;
+    public static int           _gender = GENDER_MALE;
 
     public static final long    _timer_period   = 10000;    // 1 sec (최초이후 실행 주기)
     public static final long    _timer_delay    = 1000;     // 1 sec (최초실행)
@@ -76,42 +78,36 @@ public class Config {
     public static int           _file_type_day  = 2;
     public static int           _file_type_activity  = 3;
 
-    public static final int PICK_FROM_CAMERA = 1;
-    public static final int CALL_RUN_ACTIVITY = 2;
-    public static final int CALL_SETTING_ACTIVITY = 3;
-    public static final int CALL_START_ACTIVITY = 4;
-    public static final int CALL_QUOTE_ACTIVITY = 5;
-    public static final int CALL_PIC_ACTIVITY = 6;
-    public static final int CALL_PIC3_ACTIVITY = 7;
+    public static final int PICK_FROM_CAMERA        = 1;
+    public static final int CALL_RUN_ACTIVITY       = 2;
+    public static final int CALL_SETTING_ACTIVITY   = 3;
+    public static final int CALL_START_ACTIVITY     = 4;
+    public static final int CALL_QUOTE_ACTIVITY     = 5;
+    public static final int CALL_PIC_ACTIVITY       = 6;
+    public static final int CALL_PIC3_ACTIVITY      = 7;
     public static final int CALL_SCROLL_PIC_ACTIVITY = 8;
-    public static final int PICK_FROM_VIDEO = 9;
+    public static final int PICK_FROM_VIDEO         = 9;
     public static final int CALL_SCROLL_ALL_PIC_ACTIVITY = 10;
 
 
-    public static final int perKM = 1;
-    public static final int perMile = 2;
-    public static final int per1KM = 3;
-    public static final int per1Mile = 4;
+    public static final int perKM       = 1;
+    public static final int perMile     = 2;
+    public static final int per1KM      = 3;
+    public static final int per1Mile    = 4;
 
-    public static final int GENDER_MALE=1;
-    public static final int GENDER_FEMALE=2;
-
-    public static File mediaStorageDir                 =
-            new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                    "Moment" + _ver);
-    public static File mediaStorageDir4csv             =
-            new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                    "CSV" + _ver);
-    public static File mediaStorageDir4pic             =
-            new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                    "Picture" + _ver);
+    static File mediaStorage =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+    public static File mediaStorageDir4mnt  = new File(mediaStorage, "CSV" + _ver);
+    public static File mediaStorageDir4csv  = new File(mediaStorage, "CSV" + _ver);
+    public static File mediaStorageDir4pic  = new File(mediaStorage,"Picture" + _ver);
 
     static {
-        if(!mediaStorageDir.exists()) mediaStorageDir.mkdirs();
+        if(!mediaStorageDir4mnt.exists()) mediaStorageDir4mnt.mkdirs();
         if(!mediaStorageDir4csv.exists()) mediaStorageDir4csv.mkdirs();
+        if(!mediaStorageDir4pic.exists()) mediaStorageDir4pic.mkdirs();
     }
 
-    public static String getPicName() {
+    public static String getTmpPicName() {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String name  = "IMG_" + timeStamp + ".jpeg";
         return name;
@@ -129,7 +125,7 @@ public class Config {
     public static String getAbsolutePath(String fname) {
         File file;
         if(_default_ext == _ser) {
-            file = new File(mediaStorageDir, fname);
+            file = new File(mediaStorageDir4mnt, fname);
         }else if(_default_ext == _csv) {
             file = new File(mediaStorageDir4csv, fname);
         }else return null;
@@ -137,7 +133,7 @@ public class Config {
     }
 
     public static String getMediaStorageDirPath() {
-        if(_default_ext == _ser) return mediaStorageDir.getAbsolutePath();
+        if(_default_ext == _ser) return mediaStorageDir4mnt.getAbsolutePath();
         else if(_default_ext == _csv) return mediaStorageDir4csv.getAbsolutePath();
         return null;
     }

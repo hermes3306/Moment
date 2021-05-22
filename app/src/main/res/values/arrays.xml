@@ -20,12 +20,14 @@
         <item>1 sec</item>
         <item>5 sec</item>
         <item>10 sec</item>
+        <item>20 sec</item>
     </string-array>
 
     <string-array name="interval_values">
         <item>1000</item>
         <item>5000</item>
         <item>10000</item>
+        <item>20000</item>
     </string-array>
 
     <string-array name="filetype">

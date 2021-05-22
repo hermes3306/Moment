@@ -58,6 +58,7 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
     Context _ctx;
     TextView tv;
     ScrollView hsv;
+    LinearLayout gallery;
 
 
     /**
@@ -157,6 +158,7 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
         mContentView = findViewById(R.id.gallery);
         hsv = findViewById(R.id.hsv);
         tv = findViewById(R.id.tv_picinfo);
+        gallery = findViewById(R.id.gallery);
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -236,7 +238,6 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
             bitmap = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(), bitmap.getHeight(),matrix,true);
             imageView.setImageBitmap(bitmap);
             /* add to LinearLayer, gallery  */
-            LinearLayout gallery = findViewById(R.id.gallery);
             gallery.addView(imageView);
             number_of_members_in_scroll_view = files.length;
             
@@ -363,7 +364,7 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
 
     String currentFileName;
     private void takePic() {
-        currentFileName = Config.getPicName();
+        currentFileName = Config.getTmpPicName();
         File mediaFile = new File(Config.PIC_SAVE_DIR, currentFileName);
         Uri mediaUri = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",
@@ -435,9 +436,9 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
                 deletePic();
                 if(delete_img_num!= -1) {
                     ImageView iv = findViewById(delete_img_num);
-                    iv.setVisibility(View.INVISIBLE);
-                    hsv.removeView(iv);
-                    hsv.removeViewAt(delete_img_num);
+                    iv.setVisibility(View.GONE);
+                    gallery.removeView(iv);
+//                  gallery.removeViewAt(delete_img_num);
                     String str = "" + (pos+1) + "/" + number_of_members_in_scroll_view;
                     tv.setText(str);
                     delete_img_num=-1;

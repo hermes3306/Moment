@@ -507,20 +507,10 @@ public class FileActivity extends AppCompatActivity {
         float burntkCal;
         int durationInSeconds = MyActivityUtil.durationInSeconds(list);
         int stepsTaken = (int) (total_distM / Config._strideLengthInMeters);
-        burntkCal = CaloryUtil.calculateEnergyExpenditure(
-                Config._height,
-                Config._age,
-                Config._weight,
-                Config.GENDER_MALE,
-                durationInSeconds,
-                stepsTaken,
-                Config._strideLengthInMeters
-        );
-
+        burntkCal = CaloryUtil.calculateEnergyExpenditure((float)total_distM / 1000f, durationInSeconds);
         ActivityStat as = new ActivityStat(start_date, stop_date, duration, total_distM, total_distKm, minpk, (int)burntkCal);
         return as;
     }
-
 
     public static void drawTrack(GoogleMap gmap, ArrayList<MyActivity> list) {
         if(list == null) return;

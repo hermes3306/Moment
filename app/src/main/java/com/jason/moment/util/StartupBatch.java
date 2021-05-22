@@ -27,7 +27,7 @@ public class StartupBatch {
             //deserializeTest();
             //genTodayDB4Sample();
             //deleteDB();
-            geturl();
+            //geturl();
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             Log.d(TAG,"-- Err: " + e);
@@ -41,7 +41,6 @@ public class StartupBatch {
 
     public void geturl() throws Exception{
         String urlstr = "http://ezehub.club/moment/list.php?dir=upload&&ext=mnt";
-
         String fullString="";
         URL url = new URL(urlstr);
         BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));

@@ -15,14 +15,14 @@
             app:key="NetworkProvider"
             app:title="Enable Network Provider..." />
         <ListPreference
-            app:defaultValue="Interval"
+            app:defaultValue="1000"
             app:entries="@array/interval"
             app:entryValues="@array/interval_values"
             app:key="interval"
             app:title="Interval"
             app:useSimpleSummaryProvider="true" />
         <ListPreference
-            app:defaultValue="Distance"
+            app:defaultValue="1"
             app:entries="@array/distance"
             app:entryValues="@array/distance_values"
             app:key="distance"
