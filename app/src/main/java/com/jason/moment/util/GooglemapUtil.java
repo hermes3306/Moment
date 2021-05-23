@@ -34,6 +34,7 @@ public class GooglemapUtil {
         drawTrack2(gmap, l);
     }
 
+    /* 이곳을 수정해야 함 */
     public static Polyline line_prev = null;
     public static void drawTrack(GoogleMap map, ArrayList<MyActivity> list, int start, int end) {
         if(list == null) return;
@@ -43,9 +44,9 @@ public class GooglemapUtil {
         }
 
         PolylineOptions plo = new PolylineOptions();
-        plo.color(Color.BLACK);
+        plo.color(Config._pen_track_color);
         Polyline line = map.addPolyline(plo);
-        line.setWidth(20);
+        line.setWidth(Config._pen_width);
         line.setPoints(l);
         if(line_prev!=null) line_prev.remove();
         line_prev = line;

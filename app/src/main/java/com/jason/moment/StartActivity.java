@@ -312,7 +312,17 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         Config.initialize(_ctx);
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_start);
+        //setContentView(R.layout.activity_start);
+
+
+        int inx = Integer.parseInt(Config.getPreference(this,"start_screen"));
+        int start_layout[] = {
+                R.layout.activity_start_style1,
+                R.layout.activity_start_style2,
+                R.layout.activity_start_style3
+        };
+        //* setContentView를 다이나믹하게 수정할 수 있는지 확인 필요함.
+        setContentView(start_layout[inx]);
         initializeLocationManager();
 
         start_time = new Date();

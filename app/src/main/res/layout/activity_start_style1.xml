@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/Ivory"
     tools:context=".StartActivity">
 
     <LinearLayout
@@ -24,7 +25,7 @@
                 android:layout_weight="1"
                 android:text="05:20:21"
                 android:textAlignment="center"
-                android:textColor="#FFFFFF"
+                android:textColor="#00E5FF"
                 android:textSize="45dp" />
 
             <TextView
@@ -56,7 +57,7 @@
                 android:layout_weight="1"
                 android:text="TIME"
                 android:textAlignment="center"
-                android:textColor="#FFFFFF"
+                android:textColor="#00E5FF"
                 android:textSize="20dp" />
 
             <TextView
@@ -86,7 +87,7 @@
 
                 android:text="12.1"
                 android:textAlignment="center"
-                android:textColor="#00BCD4"
+                android:textColor="@color/Coral"
                 android:textSize="210dp" />
 
             <TextView
@@ -95,6 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:text="KM"
+                android:textColor="@color/Coral"
                 android:textAlignment="center"
                 android:textSize="30dp" />
         </LinearLayout>

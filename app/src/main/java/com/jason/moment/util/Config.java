@@ -1,11 +1,16 @@
 package com.jason.moment.util;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Environment;
 import android.util.Log;
 import android.view.animation.LinearInterpolator;
 
+import androidx.preference.PreferenceManager;
+
 import com.google.android.gms.maps.model.LatLng;
+import com.jason.moment.R;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -16,6 +21,13 @@ public class Config {
 
     static String TAG                       = "Config";
     static String _ver                      = "0.92";
+
+    /* 지도 */
+    public static int _pen_color            = Color.BLUE;
+    public static int _pen_track_color      = Color.RED;
+    public static int _pen_width            = 5;
+    public static int _default_start_layout = R.layout.activity_start_style1;
+
 
     /* 파일 디코딩시 목표 크기 지정 100:흐림 400:보통 800:또렷 */
     public static int PIC_REQUIRED_SIZE     = 400;
@@ -105,6 +117,14 @@ public class Config {
         if(!mediaStorageDir4mnt.exists()) mediaStorageDir4mnt.mkdirs();
         if(!mediaStorageDir4csv.exists()) mediaStorageDir4csv.mkdirs();
         if(!mediaStorageDir4pic.exists()) mediaStorageDir4pic.mkdirs();
+    }
+
+    public static String getPreference(Context context, String name) {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(context /* Activity context */);
+        String _preference_val = sharedPreferences.getString(name, "");
+        return _preference_val;
+
     }
 
     public static String getTmpPicName() {
