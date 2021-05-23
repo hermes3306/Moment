@@ -46,6 +46,7 @@ import com.jason.moment.util.CalcTime;
 import com.jason.moment.util.CaloryUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.FileUtil;
+import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StringUtil;
@@ -215,7 +216,7 @@ public class FileActivity extends AppCompatActivity {
                 }
 
                 if(!nomarker) drawMarkers(googleMap,mActivityList);
-                if(!notrack) drawTrack(googleMap,mActivityList);
+                if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
                 if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
@@ -316,7 +317,7 @@ public class FileActivity extends AppCompatActivity {
 
                         marker.showInfoWindow();
 
-                        drawTrack(googleMap,mActivityList,0,marker_pos);
+                        MapUtil.drawTrackInRange(_ctx,googleMap,mActivityList,marker_pos_prev, marker_pos);
 
                         //
                         tv_heading.setText(MyActivityUtil.getTimeStr(mActivityList, marker_pos));
@@ -375,7 +376,7 @@ public class FileActivity extends AppCompatActivity {
                         nomarker = !nomarker;
                         googleMap.clear();
                         if(!nomarker) drawMarkers(googleMap,mActivityList);
-                        if(!notrack) drawTrack(googleMap,mActivityList);
+                        if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
                         if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                         else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                         if(nomarker || notrack) {
@@ -391,7 +392,7 @@ public class FileActivity extends AppCompatActivity {
                         notrack = !notrack;
                         googleMap.clear();
                         if(!nomarker) drawMarkers(googleMap,mActivityList);
-                        if(!notrack) drawTrack(googleMap,mActivityList);
+                        if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
                         if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                         else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                         if(nomarker || notrack) {
@@ -510,37 +511,6 @@ public class FileActivity extends AppCompatActivity {
         burntkCal = CaloryUtil.calculateEnergyExpenditure((float)total_distM / 1000f, durationInSeconds);
         ActivityStat as = new ActivityStat(start_date, stop_date, duration, total_distM, total_distKm, minpk, (int)burntkCal);
         return as;
-    }
-
-    public static void drawTrack(GoogleMap gmap, ArrayList<MyActivity> list) {
-        if(list == null) return;
-        ArrayList<LatLng> l = new ArrayList<>();
-        for(int i=0; i<list.size();i++) {
-            l.add(new LatLng(list.get(i).latitude, list.get(i).longitude));
-        }
-
-        PolylineOptions plo = new PolylineOptions();
-        plo.color(Color.RED);
-        Polyline line = gmap.addPolyline(plo);
-        line.setWidth(20);
-        line.setPoints(l);
-    }
-
-    public static void drawTrack(GoogleMap map, ArrayList<MyActivity> list, int start, int end) {
-        if(list == null) return;
-        ArrayList<LatLng> l = new ArrayList<>();
-        for(int i=start; i < end; i++) {
-            l.add(new LatLng(list.get(i).latitude, list.get(i).longitude));
-        }
-
-        PolylineOptions plo = new PolylineOptions();
-        plo.color(Color.BLACK);
-        Polyline line = map.addPolyline(plo);
-        line.setWidth(20);
-        line.setPoints(l);
-
-        if(line_prev!=null) line_prev.remove();
-        line_prev = line;
     }
 
     public static void drawStartMarker(GoogleMap gmap, ArrayList<MyActivity> list) {

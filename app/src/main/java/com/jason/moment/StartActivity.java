@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -62,6 +63,12 @@ import static java.lang.Integer.parseInt;
 
 public class StartActivity extends AppCompatActivity implements View.OnClickListener{
     public static String TAG = "StartActivity";
+
+    int start_layout[] = {
+            R.layout.activity_start_style1,
+            R.layout.activity_start_style2,
+            R.layout.activity_start_style3
+    };
 
     public static Context _ctx;
     public TextView tv_start_km;
@@ -223,20 +230,24 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
 
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
-            String[] mSports = {"야구","축구","농구","수영","테니스","골프","탁구","볼링","당구"};
+            Resources r = getResources();
+            String screen_layout[] = r.getStringArray(R.array.start_screen);
+            String screen_layout_value[] = r.getStringArray(R.array.start_screen);
+
             int id = item.getItemId();
             if (id == R.id.start_layout_select) {
-                AlertDialog mSportSelectDialog = new AlertDialog.Builder(StartActivity.this )
-                        .setItems(mSports, new DialogInterface.OnClickListener() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(StartActivity.this )
+                        .setItems(screen_layout, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                Toast.makeText(getApplicationContext(),mSports[i], Toast.LENGTH_SHORT).show();
+                                initializeContentViews(start_layout[i]);
+                                //Toast.makeText(getApplicationContext(),screen_layout[i], Toast.LENGTH_SHORT).show();
                             }
                         })
-                        .setTitle("title")
-                        .setPositiveButton("확인",null)
-                        .setNegativeButton("취소",null)
-                        .create();
+                        .setTitle("Choose a layout")
+                        .setPositiveButton("OK",null)
+                        .setNegativeButton("Cancel",null);
+                AlertDialog mSportSelectDialog = builder.create();
                 mSportSelectDialog.show();
             return true;
             }
@@ -346,6 +357,16 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    private void initializeContentViews(int layout) {
+        setContentView(layout);
+        tv_start_km = (TextView)findViewById(R.id.tv_start_km);
+        tv_start_km_str = (TextView)findViewById(R.id.tv_start_km_str);
+        tv_start_time = (TextView)findViewById(R.id.tv_start_time);
+        tv_start_avg = (TextView)findViewById(R.id.tv_start_avg);
+        tv_start_cur = (TextView)findViewById(R.id.tv_start_cur);
+        tv_start_calory = (TextView)findViewById(R.id.tv_start_calory);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         _ctx = this;
@@ -354,27 +375,14 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_start);
 
-
         int inx = Integer.parseInt(Config.getPreference(this,"start_screen"));
-        int start_layout[] = {
-                R.layout.activity_start_style1,
-                R.layout.activity_start_style2,
-                R.layout.activity_start_style3
-        };
-        //* setContentView를 다이나믹하게 수정할 수 있는지 확인 필요함.
-        setContentView(start_layout[inx]);
+        //setContentView();
+        initializeContentViews(start_layout[inx]);
         initializeLocationManager();
-
-        start_time = new Date();
-        tv_start_km = (TextView)findViewById(R.id.tv_start_km);
-        tv_start_km_str = (TextView)findViewById(R.id.tv_start_km_str);
-        tv_start_time = (TextView)findViewById(R.id.tv_start_time);
-        tv_start_avg = (TextView)findViewById(R.id.tv_start_avg);
-        tv_start_cur = (TextView)findViewById(R.id.tv_start_cur);
-        tv_start_calory = (TextView)findViewById(R.id.tv_start_calory);
 
         filename = StringUtil.DateToString(new Date(),"yyyyMMdd_HHmmss");
         startMyTimer();
+        start_time = new Date();
     }
 
     @Override

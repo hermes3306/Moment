@@ -55,6 +55,7 @@ import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.FileUtil;
 import com.jason.moment.util.GooglemapUtil;
+import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StartupBatch;
@@ -472,6 +473,13 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivityForResult(picIntent, Config.CALL_PIC3_ACTIVITY);
                 break;
 
+            case R.id.imSetting:
+                Log.d(TAG,"-- Setting Activities!");
+                Intent configIntent = new Intent(MapsActivity.this, ConfigActivity.class);
+                configIntent.putExtra("1", 1);
+                startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
+                break;
+
             default:
                 // doesn't work
                 refresh();
@@ -524,22 +532,20 @@ public class MapsActivity extends AppCompatActivity implements
 
         marker.showInfoWindow();
 
-        drawTrack(mMap,mActivityList,0,marker_pos);
+        MapUtil.drawTrackInRange(_ctx,mMap,mActivityList,marker_pos_prev,marker_pos);
 
-        //
-//                tv_heading.setText(MyActivityUtil.getTimeStr(mActivityList, marker_pos));
         String addinfo = AddressUtil.getAddress(_ctx, mActivityList.get(marker_pos));
         addinfo += " (" + (marker_pos+1) + "/" + cntofactivities +")";
         tv_map_address.setText(addinfo);
-
-//                String inx_str= "" + seekBar.getProgress() + "/" + seekBar.getMax();
-//                String inx_str2= "" + (position+1)  + "/" + (flist.length);
-//                tv_cursor.setText(inx_str);
-//                tv_cursor2.setText(inx_str2);
-//                tv_file.setText(_file.getName().substring(0, _file.getName().length()-4));
     }
 
     private void showActivities() {
+        MyLoc myLoc = new MyLoc(getApplicationContext());
+        ArrayList<MyActivity> mal = myLoc.todayActivity();
+        MapUtil.drawTrack(_ctx,mMap,mal);
+    }
+
+    private void showActivities_old() {
         MyLoc myLoc = new MyLoc(getApplicationContext());
         if(myLoc==null) return;
         ArrayList<LatLng> todaypath = myLoc.todayPath();
@@ -740,7 +746,7 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     public static Polyline line_prev = null;
-    public static void drawTrack(GoogleMap map, ArrayList<MyActivity> list, int start, int end) {
+    public static void drawTrackInRange(GoogleMap map, ArrayList<MyActivity> list, int start, int end) {
         if(list == null) return;
         ArrayList<LatLng> l = new ArrayList<>();
         for(int i=start; i < end; i++) {

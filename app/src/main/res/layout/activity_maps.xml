@@ -75,6 +75,15 @@
                 android:background="@color/white"
                 android:onClick="onClick"
                 android:src="@drawable/gallery48" />
+
+            <ImageButton
+                android:id="@+id/imSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:onClick="onClick"
+                android:src="@drawable/edit48" />
         </LinearLayout>
 
     </LinearLayout>

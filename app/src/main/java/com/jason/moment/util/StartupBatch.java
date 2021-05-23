@@ -22,8 +22,8 @@ public class StartupBatch {
     public void execute() {
         try{
             Log.d(TAG,"-- Startup Batch Started...");
-            if(genCVSfiles()) Log.d(TAG, "-- Success");
-            //if(genMNTfiles()) Log.d(TAG, "-- Success");
+            //if(genCVSfiles()) Log.d(TAG, "-- Success");
+            if(genMNTfiles()) Log.d(TAG, "-- Success");
             //deserializeTest();
             //genTodayDB4Sample();
             //deleteDB();

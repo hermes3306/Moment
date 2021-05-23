@@ -8,6 +8,23 @@
             app:key="start_screen"
             app:title="Start Screen Type"
             app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:key="track_color"
+            app:defaultValue="0"
+            app:entries="@array/track_color"
+            app:entryValues="@array/track_color_values"
+            app:title="Track Color"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="20"
+            app:entries="@array/track_width"
+            app:entryValues="@array/track_width_values"
+            app:key="track_width"
+            app:title="Track Width"
+            app:useSimpleSummaryProvider="true" />
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="File Type">

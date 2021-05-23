@@ -22,7 +22,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
-                android:text="05:20:21"
+                android:text="00:00:00"
+                android:textStyle="bold"
                 android:textAlignment="center"
                 android:textColor="#FFFFFF"
                 android:textSize="45dp" />
@@ -33,12 +34,12 @@
                 android:layout_height="73dp"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:text="120"
-
                 android:autoSizeMaxTextSize="100sp"
+                android:textStyle="bold"
                 android:autoSizeMinTextSize="5sp"
                 android:autoSizeStepGranularity="2sp"
                 android:autoSizeTextType="uniform"
+                android:text="0"
 
                 android:textAlignment="center"
                 android:textColor="#00E5FF"
@@ -82,9 +83,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="291dp"
                 android:layout_gravity="center_horizontal"
-
-
-                android:text="12.1"
+                android:textStyle="bold"
+                android:text="0"
                 android:textAlignment="center"
                 android:textColor="#00BCD4"
                 android:textSize="210dp" />
@@ -110,12 +110,12 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
-                android:text="0:0"
-
-                android:autoSizeTextType="uniform"
-                android:autoSizeMinTextSize="12sp"
                 android:autoSizeMaxTextSize="100sp"
+                android:textStyle="bold"
+                android:autoSizeMinTextSize="12sp"
                 android:autoSizeStepGranularity="2sp"
+                android:autoSizeTextType="uniform"
+                android:text="0"
                 android:textAlignment="center"
                 android:textColor="#8BC34A"
                 android:textSize="50dp" />
@@ -126,12 +126,12 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
-                android:text="0:0"
-
-                android:autoSizeTextType="uniform"
-                android:autoSizeMinTextSize="12sp"
                 android:autoSizeMaxTextSize="100sp"
+                android:textStyle="bold"
+                android:autoSizeMinTextSize="12sp"
                 android:autoSizeStepGranularity="2sp"
+                android:autoSizeTextType="uniform"
+                android:text="0"
 
                 android:textAlignment="center"
                 android:textColor="#00E5FF"

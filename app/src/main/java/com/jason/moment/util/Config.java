@@ -22,9 +22,8 @@ public class Config {
     static String _ver                      = "1";
 
     /* 지도 */
-    public static int _pen_color            = Color.BLUE;
-    public static int _pen_track_color      = Color.RED;
-    public static int _pen_width            = 5;
+    public static int _track_color      = Color.RED;
+    public static int _track_width            = 10;
     public static int _default_start_layout = R.layout.activity_start_style1;
 
     /* 파일 디코딩시 목표 크기 지정 100:흐림 400:보통 800:또렷 */
@@ -119,7 +118,18 @@ public class Config {
                 PreferenceManager.getDefaultSharedPreferences(context /* Activity context */);
         String _preference_val = sharedPreferences.getString(name, "");
         return _preference_val;
+    }
 
+    public static int getIntPreference(Context context, String name) {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(context /* Activity context */);
+        int _preference_val = -1;
+        try {
+            _preference_val = Integer.parseInt(sharedPreferences.getString(name, "-1"));
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+        return _preference_val;
     }
 
     public static String getTmpPicName() {

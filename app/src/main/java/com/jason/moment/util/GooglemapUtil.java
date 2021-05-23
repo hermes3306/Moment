@@ -44,9 +44,9 @@ public class GooglemapUtil {
         }
 
         PolylineOptions plo = new PolylineOptions();
-        plo.color(Config._pen_track_color);
+        plo.color(Config._track_color);
         Polyline line = map.addPolyline(plo);
-        line.setWidth(Config._pen_width);
+        line.setWidth(Config._track_width);
         line.setPoints(l);
         if(line_prev!=null) line_prev.remove();
         line_prev = line;
