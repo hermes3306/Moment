@@ -50,16 +50,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
-                android:text="TIME"
-                android:textStyle="bold"
+                android:text="Time"
                 android:textAlignment="center"
                 android:textColor="@color/DimGray"
-                android:textSize="20dp" />
+                android:textSize="25dp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -67,10 +68,10 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:text="Calories"
-                android:textStyle="bold"
                 android:textAlignment="center"
                 android:textColor="@color/DimGray"
-                android:textSize="20dp" />
+                android:textSize="25dp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
@@ -97,10 +98,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:text="KM"
-                android:textStyle="bold"
-                android:textColor="@color/DimGray"
                 android:textAlignment="center"
-                android:textSize="30dp" />
+                android:textColor="@color/DimGray"
+                android:textSize="30dp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
@@ -152,28 +153,28 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="30dp"
                 android:layout_weight="1"
-                android:text="CURRENT(km/min)"
-                android:textStyle="bold"
+                android:text="Current"
                 android:textAlignment="center"
                 android:textColor="@color/DimGray"
-                android:textSize="20dp" />
+                android:textSize="25dp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
-                android:text="AVG PACE(km/min)"
-                android:textStyle="bold"
+                android:text="Average"
                 android:textAlignment="center"
                 android:textColor="@color/DimGray"
-                android:textSize="20dp" />
+                android:textSize="25dp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:background="@color/teal_200"
+            android:background="@color/Cyan"
             android:orientation="horizontal">
 
             <ImageButton

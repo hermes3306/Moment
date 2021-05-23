@@ -85,18 +85,18 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     public ArrayList list = null;
     public MyActivity first = null;
     public MyActivity last = null;
-    public String filename;
+    public String activity_file_namee;
 
     public LocationManager mLocManager = null;
 
     // 사진 촬영 기능
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    String currentFileName;
+    String currentMediaName;
     Uri currentFileUri;
 
     private void recordVideo() {
-        currentFileName = Config.getVideoName();
-        File mediaFile = new File(Config.MOV_SAVE_DIR, currentFileName);
+        currentMediaName = Config.getVideoName();
+        File mediaFile = new File(Config.MOV_SAVE_DIR, currentMediaName);
         Uri mediaUri = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",
                 mediaFile);
@@ -107,8 +107,8 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void takePic() {
-        currentFileName = Config.getTmpPicName();
-        File mediaFile = new File(Config.PIC_SAVE_DIR, currentFileName);
+        currentMediaName = Config.getTmpPicName();
+        File mediaFile = new File(Config.PIC_SAVE_DIR, currentMediaName);
         Uri mediaUri = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",
                 mediaFile);
@@ -132,11 +132,11 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         switch(requestCode) {
             case Config.PICK_FROM_CAMERA:
                 Log.d(TAG, "-- PIC_FROM_CAMERA: ");
-                showImg(currentFileName);
+                showImg(currentMediaName);
                 break;
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
-                showVideo(currentFileName);
+                showVideo(currentMediaName);
                 break;
         }
     }
@@ -178,7 +178,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         MediaController m;
         m = new MediaController(this);
 
-        File mediaFile = new File(Config.MOV_SAVE_DIR, currentFileName);
+        File mediaFile = new File(Config.MOV_SAVE_DIR, currentMediaName);
         Uri mediaUri = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",
                 mediaFile);
@@ -380,7 +380,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         initializeContentViews(start_layout[inx]);
         initializeLocationManager();
 
-        filename = StringUtil.DateToString(new Date(),"yyyyMMdd_HHmmss");
+        activity_file_namee = StringUtil.DateToString(new Date(),"yyyyMMdd_HHmmss");
         startMyTimer();
         start_time = new Date();
     }
@@ -410,7 +410,9 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void notificationQuit(int _id, String ticker, String title, String detail) {
-        Intent intent = new Intent(_ctx, StartActivity.class);
+        Intent intent = new Intent(_ctx, MyReportActivity.class);
+        intent.putExtra("activity_file_name", activity_file_namee);
+
         PendingIntent contentIntent = PendingIntent.getActivity(_ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder b = new NotificationCompat.Builder(_ctx,"default");
@@ -424,7 +426,6 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                 .setDefaults(Notification.DEFAULT_LIGHTS| Notification.DEFAULT_SOUND)
                 .setContentIntent(contentIntent)
                 .setContentInfo("Info");
-
         NotificationManager notificationManager = (NotificationManager) _ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(_id, b.build());
     }
@@ -452,8 +453,8 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         builder.setPositiveButton("중지",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        MyActivityUtil.serialize(list, filename );
-                        Toast.makeText(getApplicationContext(), "JASON's 활동이 저장되었습니다!" + filename, Toast.LENGTH_SHORT).show();
+                        MyActivityUtil.serialize(list, activity_file_namee );
+                        Toast.makeText(getApplicationContext(), "JASON's 활동이 저장되었습니다!" + activity_file_namee, Toast.LENGTH_SHORT).show();
 
                         String detail = "총운동 거리:" + tv_start_km.getText();
                         detail+= "\n총운동 시간:" + tv_start_time.getText();
@@ -461,8 +462,8 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                         detail+= "\n소모칼로리:" + tv_start_calory.getText();
 
                         notificationQuit(100,"Jason","활동이 저장되었습니다.", detail);
-                        notificationQuit2(101,"Jason","활동이 저장되었습니다.", detail);
-                        notificationSimpleQuit(102,"활동이 저장되었습니다.", detail);
+                        //notificationQuit2(101,"Jason","활동이 저장되었습니다.", detail);
+                        //notificationSimpleQuit(102,"활동이 저장되었습니다.", detail);
 
                         deleteLocationManager();
                         StartActivity.this.quit = true;
@@ -531,11 +532,11 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                     tv_start_calory.setText("" + String.format("%.1f", burntkCal));
                     if(last==null) {
                         last = new Date();
-                        MyActivityUtil.serialize(list, filename );
+                        MyActivityUtil.serialize(list, activity_file_namee );
                     }else {
                         Date now = new Date();
                         if(DateUtil.isLongerThan1Min(last, now)) {
-                            MyActivityUtil.serialize(list, filename );
+                            MyActivityUtil.serialize(list, activity_file_namee );
                             last = now;
                         }
                     }
