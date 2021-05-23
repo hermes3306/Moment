@@ -18,16 +18,14 @@ import java.util.Date;
 
 public class Config {
 
-
     static String TAG                       = "Config";
-    static String _ver                      = "0.92";
+    static String _ver                      = "1";
 
     /* 지도 */
     public static int _pen_color            = Color.BLUE;
     public static int _pen_track_color      = Color.RED;
     public static int _pen_width            = 5;
     public static int _default_start_layout = R.layout.activity_start_style1;
-
 
     /* 파일 디코딩시 목표 크기 지정 100:흐림 400:보통 800:또렷 */
     public static int PIC_REQUIRED_SIZE     = 400;
@@ -42,12 +40,14 @@ public class Config {
     static File external_pub_files_path2    = null;    /* 7. 외부 공유저장소 */
     static File external_pub_files_path_csv = null;    /* 8. 외부 공유저장소 (CSV)*/
     static File external_pub_files_path_mnt = null;    /* 9. 외부 공유저장소 (MNT) */
+    static File external_pub_files_path_pic = null;    /* 10. 외부 공유저장소 (PIC) */
+    static File external_pub_files_path_mov = null;    /* 11. 외부 공유저장소 (MOV) */
 
     static File _SAVE_DIRS[]                = null;
-    public static File PIC_SAVE_DIR         = null;
-    public static File VIDEO_SAVE_DIR       = null;
     public static File CVS_SAVE_DIR         = null;
     public static File MNT_SAVE_DIR         = null;
+    public static File PIC_SAVE_DIR         = null;
+    public static File MOV_SAVE_DIR       = null;
 
     public static String        _serverURL      = "http://ezehub.club/moment";
     public static String        _serverFolder   = "/upload";
@@ -107,17 +107,12 @@ public class Config {
     public static final int per1KM      = 3;
     public static final int per1Mile    = 4;
 
-    static File mediaStorage =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
-    public static File mediaStorageDir4mnt  = new File(mediaStorage, "CSV" + _ver);
-    public static File mediaStorageDir4csv  = new File(mediaStorage, "CSV" + _ver);
-    public static File mediaStorageDir4pic  = new File(mediaStorage,"Picture" + _ver);
+    static String mnt_folder_name       = "Moment_MNT" + _ver;
+    static String csv_folder_name       = "Moment_CSV" + _ver;
+    static String pic_folder_name       = "Moment_PIC" + _ver;
+    static String mov_folder_name       = "Moment_MOV" + _ver;
+    static String jsn_folder_name       = "Moment_JSN" + _ver;
 
-    static {
-        if(!mediaStorageDir4mnt.exists()) mediaStorageDir4mnt.mkdirs();
-        if(!mediaStorageDir4csv.exists()) mediaStorageDir4csv.mkdirs();
-        if(!mediaStorageDir4pic.exists()) mediaStorageDir4pic.mkdirs();
-    }
 
     public static String getPreference(Context context, String name) {
         SharedPreferences sharedPreferences =
@@ -158,6 +153,22 @@ public class Config {
         return null;
     }
 
+    static File mediaStorage =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+    public static File mediaStorageDir4mnt  = new File(mediaStorage, mnt_folder_name);
+    public static File mediaStorageDir4csv  = new File(mediaStorage, csv_folder_name);
+    public static File mediaStorageDir4pic  = new File(mediaStorage, pic_folder_name);
+    public static File mediaStorageDir4mov  = new File(mediaStorage, mov_folder_name);
+    public static File mediaStorageDir4jsn  = new File(mediaStorage, jsn_folder_name);
+
+    static {
+        if(!mediaStorageDir4mnt.exists()) mediaStorageDir4mnt.mkdirs();
+        if(!mediaStorageDir4csv.exists()) mediaStorageDir4csv.mkdirs();
+        if(!mediaStorageDir4pic.exists()) mediaStorageDir4pic.mkdirs();
+        if(!mediaStorageDir4mov.exists()) mediaStorageDir4mov.mkdirs();
+        if(!mediaStorageDir4jsn.exists()) mediaStorageDir4jsn.mkdirs();
+    }
+
     static boolean initialized_file_provider = false;
     public static void initialize_file_provider(Context _ctx) {
         if(initialized_file_provider) return;
@@ -169,8 +180,10 @@ public class Config {
         external_files_path2 = _ctx.getExternalFilesDir(Environment.DIRECTORY_MOVIES); /* 5. 외부 공유 저장소 Movies */
         external_pub_files_path1 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS); /* 6.외부 공유저장소 */
         external_pub_files_path2 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES); /* 7.외부 공유저장소 */
-        external_pub_files_path_csv = new File(external_pub_files_path1, "CSV" + _ver);    /* 8. 외부 공유저장소 (CSV)*/
-        external_pub_files_path_mnt = new File(external_pub_files_path1, "Moment" + _ver);   /* 9. 외부 공유저장소 (MNT) */
+        external_pub_files_path_csv = new File(external_pub_files_path1, mnt_folder_name);    /* 8. 외부 공유저장소 (CSV)*/
+        external_pub_files_path_mnt = new File(external_pub_files_path1, csv_folder_name);   /* 9. 외부 공유저장소 (MNT) */
+        external_pub_files_path_pic = new File(external_pub_files_path1, pic_folder_name);   /* 9. 외부 공유저장소 (PIC) */
+        external_pub_files_path_mov = new File(external_pub_files_path1, mov_folder_name);   /* 9. 외부 공유저장소 (MOV) */
 
         _SAVE_DIRS = new File[] {
             cache_path,                     /* 0. 내부 저장소 */
@@ -182,7 +195,9 @@ public class Config {
             external_pub_files_path1,       /* 6. 외부 공유 저장소 Document */
             external_pub_files_path2,       /* 7. 외부 공유 저장소 Pictures */
             external_pub_files_path_csv,    /* 8. 외부 공유 저장소 (CSV) */
-            external_pub_files_path_mnt     /* 9. 외부 공유 저장소 (MNT)) */
+            external_pub_files_path_mnt,    /* 9. 외부 공유 저장소 (MNT)) */
+            external_pub_files_path_pic,    /* 10. 외부 공유 저장소 (PIC)) */
+            external_pub_files_path_mov     /* 11. 외부 공유 저장소 (MOV)) */
         };
 
         Log.d(TAG, "--cache_path:" + cache_path);
@@ -194,10 +209,16 @@ public class Config {
         Log.d(TAG, "--external_pub_files_path1:" + external_pub_files_path1);
         Log.d(TAG, "--external_pub_files_path2:" + external_pub_files_path2);
 
-        PIC_SAVE_DIR   = _SAVE_DIRS[4];
-        VIDEO_SAVE_DIR = _SAVE_DIRS[5];
         CVS_SAVE_DIR   = _SAVE_DIRS[8];
         MNT_SAVE_DIR   = _SAVE_DIRS[9];
+        PIC_SAVE_DIR   = _SAVE_DIRS[10];
+        MOV_SAVE_DIR   = _SAVE_DIRS[11];
+
+        if(!CVS_SAVE_DIR.exists()) CVS_SAVE_DIR.mkdirs();
+        if(!MNT_SAVE_DIR.exists()) MNT_SAVE_DIR.mkdirs();
+        if(!PIC_SAVE_DIR.exists()) PIC_SAVE_DIR.mkdirs();
+        if(!MOV_SAVE_DIR.exists()) MOV_SAVE_DIR.mkdirs();
+
         initialized_file_provider = true;
     }
 

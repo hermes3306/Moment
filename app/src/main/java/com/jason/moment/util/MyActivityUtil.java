@@ -42,7 +42,7 @@ import static com.jason.moment.util.Config.mediaStorageDir4csv;
 
 public class MyActivityUtil {
     private static String TAG = "MyActivityUtil";
-    private static File mediaStorageDir;
+    private static File mediaStorageDir4mnt;
     private static File mediaStorageDir4csv;
     private static int  _default_ext;
     private static String _default_extension;
@@ -53,7 +53,7 @@ public class MyActivityUtil {
     }
 
     public static void initialize() {
-        mediaStorageDir = Config.mediaStorageDir4mnt;
+        mediaStorageDir4mnt = Config.mediaStorageDir4mnt;
         mediaStorageDir4csv = Config.mediaStorageDir4csv;
         _default_ext = Config._default_ext;
         _default_extension = (_default_ext==Config._csv)? ".csv" : ".mnt";
@@ -126,8 +126,7 @@ public class MyActivityUtil {
 
     public static void serializeIntoJason(ArrayList<MyActivity> list, int start, int end, String fileName) {
         if(start <0 || end >= list.size()) return;
-        if(!mediaStorageDir.exists()) mediaStorageDir.mkdirs();
-        File file = new File(mediaStorageDir, fileName);
+        File file = new File(Config.mediaStorageDir4jsn, fileName);
         Log.d(TAG, " -- **** Activity Jason file: " + file.toString());
         try {
             JSONArray jsonArr = new JSONArray();
@@ -145,7 +144,7 @@ public class MyActivityUtil {
             jobj.put("activities", jsonArr);
 
             Writer output = null;
-            File jfile = new File(mediaStorageDir,fileName);
+            File jfile = new File(Config.mediaStorageDir4jsn,fileName);
             output = new BufferedWriter(new FileWriter(jfile));
             output.write(jobj.toString());
             output.close();
@@ -175,8 +174,8 @@ public class MyActivityUtil {
 
     public static void serializeIntoMnt(ArrayList<MyActivity> list, String fileName) {
         if(list == null) return;
-        if(!mediaStorageDir.exists()) mediaStorageDir.mkdirs();
-        File file = new File(mediaStorageDir, fileName);
+        if(!mediaStorageDir4mnt.exists()) mediaStorageDir4mnt.mkdirs();
+        File file = new File(mediaStorageDir4mnt, fileName);
         Log.e(TAG, "-- **** Activity file: " + file.toString());
         try {
             FileOutputStream fos = new FileOutputStream(file);
@@ -253,7 +252,7 @@ public class MyActivityUtil {
         };
         File[] flist=null;
         if(_default_ext==Config._csv) flist = mediaStorageDir4csv.listFiles(fnf);
-        else if(_default_ext==Config._ser) flist = mediaStorageDir.listFiles(fnf);
+        else if(_default_ext==Config._ser) flist = mediaStorageDir4mnt.listFiles(fnf);
 
         if(reverserorder) Arrays.sort(flist, Collections.<File>reverseOrder());
         else Arrays.sort(flist);
@@ -267,7 +266,7 @@ public class MyActivityUtil {
                 return s.toLowerCase().endsWith(postfix);
             }
         };
-        File[] flist  = (_default_ext==Config._ser)? mediaStorageDir.listFiles(fnf) : mediaStorageDir4csv.listFiles(fnf);
+        File[] flist  = (_default_ext==Config._ser)? mediaStorageDir4mnt.listFiles(fnf) : mediaStorageDir4csv.listFiles(fnf);
         if(reverserorder) Arrays.sort(flist, Collections.<File>reverseOrder());
         else Arrays.sort(flist);
         return flist;
@@ -282,7 +281,7 @@ public class MyActivityUtil {
         };
 
         File[] files  = null;
-        files = (_default_ext==Config._ser)? mediaStorageDir.listFiles(fnf) : mediaStorageDir4csv.listFiles(fnf);
+        files = (_default_ext==Config._ser)? mediaStorageDir4mnt.listFiles(fnf) : mediaStorageDir4csv.listFiles(fnf);
         if (files == null) return null;
         if(reverse_order) Arrays.sort(files, Collections.reverseOrder());
         else Arrays.sort(files);

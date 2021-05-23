@@ -650,7 +650,7 @@ public class MapsActivity extends AppCompatActivity implements
 
             case R.id.pic_activity:
                 Log.d(TAG,"-- Pic Activity!");
-                File folder= _ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                File folder= Config.PIC_SAVE_DIR;
 
                 File[] files = folder.listFiles(new FilenameFilter() {
                     @Override

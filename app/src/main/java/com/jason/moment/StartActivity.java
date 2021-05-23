@@ -22,18 +22,22 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.FileProvider;
+import androidx.core.widget.TextViewCompat;
 import androidx.preference.PreferenceManager;
 
 import com.jason.moment.util.CalDistance;
@@ -43,6 +47,8 @@ import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StringUtil;
+
+import org.jetbrains.annotations.TestOnly;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -83,7 +89,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
 
     private void recordVideo() {
         currentFileName = Config.getVideoName();
-        File mediaFile = new File(Config.VIDEO_SAVE_DIR, currentFileName);
+        File mediaFile = new File(Config.MOV_SAVE_DIR, currentFileName);
         Uri mediaUri = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",
                 mediaFile);
@@ -165,7 +171,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         MediaController m;
         m = new MediaController(this);
 
-        File mediaFile = new File(Config.VIDEO_SAVE_DIR, currentFileName);
+        File mediaFile = new File(Config.MOV_SAVE_DIR, currentFileName);
         Uri mediaUri = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",
                 mediaFile);
@@ -200,10 +206,44 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                 takePic();
                 break;
             case R.id.imb_start_list:
-                recordVideo();
+                //recordVideo();
+                PopupMenu p = new PopupMenu(StartActivity.this, v);
+                getMenuInflater().inflate(R.menu.start_menu, p.getMenu());
+                p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        return onOptionsItemSelected(item);
+                    }
+                });
+                p.show();
                 break;
         }
     }
+
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            String[] mSports = {"야구","축구","농구","수영","테니스","골프","탁구","볼링","당구"};
+            int id = item.getItemId();
+            if (id == R.id.start_layout_select) {
+                AlertDialog mSportSelectDialog = new AlertDialog.Builder(StartActivity.this )
+                        .setItems(mSports, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Toast.makeText(getApplicationContext(),mSports[i], Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setTitle("title")
+                        .setPositiveButton("확인",null)
+                        .setNegativeButton("취소",null)
+                        .create();
+                mSportSelectDialog.show();
+            return true;
+            }
+            return super.onOptionsItemSelected(item);
+        }
+
+
 
     private class GPSListener implements LocationListener {
         public GPSListener(String gpsProvider) {
@@ -442,6 +482,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         public void run() {
             long start = System.currentTimeMillis();
             StartActivity.this.runOnUiThread(new Runnable() {
+                @RequiresApi(api = Build.VERSION_CODES.O)
                 public void run() {
                     Date d = new Date();
                     String elapsed = StringUtil.elapsedStr(start_time,d);
@@ -450,14 +491,17 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                     dist = MyActivityUtil.getTotalDistanceInDouble(list);
 
                     long t2 = System.currentTimeMillis();
-                    if(dist<1000) {
-                        String s1 = String.format("%.2f", dist);
-                        if(s1.length()>4) s1=String.format("%.1f", dist);
+                    if(dist<1000) { /* 1KM 이하 */
+                        String s1 = String.format("%.0f", dist);
                         tv_start_km.setText(s1);
                         tv_start_km_str.setText("Meters");
-                    } else {
-                        String s1 = String.format("%.1f", dist/1000.0);
-                        if(s1.length()>3) s1=String.format("%.1f", dist/1000.0);
+                    } else if(dist>1000) { /* 1KM 이상 */
+                        String s1 = String.format("%1.f", dist/1000.0);
+                        tv_start_km.setText(s1);
+                        tv_start_km_str.setText("Meters");
+                    } else if(dist >10000){ /* 10KM 이상*/
+                        String s1 = String.format("%.2f", dist/1000.0);
+                        tv_start_km.setAutoSizeTextTypeWithDefaults(TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
                         tv_start_km.setText(s1);
                         tv_start_km_str.setText("Kilometers");
                     }
@@ -476,7 +520,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
 
                     burntkCal = CaloryUtil.calculateEnergyExpenditure((float)dist / 1000f, durationInSeconds);
 
-                    tv_start_calory.setText("" + String.format("%.3f", burntkCal));
+                    tv_start_calory.setText("" + String.format("%.1f", burntkCal));
                     if(last==null) {
                         last = new Date();
                         MyActivityUtil.serialize(list, filename );

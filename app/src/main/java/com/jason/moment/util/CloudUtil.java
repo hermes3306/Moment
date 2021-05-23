@@ -189,7 +189,7 @@ public class CloudUtil {
                 } else if(ftype==Config._ser) {
                     flist = Config.mediaStorageDir4mnt.listFiles();
                 }else if(ftype==Config._img) {
-                    flist = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).listFiles();
+                    flist = Config.PIC_SAVE_DIR.listFiles();
                 }
 
                 asyncDialog.setMax(flist.length);

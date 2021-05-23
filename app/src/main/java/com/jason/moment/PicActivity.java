@@ -64,7 +64,7 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
     }
 
     public void reload() {
-        File folder= _ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File folder= Config.PIC_SAVE_DIR;
         File files[] = folder.listFiles();
 
         Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
@@ -178,7 +178,7 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
                 Log.e(TAG,"-- before createImageFile");
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
                 String imageFileName = "IMG_" + timeStamp + ".jpeg";
-                photoFile = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), imageFileName);
+                photoFile = new File(Config.PIC_SAVE_DIR, imageFileName);
                 Toast.makeText(_ctx, "photoFile " + photoFile.getAbsolutePath() + " is used for this picture!", Toast.LENGTH_LONG).show();
                 Log.d(TAG,"-- >>>>after createImageFile" + photoFile.getAbsolutePath());
             } catch (Exception ex) {
@@ -224,7 +224,7 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
     }
 
     private void sharePic() {
-        File photoFile = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), currentFileName);
+        File photoFile = new File(Config.PIC_SAVE_DIR, currentFileName);
         Uri photoURI = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",
                 photoFile);
@@ -241,7 +241,7 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
     // check how to use this galleryAddPic
     private void galleryAddPic(String filename) {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), filename);
+        File f = new File(Config.PIC_SAVE_DIR, filename);
         Uri contentUri = Uri.fromFile(f);
         Log.d(TAG,"-- >>>>contentUri to be added to Gallary " + contentUri);
         mediaScanIntent.setData(contentUri);
