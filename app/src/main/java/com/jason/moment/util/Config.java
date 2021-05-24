@@ -19,11 +19,12 @@ import java.util.Date;
 public class Config {
 
     static String TAG                       = "Config";
-    static String _ver                      = "1";
+    static String _ver                      = "2";
+
 
     /* 지도 */
-    public static int _track_color      = Color.RED;
-    public static int _track_width            = 10;
+    public static int _track_color          = Color.RED;
+    public static int _track_width          = 10;
     public static int _default_start_layout = R.layout.activity_start_style1;
 
     /* 파일 디코딩시 목표 크기 지정 100:흐림 400:보통 800:또렷 */
@@ -43,7 +44,7 @@ public class Config {
     static File external_pub_files_path_mov = null;    /* 11. 외부 공유저장소 (MOV) */
 
     static File _SAVE_DIRS[]                = null;
-    public static File CVS_SAVE_DIR         = null;
+    public static File CSV_SAVE_DIR         = null;
     public static File MNT_SAVE_DIR         = null;
     public static File PIC_SAVE_DIR         = null;
     public static File MOV_SAVE_DIR       = null;
@@ -99,7 +100,8 @@ public class Config {
     public static final int CALL_SCROLL_PIC_ACTIVITY = 8;
     public static final int PICK_FROM_VIDEO         = 9;
     public static final int CALL_SCROLL_ALL_PIC_ACTIVITY = 10;
-
+    public static final int CALL_FILE_ACTIVITY      = 11;
+    public static final int CALL_REPORT_ACTIVITY    = 12;
 
     public static final int perKM       = 1;
     public static final int perMile     = 2;
@@ -125,8 +127,9 @@ public class Config {
                 PreferenceManager.getDefaultSharedPreferences(context /* Activity context */);
         int _preference_val = -1;
         try {
-            _preference_val = Integer.parseInt(sharedPreferences.getString(name, "-1"));
+            _preference_val = Integer.parseInt(sharedPreferences.getString(name, "0"));
         }catch(Exception e) {
+            Log.d(TAG, "-- Err(getIntPreference for name:" + name  + e.toString());
             e.printStackTrace();
         }
         return _preference_val;
@@ -190,8 +193,8 @@ public class Config {
         external_files_path2 = _ctx.getExternalFilesDir(Environment.DIRECTORY_MOVIES); /* 5. 외부 공유 저장소 Movies */
         external_pub_files_path1 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS); /* 6.외부 공유저장소 */
         external_pub_files_path2 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES); /* 7.외부 공유저장소 */
-        external_pub_files_path_csv = new File(external_pub_files_path1, mnt_folder_name);    /* 8. 외부 공유저장소 (CSV)*/
-        external_pub_files_path_mnt = new File(external_pub_files_path1, csv_folder_name);   /* 9. 외부 공유저장소 (MNT) */
+        external_pub_files_path_csv = new File(external_pub_files_path1, csv_folder_name);    /* 8. 외부 공유저장소 (CSV)*/
+        external_pub_files_path_mnt = new File(external_pub_files_path1, mnt_folder_name);   /* 9. 외부 공유저장소 (MNT) */
         external_pub_files_path_pic = new File(external_pub_files_path1, pic_folder_name);   /* 9. 외부 공유저장소 (PIC) */
         external_pub_files_path_mov = new File(external_pub_files_path1, mov_folder_name);   /* 9. 외부 공유저장소 (MOV) */
 
@@ -219,12 +222,12 @@ public class Config {
         Log.d(TAG, "--external_pub_files_path1:" + external_pub_files_path1);
         Log.d(TAG, "--external_pub_files_path2:" + external_pub_files_path2);
 
-        CVS_SAVE_DIR   = _SAVE_DIRS[8];
+        CSV_SAVE_DIR   = _SAVE_DIRS[8];
         MNT_SAVE_DIR   = _SAVE_DIRS[9];
         PIC_SAVE_DIR   = _SAVE_DIRS[10];
         MOV_SAVE_DIR   = _SAVE_DIRS[11];
 
-        if(!CVS_SAVE_DIR.exists()) CVS_SAVE_DIR.mkdirs();
+        if(!CSV_SAVE_DIR.exists()) CSV_SAVE_DIR.mkdirs();
         if(!MNT_SAVE_DIR.exists()) MNT_SAVE_DIR.mkdirs();
         if(!PIC_SAVE_DIR.exists()) PIC_SAVE_DIR.mkdirs();
         if(!MOV_SAVE_DIR.exists()) MOV_SAVE_DIR.mkdirs();

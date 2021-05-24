@@ -23,7 +23,7 @@ public class StartupBatch {
         try{
             Log.d(TAG,"-- Startup Batch Started...");
             //if(genCVSfiles()) Log.d(TAG, "-- Success");
-            if(genMNTfiles()) Log.d(TAG, "-- Success");
+            //if(genMNTfiles()) Log.d(TAG, "-- Success");
             //deserializeTest();
             //genTodayDB4Sample();
             //deleteDB();
@@ -82,9 +82,9 @@ public class StartupBatch {
         MyActivityUtil.initialize();
 
         File flist[] = MyActivityUtil.getAllFiles();
-        for (int i=0;i<flist.length;i++) {
-            Log.e(TAG, "-- VVVV orig files " + i + " " + flist[i].getName());
-        }
+//        for (int i=0;i<flist.length;i++) {
+//            Log.e(TAG, "-- VVVV orig files " + i + " " + flist[i].getName());
+//        }
         for(int i=0;i<flist.length;i++) {
             ArrayList<MyActivity> mal = MyActivityUtil.deserializeFromCSV(flist[i]);
             String mntfname = MyActivityUtil.renameExt(flist[i], "mnt");
@@ -104,11 +104,11 @@ public class StartupBatch {
         MyActivityUtil.initialize();
 
         File flist[] = MyActivityUtil.getAllFiles();
-        for (int i=0;i<flist.length;i++) {
-            Log.e(TAG, "-- VVVV orig files " + i + " " + flist[i].getName());
-        }
+//        for (int i=0;i<flist.length;i++) {
+//            Log.e(TAG, "-- VVVV orig files " + i + " " + flist[i].getName());
+//        }
         for(int i=0;i<flist.length;i++) {
-            ArrayList<MyActivity> mal = MyActivityUtil.deserializeActivityFromMnt(flist[i]);
+            ArrayList<MyActivity> mal = MyActivityUtil.deserializeFromMnt(flist[i]);
             String csvfname = MyActivityUtil.renameExt(flist[i], "csv");
             MyActivityUtil.serializeIntoCSV(mal, csvfname);
         }

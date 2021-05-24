@@ -5,4 +5,12 @@
         android:id="@+id/start_layout_select"
         android:icon="@drawable/ic_home_black_24dp"
         android:title="Layout Select..." />
+    <item
+        android:id="@+id/action_map"
+        android:orderInCategory="100"
+        android:title="Map"/>
+    <item
+        android:id="@+id/imSetting"
+        android:orderInCategory="100"
+        android:title="Setting" />
 </menu>

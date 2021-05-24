@@ -1,22 +1,16 @@
 package com.jason.moment;
 
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
-import android.os.IBinder;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
@@ -38,31 +32,24 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.material.snackbar.Snackbar;
 import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.AddressUtil;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CalcTime;
 import com.jason.moment.util.CaloryUtil;
 import com.jason.moment.util.Config;
-import com.jason.moment.util.FileUtil;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StringUtil;
-import com.jason.moment.util.UI;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class FileActivity extends AppCompatActivity implements View.OnClickListener{
+public class FileActivity2 extends AppCompatActivity implements OnMapReadyCallback,View.OnClickListener{
     public static String TAG = "FileActivity";
 
     String _layout_names[] = {"Basic","Night","White"};
@@ -98,6 +85,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initializeContentViews(int layout) {
         setContentView(layout);
+
     }
 
     @Override
@@ -633,13 +621,13 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.imSetting:
                 Log.d(TAG, "-- Setting Activities!");
-                Intent configIntent = new Intent(FileActivity.this, ConfigActivity.class);
+                Intent configIntent = new Intent(FileActivity2.this, ConfigActivity.class);
                 configIntent.putExtra("1", 1);
                 startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
                 break;
             case R.id.imLayout:
                 Resources r = getResources();
-                AlertDialog.Builder builder = new AlertDialog.Builder(FileActivity.this )
+                AlertDialog.Builder builder = new AlertDialog.Builder(FileActivity2.this )
                         .setItems(_layout_names, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -659,5 +647,8 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
 
+    }
 }

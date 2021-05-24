@@ -89,6 +89,10 @@ public class MyActivityUtil {
         return deserializeFromCSV(new File(mediaStorageDir4csv, fileName));
     }
 
+    public static ArrayList<MyActivity> deserializeFromMnt(String fileName) {
+        return deserializeFromMnt(new File(mediaStorageDir4mnt, fileName));
+    }
+
     public static Date getActivityTime(MyActivity ma) {
         return ma.toDate();
     }
@@ -195,14 +199,31 @@ public class MyActivityUtil {
     }
 
     public static ArrayList<MyActivity> deserialize(File file) {
+        Log.d(TAG,"-- about to deserialize:" + file.getAbsolutePath());
         if(_default_ext == Config._csv) {
             return deserializeFromCSV(file);
         }else if(_default_ext == Config._ser) {
-            return deserializeActivityFromMnt(file);
+            return deserializeFromMnt(file);
         } else return null;
     }
 
-    public static ArrayList<MyActivity> deserializeActivityFromMnt(File file) {
+    public static ArrayList<MyActivity> deserialize(String activity_filename) {
+        Log.d(TAG, "-- activity filename: " + activity_filename);
+        if(activity_filename.endsWith("csv")) {
+            return deserialize(new File(Config.CSV_SAVE_DIR, activity_filename));
+        }else if(activity_filename.endsWith("mnt")) {
+            return deserialize(new File(Config.MNT_SAVE_DIR, activity_filename));
+        }
+
+        initialize();
+        if(_default_ext == Config._csv) {
+            return deserialize(new File(Config.CSV_SAVE_DIR, activity_filename + _default_extension));
+        }else {
+            return deserialize(new File(Config.MNT_SAVE_DIR, activity_filename + _default_extension));
+        }
+    }
+
+    public static ArrayList<MyActivity> deserializeFromMnt(File file) {
         if(file == null)  return null;
         FileInputStream fis = null;
         BufferedInputStream bis = null;

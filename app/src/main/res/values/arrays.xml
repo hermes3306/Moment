@@ -1,10 +1,15 @@
 <resources>
     <!-- Track color -->
     <string-array name="track_color">
-        <item>RED</item>
-        <item>BLUE</item>
-        <item>CYAN</item>
-        <item>WHITE</item>
+        <item>Red</item>
+        <item>Blue</item>
+        <item>Cyan</item>
+        <item>White</item>
+        <item>Black</item>
+        <item>Yellow</item>
+        <item>DarkGray</item>
+        <item>Green</item>
+        <item>LightGray</item>
     </string-array>
 
     <string-array name="track_color_values">
@@ -12,6 +17,11 @@
         <item>1</item>
         <item>2</item>
         <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
     </string-array>
 
     <!-- Track color -->

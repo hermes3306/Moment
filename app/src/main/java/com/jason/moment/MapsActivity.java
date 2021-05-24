@@ -603,7 +603,7 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
+        inflater.inflate(R.menu.main_menu2, menu);
         return true;
     }
 
@@ -631,6 +631,20 @@ public class MapsActivity extends AppCompatActivity implements
                 }catch(Exception e){
                     e.printStackTrace();
                 }
+                return true;
+
+            case R.id.file_activity2:
+                Log.d(TAG,"-- Quote Activity!");
+                Intent fileactivity2 = new Intent(MapsActivity.this, FileActivity2.class);
+                fileactivity2.putExtra("1", 1);
+                startActivityForResult(fileactivity2, Config.CALL_FILE_ACTIVITY);
+                return true;
+
+            case R.id.ReportActivity:
+                Log.d(TAG,"-- Report Activity!");
+                Intent reportActivity = new Intent(MapsActivity.this, MyReportActivity.class);
+                reportActivity.putExtra("activity_file_name", "20210522_110818");
+                startActivityForResult(reportActivity, Config.CALL_REPORT_ACTIVITY);
                 return true;
 
             case R.id.quote_activity:
