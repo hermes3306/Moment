@@ -56,6 +56,19 @@
         <item>2</item>
     </string-array>
 
+    <!-- Start screen -->
+    <string-array name="file_screen">
+        <item>White</item>
+        <item>Night</item>
+        <item>Custom</item>
+    </string-array>
+
+    <string-array name="file_screen_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
     <string-array name="distance_values">
         <item>1</item>
         <item>5</item>

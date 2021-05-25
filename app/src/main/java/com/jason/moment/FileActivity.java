@@ -103,7 +103,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_file);
+        setContentView(R.layout.activity_file1);
 
         Intent intent = getIntent();
         position = intent.getExtras().getInt("pos");

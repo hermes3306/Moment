@@ -45,6 +45,7 @@
                 android:text="-/-"
                 android:textSize="14sp"
                 android:gravity="center_horizontal"
+                android:onClick="onClick"
                 android:textStyle="bold"/>
             <TextView
                 android:id="@+id/tv_file"
@@ -64,6 +65,7 @@
                 android:textSize="14sp"
                 android:gravity="center_horizontal"
                 android:textColor="@color/teal_200"
+                android:onClick="onClick"
                 android:textStyle="bold"/>
         </LinearLayout>
 
@@ -71,7 +73,7 @@
             android:id="@+id/mapView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-           android:layout_weight="1"
+            android:layout_weight="1"
             />
 
         <LinearLayout
@@ -175,6 +177,7 @@
             android:alpha="0.6"
             android:background="@android:color/transparent"
             android:contentDescription=""
+            android:onClick="onClick"
             app:srcCompat="@drawable/arrow_left128" />
         <TextView
             android:layout_width="100sp"
@@ -188,10 +191,34 @@
             android:alpha="0.6"
             android:background="@android:color/transparent"
             android:contentDescription="TODO"
+            android:onClick="onClick"
             app:srcCompat="@drawable/arrow_right128" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom|fill_horizontal"
+        android:layout_marginBottom="50dp"
+        android:orientation="vertical">
 
+        <ImageButton
+            android:id="@+id/imSetting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            app:srcCompat="@drawable/edit48" />
+        <ImageButton
+            android:id="@+id/imLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            app:srcCompat="@drawable/setup48" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -221,6 +248,7 @@
             android:background="@android:color/transparent"
             android:layout_gravity="right"
             app:srcCompat="@drawable/trash_48" />
+
 
     </LinearLayout>
 

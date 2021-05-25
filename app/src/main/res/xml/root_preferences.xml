@@ -10,6 +10,14 @@
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
+            app:defaultValue="0"
+            app:entries="@array/file_screen"
+            app:entryValues="@array/file_screen_values"
+            app:key="file_screen"
+            app:title="File Screen Type"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
             app:key="track_color"
             app:defaultValue="0"
             app:entries="@array/track_color"

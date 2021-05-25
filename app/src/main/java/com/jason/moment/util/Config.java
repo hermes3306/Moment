@@ -26,6 +26,7 @@ public class Config {
     public static int _track_color          = Color.RED;
     public static int _track_width          = 10;
     public static int _default_start_layout = R.layout.activity_start_style1;
+    public static int _default_file_layout  = R.layout.activity_file1;
 
     /* 파일 디코딩시 목표 크기 지정 100:흐림 400:보통 800:또렷 */
     public static int PIC_REQUIRED_SIZE     = 400;

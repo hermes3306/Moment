@@ -634,7 +634,7 @@ public class MapsActivity extends AppCompatActivity implements
                 return true;
 
             case R.id.file_activity2:
-                Log.d(TAG,"-- Quote Activity!");
+                Log.d(TAG,"-- FileActivity2!");
                 Intent fileactivity2 = new Intent(MapsActivity.this, FileActivity2.class);
                 fileactivity2.putExtra("1", 1);
                 startActivityForResult(fileactivity2, Config.CALL_FILE_ACTIVITY);

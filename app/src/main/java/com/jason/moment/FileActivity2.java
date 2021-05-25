@@ -49,10 +49,28 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class FileActivity2 extends AppCompatActivity implements OnMapReadyCallback,View.OnClickListener{
-    public static String TAG = "FileActivity";
+public class FileActivity2 extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener{
+    public static String TAG = "FileActivity2";
+    private     Context _ctx=null;
+    private     GoogleMap googleMap;
+    TextView    tv_cursor;
+    TextView    tv_cursor2;
+    TextView    tv_file;
+    TextView    tv_heading;
+    ImageButton imbt_prev;
+    ImageButton imbt_next;
+    TextView    tv_distance;
+    TextView    tv_duration;
+    TextView    tv_minperkm;
+    TextView    tv_carolies;
+    TextView    tv_address;
+    SeekBar     seekBar;
+    ImageButton imbt_marker;
+    ImageButton imbt_navi;
+    ImageButton imbt_trash;
+    File flist[];
 
-    String _layout_names[] = {"Basic","Night","White"};
+    String _layout_names[] = {"White","Night","Custome"};
     int _layout[] = {
             R.layout.activity_file1,
             R.layout.activity_file2,
@@ -83,358 +101,127 @@ public class FileActivity2 extends AppCompatActivity implements OnMapReadyCallba
     File _file_list[] = null;
     File _file = null;
 
+    Bundle _savedInstanceState=null;
     private void initializeContentViews(int layout) {
+        initializeContentViews(_savedInstanceState,  layout);
+    }
+
+    private void initializeContentViews(Bundle savedInstanceState, int layout) {
+        if(_savedInstanceState==null) _savedInstanceState = savedInstanceState;
         setContentView(layout);
+        MapView mapView = findViewById(R.id.mapView);
+        MapsInitializer.initialize(this);
+        mapView.onCreate(savedInstanceState);  // check required ....
+        mapView.onResume();
+        mapView.getMapAsync(this);
+        tv_cursor   = (TextView) findViewById(R.id.tv_cursor);
+        tv_cursor2  = (TextView) findViewById(R.id.tv_cursor2);
+        tv_file     = (TextView) findViewById(R.id.tv_file);
+        tv_heading  = (TextView) findViewById(R.id.tv_heading);
+        imbt_prev   = (ImageButton) findViewById(R.id.imbt_prev);
+        imbt_next   = (ImageButton) findViewById(R.id.imbt_next);
+        tv_distance = (TextView) findViewById(R.id.tv_distance);
+        tv_duration = (TextView) findViewById(R.id.tv_duration);
+        tv_minperkm = (TextView) findViewById(R.id.tv_minperkm);
+        tv_carolies = (TextView) findViewById(R.id.tv_carolies);
+        tv_address  = (TextView) findViewById(R.id.tv_address);
+        seekBar     = (SeekBar) findViewById(R.id.seekBar);
+        imbt_marker = (ImageButton) findViewById(R.id.imbt_marker);
+        imbt_navi   = (ImageButton) findViewById(R.id.imbt_navi);
+        imbt_trash  = (ImageButton) findViewById(R.id.imbt_trash);
+        flist       = MyActivityUtil.getFiles(filetype);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            public void onStopTrackingTouch(SeekBar seekBar) { }
+            public void onStartTrackingTouch(SeekBar seekBar) { }
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(mActivityList == null) return;
+                marker_pos_prev = marker_pos;
+                marker_pos = seekBar.getProgress();
+
+                LatLng nextpos = new LatLng(mActivityList.get(marker_pos).latitude,
+                        mActivityList.get(marker_pos).longitude);
+                LatLng prevpos = new LatLng(mActivityList.get(0).latitude,
+                        mActivityList.get(0).longitude);
+
+                CalDistance cd =  new CalDistance(prevpos, nextpos);
+                double dist = cd.getDistance();
+
+                String diststr = null;
+                String elapsedstr=null;
+                if(dist > 1000.0f) diststr = cd.getDistanceKmStr();
+                else diststr = cd.getDistanceMStr();
+
+                CalcTime ct = new CalcTime(mActivityList.get(marker_pos_prev), mActivityList.get(marker_pos));
+                long elapsed = ct.getElapsed();
+
+                if(elapsed > 60*60000) elapsedstr = ct.getElapsedHourStr();
+                else if(elapsed > 60000) elapsedstr = ct.getElapsedMinStr();
+                else elapsedstr = ct.getElapsedSecStr();
+
+                moveCamera(googleMap, nextpos);
+                String addr_Dong="";
+                float color = (marker_pos==0? BitmapDescriptorFactory.HUE_ROSE:BitmapDescriptorFactory.HUE_CYAN);
+                try {
+                    addr_Dong = AddressUtil.getAddressDong(_ctx, mActivityList.get(marker_pos));
+                }catch(Exception e) {
+                    e.printStackTrace();
+                    Log.e(TAG, "-- "+e);
+                }
+                Marker marker = googleMap.addMarker(new MarkerOptions().position(nextpos).title(addr_Dong)
+                        .icon(BitmapDescriptorFactory.defaultMarker(color))
+                        .draggable(true)
+                        .visible(true)
+                        .snippet(elapsedstr + " ("+diststr+")"));
+
+                if(bef_last_marker!=null) bef_last_marker.remove();
+                if(last_marker!=null) last_marker.remove();
+                last_marker = marker;
+
+                marker.showInfoWindow();
+                MapUtil.drawTrackInRange(_ctx,googleMap,mActivityList,marker_pos_prev, marker_pos);
+                //
+                tv_heading.setText(MyActivityUtil.getTimeStr(mActivityList, marker_pos));
+                tv_address.setText(AddressUtil.getAddress(_ctx, mActivityList.get(marker_pos)));
+
+                String inx_str= "" + seekBar.getProgress() + "/" + seekBar.getMax();
+                String inx_str2= "" + (position+1)  + "/" + (flist.length);
+                tv_cursor.setText(inx_str);
+                tv_cursor2.setText(inx_str2);
+                tv_file.setText(_file.getName().substring(0, _file.getName().length()-4));
+            }
+        });
 
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Config.initialize(_ctx);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_file);
+        int inx = Config.getIntPreference(this,"file_screen");
+        initializeContentViews(_layout[inx]);
+    }
 
-        Intent intent = getIntent();
-        position = intent.getExtras().getInt("pos");
-        filetype = intent.getExtras().getInt("filetype");
-
-        _file_list = MyActivityUtil.getFiles(filetype);
-        if(_file_list == null) {
-            Toast.makeText(getApplicationContext(),"No files found!", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        } else if(_file_list.length==0) {
-            Toast.makeText(getApplicationContext(), "No files found!", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-        _file = _file_list[0];
-
-        final Context _ctx = this;
-        final MapView mMapView = (MapView) findViewById(R.id.mapView);
-        MapsInitializer.initialize(this);
-        mMapView.onCreate(savedInstanceState);  // check required ....
-        mMapView.onResume();
-
-        mMapView.getMapAsync(new OnMapReadyCallback() {
-            final TextView tv_cursor = (TextView) findViewById(R.id.tv_cursor);
-            final TextView tv_cursor2 = (TextView) findViewById(R.id.tv_cursor2);
-
-            final TextView tv_file = (TextView) findViewById(R.id.tv_file);
-            final TextView tv_heading = (TextView) findViewById(R.id.tv_heading);
-            final ImageButton imbt_prev = (ImageButton) findViewById(R.id.imbt_prev);
-            final ImageButton imbt_next = (ImageButton) findViewById(R.id.imbt_next);
-            final TextView tv_distance = (TextView) findViewById(R.id.tv_distance);
-            final TextView tv_duration = (TextView) findViewById(R.id.tv_duration);
-            final TextView tv_minperkm = (TextView) findViewById(R.id.tv_minperkm);
-            final TextView tv_carolies = (TextView) findViewById(R.id.tv_carolies);
-            final TextView tv_address = (TextView) findViewById(R.id.tv_address);
-            final SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
-            final ImageButton imbt_marker = (ImageButton) findViewById(R.id.imbt_marker);
-            final ImageButton imbt_navi = (ImageButton) findViewById(R.id.imbt_navi);
-            final ImageButton imbt_trash = (ImageButton) findViewById(R.id.imbt_trash);
-
-            final File flist[] = MyActivityUtil.getFiles(filetype);
-
-            public void GO(final GoogleMap googleMap, File myfile) {
-                Log.e(TAG, "-- filename to see: " + myfile.getAbsolutePath());
-                googleMap.clear();
-                markers = new ArrayList<Marker>();
-                ActivityStat activityStat = null;
-
-                if(myfile != null) mActivityList = MyActivityUtil.deserialize(myfile);
-
-                if(mActivityList==null) {
-                    Log.e(TAG, "-- " + myfile + " failed to be deserialized");
-                    return;
-                } else if(mActivityList.size()==0) {
-                    Log.e(TAG, "-- " + myfile + " serialized successfully but the size is 0");
-                } else {
-                        Log.d(TAG, "-- " + myfile + " is deserialized successfully! with # of " + mActivityList.size());
-                }
-
-                if(mActivityList.size()>1) {
-                    add1 = AddressUtil.getAddress(_ctx, mActivityList.get(0));
-                    add2 = AddressUtil.getAddress(_ctx, mActivityList.get(mActivityList.size()-1));
-                    marker_pos = mActivityList.size()-1;
-                    seekBar.setMax(mActivityList.size()-1);
-                }
-
-                Geocoder geocoder = new Geocoder(_ctx, Locale.getDefault());
-                List<Address> addresses = null;
-                try {
-                    addresses = geocoder.getFromLocation(mActivityList.get(0).latitude, mActivityList.get(0).longitude,1);
-                }catch(Exception e) {
-                    e.printStackTrace();
-                    Log.e(TAG, e.toString());
-                }
-
-                String addinfo = null;
-                if(addresses == null || addresses.size() ==0) {
-                    Log.e(TAG, "No Addresses found !!");
-                }else {
-                    addinfo = addresses.get(0).getAddressLine(0).toString();
-                }
-
-                String inx_str= "" + seekBar.getProgress() + "/" + seekBar.getMax();
-                String inx_str2= "" + (position+1)  + "/" + (flist.length);
-
-                tv_cursor.setText(inx_str);
-                tv_cursor2.setText(inx_str2);
-                //tv_file.setText(myfile.getName().substring(0, myfile.getName().length()-4));
-                tv_file.setText(myfile.getName());
-
-
-                Log.d(TAG, "-- FileActivity, Tot # of Activity: " + inx_str);
-
-                if(mActivityList.size()==0) return;
-
-                MyActivity ta = mActivityList.get(0);
-                String date_str = ta.cr_date + " " + ta.cr_time;
-                Log.d(TAG, "-- FileActivity, getStartTime: " + date_str);
-
-                activityStat= getActivityStat(mActivityList);
-
-                if(activityStat !=null) {
-                    String _minDist = String.format("%.2f", activityStat.distanceKm);
-                    String sinfo = "" + date_str;
-
-                    tv_heading.setText(sinfo);
-                    tv_address.setText(addinfo);
-                    tv_distance.setText(_minDist);
-                    tv_duration.setText(activityStat.duration);
-                    tv_minperkm.setText(String.format("  %.2f",activityStat.minperKm));
-                    tv_carolies.setText("   " + activityStat.calories);
-                } else {
-                    Toast.makeText(getApplicationContext(), "ERR: No Statistics Information !", Toast.LENGTH_LONG).show();
-                    String _minDist = String.format("-");
-                    String sinfo = "" + date_str + "  (" + _minDist + "Km)";
-                    tv_heading.setText(sinfo);
-                    tv_distance.setText(_minDist);
-                    tv_duration.setText("-");
-                    tv_minperkm.setText("-");
-                    tv_carolies.setText("-");
-                }
-
-                if(!nomarker) drawMarkers(googleMap,mActivityList);
-                if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
-                if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-
-                if(nomarker || notrack) {
-                    drawStartMarker(googleMap,mActivityList);
-                    drawEndMarker(googleMap,mActivityList);
-                }
-
-                Display display = getWindowManager().getDefaultDisplay();
-                DisplayMetrics metrics = new DisplayMetrics();
-                display.getMetrics( metrics );
-                int width = metrics.widthPixels;
-                int height = metrics.heightPixels;
-
-                boolean got_bound_wo_error = false;
-                int try_cnt = 0;
-
-                do {
-                    try {
-                        Log.e(TAG, "Tying to get Bound with width:" + width + ", height:" + height);
-                        doBoundBuild(googleMap, width, height);
-                        got_bound_wo_error = true;
-                    } catch (Exception e) {
-                        try_cnt++;
-                        Log.e(TAG, e.toString() + "Trying to get again... (try_cnt:" +try_cnt+")");
-                    }
-                }while(!got_bound_wo_error && try_cnt < 3);
-                if(!got_bound_wo_error) { myzoom = 16; moveCamera(googleMap, myzoom); }
-            }
-
-            public void alertDeleteDialog(File file) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
-                builder.setTitle("파일을 삭제하시겠습니까?");
-                builder.setMessage("파일을 삭제하시겠습니까?");
-                builder.setPositiveButton("삭제",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                file.delete();
-                            }
-                        });
-                builder.setNegativeButton("취소",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
-                builder.show();
-            }
-
-            @Override
-            public void onMapReady(final GoogleMap googleMap) {
-                GO(googleMap, _file);
-
-                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                    }
-
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                    }
-
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-                        if(mActivityList == null) return;
-                        marker_pos_prev = marker_pos;
-                        marker_pos = seekBar.getProgress();
-
-                        LatLng nextpos = new LatLng(mActivityList.get(marker_pos).latitude,
-                                mActivityList.get(marker_pos).longitude);
-                        LatLng prevpos = new LatLng(mActivityList.get(0).latitude,
-                                mActivityList.get(0).longitude);
-
-                        CalDistance cd =  new CalDistance(prevpos, nextpos);
-                        double dist = cd.getDistance();
-
-                        String diststr = null;
-                        String elapsedstr=null;
-                        if(dist > 1000.0f) diststr = cd.getDistanceKmStr();
-                        else diststr = cd.getDistanceMStr();
-
-                        CalcTime ct = new CalcTime(mActivityList.get(marker_pos_prev), mActivityList.get(marker_pos));
-                        long elapsed = ct.getElapsed();
-
-                        if(elapsed > 60*60000) elapsedstr = ct.getElapsedHourStr();
-                        else if(elapsed > 60000) elapsedstr = ct.getElapsedMinStr();
-                        else elapsedstr = ct.getElapsedSecStr();
-
-                        moveCamera(googleMap, nextpos);
-
-                        float color = (marker_pos==0? BitmapDescriptorFactory.HUE_ROSE:BitmapDescriptorFactory.HUE_CYAN);
-                        Marker marker = googleMap.addMarker(new MarkerOptions().position(nextpos).title(AddressUtil.getAddressDong(_ctx, mActivityList.get(marker_pos)))
-                                .icon(BitmapDescriptorFactory.defaultMarker(color))
-                                .draggable(true)
-                                .visible(true)
-                                .snippet(elapsedstr + " ("+diststr+")"));
-
-                        if(bef_last_marker!=null) bef_last_marker.remove();
-                        if(last_marker!=null) last_marker.remove();
-                        last_marker = marker;
-
-                        marker.showInfoWindow();
-
-                        MapUtil.drawTrackInRange(_ctx,googleMap,mActivityList,marker_pos_prev, marker_pos);
-
-                        //
-                        tv_heading.setText(MyActivityUtil.getTimeStr(mActivityList, marker_pos));
-                        tv_address.setText(AddressUtil.getAddress(_ctx, mActivityList.get(marker_pos)));
-
-                        String inx_str= "" + seekBar.getProgress() + "/" + seekBar.getMax();
-                        String inx_str2= "" + (position+1)  + "/" + (flist.length);
-                        tv_cursor.setText(inx_str);
-                        tv_cursor2.setText(inx_str2);
-                        tv_file.setText(_file.getName().substring(0, _file.getName().length()-4));
-
+    public void alertDeleteDialog(File file) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
+        builder.setTitle("파일을 삭제하시겠습니까?");
+        builder.setMessage("파일을 삭제하시겠습니까?");
+        builder.setPositiveButton("삭제",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        file.delete();
                     }
                 });
-
-                imbt_prev.setOnClickListener(new View.OnClickListener(){
-                    public void onClick(View view) {
-
-                        File flist[] = MyActivityUtil.getFiles(filetype);
-                        if(flist==null) {
-                            Toast.makeText(getApplicationContext(),"No more files!",Toast.LENGTH_LONG).show();
-                            return;
-                        }
-
-                        if (position > 0 && position <= flist.length) position--;
-                        else position=flist.length-1;
-                        GO(googleMap, flist[position]);
+        builder.setNegativeButton("취소",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
                     }
                 });
-
-                tv_cursor2.setOnClickListener(new View.OnClickListener(){
-                    public void onClick(View view) {
-                        File flist[] = MyActivityUtil.getFiles(filetype);
-                        if (position >= 0 && position < flist.length-1) position++;
-                        else position=0;
-                        GO(googleMap, flist[position]);
-                    }
-                });
-
-
-                imbt_next.setOnClickListener(new View.OnClickListener(){
-                    public void onClick (View view) {
-                        File flist[] = MyActivityUtil.getFiles(filetype);
-                        if(flist==null) {
-                            Toast.makeText(getApplicationContext(),"No more files!",Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                        if (position >= 0 && position < flist.length-1) position++;
-                        else position=0;
-                        GO(googleMap, flist[position]);
-                    }
-                });
-
-                imbt_marker.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        nomarker = !nomarker;
-                        googleMap.clear();
-                        if(!nomarker) drawMarkers(googleMap,mActivityList);
-                        if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
-                        if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                        else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                        if(nomarker || notrack) {
-                            drawStartMarker(googleMap,mActivityList);
-                            drawEndMarker(googleMap,mActivityList);
-                        }
-                    }
-                });
-
-                imbt_navi.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        notrack = !notrack;
-                        googleMap.clear();
-                        if(!nomarker) drawMarkers(googleMap,mActivityList);
-                        if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
-                        if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                        else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                        if(nomarker || notrack) {
-                            drawStartMarker(googleMap,mActivityList);
-                            drawEndMarker(googleMap,mActivityList);
-                        }
-                    }
-                });
-
-                imbt_trash.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        File flist[] = MyActivityUtil.getFiles(filetype);
-                        try {
-                            alertDeleteDialog(flist[position]);
-                            flist = MyActivityUtil.getFiles(filetype);
-                            if (flist.length > 1) position=position;
-                            else position=0;
-                        }catch(Exception e) {
-                            e.printStackTrace();
-                            Log.d(TAG, "-- file delete err: " + e.toString());
-                        }
-                        GO(googleMap, flist[position]);
-                    }
-                });
-
-                tv_address.setOnClickListener(new View.OnClickListener(){
-                    public void onClick(View view) {
-                        if(tog_add) {
-                            seekBar.setProgress(0,true);
-                        }else {
-                            seekBar.setProgress(mActivityList.size()-1, true);
-                        }
-                        tog_add = !tog_add;
-                    }
-                });
+        builder.show();
+    }
 
 
 
-            } /* on  MapReady */
-        });
-    } /* onCreate */
 
     public void moveCamera(GoogleMap googleMap, float _zoom) {
         if(mActivityList==null) return;
@@ -472,7 +259,6 @@ public class FileActivity2 extends AppCompatActivity implements OnMapReadyCallba
         CameraPosition cameraPosition = new CameraPosition.Builder().target(loc).zoom(myzoom).build();
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
-
 
     public static ActivityStat getActivityStat(ArrayList <MyActivity> list) {
         if(list == null) {
@@ -618,7 +404,79 @@ public class FileActivity2 extends AppCompatActivity implements OnMapReadyCallba
 
     @Override
     public void onClick(View v) {
+        File flist[] = null;
         switch (v.getId()) {
+            case R.id.tv_address:
+                if(tog_add) {
+                    seekBar.setProgress(0,true);
+                }else {
+                    seekBar.setProgress(mActivityList.size()-1, true);
+                }
+                tog_add = !tog_add;
+            case R.id.tv_cursor:
+            case R.id.tv_cursor2:
+                flist = MyActivityUtil.getFiles(filetype);
+                if (position >= 0 && position < flist.length-1) position++;
+                else position=0;
+                GO(googleMap, flist[position]);
+                break;
+            case R.id.imb_prev:
+                flist = MyActivityUtil.getFiles(filetype);
+                if(flist==null) {
+                    Toast.makeText(getApplicationContext(),"No more files!",Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if (position > 0 && position <= flist.length) position--;
+                else position=flist.length-1;
+                GO(googleMap, flist[position]);
+                break;
+            case R.id.imb_next:
+                flist = MyActivityUtil.getFiles(filetype);
+                if(flist==null) {
+                    Toast.makeText(getApplicationContext(),"No more files!",Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if (position >= 0 && position < flist.length-1) position++;
+                else position=0;
+                GO(googleMap, flist[position]);
+                break;
+            case R.id.imbt_marker:
+                nomarker = !nomarker;
+                googleMap.clear();
+                if(!nomarker) drawMarkers(googleMap,mActivityList);
+                if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
+                if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                if(nomarker || notrack) {
+                    drawStartMarker(googleMap,mActivityList);
+                    drawEndMarker(googleMap,mActivityList);
+                }
+                break;
+            case R.id.imbt_navi:
+                notrack = !notrack;
+                googleMap.clear();
+                if(!nomarker) drawMarkers(googleMap,mActivityList);
+                if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
+                if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                if(nomarker || notrack) {
+                    drawStartMarker(googleMap,mActivityList);
+                    drawEndMarker(googleMap,mActivityList);
+                }
+                break;
+            case R.id.imbt_trash:
+                flist = MyActivityUtil.getFiles(filetype);
+                try {
+                    alertDeleteDialog(flist[position]);
+                    flist = MyActivityUtil.getFiles(filetype);
+                    if (flist.length > 1) position=position;
+                    else position=0;
+                }catch(Exception e) {
+                    e.printStackTrace();
+                    Log.d(TAG, "-- file delete err: " + e.toString());
+                }
+                GO(googleMap, flist[position]);
+                break;
             case R.id.imSetting:
                 Log.d(TAG, "-- Setting Activities!");
                 Intent configIntent = new Intent(FileActivity2.this, ConfigActivity.class);
@@ -646,9 +504,142 @@ public class FileActivity2 extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
+    public void GO(final GoogleMap googleMap, File myfile) {
+        Log.e(TAG, "-- filename to see: " + myfile.getAbsolutePath());
+        googleMap.clear();
+        markers = new ArrayList<Marker>();
+        ActivityStat activityStat = null;
+
+        if(myfile != null) mActivityList = MyActivityUtil.deserialize(myfile);
+        if(mActivityList==null) {
+            Log.e(TAG, "-- " + myfile + " failed to be deserialized");
+            return;
+        } else if(mActivityList.size()==0) {
+            Log.e(TAG, "-- " + myfile + " serialized successfully but the size is 0");
+        } else {
+            Log.d(TAG, "-- " + myfile + " is deserialized successfully! with # of " + mActivityList.size());
+        }
+
+        if(mActivityList.size()>1) {
+            try {
+                add1 = AddressUtil.getAddress(_ctx, mActivityList.get(0));
+                add2 = AddressUtil.getAddress(_ctx, mActivityList.get(mActivityList.size() - 1));
+            }catch(Exception e) {
+                e.printStackTrace();
+                Log.e(TAG, "-- " + e);
+            }
+            marker_pos = mActivityList.size()-1;
+            seekBar.setMax(mActivityList.size()-1);
+        }
+
+        Geocoder geocoder = new Geocoder(_ctx, Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            addresses = geocoder.getFromLocation(mActivityList.get(0).latitude, mActivityList.get(0).longitude,1);
+        }catch(Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, e.toString());
+        }
+
+        String addinfo = null;
+        if(addresses == null || addresses.size() ==0) {
+            Log.e(TAG, "No Addresses found !!");
+        }else {
+            addinfo = addresses.get(0).getAddressLine(0).toString();
+        }
+
+        String inx_str= "" + seekBar.getProgress() + "/" + seekBar.getMax();
+        String inx_str2= "" + (position+1)  + "/" + (flist.length);
+
+        tv_cursor.setText(inx_str);
+        tv_cursor2.setText(inx_str2);
+        //tv_file.setText(myfile.getName().substring(0, myfile.getName().length()-4));
+        tv_file.setText(myfile.getName());
+
+
+        Log.d(TAG, "-- FileActivity, Tot # of Activity: " + inx_str);
+
+        if(mActivityList.size()==0) return;
+
+        MyActivity ta = mActivityList.get(0);
+        String date_str = ta.cr_date + " " + ta.cr_time;
+        Log.d(TAG, "-- FileActivity, getStartTime: " + date_str);
+
+        activityStat= getActivityStat(mActivityList);
+
+        if(activityStat !=null) {
+            String _minDist = String.format("%.2f", activityStat.distanceKm);
+            String sinfo = "" + date_str;
+
+            tv_heading.setText(sinfo);
+            tv_address.setText(addinfo);
+            tv_distance.setText(_minDist);
+            tv_duration.setText(activityStat.duration);
+            tv_minperkm.setText(String.format("  %.2f",activityStat.minperKm));
+            tv_carolies.setText("   " + activityStat.calories);
+        } else {
+            Toast.makeText(getApplicationContext(), "ERR: No Statistics Information !", Toast.LENGTH_LONG).show();
+            String _minDist = String.format("-");
+            String sinfo = "" + date_str + "  (" + _minDist + "Km)";
+            tv_heading.setText(sinfo);
+            tv_distance.setText(_minDist);
+            tv_duration.setText("-");
+            tv_minperkm.setText("-");
+            tv_carolies.setText("-");
+        }
+
+        if(!nomarker) drawMarkers(googleMap,mActivityList);
+        if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
+        if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+
+        if(nomarker || notrack) {
+            drawStartMarker(googleMap,mActivityList);
+            drawEndMarker(googleMap,mActivityList);
+        }
+
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics( metrics );
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+
+        boolean got_bound_wo_error = false;
+        int try_cnt = 0;
+
+        do {
+            try {
+                Log.e(TAG, "Tying to get Bound with width:" + width + ", height:" + height);
+                MapUtil.doBoundBuild(googleMap, width, height);
+                got_bound_wo_error = true;
+            } catch (Exception e) {
+                try_cnt++;
+                Log.e(TAG, e.toString() + "Trying to get again... (try_cnt:" +try_cnt+")");
+            }
+        }while(!got_bound_wo_error && try_cnt < 3);
+        if(!got_bound_wo_error) { myzoom = 16; moveCamera(googleMap, myzoom); }
+    } /* end of GO */
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-
+    public void onMapReady(final GoogleMap googleMap) {
+        this.googleMap = googleMap;
+        Log.e(TAG,"-- onMapReady called.........................");
+        if(_file==null) {
+            _file_list = MyActivityUtil.getAllFiles();
+            if (_file_list == null) {
+                Toast.makeText(getApplicationContext(), "No files found!", Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            } else if (_file_list.length == 0) {
+                Toast.makeText(getApplicationContext(), "No files found!", Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
+            _file = _file_list[0];
+        }
+        GO(googleMap, _file);
     }
+
+
+
 }

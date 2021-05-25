@@ -118,8 +118,15 @@ public class MapUtil {
             latLngArrayListInRange.add(new LatLng(latLngArrayList.get(i).latitude, latLngArrayList.get(i).longitude));
         }
 
-        int color_inx = Config.getIntPreference(context, "track_color");
-        int width = Config.getIntPreference(context, "track_width");
+        int color_inx = 0;
+        int width = 20;
+        try {
+            color_inx = Config.getIntPreference(context, "track_color");
+            width = Config.getIntPreference(context, "track_width");
+        }catch(Exception e){
+            e.printStackTrace();
+            Log.e(TAG,"--" + e);
+        }
         int color = colors[color_inx];
         drawTrack(map,latLngArrayListInRange,color,width);
     }
