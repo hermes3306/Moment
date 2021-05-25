@@ -41,7 +41,12 @@ public class MyReportActivity extends AppCompatActivity implements
         MyLoc myLoc = new MyLoc(getApplicationContext());
         //ArrayList<MyActivity> mal = myLoc.todayActivity();
         ArrayList<MyActivity> mal = MyActivityUtil.deserialize(activity_filename);
-        MyActivity lastActivity = mal.get(mal.size()-1);
+        MyActivity lastActivity = null;
+        if(mal.size()==0) {
+            Toast.makeText(_ctx,"No activities!", Toast.LENGTH_SHORT).show();
+        } else {
+            lastActivity = mal.get(mal.size()-1);
+        }
 
         MapUtil.initialize();
         MapUtil.drawMarkers(googleMap,mal);
@@ -66,10 +71,11 @@ public class MyReportActivity extends AppCompatActivity implements
                 try_cnt++;
             }
         }while(!got_bound_wo_error && try_cnt < 3);
-        if(!got_bound_wo_error) { int myzoom = 16; MapUtil.moveCamera(googleMap, lastActivity, myzoom); }
+        if(!got_bound_wo_error) {
+            int myzoom = 16;
+            if(lastActivity!=null) MapUtil.moveCamera(googleMap, lastActivity, myzoom);
+        }
     }
-
-
 
     protected void initialize_views(Bundle savedInstanceState) {
         setContentView(R.layout.activity_my_report);

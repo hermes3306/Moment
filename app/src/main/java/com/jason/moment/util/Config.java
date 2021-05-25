@@ -19,7 +19,7 @@ import java.util.Date;
 public class Config {
 
     static String TAG                       = "Config";
-    static String _ver                      = "2";
+    static String _ver                      = "1.12";
 
 
     /* 지도 */
@@ -125,7 +125,7 @@ public class Config {
     public static int getIntPreference(Context context, String name) {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(context /* Activity context */);
-        int _preference_val = -1;
+        int _preference_val = 0;
         try {
             _preference_val = Integer.parseInt(sharedPreferences.getString(name, "0"));
         }catch(Exception e) {

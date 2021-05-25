@@ -65,9 +65,9 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     public static String TAG = "StartActivity";
 
     int start_layout[] = {
+            R.layout.activity_start_style3,
             R.layout.activity_start_style1,
-            R.layout.activity_start_style2,
-            R.layout.activity_start_style3
+            R.layout.activity_start_style2
     };
 
     public static Context _ctx;
@@ -85,7 +85,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     public ArrayList list = null;
     public MyActivity first = null;
     public MyActivity last = null;
-    public String activity_file_namee;
+    public String activity_file_name;
 
     public LocationManager mLocManager = null;
 
@@ -166,7 +166,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         ImageView iv = view.findViewById(R.id.dialog_imageview);
         showImg(iv, fname);
         alertadd.setView(view);
-        alertadd.setNeutralButton("Here!", new DialogInterface.OnClickListener() {
+        alertadd.setNeutralButton("Upload!", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dlg, int sumthin) {
 
             }
@@ -228,14 +228,15 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            Resources r = getResources();
-            String screen_layout[] = r.getStringArray(R.array.start_screen);
-            String screen_layout_value[] = r.getStringArray(R.array.start_screen);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Resources r = getResources();
+        String screen_layout[] = r.getStringArray(R.array.start_screen);
+        String screen_layout_value[] = r.getStringArray(R.array.start_screen);
 
-            int id = item.getItemId();
-            if (id == R.id.start_layout_select) {
+        int id = item.getItemId();
+        switch(id) {
+            case R.id.start_layout_select:
                 AlertDialog.Builder builder = new AlertDialog.Builder(StartActivity.this )
                         .setItems(screen_layout, new DialogInterface.OnClickListener() {
                             @Override
@@ -244,16 +245,24 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                                 //Toast.makeText(getApplicationContext(),screen_layout[i], Toast.LENGTH_SHORT).show();
                             }
                         })
-                        .setTitle("Choose a layout")
-                        .setPositiveButton("OK",null)
-                        .setNegativeButton("Cancel",null);
+                        .setTitle("Choose a layout");
+//                    .setPositiveButton("OK",null)
+//                    .setNegativeButton("Cancel",null);
                 AlertDialog mSportSelectDialog = builder.create();
                 mSportSelectDialog.show();
-            return true;
-            }
-            return super.onOptionsItemSelected(item);
+                break;
+            case R.id.imSetting:
+                Log.d(TAG,"-- Setting Activities!");
+                Intent configIntent = new Intent(StartActivity.this, ConfigActivity.class);
+                configIntent.putExtra("1", 1);
+                startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
+                break;
+            case R.id.action_map:
+                int i=0;
+                break;
         }
-
+        return super.onOptionsItemSelected(item);
+    }
 
 
     private class GPSListener implements LocationListener {
@@ -323,8 +332,8 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         String t = "Loc_interval:"+ Config._loc_interval / 1000 + " sec\n" +
                 "Loc_distance:" + Config._loc_distance + " meter\n" +
                 "Network provider: " + Config._enable_network_provider;
-        Toast.makeText(getApplicationContext(),t, Toast.LENGTH_LONG).show();
-
+        //Toast.makeText(getApplicationContext(),t, Toast.LENGTH_LONG).show();
+        Log.d(TAG,t);
 
         if (mLocManager == null) {
             mLocManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
@@ -375,15 +384,29 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_start);
 
-        int inx = Integer.parseInt(Config.getPreference(this,"start_screen"));
+        int inx = Config.getIntPreference(this,"start_screen");
         //setContentView();
         initializeContentViews(start_layout[inx]);
         initializeLocationManager();
 
-        activity_file_namee = StringUtil.DateToString(new Date(),"yyyyMMdd_HHmmss");
+        activity_file_name = StringUtil.DateToString(new Date(),"yyyyMMdd_HHmmss");
         startMyTimer();
         start_time = new Date();
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "-- onPause.");
+        MyActivityUtil.serialize(list, activity_file_name );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "-- onResume.");
+    }
+    
 
     @Override
     public void onBackPressed() {
@@ -411,8 +434,9 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
 
     public void notificationQuit(int _id, String ticker, String title, String detail) {
         Intent intent = new Intent(_ctx, MyReportActivity.class);
-        intent.putExtra("activity_file_name", activity_file_namee);
 
+        intent.putExtra("activity_file_name", activity_file_name);
+        //intent.putExtra("activity_file_name", "20210502_092412");
         PendingIntent contentIntent = PendingIntent.getActivity(_ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder b = new NotificationCompat.Builder(_ctx,"default");
@@ -430,22 +454,6 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         notificationManager.notify(_id, b.build());
     }
 
-    public void notificationQuit2(int _id, String ticker, String title, String detail) {
-        NotificationCompat.Builder b = new NotificationCompat.Builder(_ctx);
-        b.setAutoCancel(true)
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
-                .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.drawable.cloudup48)
-                .setTicker(ticker)
-                .setContentTitle(title)
-                .setContentText(detail)
-                .setContentInfo("INFO");
-
-        NotificationManager nm = (NotificationManager) _ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-        nm.notify(_id, b.build());
-    }
-
-
     public void alertQuitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("활동을 중지하시겠습니까?");
@@ -453,18 +461,14 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         builder.setPositiveButton("중지",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        MyActivityUtil.serialize(list, activity_file_namee );
-                        Toast.makeText(getApplicationContext(), "JASON's 활동이 저장되었습니다!" + activity_file_namee, Toast.LENGTH_SHORT).show();
+                        MyActivityUtil.serialize(list, activity_file_name );
+                        Toast.makeText(getApplicationContext(), "JASON's 활동이 저장되었습니다!" + activity_file_name, Toast.LENGTH_SHORT).show();
 
                         String detail = "총운동 거리:" + tv_start_km.getText();
                         detail+= "\n총운동 시간:" + tv_start_time.getText();
                         detail+= "\n평균 분/Km:" + tv_start_avg.getText();
                         detail+= "\n소모칼로리:" + tv_start_calory.getText();
-
                         notificationQuit(100,"Jason","활동이 저장되었습니다.", detail);
-                        //notificationQuit2(101,"Jason","활동이 저장되었습니다.", detail);
-                        //notificationSimpleQuit(102,"활동이 저장되었습니다.", detail);
-
                         deleteLocationManager();
                         StartActivity.this.quit = true;
                         StartActivity.this.finish();
@@ -532,11 +536,11 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                     tv_start_calory.setText("" + String.format("%.1f", burntkCal));
                     if(last==null) {
                         last = new Date();
-                        MyActivityUtil.serialize(list, activity_file_namee );
+                        MyActivityUtil.serialize(list, activity_file_name );
                     }else {
                         Date now = new Date();
                         if(DateUtil.isLongerThan1Min(last, now)) {
-                            MyActivityUtil.serialize(list, activity_file_namee );
+                            MyActivityUtil.serialize(list, activity_file_name );
                             last = now;
                         }
                     }
