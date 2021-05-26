@@ -401,6 +401,10 @@ public class MapsActivity extends AppCompatActivity implements
         switch (view.getId()) {
             case R.id.imbt_prev:
                 Log.d(TAG,"-- marker_pos:" + marker_pos + " cntofactivities:" + cntofactivities );
+                if(mActivityList== null) {
+                    MyLoc myloc = new MyLoc(_ctx);
+                    mActivityList = myloc.todayActivity();
+                }
                 step = cntofactivities / 10;
                 if (marker_pos - step > 0) {
                     marker_pos -= step;
@@ -410,9 +414,14 @@ public class MapsActivity extends AppCompatActivity implements
                 LatLng ll1 = mActivityList.get(marker_pos).toLatLng();
                 float myzoom = mMap.getCameraPosition().zoom;
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll1, myzoom));
+                MapUtil.drawTrack(_ctx,mMap,mActivityList);
                 break;
             case R.id.imbt_next:
                 Log.d(TAG,"-- marker_pos:" + marker_pos + " cntofactivities:" + cntofactivities );
+                if(mActivityList==null) {
+                    MyLoc myloc = new MyLoc(_ctx);
+                    mActivityList = myloc.todayActivity();
+                }
                 step = cntofactivities / 10;
                 if(marker_pos + step  < cntofactivities-1) {
                     marker_pos+= step;
@@ -422,6 +431,7 @@ public class MapsActivity extends AppCompatActivity implements
                 LatLng ll2 = mActivityList.get(marker_pos).toLatLng();
                 float myzoom2 = mMap.getCameraPosition().zoom;
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll2, myzoom2));
+                MapUtil.drawTrack(_ctx,mMap,mActivityList);
                 break;
 
             case R.id.imGlobe:
@@ -492,6 +502,11 @@ public class MapsActivity extends AppCompatActivity implements
             mActivityList =  myloc.todayActivity();
             cntofactivities = mActivityList.size();
             if(mActivityList==null) return;
+        }
+
+        if(mActivityList.size()==0) {
+            Toast.makeText(_ctx, "No Activities yet!", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         LatLng nextpos = mActivityList.get(marker_pos).toLatLng();

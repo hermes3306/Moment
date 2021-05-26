@@ -221,8 +221,6 @@ public class FileActivity2 extends AppCompatActivity implements OnMapReadyCallba
     }
 
 
-
-
     public void moveCamera(GoogleMap googleMap, float _zoom) {
         if(mActivityList==null) return;
         if(mActivityList.size()==0) return;
@@ -636,6 +634,8 @@ public class FileActivity2 extends AppCompatActivity implements OnMapReadyCallba
                 return;
             }
             _file = _file_list[0];
+            int inx = Config.getIntPreference(this,"file_screen");
+            initializeContentViews(_layout[inx]);
         }
         GO(googleMap, _file);
     }

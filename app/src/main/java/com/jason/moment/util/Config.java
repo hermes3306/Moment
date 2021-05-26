@@ -19,7 +19,7 @@ import java.util.Date;
 public class Config {
 
     static String TAG                       = "Config";
-    static String _ver                      = "1.12";
+    static String _ver                      = "1.139";
 
 
     /* 지도 */
@@ -50,7 +50,8 @@ public class Config {
     public static File PIC_SAVE_DIR         = null;
     public static File MOV_SAVE_DIR       = null;
 
-    public static String        _serverURL      = "http://ezehub.club/moment";
+    //public static String        _serverURL      = "http://ezehub.club/moment";
+    public static String        _serverURL      = "http://ezehub.club/moment:8080";
     public static String        _serverFolder   = "/upload";
     public static String        _uploadURL      = _serverURL + "/upload.php";
     public static String        _listFiles      = _serverURL + "/list.php";
