@@ -43,6 +43,22 @@ public class CaloryUtil {
 
         return correctedMets * hours * weight;
     }
+
+    public static float calculateEnergyExpenditure(float kmTravelled, int durationInSeconds) {
+        Date age            = Config._age;
+        int gender          = Config._gender;
+        float ageCalculated = getAgeFromDateOfBirth(age);
+        float height        = Config._height;
+        float weight        = Config._weight;
+
+        float harrisBenedictRmR = convertKilocaloriesToMlKmin(harrisBenedictRmr(gender, weight, ageCalculated,  convertMetresToCentimetre(height)), weight);
+        float hours = UnitConverter.convertSecondsToHours(durationInSeconds);
+        float speedInMph = UnitConverter.convertKilometersToMiles(kmTravelled) / hours;
+        float metValue = getMetForActivity(speedInMph);
+        float constant = 3.5f;
+        float correctedMets = metValue * (constant / harrisBenedictRmR);
+        return correctedMets * hours * weight;
+    }
     /**
      * Gets a users age from a date. Only takes into account years.
      *

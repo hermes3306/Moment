@@ -16,7 +16,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -224,7 +223,7 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
 
 
     public void reload() {
-        File folder= _ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File folder= Config.PIC_SAVE_DIR;
         File[] files = folder.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -420,7 +419,7 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
                 Log.e(TAG,"-- before createImageFile");
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
                 String imageFileName = "IMG_" + timeStamp + ".jpeg";
-                photoFile = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), imageFileName);
+                photoFile = new File(Config.PIC_SAVE_DIR, imageFileName);
                 Toast.makeText(_ctx, "photoFile " + photoFile.getAbsolutePath() + " is used for this picture!", Toast.LENGTH_LONG).show();
                 Log.d(TAG,"-- >>>>after createImageFile" + photoFile.getAbsolutePath());
             } catch (Exception ex) {
@@ -466,7 +465,7 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void sharePic() {
-        File photoFile = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), currentFileName);
+        File photoFile = new File(Config.PIC_SAVE_DIR, currentFileName);
         Uri photoURI = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",
                 photoFile);
@@ -483,7 +482,7 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
     // check how to use this galleryAddPic
     private void galleryAddPic(String filename) {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), filename);
+        File f = new File(Config.PIC_SAVE_DIR , filename);
         Uri contentUri = Uri.fromFile(f);
         Log.d(TAG,"-- >>>>contentUri to be added to Gallary " + contentUri);
         mediaScanIntent.setData(contentUri);

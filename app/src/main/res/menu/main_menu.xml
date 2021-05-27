@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.jason.moment.MapsActivity">
+
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="Setting..."
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/run_activity"
+        android:orderInCategory="100"
+        android:title="Run Activity"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/downloadcsv"
+        android:orderInCategory="100"
+        android:title="Downloadd CSV"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/scrollpic_activity"
+        android:orderInCategory="100"
+        android:title="Scroll Picture"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/scrollAllpic_activity"
+        android:orderInCategory="100"
+        android:title="Scroll All Picture"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/pic_activity"
+        android:orderInCategory="100"
+        android:title="Picture"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/quote_activity"
+        android:orderInCategory="100"
+        android:title="Quote"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/file_activity2"
+        android:orderInCategory="100"
+        android:title="File Activity 2"
+        app:showAsAction="never" />
+</menu>

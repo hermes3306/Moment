@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -22,18 +23,22 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.FileProvider;
+import androidx.core.widget.TextViewCompat;
 import androidx.preference.PreferenceManager;
 
 import com.jason.moment.util.CalDistance;
@@ -43,6 +48,8 @@ import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StringUtil;
+
+import org.jetbrains.annotations.TestOnly;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -56,6 +63,12 @@ import static java.lang.Integer.parseInt;
 
 public class StartActivity extends AppCompatActivity implements View.OnClickListener{
     public static String TAG = "StartActivity";
+
+    int start_layout[] = {
+            R.layout.activity_start_style3,
+            R.layout.activity_start_style1,
+            R.layout.activity_start_style2
+    };
 
     public static Context _ctx;
     public TextView tv_start_km;
@@ -72,18 +85,18 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     public ArrayList list = null;
     public MyActivity first = null;
     public MyActivity last = null;
-    public String filename;
+    public String activity_file_name;
 
     public LocationManager mLocManager = null;
 
     // 사진 촬영 기능
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    String currentFileName;
+    String currentMediaName;
     Uri currentFileUri;
 
     private void recordVideo() {
-        currentFileName = Config.getVideoName();
-        File mediaFile = new File(Config.VIDEO_SAVE_DIR, currentFileName);
+        currentMediaName = Config.getVideoName();
+        File mediaFile = new File(Config.MOV_SAVE_DIR, currentMediaName);
         Uri mediaUri = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",
                 mediaFile);
@@ -94,8 +107,8 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void takePic() {
-        currentFileName = Config.getPicName();
-        File mediaFile = new File(Config.PIC_SAVE_DIR, currentFileName);
+        currentMediaName = Config.getTmpPicName();
+        File mediaFile = new File(Config.PIC_SAVE_DIR, currentMediaName);
         Uri mediaUri = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",
                 mediaFile);
@@ -119,11 +132,11 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         switch(requestCode) {
             case Config.PICK_FROM_CAMERA:
                 Log.d(TAG, "-- PIC_FROM_CAMERA: ");
-                showImg(currentFileName);
+                showImg(currentMediaName);
                 break;
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
-                showVideo(currentFileName);
+                showVideo(currentMediaName);
                 break;
         }
     }
@@ -153,7 +166,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         ImageView iv = view.findViewById(R.id.dialog_imageview);
         showImg(iv, fname);
         alertadd.setView(view);
-        alertadd.setNeutralButton("Here!", new DialogInterface.OnClickListener() {
+        alertadd.setNeutralButton("Upload!", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dlg, int sumthin) {
 
             }
@@ -165,7 +178,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         MediaController m;
         m = new MediaController(this);
 
-        File mediaFile = new File(Config.VIDEO_SAVE_DIR, currentFileName);
+        File mediaFile = new File(Config.MOV_SAVE_DIR, currentMediaName);
         Uri mediaUri = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",
                 mediaFile);
@@ -200,10 +213,57 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                 takePic();
                 break;
             case R.id.imb_start_list:
-                recordVideo();
+                //recordVideo();
+                PopupMenu p = new PopupMenu(StartActivity.this, v);
+                getMenuInflater().inflate(R.menu.start_menu, p.getMenu());
+                p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        return onOptionsItemSelected(item);
+                    }
+                });
+                p.show();
                 break;
         }
     }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Resources r = getResources();
+        String screen_layout[] = r.getStringArray(R.array.start_screen);
+        String screen_layout_value[] = r.getStringArray(R.array.start_screen);
+
+        int id = item.getItemId();
+        switch(id) {
+            case R.id.start_layout_select:
+                AlertDialog.Builder builder = new AlertDialog.Builder(StartActivity.this )
+                        .setItems(screen_layout, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                initializeContentViews(start_layout[i]);
+                                //Toast.makeText(getApplicationContext(),screen_layout[i], Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setTitle("Choose a layout");
+//                    .setPositiveButton("OK",null)
+//                    .setNegativeButton("Cancel",null);
+                AlertDialog mSportSelectDialog = builder.create();
+                mSportSelectDialog.show();
+                break;
+            case R.id.imSetting:
+                Log.d(TAG,"-- Setting Activities!");
+                Intent configIntent = new Intent(StartActivity.this, ConfigActivity.class);
+                configIntent.putExtra("1", 1);
+                startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
+                break;
+            case R.id.action_map:
+                int i=0;
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     private class GPSListener implements LocationListener {
         public GPSListener(String gpsProvider) {
@@ -272,8 +332,8 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         String t = "Loc_interval:"+ Config._loc_interval / 1000 + " sec\n" +
                 "Loc_distance:" + Config._loc_distance + " meter\n" +
                 "Network provider: " + Config._enable_network_provider;
-        Toast.makeText(getApplicationContext(),t, Toast.LENGTH_LONG).show();
-
+        //Toast.makeText(getApplicationContext(),t, Toast.LENGTH_LONG).show();
+        Log.d(TAG,t);
 
         if (mLocManager == null) {
             mLocManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
@@ -306,26 +366,47 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        _ctx = this;
-        Config.initialize(_ctx);
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_start);
-        initializeLocationManager();
-
-        start_time = new Date();
+    private void initializeContentViews(int layout) {
+        setContentView(layout);
         tv_start_km = (TextView)findViewById(R.id.tv_start_km);
         tv_start_km_str = (TextView)findViewById(R.id.tv_start_km_str);
         tv_start_time = (TextView)findViewById(R.id.tv_start_time);
         tv_start_avg = (TextView)findViewById(R.id.tv_start_avg);
         tv_start_cur = (TextView)findViewById(R.id.tv_start_cur);
         tv_start_calory = (TextView)findViewById(R.id.tv_start_calory);
-
-        filename = StringUtil.DateToString(new Date(),"yyyyMMdd_HHmmss");
-        startMyTimer();
     }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        _ctx = this;
+        Config.initialize(_ctx);
+
+        super.onCreate(savedInstanceState);
+        //setContentView(R.layout.activity_start);
+
+        int inx = Config.getIntPreference(this,"start_screen");
+        //setContentView();
+        initializeContentViews(start_layout[inx]);
+        initializeLocationManager();
+
+        activity_file_name = StringUtil.DateToString(new Date(),"yyyyMMdd_HHmmss");
+        startMyTimer();
+        start_time = new Date();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "-- onPause.");
+        MyActivityUtil.serialize(list, activity_file_name );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "-- onResume.");
+    }
+    
 
     @Override
     public void onBackPressed() {
@@ -352,7 +433,10 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void notificationQuit(int _id, String ticker, String title, String detail) {
-        Intent intent = new Intent(_ctx, StartActivity.class);
+        Intent intent = new Intent(_ctx, MyReportActivity.class);
+
+        intent.putExtra("activity_file_name", activity_file_name);
+        //intent.putExtra("activity_file_name", "20210502_092412");
         PendingIntent contentIntent = PendingIntent.getActivity(_ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder b = new NotificationCompat.Builder(_ctx,"default");
@@ -366,26 +450,9 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                 .setDefaults(Notification.DEFAULT_LIGHTS| Notification.DEFAULT_SOUND)
                 .setContentIntent(contentIntent)
                 .setContentInfo("Info");
-
         NotificationManager notificationManager = (NotificationManager) _ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(_id, b.build());
     }
-
-    public void notificationQuit2(int _id, String ticker, String title, String detail) {
-        NotificationCompat.Builder b = new NotificationCompat.Builder(_ctx);
-        b.setAutoCancel(true)
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
-                .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.drawable.cloudup48)
-                .setTicker(ticker)
-                .setContentTitle(title)
-                .setContentText(detail)
-                .setContentInfo("INFO");
-
-        NotificationManager nm = (NotificationManager) _ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-        nm.notify(_id, b.build());
-    }
-
 
     public void alertQuitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -394,18 +461,14 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         builder.setPositiveButton("중지",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        MyActivityUtil.serialize(list, filename );
-                        Toast.makeText(getApplicationContext(), "JASON's 활동이 저장되었습니다!" + filename, Toast.LENGTH_SHORT).show();
+                        MyActivityUtil.serialize(list, activity_file_name );
+                        Toast.makeText(getApplicationContext(), "JASON's 활동이 저장되었습니다!" + activity_file_name, Toast.LENGTH_SHORT).show();
 
                         String detail = "총운동 거리:" + tv_start_km.getText();
                         detail+= "\n총운동 시간:" + tv_start_time.getText();
                         detail+= "\n평균 분/Km:" + tv_start_avg.getText();
                         detail+= "\n소모칼로리:" + tv_start_calory.getText();
-
                         notificationQuit(100,"Jason","활동이 저장되었습니다.", detail);
-                        notificationQuit2(101,"Jason","활동이 저장되었습니다.", detail);
-                        notificationSimpleQuit(102,"활동이 저장되었습니다.", detail);
-
                         deleteLocationManager();
                         StartActivity.this.quit = true;
                         StartActivity.this.finish();
@@ -432,6 +495,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         public void run() {
             long start = System.currentTimeMillis();
             StartActivity.this.runOnUiThread(new Runnable() {
+                @RequiresApi(api = Build.VERSION_CODES.O)
                 public void run() {
                     Date d = new Date();
                     String elapsed = StringUtil.elapsedStr(start_time,d);
@@ -440,16 +504,19 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                     dist = MyActivityUtil.getTotalDistanceInDouble(list);
 
                     long t2 = System.currentTimeMillis();
-                    if(dist<1000) {
-                        String s1 = String.format("%.2f", dist);
-                        if(s1.length()>4) s1=String.format("%.1f", dist);
+                    if(dist<1000) { /* 1KM 이하 */
+                        String s1 = String.format("%.0f", dist);
                         tv_start_km.setText(s1);
-                        tv_start_km_str.setText("미터");
-                    } else {
+                        tv_start_km_str.setText("Meters");
+                    } else if(dist>1000) { /* 1KM 이상 */
+                        String s1 = String.format("%1.f", dist/1000.0);
+                        tv_start_km.setText(s1);
+                        tv_start_km_str.setText("Meters");
+                    } else if(dist >10000){ /* 10KM 이상*/
                         String s1 = String.format("%.2f", dist/1000.0);
-                        if(s1.length()>4) s1=String.format("%.1f", dist/1000.0);
+                        tv_start_km.setAutoSizeTextTypeWithDefaults(TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
                         tv_start_km.setText(s1);
-                        tv_start_km_str.setText("킬로미터");
+                        tv_start_km_str.setText("Kilometers");
                     }
 
                     double  minpkm = MyActivityUtil.getMinPerKm(list);
@@ -463,24 +530,17 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                     float burntkCal;
                     int durationInSeconds = MyActivityUtil.durationInSeconds(list);
                     int stepsTaken = (int) (dist / Config._strideLengthInMeters);
-                    burntkCal = CaloryUtil.calculateEnergyExpenditure(
-                        Config._height,
-                        Config._age,
-                        Config._weight,
-                        Config.GENDER_MALE,
-                        durationInSeconds,
-                        stepsTaken,
-                        Config._strideLengthInMeters
-                    );
 
-                    tv_start_calory.setText("" + String.format("%.3f", burntkCal));
+                    burntkCal = CaloryUtil.calculateEnergyExpenditure((float)dist / 1000f, durationInSeconds);
+
+                    tv_start_calory.setText("" + String.format("%.1f", burntkCal));
                     if(last==null) {
                         last = new Date();
-                        MyActivityUtil.serialize(list, filename );
+                        MyActivityUtil.serialize(list, activity_file_name );
                     }else {
                         Date now = new Date();
                         if(DateUtil.isLongerThan1Min(last, now)) {
-                            MyActivityUtil.serialize(list, filename );
+                            MyActivityUtil.serialize(list, activity_file_name );
                             last = now;
                         }
                     }

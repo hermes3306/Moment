@@ -198,9 +198,8 @@ public class WebUtil {
         }
     }
 
-
     public static void downloadFileAsync2(final Context ctx, final String fileURL[]) {
-        File saveDir = (Config._default_ext==Config._csv)? Config.mediaStorageDir4csv : Config.mediaStorageDir;
+        File saveDir = (Config._default_ext==Config._csv)? Config.mediaStorageDir4csv : Config.mediaStorageDir4mnt;
         AsyncTask aTask = new AsyncTask<String, Void, Boolean>() {
             ProgressDialog asyncDialog = new ProgressDialog(ctx);
             @Override

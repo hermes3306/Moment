@@ -1,5 +1,40 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <PreferenceCategory app:title="Map">
+        <ListPreference
+            app:defaultValue="0"
+            app:entries="@array/start_screen"
+            app:entryValues="@array/start_screen_values"
+            app:key="start_screen"
+            app:title="Start Screen Type"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="0"
+            app:entries="@array/file_screen"
+            app:entryValues="@array/file_screen_values"
+            app:key="file_screen"
+            app:title="File Screen Type"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:key="track_color"
+            app:defaultValue="0"
+            app:entries="@array/track_color"
+            app:entryValues="@array/track_color_values"
+            app:title="Track Color"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="20"
+            app:entries="@array/track_width"
+            app:entryValues="@array/track_width_values"
+            app:key="track_width"
+            app:title="Track Width"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory app:title="File Type">
         <ListPreference
             app:defaultValue="0"
@@ -15,14 +50,14 @@
             app:key="NetworkProvider"
             app:title="Enable Network Provider..." />
         <ListPreference
-            app:defaultValue="Interval"
+            app:defaultValue="1000"
             app:entries="@array/interval"
             app:entryValues="@array/interval_values"
             app:key="interval"
             app:title="Interval"
             app:useSimpleSummaryProvider="true" />
         <ListPreference
-            app:defaultValue="Distance"
+            app:defaultValue="1"
             app:entries="@array/distance"
             app:entryValues="@array/distance_values"
             app:key="distance"
@@ -30,13 +65,26 @@
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
-
-
-
     <PreferenceCategory app:title="Runner">
         <EditTextPreference
+            app:defaultValue="Jason Park "
             app:key="your_name"
             app:title="Your Name"
+            app:useSimpleSummaryProvider="true" />
+        <SwitchPreferenceCompat
+            app:key="Gender"
+            app:title="Female" />
+        <EditTextPreference
+            app:dependency="your_name"
+            appLdefaultValue="175"
+            app:key="Height"
+            app:title="Height"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            app:dependency="your_name"
+            appLdefaultValue="75"
+            app:key="Weight"
+            app:title="Weight"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
@@ -48,15 +96,6 @@
             app:key="activity_type"
             app:title="Activity Type"
             app:useSimpleSummaryProvider="true" />
-        <SwitchPreferenceCompat
-            app:key="sound_alert"
-            app:title="Sound alert when running" />
-        <SwitchPreferenceCompat
-            app:dependency="sound_alert"
-            app:key="attachment"
-            app:summaryOff="Background music off"
-            app:summaryOn="Background music on"
-            app:title="Background music... " />
     </PreferenceCategory>
 
 </PreferenceScreen>

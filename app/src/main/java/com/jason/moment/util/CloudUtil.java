@@ -137,8 +137,8 @@ public class CloudUtil {
                         Log.d(TAG, "-- fileUrl:" + fileURL[i]);
                     }
 
-                    if(ftype==Config._img) saveDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                    else saveDir = (Config._default_ext==Config._csv)? Config.mediaStorageDir4csv : Config.mediaStorageDir;
+                    if(ftype==Config._img) saveDir = Config.mediaStorageDir4pic;
+                    else saveDir = (Config._default_ext==Config._csv)? Config.mediaStorageDir4csv : Config.mediaStorageDir4mnt;
 
                     asyncDialog.setMax(fileURL.length);
                     for(int i=0;i<fileURL.length;i++) {
@@ -187,9 +187,9 @@ public class CloudUtil {
                 if(ftype==Config._csv) {
                     flist = Config.mediaStorageDir4csv.listFiles();
                 } else if(ftype==Config._ser) {
-                    flist = Config.mediaStorageDir.listFiles();
+                    flist = Config.mediaStorageDir4mnt.listFiles();
                 }else if(ftype==Config._img) {
-                    flist = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).listFiles();
+                    flist = Config.PIC_SAVE_DIR.listFiles();
                 }
 
                 asyncDialog.setMax(flist.length);

@@ -55,6 +55,7 @@ import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.FileUtil;
 import com.jason.moment.util.GooglemapUtil;
+import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StartupBatch;
@@ -287,7 +288,6 @@ public class MapsActivity extends AppCompatActivity implements
         String _snippet = getAddress(getApplicationContext(),new LatLng(location.getLatitude(), location.getLongitude()));
         tv_map_address.setText(_snippet);
         showActivities();
-
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, mMap.getCameraPosition().zoom));
     }
 
@@ -347,13 +347,12 @@ public class MapsActivity extends AppCompatActivity implements
             mMap.getUiSettings().setCompassEnabled(true);
             mMap.getUiSettings().setZoomControlsEnabled(true);
         }
-
         showActivities();
 
         MyLoc myloc = new MyLoc(_ctx);
         MyActivity a = myloc.lastActivity();
-        if(a==null) mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Config._olympic_park, DEFAULT_ZOOM));
-        else mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(a.toLatLng(), DEFAULT_ZOOM));
+        if(a==null) mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Config._olympic_park, DEFAULT_ZOOM));
+        else mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(a.toLatLng(), DEFAULT_ZOOM));
         //refresh();
     }
 
@@ -402,6 +401,10 @@ public class MapsActivity extends AppCompatActivity implements
         switch (view.getId()) {
             case R.id.imbt_prev:
                 Log.d(TAG,"-- marker_pos:" + marker_pos + " cntofactivities:" + cntofactivities );
+                if(mActivityList== null) {
+                    MyLoc myloc = new MyLoc(_ctx);
+                    mActivityList = myloc.todayActivity();
+                }
                 step = cntofactivities / 10;
                 if (marker_pos - step > 0) {
                     marker_pos -= step;
@@ -411,9 +414,14 @@ public class MapsActivity extends AppCompatActivity implements
                 LatLng ll1 = mActivityList.get(marker_pos).toLatLng();
                 float myzoom = mMap.getCameraPosition().zoom;
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll1, myzoom));
+                MapUtil.drawTrack(_ctx,mMap,mActivityList);
                 break;
             case R.id.imbt_next:
                 Log.d(TAG,"-- marker_pos:" + marker_pos + " cntofactivities:" + cntofactivities );
+                if(mActivityList==null) {
+                    MyLoc myloc = new MyLoc(_ctx);
+                    mActivityList = myloc.todayActivity();
+                }
                 step = cntofactivities / 10;
                 if(marker_pos + step  < cntofactivities-1) {
                     marker_pos+= step;
@@ -423,6 +431,7 @@ public class MapsActivity extends AppCompatActivity implements
                 LatLng ll2 = mActivityList.get(marker_pos).toLatLng();
                 float myzoom2 = mMap.getCameraPosition().zoom;
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll2, myzoom2));
+                MapUtil.drawTrack(_ctx,mMap,mActivityList);
                 break;
 
             case R.id.imGlobe:
@@ -474,6 +483,13 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivityForResult(picIntent, Config.CALL_PIC3_ACTIVITY);
                 break;
 
+            case R.id.imSetting:
+                Log.d(TAG,"-- Setting Activities!");
+                Intent configIntent = new Intent(MapsActivity.this, ConfigActivity.class);
+                configIntent.putExtra("1", 1);
+                startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
+                break;
+
             default:
                 // doesn't work
                 refresh();
@@ -486,6 +502,11 @@ public class MapsActivity extends AppCompatActivity implements
             mActivityList =  myloc.todayActivity();
             cntofactivities = mActivityList.size();
             if(mActivityList==null) return;
+        }
+
+        if(mActivityList.size()==0) {
+            Toast.makeText(_ctx, "No Activities yet!", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         LatLng nextpos = mActivityList.get(marker_pos).toLatLng();
@@ -526,22 +547,20 @@ public class MapsActivity extends AppCompatActivity implements
 
         marker.showInfoWindow();
 
-        drawTrack(mMap,mActivityList,0,marker_pos);
+        MapUtil.drawTrackInRange(_ctx,mMap,mActivityList,marker_pos_prev,marker_pos);
 
-        //
-//                tv_heading.setText(MyActivityUtil.getTimeStr(mActivityList, marker_pos));
         String addinfo = AddressUtil.getAddress(_ctx, mActivityList.get(marker_pos));
         addinfo += " (" + (marker_pos+1) + "/" + cntofactivities +")";
         tv_map_address.setText(addinfo);
-
-//                String inx_str= "" + seekBar.getProgress() + "/" + seekBar.getMax();
-//                String inx_str2= "" + (position+1)  + "/" + (flist.length);
-//                tv_cursor.setText(inx_str);
-//                tv_cursor2.setText(inx_str2);
-//                tv_file.setText(_file.getName().substring(0, _file.getName().length()-4));
     }
 
     private void showActivities() {
+        MyLoc myLoc = new MyLoc(getApplicationContext());
+        ArrayList<MyActivity> mal = myLoc.todayActivity();
+        MapUtil.drawTrack(_ctx,mMap,mal);
+    }
+
+    private void showActivities_old() {
         MyLoc myLoc = new MyLoc(getApplicationContext());
         if(myLoc==null) return;
         ArrayList<LatLng> todaypath = myLoc.todayPath();
@@ -550,7 +569,7 @@ public class MapsActivity extends AppCompatActivity implements
         if(mActivityList==null) return;
         GooglemapUtil.drawTrack2(mMap, todaypath );
         Log.d(TAG, "-- nomarkers = " + nomarkers + " notrack = " + notrack);
-        //mMap.clear();
+        mMap.clear();
         if(!nomarkers) drawMarkers(mMap,mActivityList);
         if(!notrack) drawTrack(mMap,mActivityList);
         if(!satellite) mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
@@ -564,7 +583,7 @@ public class MapsActivity extends AppCompatActivity implements
     // 사진 촬영 기능
     String currentFileName;
     private void takePic() {
-        currentFileName = Config.getPicName();
+        currentFileName = Config.getTmpPicName();
         File mediaFile = new File(Config.PIC_SAVE_DIR, currentFileName);
         Uri mediaUri = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",
@@ -599,7 +618,7 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
+        inflater.inflate(R.menu.main_menu2, menu);
         return true;
     }
 
@@ -629,6 +648,20 @@ public class MapsActivity extends AppCompatActivity implements
                 }
                 return true;
 
+            case R.id.file_activity2:
+                Log.d(TAG,"-- FileActivity2!");
+                Intent fileactivity2 = new Intent(MapsActivity.this, FileActivity2.class);
+                fileactivity2.putExtra("1", 1);
+                startActivityForResult(fileactivity2, Config.CALL_FILE_ACTIVITY);
+                return true;
+
+            case R.id.ReportActivity:
+                Log.d(TAG,"-- Report Activity!");
+                Intent reportActivity = new Intent(MapsActivity.this, MyReportActivity.class);
+                reportActivity.putExtra("activity_file_name", "20210522_110818");
+                startActivityForResult(reportActivity, Config.CALL_REPORT_ACTIVITY);
+                return true;
+
             case R.id.quote_activity:
                 Log.d(TAG,"-- Quote Activity!");
                 Intent quoteIntent = new Intent(MapsActivity.this, QuoteActivity.class);
@@ -652,7 +685,7 @@ public class MapsActivity extends AppCompatActivity implements
 
             case R.id.pic_activity:
                 Log.d(TAG,"-- Pic Activity!");
-                File folder= _ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                File folder= Config.PIC_SAVE_DIR;
 
                 File[] files = folder.listFiles(new FilenameFilter() {
                     @Override
@@ -742,7 +775,7 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     public static Polyline line_prev = null;
-    public static void drawTrack(GoogleMap map, ArrayList<MyActivity> list, int start, int end) {
+    public static void drawTrackInRange(GoogleMap map, ArrayList<MyActivity> list, int start, int end) {
         if(list == null) return;
         ArrayList<LatLng> l = new ArrayList<>();
         for(int i=start; i < end; i++) {

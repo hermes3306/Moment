@@ -27,7 +27,7 @@ public class StartupBatch {
             //deserializeTest();
             //genTodayDB4Sample();
             //deleteDB();
-            geturl();
+            //geturl();
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             Log.d(TAG,"-- Err: " + e);
@@ -41,7 +41,6 @@ public class StartupBatch {
 
     public void geturl() throws Exception{
         String urlstr = "http://ezehub.club/moment/list.php?dir=upload&&ext=mnt";
-
         String fullString="";
         URL url = new URL(urlstr);
         BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
@@ -83,9 +82,9 @@ public class StartupBatch {
         MyActivityUtil.initialize();
 
         File flist[] = MyActivityUtil.getAllFiles();
-        for (int i=0;i<flist.length;i++) {
-            Log.e(TAG, "-- VVVV orig files " + i + " " + flist[i].getName());
-        }
+//        for (int i=0;i<flist.length;i++) {
+//            Log.e(TAG, "-- VVVV orig files " + i + " " + flist[i].getName());
+//        }
         for(int i=0;i<flist.length;i++) {
             ArrayList<MyActivity> mal = MyActivityUtil.deserializeFromCSV(flist[i]);
             String mntfname = MyActivityUtil.renameExt(flist[i], "mnt");
@@ -105,11 +104,11 @@ public class StartupBatch {
         MyActivityUtil.initialize();
 
         File flist[] = MyActivityUtil.getAllFiles();
-        for (int i=0;i<flist.length;i++) {
-            Log.e(TAG, "-- VVVV orig files " + i + " " + flist[i].getName());
-        }
+//        for (int i=0;i<flist.length;i++) {
+//            Log.e(TAG, "-- VVVV orig files " + i + " " + flist[i].getName());
+//        }
         for(int i=0;i<flist.length;i++) {
-            ArrayList<MyActivity> mal = MyActivityUtil.deserializeActivityFromMnt(flist[i]);
+            ArrayList<MyActivity> mal = MyActivityUtil.deserializeFromMnt(flist[i]);
             String csvfname = MyActivityUtil.renameExt(flist[i], "csv");
             MyActivityUtil.serializeIntoCSV(mal, csvfname);
         }

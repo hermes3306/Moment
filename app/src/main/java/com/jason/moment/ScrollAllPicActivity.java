@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import static android.view.View.GONE;
+
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
@@ -56,6 +58,7 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
     Context _ctx;
     TextView tv;
     ScrollView hsv;
+    LinearLayout gallery;
 
 
     /**
@@ -155,6 +158,7 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
         mContentView = findViewById(R.id.gallery);
         hsv = findViewById(R.id.hsv);
         tv = findViewById(R.id.tv_picinfo);
+        gallery = findViewById(R.id.gallery);
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -180,12 +184,13 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
 
                 //ImageView iv = (ImageView)hsv.getFocusedChild();
                 //tv.setText(""+hsv.getScrollY() + "ImageView" + iv.getId());
-                tv.setText("" + hsv.getScrollY());
+                //tv.setText("" + hsv.getScrollY());
 
                 //DO SOMETHING WITH THE SCROLL COORDINATES
                 Log.d(TAG,"-- scrollX:" + scrollX + ", scrollY:"+scrollY  );
                 Log.d(TAG,"-- scroll width:" + scrollWidth + ", scrollHeight:"+scrollHeight  );
-
+                tv.setText("");
+                pos = -1;
             }
         });
         _ctx = this;
@@ -194,6 +199,7 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
 
     int file_height[] = null;
     private void build_all_Image_Views() {
+        _files = new ArrayList<>();
         File folder= Config.PIC_SAVE_DIR;
         File[] files = folder.listFiles(new FilenameFilter() {
             @Override
@@ -205,21 +211,24 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
 
         Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
 
-        file_height = new int[files.length];
         for(int i=0;i<files.length;i++) {
+            _files.add(files[i]);
+
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             ImageView imageView = (ImageView)inflater.inflate(R.layout.layout_imageitem, null);
             imageView.setId(i);
             Log.d(TAG,"-- ImageView id:" + i);
 
-            /*
-            imageView.setOnClickListener(new View.OnClickListener(){
+            imageView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public void onClick(View v) {
-                    Snackbar.make(v,"ImageView" + v.getId(), Snackbar.LENGTH_SHORT).show();
+                public boolean onTouch(View v, MotionEvent event) {
+                    pos = v.getId();
+                    String str = "" + (pos+1) + "/" + number_of_members_in_scroll_view;
+                    tv.setText(str);
+                    //Snackbar.make(v,"ImageView" + v.getId(), Snackbar.LENGTH_SHORT).show();
+                    return false;
                 }
             });
-            */
 
             /* Set Bitmap for the image view */
             Matrix matrix = new Matrix();
@@ -229,21 +238,13 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
             bitmap = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(), bitmap.getHeight(),matrix,true);
             imageView.setImageBitmap(bitmap);
             /* add to LinearLayer, gallery  */
-            LinearLayout gallery = findViewById(R.id.gallery);
             gallery.addView(imageView);
+            number_of_members_in_scroll_view = files.length;
+            
             //file_height[i] = bitmap.getHeight(); // numbers
-            // file_height[i] = hsv.getMaxScrollAmount();  //all 0
-            file_height[i] = hsv.getBottom();
             Log.d(TAG, "-- hsv.getTop()" + hsv.getTop());
             Log.d(TAG, "-- hsv.getBottom()" + hsv.getBottom());
         }
-
-        int s=0;
-        for(int i=0;i<file_height.length;i++) {
-            Log.d(TAG, "-- " + String.format("%5d",i) + ":" + file_height[i]);
-            s+= file_height[i];
-        }
-        Log.d(TAG,"-- Total:" + s);
     }
 
     @Override
@@ -270,9 +271,9 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
         if (actionBar != null) {
             actionBar.hide();
         }
-        mControlsView.setVisibility(View.GONE);
-        mControlsView2.setVisibility(View.GONE);
-        mControlsView3.setVisibility(View.GONE);
+        mControlsView.setVisibility(GONE);
+        mControlsView2.setVisibility(GONE);
+        //mControlsView3.setVisibility(View.GONE);
 
         mVisible = false;
 
@@ -329,6 +330,9 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
     public void rotate1() {
     }
 
+    int delete_img_num = -1;
+    int number_of_members_in_scroll_view = 0;
+    
     public void deletePic() {
         if(_files.size()==0) {
             Toast.makeText(_ctx,"No files to be deleted!",Toast.LENGTH_SHORT).show();
@@ -345,11 +349,14 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         _files.get(pos).delete();
+                        delete_img_num = pos;
+                        number_of_members_in_scroll_view --;
                     }
                 });
         builder.setNegativeButton("취소",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        delete_img_num = -1;
                     }
                 });
         builder.show();
@@ -357,7 +364,7 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
 
     String currentFileName;
     private void takePic() {
-        currentFileName = Config.getPicName();
+        currentFileName = Config.getTmpPicName();
         File mediaFile = new File(Config.PIC_SAVE_DIR, currentFileName);
         Uri mediaUri = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",
@@ -384,7 +391,7 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void sharePic() {
-        File photoFile = new File(_ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES), currentFileName);
+        File photoFile = _files.get(pos);
         Uri photoURI = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",
                 photoFile);
@@ -419,13 +426,30 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
                 });
                 break;
             case R.id.imRotate:
-                //rotate1();
+                rotate1();
                 break;
             case R.id.imTrash:
-                //deletePic();
+                if(pos==-1) {
+                    Snackbar.make(v,"이미지를 선택후 삭제 하세요.", Snackbar.LENGTH_SHORT).show();
+                    break;
+                }
+                deletePic();
+                if(delete_img_num!= -1) {
+                    ImageView iv = findViewById(delete_img_num);
+                    iv.setVisibility(View.GONE);
+                    gallery.removeView(iv);
+//                  gallery.removeViewAt(delete_img_num);
+                    String str = "" + (pos+1) + "/" + number_of_members_in_scroll_view;
+                    tv.setText(str);
+                    delete_img_num=-1;
+                }
                 break;
             case R.id.imShare:
-                //sharePic();
+                if(pos==-1) {
+                    Snackbar.make(v,"이미지를 선택후 공유 하세요.", Snackbar.LENGTH_SHORT).show();
+                    break;
+                }
+                sharePic();
                 break;
         }
     }

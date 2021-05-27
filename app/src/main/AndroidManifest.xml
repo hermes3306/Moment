@@ -25,12 +25,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Moment"
         android:usesCleartextTraffic="true">
-
-        <activity
-            android:name=".ScrollAllPicActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_pic3"
-            android:theme="@style/Theme.AppCompat" />
+        <activity android:name=".MyReportActivity"
+            android:theme="@style/Theme.AppCompat"></activity>
         <activity
             android:name=".ScrollPicActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -59,6 +55,9 @@
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".FileActivity"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name=".FileActivity2"
             android:theme="@style/Theme.AppCompat" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

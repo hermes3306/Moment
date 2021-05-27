@@ -64,7 +64,7 @@ public class CameraUtil {
         MediaController m;
         m = new MediaController(parentContext);
 
-        File mediaFile = new File(Config.VIDEO_SAVE_DIR, currentFileName);
+        File mediaFile = new File(Config.MOV_SAVE_DIR, currentFileName);
         Uri mediaUri = FileProvider.getUriForFile(parentContext,
                 "com.jason.moment.file_provider",
                 mediaFile);

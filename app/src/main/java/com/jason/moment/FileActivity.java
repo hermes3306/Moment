@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -46,6 +47,7 @@ import com.jason.moment.util.CalcTime;
 import com.jason.moment.util.CaloryUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.FileUtil;
+import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StringUtil;
@@ -60,8 +62,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class FileActivity extends AppCompatActivity {
+public class FileActivity extends AppCompatActivity implements View.OnClickListener{
     public static String TAG = "FileActivity";
+
+    String _layout_names[] = {"Basic","Night","White"};
+    int _layout[] = {
+            R.layout.activity_file1,
+            R.layout.activity_file2,
+            R.layout.activity_file3
+    };
+
     public static int position = 0;
     public static int filetype = -1;
 
@@ -86,10 +96,14 @@ public class FileActivity extends AppCompatActivity {
     File _file_list[] = null;
     File _file = null;
 
+    private void initializeContentViews(int layout) {
+        setContentView(layout);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_file);
+        setContentView(R.layout.activity_file1);
 
         Intent intent = getIntent();
         position = intent.getExtras().getInt("pos");
@@ -110,7 +124,6 @@ public class FileActivity extends AppCompatActivity {
         final Context _ctx = this;
         final MapView mMapView = (MapView) findViewById(R.id.mapView);
         MapsInitializer.initialize(this);
-
         mMapView.onCreate(savedInstanceState);  // check required ....
         mMapView.onResume();
 
@@ -215,7 +228,7 @@ public class FileActivity extends AppCompatActivity {
                 }
 
                 if(!nomarker) drawMarkers(googleMap,mActivityList);
-                if(!notrack) drawTrack(googleMap,mActivityList);
+                if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
                 if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
@@ -316,7 +329,7 @@ public class FileActivity extends AppCompatActivity {
 
                         marker.showInfoWindow();
 
-                        drawTrack(googleMap,mActivityList,0,marker_pos);
+                        MapUtil.drawTrackInRange(_ctx,googleMap,mActivityList,marker_pos_prev, marker_pos);
 
                         //
                         tv_heading.setText(MyActivityUtil.getTimeStr(mActivityList, marker_pos));
@@ -375,7 +388,7 @@ public class FileActivity extends AppCompatActivity {
                         nomarker = !nomarker;
                         googleMap.clear();
                         if(!nomarker) drawMarkers(googleMap,mActivityList);
-                        if(!notrack) drawTrack(googleMap,mActivityList);
+                        if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
                         if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                         else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                         if(nomarker || notrack) {
@@ -391,7 +404,7 @@ public class FileActivity extends AppCompatActivity {
                         notrack = !notrack;
                         googleMap.clear();
                         if(!nomarker) drawMarkers(googleMap,mActivityList);
-                        if(!notrack) drawTrack(googleMap,mActivityList);
+                        if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
                         if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                         else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                         if(nomarker || notrack) {
@@ -507,50 +520,9 @@ public class FileActivity extends AppCompatActivity {
         float burntkCal;
         int durationInSeconds = MyActivityUtil.durationInSeconds(list);
         int stepsTaken = (int) (total_distM / Config._strideLengthInMeters);
-        burntkCal = CaloryUtil.calculateEnergyExpenditure(
-                Config._height,
-                Config._age,
-                Config._weight,
-                Config.GENDER_MALE,
-                durationInSeconds,
-                stepsTaken,
-                Config._strideLengthInMeters
-        );
-
+        burntkCal = CaloryUtil.calculateEnergyExpenditure((float)total_distM / 1000f, durationInSeconds);
         ActivityStat as = new ActivityStat(start_date, stop_date, duration, total_distM, total_distKm, minpk, (int)burntkCal);
         return as;
-    }
-
-
-    public static void drawTrack(GoogleMap gmap, ArrayList<MyActivity> list) {
-        if(list == null) return;
-        ArrayList<LatLng> l = new ArrayList<>();
-        for(int i=0; i<list.size();i++) {
-            l.add(new LatLng(list.get(i).latitude, list.get(i).longitude));
-        }
-
-        PolylineOptions plo = new PolylineOptions();
-        plo.color(Color.RED);
-        Polyline line = gmap.addPolyline(plo);
-        line.setWidth(20);
-        line.setPoints(l);
-    }
-
-    public static void drawTrack(GoogleMap map, ArrayList<MyActivity> list, int start, int end) {
-        if(list == null) return;
-        ArrayList<LatLng> l = new ArrayList<>();
-        for(int i=start; i < end; i++) {
-            l.add(new LatLng(list.get(i).latitude, list.get(i).longitude));
-        }
-
-        PolylineOptions plo = new PolylineOptions();
-        plo.color(Color.BLACK);
-        Polyline line = map.addPolyline(plo);
-        line.setWidth(20);
-        line.setPoints(l);
-
-        if(line_prev!=null) line_prev.remove();
-        line_prev = line;
     }
 
     public static void drawStartMarker(GoogleMap gmap, ArrayList<MyActivity> list) {
@@ -655,4 +627,37 @@ public class FileActivity extends AppCompatActivity {
         Date date = StringUtil.StringToDate(list.get(list.size()-1));
         return date;
     }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.imSetting:
+                Log.d(TAG, "-- Setting Activities!");
+                Intent configIntent = new Intent(FileActivity.this, ConfigActivity.class);
+                configIntent.putExtra("1", 1);
+                startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
+                break;
+            case R.id.imLayout:
+                Resources r = getResources();
+                AlertDialog.Builder builder = new AlertDialog.Builder(FileActivity.this )
+                        .setItems(_layout_names, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                initializeContentViews(_layout[i]);
+                                //Toast.makeText(getApplicationContext(),screen_layout[i], Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setTitle("Choose a layout")
+                        .setPositiveButton("OK",null)
+                        .setNegativeButton("Cancel",null);
+                AlertDialog mSportSelectDialog = builder.create();
+                mSportSelectDialog.show();
+                break;
+            default:
+                break;
+        }
+    }
+
+
+
 }
