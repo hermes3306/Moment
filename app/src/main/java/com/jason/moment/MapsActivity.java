@@ -26,6 +26,7 @@ import android.os.IBinder;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -246,7 +247,7 @@ public class MapsActivity extends AppCompatActivity implements
             String activity_file_name = DateUtil.today();
             MyActivityUtil.serialize(myal, DateUtil.today());
             Toast.makeText(_ctx,"saved into " + DateUtil.today(), Toast.LENGTH_SHORT ).show();
-            NotificationUtil.notify_new_activity(_ctx, activity_file_name);
+            //NotificationUtil.notify_new_activity(_ctx, activity_file_name);
         }
         paused = true;
         super.onPause();
@@ -449,7 +450,7 @@ public class MapsActivity extends AppCompatActivity implements
                 satellite = !satellite;
                 if(!satellite) mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 else mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                //showActivities();
+                showActivities();
                 break;
             case R.id.imSave:
                 ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).todayActivity();
@@ -568,8 +569,21 @@ public class MapsActivity extends AppCompatActivity implements
 
     private void showActivities() {
         MyLoc myLoc = new MyLoc(getApplicationContext());
-        ArrayList<MyActivity> mal = myLoc.todayActivity();
-        MapUtil.drawTrack(_ctx,mMap,mal);
+        if(myLoc==null) return;
+        ArrayList<LatLng> todaypath = myLoc.todayPath();
+        if(todaypath==null) return;
+        ArrayList<MyActivity> mActivityList = myLoc.todayActivity();
+        if(mActivityList==null) return;
+
+        ArrayList<Marker> _markers = new ArrayList<>();
+        for(int i=0;i<mActivityList.size();i++) {
+            Marker marker = mMap.addMarker(
+                    new MarkerOptions().position(mActivityList.get(i).toLatLng()).title("").visible(false));
+            _markers.add(marker);
+        }
+        MyActivity lastActivity = mActivityList.get(mActivityList.size()-1);
+        Display display = getWindowManager().getDefaultDisplay();
+        MapUtil.DRAW(_ctx,mMap,_markers, display,lastActivity,mActivityList);
     }
 
     private void showActivities_old() {
