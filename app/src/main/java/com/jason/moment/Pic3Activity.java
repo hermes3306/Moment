@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.google.android.material.snackbar.Snackbar;
 import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
+import com.jason.moment.util.NotificationUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -524,6 +525,7 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.imDown:
                 new CloudUtil().DownloadAll(_ctx, Config._img);
+                NotificationUtil.notify_new_picture(_ctx, "서버로 부터 사진을 다운로드 하였습니다.");
                 break;
         }
     }

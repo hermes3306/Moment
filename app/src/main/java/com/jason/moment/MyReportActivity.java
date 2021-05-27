@@ -12,6 +12,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
+import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
@@ -46,6 +48,30 @@ public class MyReportActivity extends AppCompatActivity implements
             Toast.makeText(_ctx,"No activities!", Toast.LENGTH_SHORT).show();
         } else {
             lastActivity = mal.get(mal.size()-1);
+        }
+
+
+        TextView name = findViewById(R.id.name);
+        TextView date_str = findViewById(R.id.date_str);
+        TextView distancekm = findViewById(R.id.distancekm);
+        TextView duration = findViewById(R.id.duration);
+        TextView calories = findViewById(R.id.calories);
+        TextView minperkm = findViewById(R.id.minperkm);
+        TextView memo = findViewById(R.id.memo);
+        TextView weather = findViewById(R.id.weather);
+        TextView co_runner = findViewById(R.id.co_runner);
+
+        ActivityStat activityStat = MyActivityUtil.getActivityStat(mal);
+        if(activityStat!=null) {
+            name.setText(activityStat.name);
+            date_str.setText(activityStat.date_str);
+            distancekm.setText("" + String.format("%.1f", activityStat.distanceKm));
+            duration.setText(activityStat.duration);
+            calories.setText("" + activityStat.calories);
+            minperkm.setText("" + String.format("%.1f", activityStat.minperKm));
+            memo.setText(activityStat.memo);
+            weather.setText(activityStat.weather);
+            co_runner.setText(activityStat.co_runner);
         }
 
         MapUtil.initialize();
@@ -80,6 +106,7 @@ public class MyReportActivity extends AppCompatActivity implements
     protected void initialize_views(Bundle savedInstanceState) {
         setContentView(R.layout.activity_my_report);
         MapView mapView = findViewById(R.id.mapView);
+
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
         mapView.getMapAsync(this);

@@ -58,6 +58,7 @@ import com.jason.moment.util.GooglemapUtil;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
+import com.jason.moment.util.NotificationUtil;
 import com.jason.moment.util.StartupBatch;
 import com.jason.moment.util.UI;
 import com.jason.moment.util.WebUtil;
@@ -242,8 +243,10 @@ public class MapsActivity extends AppCompatActivity implements
         deleteLocationManager();
         if(Config._save_onPause) {
             ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).todayActivity();
+            String activity_file_name = DateUtil.today();
             MyActivityUtil.serialize(myal, DateUtil.today());
             Toast.makeText(_ctx,"saved into " + DateUtil.today(), Toast.LENGTH_SHORT ).show();
+            NotificationUtil.notify_new_activity(_ctx, activity_file_name);
         }
         paused = true;
         super.onPause();
@@ -388,7 +391,7 @@ public class MapsActivity extends AppCompatActivity implements
     };
 
     ArrayList<MyActivity> mActivityList=null;
-    int cntofactivities=100;
+    int cntofactivities=0;
     int marker_pos_prev=0;
     int marker_pos=0;
     public static Marker last_marker=null;
@@ -404,34 +407,42 @@ public class MapsActivity extends AppCompatActivity implements
                 if(mActivityList== null) {
                     MyLoc myloc = new MyLoc(_ctx);
                     mActivityList = myloc.todayActivity();
+                    if(mActivityList.size()==0) break;
                 }
+                cntofactivities = mActivityList.size();
                 step = cntofactivities / 10;
                 if (marker_pos - step > 0) {
                     marker_pos -= step;
                 }
                 else break;
-                showNavigate();
                 LatLng ll1 = mActivityList.get(marker_pos).toLatLng();
                 float myzoom = mMap.getCameraPosition().zoom;
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll1, myzoom));
                 MapUtil.drawTrack(_ctx,mMap,mActivityList);
+                showNavigate();
                 break;
             case R.id.imbt_next:
                 Log.d(TAG,"-- marker_pos:" + marker_pos + " cntofactivities:" + cntofactivities );
                 if(mActivityList==null) {
                     MyLoc myloc = new MyLoc(_ctx);
                     mActivityList = myloc.todayActivity();
+                    if(mActivityList.size()==0) break;
                 }
+                cntofactivities = mActivityList.size();
                 step = cntofactivities / 10;
                 if(marker_pos + step  < cntofactivities-1) {
                     marker_pos+= step;
-                }
-                else break;
-                showNavigate();
+                } else break;
+
+                Log.d(TAG,"-- cntofactivities:" + cntofactivities);
+                Log.d(TAG,"-- marker_pos:" + marker_pos);
+                Log.d(TAG,"-- step:" + step);
+
                 LatLng ll2 = mActivityList.get(marker_pos).toLatLng();
                 float myzoom2 = mMap.getCameraPosition().zoom;
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll2, myzoom2));
                 MapUtil.drawTrack(_ctx,mMap,mActivityList);
+                showNavigate();
                 break;
 
             case R.id.imGlobe:
@@ -465,6 +476,7 @@ public class MapsActivity extends AppCompatActivity implements
                 //this is used for temporary
             case R.id.imDown:
                 new CloudUtil().DownloadAll(_ctx, Config._default_ext);
+                NotificationUtil.notify_download_activity(_ctx);
                 break;
 
             case R.id.imb_start_camera:
@@ -601,6 +613,7 @@ public class MapsActivity extends AppCompatActivity implements
             case Config.PICK_FROM_CAMERA:
                 Log.d(TAG, "-- PIC_FROM_CAMERA: ");
                 CameraUtil.showImg(_ctx, currentFileName);
+                NotificationUtil.notify_new_picture(_ctx, currentFileName);
                 break;
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");

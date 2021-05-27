@@ -80,7 +80,7 @@ public class MapUtil {
         double t_lap = disunit;
         for(int i=0; i < list.size(); i++) {
             LatLng ll = new LatLng(list.get(i).latitude, list.get(i).longitude);
-            float color = (i==0) ?  BitmapDescriptorFactory.HUE_GREEN : ((i==list.size()-1)? BitmapDescriptorFactory.HUE_RED  :  BitmapDescriptorFactory.HUE_CYAN);
+            float color = (i==0) ?  BitmapDescriptorFactory.HUE_BLUE : ((i==list.size()-1)? BitmapDescriptorFactory.HUE_ORANGE  :  BitmapDescriptorFactory.HUE_MAGENTA);
 
             String title = StringUtil.getDateTimeString(list.get(i));
             /* drawMarkers 호출시 StartMarker/EndMarker별도로 호출함 */

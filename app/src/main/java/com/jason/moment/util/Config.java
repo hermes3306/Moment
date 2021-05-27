@@ -19,8 +19,10 @@ import java.util.Date;
 public class Config {
 
     static String TAG                       = "Config";
-    static String _ver                      = "1.139";
+    static String _ver                      = "1.1391";
 
+    public static String _notify_ticker     = "Jason";
+    public static int _notify_id            = 100;
 
     /* 지도 */
     public static int _track_color          = Color.RED;
@@ -50,8 +52,9 @@ public class Config {
     public static File PIC_SAVE_DIR         = null;
     public static File MOV_SAVE_DIR       = null;
 
-    //public static String        _serverURL      = "http://ezehub.club/moment";
-    public static String        _serverURL      = "http://ezehub.club/moment:8080";
+    //public static String        _serverURL      = "http://ezehub.club/moment";        //Z
+    //public static String        _serverURL      = "http://ezehub.club:8080/moment";   //W
+    public static String        _serverURL      = "http://ezehub.club:8888/moment";     //M
     public static String        _serverFolder   = "/upload";
     public static String        _uploadURL      = _serverURL + "/upload.php";
     public static String        _listFiles      = _serverURL + "/list.php";
@@ -86,7 +89,7 @@ public class Config {
     public static boolean       _start_timer    = false; // start timer background scheduler
 
     public static String        _filename_fmt   ="yyyyMMdd";
-    public static boolean       _save_onPause = false;
+    public static boolean       _save_onPause = true;
 
     public static int           _file_type_all  = 1;
     public static int           _file_type_day  = 2;
