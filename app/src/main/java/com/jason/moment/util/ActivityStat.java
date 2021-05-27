@@ -40,6 +40,6 @@ public class ActivityStat {
 
             this.name = DateUtil.DateToString(start,"E요일 ") + " " + H;
             this.date_str = DateUtil.DateToString(start,"yyyy년MM월dd일 HH:mm a");
-
         }
+
 }

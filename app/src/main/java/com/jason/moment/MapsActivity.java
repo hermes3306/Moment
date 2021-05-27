@@ -99,6 +99,9 @@ public class MapsActivity extends AppCompatActivity implements
     public TextView tv_map_address;
     public ImageButton imbt_prev = null;
     public ImageButton imbt_next = null;
+    public TextView tv_activity_name = null;
+    public TextView tv_date_str = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +150,8 @@ public class MapsActivity extends AppCompatActivity implements
         tv_map_address = (TextView) findViewById(R.id.tv_map_address);
         imbt_prev = (ImageButton) findViewById(R.id.imbt_prev);
         imbt_next = (ImageButton) findViewById(R.id.imbt_next);
+        tv_date_str = (TextView) findViewById(R.id.tv_date_str);
+        tv_activity_name = (TextView) findViewById(R.id.tv_activity_name);
 
         if (Config._start_service) {
             startService(new Intent(MapsActivity.this, LocService2.class)); // 서비스 시작
@@ -291,8 +296,23 @@ public class MapsActivity extends AppCompatActivity implements
         String _title = DateToString(new Date(), "hh:mm:ss");
         String _snippet = getAddress(getApplicationContext(),new LatLng(location.getLatitude(), location.getLongitude()));
         tv_map_address.setText(_snippet);
+
+        /* 함수로 정리해야 함 */
+        String H = DateUtil.DateToString(myloc.lastActivity().toDate(),"H");
+        int t = Integer.parseInt(H);
+        if(t >= 4 && t < 12) H = "아침 활동";
+        else if(t>=12 && t <=18) H = "오후 활동";
+        else if(t>18) H= "저녁 활동";
+        else if(t>21) H= "야간 활동";
+        else if(t<4) H= "새벽 활동";
+        String name = DateUtil.DateToString(myloc.lastActivity().toDate(),"E요일 ") + " " + H;
+        String date_str = DateUtil.DateToString(myloc.lastActivity().toDate(),"yyyy년MM월dd일 HH:mm a");
+
+        tv_activity_name.setText(name);
+        tv_date_str.setText(date_str);
+
         showActivities();
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, mMap.getCameraPosition().zoom));
+        //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, mMap.getCameraPosition().zoom));
     }
 
     @Override
