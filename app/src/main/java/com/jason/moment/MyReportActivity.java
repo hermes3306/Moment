@@ -23,6 +23,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 public class MyReportActivity extends AppCompatActivity implements
         OnMapReadyCallback,
         View.OnClickListener {
+    String TAG = "MyReportActivity";
     String activity_filename = null;
     Context _ctx = null;
     private GoogleMap googleMap;
@@ -91,7 +93,16 @@ public class MyReportActivity extends AppCompatActivity implements
 
         do {
             try {
-                MapUtil.doBoundBuild(googleMap, width, height);
+                Log.d(TAG,"-- before add all marker to do do Bound build!");
+                ArrayList<Marker> _markers = new ArrayList<>();
+                for(int i=0;i<mal.size();i++) {
+                    Marker marker = googleMap.addMarker(
+                            new MarkerOptions().position(mal.get(i).toLatLng()).title("").visible(false));
+                    _markers.add(marker);
+                }
+                Log.d(TAG,"-- after add all marker to do do Bound build!");
+
+                MapUtil.doBoundBuild(googleMap, _markers, width, height);
                 got_bound_wo_error = true;
             } catch (Exception e) {
                 try_cnt++;

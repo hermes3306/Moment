@@ -652,15 +652,6 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivityForResult(runIntent, Config.CALL_RUN_ACTIVITY);
                 return true;
 
-            case R.id.downloadcsv:
-                Log.d(TAG,"-- Download Activity!");
-                try {
-                    downloadCSV();
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-                return true;
-
             case R.id.file_activity2:
                 Log.d(TAG,"-- FileActivity2!");
                 Intent fileactivity2 = new Intent(MapsActivity.this, FileActivity2.class);
@@ -726,16 +717,6 @@ public class MapsActivity extends AppCompatActivity implements
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    // just test purpose
-    public void downloadCSV() throws Exception{
-        String _urls[] = new String[] {
-                "http://ezehub.club/moment/upload/20210520.csv",
-                "http://ezehub.club/moment/upload/20210521.csv"
-        };
-        WebUtil.downloadFileAsync2(_ctx, _urls);
-    }
-
 
     private Marker mMarker  = null;
     public void drawMarker(LatLng ll) {

@@ -70,13 +70,6 @@ public class FileActivity2 extends AppCompatActivity implements OnMapReadyCallba
     ImageButton imbt_trash;
     File flist[];
 
-    String _layout_names[] = {"White","Night","Custome"};
-    int _layout[] = {
-            R.layout.activity_file1,
-            R.layout.activity_file2,
-            R.layout.activity_file3
-    };
-
     public static int position = 0;
     public static int filetype = -1;
 
@@ -114,18 +107,13 @@ public class FileActivity2 extends AppCompatActivity implements OnMapReadyCallba
         mapView.onCreate(savedInstanceState);  // check required ....
         mapView.onResume();
         mapView.getMapAsync(this);
-        tv_cursor   = (TextView) findViewById(R.id.tv_cursor);
-        tv_cursor2  = (TextView) findViewById(R.id.tv_cursor2);
-        tv_file     = (TextView) findViewById(R.id.tv_file);
-        tv_heading  = (TextView) findViewById(R.id.tv_heading);
         imbt_prev   = (ImageButton) findViewById(R.id.imbt_prev);
         imbt_next   = (ImageButton) findViewById(R.id.imbt_next);
         tv_distance = (TextView) findViewById(R.id.tv_distance);
         tv_duration = (TextView) findViewById(R.id.tv_duration);
         tv_minperkm = (TextView) findViewById(R.id.tv_minperkm);
         tv_carolies = (TextView) findViewById(R.id.tv_carolies);
-        tv_address  = (TextView) findViewById(R.id.tv_address);
-        seekBar     = (SeekBar) findViewById(R.id.seekBar);
+
         imbt_marker = (ImageButton) findViewById(R.id.imbt_marker);
         imbt_navi   = (ImageButton) findViewById(R.id.imbt_navi);
         imbt_trash  = (ImageButton) findViewById(R.id.imbt_trash);
@@ -199,7 +187,7 @@ public class FileActivity2 extends AppCompatActivity implements OnMapReadyCallba
         Config.initialize(_ctx);
         super.onCreate(savedInstanceState);
         int inx = Config.getIntPreference(this,"file_screen");
-        initializeContentViews(_layout[inx]);
+        initializeContentViews(R.layout.activity_file);
     }
 
     public void alertDeleteDialog(File file) {
@@ -404,20 +392,6 @@ public class FileActivity2 extends AppCompatActivity implements OnMapReadyCallba
     public void onClick(View v) {
         File flist[] = null;
         switch (v.getId()) {
-            case R.id.tv_address:
-                if(tog_add) {
-                    seekBar.setProgress(0,true);
-                }else {
-                    seekBar.setProgress(mActivityList.size()-1, true);
-                }
-                tog_add = !tog_add;
-            case R.id.tv_cursor:
-            case R.id.tv_cursor2:
-                flist = MyActivityUtil.getFiles(filetype);
-                if (position >= 0 && position < flist.length-1) position++;
-                else position=0;
-                GO(googleMap, flist[position]);
-                break;
             case R.id.imb_prev:
                 flist = MyActivityUtil.getFiles(filetype);
                 if(flist==null) {
@@ -480,22 +454,6 @@ public class FileActivity2 extends AppCompatActivity implements OnMapReadyCallba
                 Intent configIntent = new Intent(FileActivity2.this, ConfigActivity.class);
                 configIntent.putExtra("1", 1);
                 startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
-                break;
-            case R.id.imLayout:
-                Resources r = getResources();
-                AlertDialog.Builder builder = new AlertDialog.Builder(FileActivity2.this )
-                        .setItems(_layout_names, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                initializeContentViews(_layout[i]);
-                                //Toast.makeText(getApplicationContext(),screen_layout[i], Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .setTitle("Choose a layout")
-                        .setPositiveButton("OK",null)
-                        .setNegativeButton("Cancel",null);
-                AlertDialog mSportSelectDialog = builder.create();
-                mSportSelectDialog.show();
                 break;
             default:
                 break;
@@ -608,7 +566,16 @@ public class FileActivity2 extends AppCompatActivity implements OnMapReadyCallba
         do {
             try {
                 Log.e(TAG, "Tying to get Bound with width:" + width + ", height:" + height);
-                MapUtil.doBoundBuild(googleMap, width, height);
+                Log.d(TAG,"-- before add all marker to do do Bound build!");
+                ArrayList<Marker> _markers = new ArrayList<>();
+                for(int i=0;i<mActivityList.size();i++) {
+                    Marker marker = googleMap.addMarker(
+                            new MarkerOptions().position(mActivityList.get(i).toLatLng()).title("").visible(false));
+                    _markers.add(marker);
+                }
+                Log.d(TAG,"-- after add all marker to do do Bound build!");
+
+                MapUtil.doBoundBuild(googleMap, _markers, width, height);
                 got_bound_wo_error = true;
             } catch (Exception e) {
                 try_cnt++;
@@ -635,7 +602,7 @@ public class FileActivity2 extends AppCompatActivity implements OnMapReadyCallba
             }
             _file = _file_list[0];
             int inx = Config.getIntPreference(this,"file_screen");
-            initializeContentViews(_layout[inx]);
+            initializeContentViews(R.layout.activity_file);
         }
         GO(googleMap, _file);
     }
