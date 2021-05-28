@@ -38,12 +38,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static com.jason.moment.util.Config.mediaStorageDir4csv;
+import static com.jason.moment.util.Config.CSV_SAVE_DIR;
+import static com.jason.moment.util.Config.MNT_SAVE_DIR;
 
 public class MyActivityUtil {
     private static String TAG = "MyActivityUtil";
-    private static File mediaStorageDir4mnt;
-    private static File mediaStorageDir4csv;
     private static int  _default_ext;
     private static String _default_extension;
     private static boolean _default_reverse_order;
@@ -53,8 +52,6 @@ public class MyActivityUtil {
     }
 
     public static void initialize() {
-        mediaStorageDir4mnt = Config.mediaStorageDir4mnt;
-        mediaStorageDir4csv = Config.mediaStorageDir4csv;
         _default_ext = Config._default_ext;
         _default_extension = (_default_ext==Config._csv)? ".csv" : ".mnt";
         _default_reverse_order = true;
@@ -126,11 +123,11 @@ public class MyActivityUtil {
     }
 
     public static ArrayList<MyActivity> deserializeFromCSV(String fileName) {
-        return deserializeFromCSV(new File(mediaStorageDir4csv, fileName));
+        return deserializeFromCSV(new File(Config.CSV_SAVE_DIR, fileName));
     }
 
     public static ArrayList<MyActivity> deserializeFromMnt(String fileName) {
-        return deserializeFromMnt(new File(mediaStorageDir4mnt, fileName));
+        return deserializeFromMnt(new File(Config.MNT_SAVE_DIR, fileName));
     }
 
     public static Date getActivityTime(MyActivity ma) {
@@ -140,10 +137,9 @@ public class MyActivityUtil {
     public static void serializeIntoCSV(ArrayList<MyActivity> list, String fileName) {
         if(list == null) return;
         if(list.size()==0) return;
-        if(!mediaStorageDir4csv.exists()) mediaStorageDir4csv.mkdirs();
 
         try {
-            File f = new File(mediaStorageDir4csv, fileName);
+            File f = new File(CSV_SAVE_DIR, fileName);
             FileWriter file = new FileWriter(f);
             BufferedWriter output = new BufferedWriter(file);
             Log.e(TAG, "-- **** CSV Activity file: " + fileName);
@@ -170,7 +166,7 @@ public class MyActivityUtil {
 
     public static void serializeIntoJason(ArrayList<MyActivity> list, int start, int end, String fileName) {
         if(start <0 || end >= list.size()) return;
-        File file = new File(Config.mediaStorageDir4jsn, fileName);
+        File file = new File(MNT_SAVE_DIR, fileName);
         Log.d(TAG, " -- **** Activity Jason file: " + file.toString());
         try {
             JSONArray jsonArr = new JSONArray();
@@ -218,8 +214,8 @@ public class MyActivityUtil {
 
     public static void serializeIntoMnt(ArrayList<MyActivity> list, String fileName) {
         if(list == null) return;
-        if(!mediaStorageDir4mnt.exists()) mediaStorageDir4mnt.mkdirs();
-        File file = new File(mediaStorageDir4mnt, fileName);
+
+        File file = new File(MNT_SAVE_DIR, fileName);
         Log.e(TAG, "-- **** Activity file: " + file.toString());
         try {
             FileOutputStream fos = new FileOutputStream(file);
@@ -304,49 +300,42 @@ public class MyActivityUtil {
         return list;
     }
 
-    public static File[] getFilesStartsWith(final String prefix, boolean reverserorder) {
-        FilenameFilter fnf = new FilenameFilter() {
+    public static File[] getFilesStartsWith(final String prefix, boolean reverseOrder) {
+        File folder;
+        if(_default_ext==Config._csv) folder = Config.CSV_SAVE_DIR;
+        else folder = Config.MNT_SAVE_DIR;
+
+        File[] files = folder.listFiles(new FilenameFilter() {
             @Override
-            public boolean accept(File file, String s) {
-                return s.toLowerCase().startsWith(prefix);
+            public boolean accept(File dir, String name) {
+                return name.startsWith(prefix);
             }
-        };
-        File[] flist=null;
-        if(_default_ext==Config._csv) flist = mediaStorageDir4csv.listFiles(fnf);
-        else if(_default_ext==Config._ser) flist = mediaStorageDir4mnt.listFiles(fnf);
+        });
 
-        if(reverserorder) Arrays.sort(flist, Collections.<File>reverseOrder());
-        else Arrays.sort(flist);
-        return flist;
-    }
-
-    public static File[] getFilesEndsWith(final String postfix, boolean reverserorder) {
-        FilenameFilter fnf = new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String s) {
-                return s.toLowerCase().endsWith(postfix);
-            }
-        };
-        File[] flist  = (_default_ext==Config._ser)? mediaStorageDir4mnt.listFiles(fnf) : mediaStorageDir4csv.listFiles(fnf);
-        if(reverserorder) Arrays.sort(flist, Collections.<File>reverseOrder());
-        else Arrays.sort(flist);
-        return flist;
-    }
-
-    public static File[] getFiles(final String extension, boolean reverse_order) {
-        FilenameFilter fnf = new FilenameFilter() {
-            @Override
-            public boolean accept(File file, String s) {
-                return s.toLowerCase().endsWith(extension);
-            }
-        };
-
-        File[] files  = null;
-        files = (_default_ext==Config._ser)? mediaStorageDir4mnt.listFiles(fnf) : mediaStorageDir4csv.listFiles(fnf);
-        if (files == null) return null;
-        if(reverse_order) Arrays.sort(files, Collections.reverseOrder());
+        if(reverseOrder) Arrays.sort(files, Collections.<File>reverseOrder());
         else Arrays.sort(files);
         return files;
+    }
+
+    public static File[] getFilesEndsWith(final String postfix, boolean reverseOrder) {
+        File folder;
+        if(_default_ext==Config._csv) folder = Config.CSV_SAVE_DIR;
+        else folder = Config.MNT_SAVE_DIR;
+
+        File[] files = folder.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(postfix);
+            }
+        });
+
+        if(reverseOrder) Arrays.sort(files, Collections.<File>reverseOrder());
+        else Arrays.sort(files);
+        return files;
+    }
+
+    public static File[] getFiles(final String postfix, boolean reverseOrder) {
+        return getFilesEndsWith(postfix,reverseOrder);
     }
 
     public static File[] getOnlyActivityFiles() {

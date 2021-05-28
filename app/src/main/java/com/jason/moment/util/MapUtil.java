@@ -28,10 +28,10 @@ public class MapUtil {
     public static boolean notrack = false;
     public static boolean satellite = false;
 
-     static int colors[] = {
-            Color.RED,
-            Color.BLUE,
+    static int colors[] = {
             Color.CYAN,
+            Color.BLUE,
+            Color.RED,
             Color.WHITE,
             Color.BLACK,
             Color.YELLOW,
@@ -125,7 +125,6 @@ public class MapUtil {
     }
 
 
-
     public static void drawTrackInRange(Context context, GoogleMap map, ArrayList<MyActivity> latLngArrayList, int start, int end) {
         if(latLngArrayList == null) return;
         ArrayList<LatLng> latLngArrayListInRange = new ArrayList<>();
@@ -142,7 +141,7 @@ public class MapUtil {
             e.printStackTrace();
             Log.e(TAG,"--" + e);
         }
-        int color = colors[color_inx];
+        long color = colors[color_inx];
         drawTrack(map,latLngArrayListInRange,color,width);
     }
 
@@ -151,7 +150,7 @@ public class MapUtil {
         int color_inx = Config.getIntPreference(context, "track_color");
         int width = Config.getIntPreference(context, "track_width");
 
-        int color = colors[color_inx];
+        long color = colors[color_inx];
 
         ArrayList<LatLng> latLngArrayListInRange = new ArrayList<>();
         for(int i=0; i < myActivityArrayList.size(); i++) {
@@ -161,22 +160,30 @@ public class MapUtil {
     }
 
     static Polyline polyLine_previous = null;
-    public static void drawTrack(GoogleMap map, ArrayList<LatLng> latLngArrayList,int color, int width) {
+    public static void drawTrack(GoogleMap map, ArrayList<LatLng> latLngArrayList,long color, int width) {
         if(latLngArrayList == null) return;
-
         if(polyLine_previous!=null) polyLine_previous.remove();
-
-
-        Log.d(TAG,"-- color:" + color);
-        Log.d(TAG,"-- width:" + width);
-
         PolylineOptions plo = new PolylineOptions();
-        plo.color(color);
+
         Polyline polyLine = map.addPolyline(plo);
+
+        boolean right_color=false;
+        int col_inx=-1;
+        for(int i=0;i<colors.length;i++) {
+            if(color == colors[i]) { right_color = true;col_inx=i;}
+            Log.d(TAG, "-- colors["+i+"] = " + colors[i]);
+        }
+        if(!right_color) color=colors[0];
+
+        Log.d(TAG,"-- track color index is: " + col_inx);
+        Log.d(TAG,"-- track color is: " + colors[0]);
+
         if(width<0) width=10;
+
+        //plo.color((int)color);
+        plo.color(Config._track_color);
         polyLine.setWidth(width);
         polyLine.setPoints(latLngArrayList);
-
         polyLine_previous = polyLine;
     }
 

@@ -19,7 +19,7 @@ import java.util.Date;
 public class Config {
 
     static String TAG                       = "Config";
-    static String _ver                      = "1.2391";
+    static String _ver                      = "2";
 
     public static String _notify_ticker     = "Jason";
     public static int _notify_id            = 100;

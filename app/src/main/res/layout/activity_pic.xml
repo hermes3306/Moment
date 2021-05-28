@@ -35,30 +35,7 @@
             android:gravity="top|center_vertical"
             android:orientation="vertical"
             tools:ignore="DuplicateIds">
-            <TextView
-                android:id="@+id/name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/tasks48"
-                android:gravity="center_horizontal|left"
-                android:text="월요일 아침"
-                android:textColor="@color/Black"
-                android:background="@color/White"
-                android:layout_marginTop="100dp"
-                android:textSize="18sp"
-                android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/date_str"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="35sp"
-                android:gravity="center_horizontal|left"
-                android:text="2021년5월10일 12:51 오전"
-                android:textColor="@color/Gray"
-                android:background="@color/White"
-                android:layout_marginTop="120dp"
-                android:textSize="16sp" />
             <TextView
                 android:id="@+id/tv_picinfo"
                 android:layout_width="match_parent"

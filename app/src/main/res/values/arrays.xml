@@ -1,9 +1,9 @@
 <resources>
     <!-- Track color -->
     <string-array name="track_color">
-        <item>Red</item>
-        <item>Blue</item>
         <item>Cyan</item>
+        <item>Blue</item>
+        <item>Red</item>
         <item>White</item>
         <item>Black</item>
         <item>Yellow</item>
@@ -26,21 +26,27 @@
 
     <!-- Track color -->
     <string-array name="track_width">
+        <item>3</item>
         <item>5</item>
         <item>10</item>
         <item>15</item>
         <item>20</item>
         <item>25</item>
         <item>30</item>
+        <item>35</item>
+        <item>40</item>
     </string-array>
 
     <string-array name="track_width_values">
+        <item>3</item>
         <item>5</item>
         <item>10</item>
         <item>15</item>
         <item>20</item>
         <item>25</item>
         <item>30</item>
+        <item>35</item>
+        <item>40</item>
     </string-array>
 
     <!-- Start screen -->

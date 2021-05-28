@@ -339,8 +339,8 @@ public class Pic_Full_Screen_Activity extends AppCompatActivity implements View.
         Date d = new Date(_file.lastModified());
         String name = DateUtil.getActivityName(d);
         String date_str = DateUtil.getDateString(d);
-        tv_activity_name.setText(name);
-        tv_date_str.setText(date_str);
+//        tv_activity_name.setText(name);
+//        tv_date_str.setText(date_str);
     }
 
     public void show1_old() {

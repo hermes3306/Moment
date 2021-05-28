@@ -250,9 +250,10 @@ public class MapsActivity extends AppCompatActivity implements
         if(Config._save_onPause) {
             ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).todayActivity();
             String activity_file_name = DateUtil.today();
-            MyActivityUtil.serialize(myal, DateUtil.today());
-            Toast.makeText(_ctx,"saved into " + DateUtil.today(), Toast.LENGTH_SHORT ).show();
-            //NotificationUtil.notify_new_activity(_ctx, activity_file_name);
+            if(myal.size()>0) {
+                MyActivityUtil.serialize(myal, DateUtil.today());
+                //NotificationUtil.notify_new_activity(_ctx, activity_file_name);
+            }
         }
         paused = true;
         super.onPause();

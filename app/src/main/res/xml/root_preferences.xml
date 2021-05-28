@@ -32,7 +32,6 @@
             app:key="track_width"
             app:title="Track Width"
             app:useSimpleSummaryProvider="true" />
-
     </PreferenceCategory>
 
     <PreferenceCategory app:title="File Type">
