@@ -140,6 +140,7 @@ public class Config {
         int _preference_val = 0;
         try {
             _preference_val = Integer.parseInt(sharedPreferences.getString(name, "0"));
+            Log.e(TAG,"-- getIntPreference value:" + _preference_val);
         }catch(Exception e) {
             Log.d(TAG, "-- Err(getIntPreference for name:" + name  + e.toString());
             e.printStackTrace();

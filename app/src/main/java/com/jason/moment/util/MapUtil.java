@@ -180,9 +180,10 @@ public class MapUtil {
         polyLine_previous = polyLine;
     }
 
-    public static void DRAW(Context _ctx, GoogleMap googleMap, ArrayList<Marker> _markers, Display display, MyActivity lastActivity, ArrayList<MyActivity>mActivityList) {
+    public static void DRAW(Context _ctx, GoogleMap googleMap, ArrayList<Marker> _markers, Display display, ArrayList<MyActivity>mActivityList) {
         MapUtil.initialize(); //MapUtil은 사용하기 전에 반드시 초기화를 해서 마크정도 초기화
         googleMap.clear();
+        MyActivity lastActivity=null;
         if(mActivityList.size()==0) {
             Toast.makeText(_ctx,"No activities!", Toast.LENGTH_SHORT).show();
         } else {

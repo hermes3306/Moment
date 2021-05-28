@@ -601,9 +601,12 @@ public class MapsActivity extends AppCompatActivity implements
                     new MarkerOptions().position(mActivityList.get(i).toLatLng()).title("").visible(false));
             _markers.add(marker);
         }
-        MyActivity lastActivity = mActivityList.get(mActivityList.size()-1);
+        MyActivity lastActivity=null;
+        if(mActivityList.size()!=0) {
+            lastActivity = mActivityList.get(mActivityList.size()-1);
+        }
         Display display = getWindowManager().getDefaultDisplay();
-        MapUtil.DRAW(_ctx,mMap,_markers, display,lastActivity,mActivityList);
+        MapUtil.DRAW(_ctx,mMap,_markers, display,mActivityList);
     }
 
     private void showActivities_old() {
