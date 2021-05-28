@@ -322,7 +322,7 @@
             android:layout_marginTop="270dp"
             android:visibility="gone"
             android:background="@android:color/transparent"
-            app:srcCompat="@drawable/trash_48" />
+            app:srcCompat="@drawable/trash32" />
         <ImageButton
             android:id="@+id/imbt_pop_menu"
             android:layout_width="wrap_content"
@@ -330,7 +330,7 @@
             android:layout_marginTop="270dp"
             android:visibility="visible"
             android:background="@android:color/transparent"
-            app:srcCompat="@drawable/gears48" />
+            app:srcCompat="@drawable/pop03" />
     </LinearLayout>
 
 

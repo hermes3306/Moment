@@ -150,47 +150,79 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="top|right|fill_horizontal"
-        android:layout_marginTop="150dp"
-        android:orientation="vertical">
+        android:gravity="center|right"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/imbt_marker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:background="@android:color/transparent"
+            android:visibility="gone"
+            app:srcCompat="@drawable/drawmarker32" />
+
+        <ImageButton
+            android:id="@+id/imbt_navi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:background="@android:color/transparent"
+            android:visibility="gone"
+            app:srcCompat="@drawable/arrow1" />
+
+        <ImageButton
+            android:id="@+id/imbt_trash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:visibility="gone"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/trash32" />
 
         <ImageButton
             android:id="@+id/imGlobe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:visibility="gone"
             android:background="@android:color/transparent"
-            android:layout_gravity="right"
-            android:onClick="onClick"
-            android:src="@drawable/globe48" />
+            app:srcCompat="@drawable/globe48" />
 
         <ImageButton
             android:id="@+id/imSave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:visibility="gone"
             android:background="@android:color/transparent"
-            android:layout_gravity="right"
-            android:onClick="onClick"
-            android:src="@drawable/save48" />
-
-
+            app:srcCompat="@drawable/save48" />
         <ImageButton
             android:id="@+id/imDown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_marginTop="270dp"
+            android:visibility="gone"
             android:background="@android:color/transparent"
-            android:onClick="onClick"
-            android:src="@drawable/clouddownload48" />
+            app:srcCompat="@drawable/circlearrowdn48" />
 
         <ImageButton
             android:id="@+id/uploadall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:visibility="gone"
             android:background="@android:color/transparent"
-            android:layout_gravity="right"
-            android:onClick="onClick"
-            android:src="@drawable/circlearrowup48" />
+            app:srcCompat="@drawable/circlearrowup48" />
 
+        <ImageButton
+            android:id="@+id/imbt_pop_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:visibility="visible"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/pop03" />
 
     </LinearLayout>
 
