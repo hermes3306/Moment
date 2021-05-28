@@ -201,7 +201,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         VideoView vv = view.findViewById(R.id.dialog_video_view);
         showVideo(vv, fname);
         alertadd.setView(view);
-        alertadd.setNeutralButton("Here!", new DialogInterface.OnClickListener() {
+        alertadd.setPositiveButton("Upload!", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dlg, int sumthin) {
 
             }
@@ -267,6 +267,9 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.action_map:
                 int i=0;
+                break;
+            case R.id.start_vodeo:
+                recordVideo();
                 break;
         }
         return super.onOptionsItemSelected(item);

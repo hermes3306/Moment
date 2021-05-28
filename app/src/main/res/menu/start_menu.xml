@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <item
+        android:id="@+id/start_vodeo"
+        android:title="Video" />
     <item
         android:id="@+id/start_layout_select"
-        android:icon="@drawable/ic_home_black_24dp"
-        android:title="Layout Select..." />
+        android:title="Layout" />
     <item
         android:id="@+id/action_map"
-        android:orderInCategory="100"
         android:title="Map"/>
     <item
         android:id="@+id/imSetting"
-        android:orderInCategory="100"
         android:title="Setting" />
 </menu>
