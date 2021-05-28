@@ -29,9 +29,9 @@ public class MapUtil {
     public static boolean satellite = false;
 
     static int colors[] = {
+            Color.RED,
             Color.CYAN,
             Color.BLUE,
-            Color.RED,
             Color.WHITE,
             Color.BLACK,
             Color.YELLOW,
@@ -141,7 +141,7 @@ public class MapUtil {
             e.printStackTrace();
             Log.e(TAG,"--" + e);
         }
-        long color = colors[color_inx];
+        int color = colors[color_inx];
         drawTrack(map,latLngArrayListInRange,color,width);
     }
 
@@ -150,7 +150,7 @@ public class MapUtil {
         int color_inx = Config.getIntPreference(context, "track_color");
         int width = Config.getIntPreference(context, "track_width");
 
-        long color = colors[color_inx];
+        int color = colors[color_inx];
 
         ArrayList<LatLng> latLngArrayListInRange = new ArrayList<>();
         for(int i=0; i < myActivityArrayList.size(); i++) {
@@ -160,12 +160,11 @@ public class MapUtil {
     }
 
     static Polyline polyLine_previous = null;
-    public static void drawTrack(GoogleMap map, ArrayList<LatLng> latLngArrayList,long color, int width) {
+    public static void drawTrack(GoogleMap map, ArrayList<LatLng> latLngArrayList,int color, int width) {
         if(latLngArrayList == null) return;
         if(polyLine_previous!=null) polyLine_previous.remove();
         PolylineOptions plo = new PolylineOptions();
 
-        Polyline polyLine = map.addPolyline(plo);
 
         boolean right_color=false;
         int col_inx=-1;
@@ -179,9 +178,8 @@ public class MapUtil {
         Log.d(TAG,"-- track color is: " + colors[0]);
 
         if(width<0) width=10;
-
-        //plo.color((int)color);
-        plo.color(Config._track_color);
+        plo.color((int)color);
+        Polyline polyLine = map.addPolyline(plo);
         polyLine.setWidth(width);
         polyLine.setPoints(latLngArrayList);
         polyLine_previous = polyLine;

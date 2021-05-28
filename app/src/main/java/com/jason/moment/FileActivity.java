@@ -134,7 +134,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             final ImageButton imbt_marker = (ImageButton) findViewById(R.id.imbt_marker);
             final ImageButton imbt_navi = (ImageButton) findViewById(R.id.imbt_navi);
             final ImageButton imbt_trash = (ImageButton) findViewById(R.id.imbt_trash);
-
+            final ImageButton imbt_pop_menu = (ImageButton) findViewById(R.id.imbt_pop_menu);
             final File flist[] = MyActivityUtil.getFiles(filetype);
 
             public void GO(final GoogleMap googleMap, File myfile) {
@@ -327,7 +327,6 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 });
 
-
                 imbt_next.setOnClickListener(new View.OnClickListener(){
                     public void onClick (View view) {
                         File flist[] = MyActivityUtil.getFiles(filetype);
@@ -344,6 +343,10 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 imbt_marker.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        imbt_marker.setVisibility(View.GONE);
+                        imbt_navi.setVisibility(View.GONE);
+                        imbt_trash.setVisibility(View.GONE);
+                        imbt_pop_menu.setVisibility(View.VISIBLE);
                         nomarker = !nomarker;
                         DRAW(googleMap);
                     }
@@ -352,14 +355,33 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 imbt_navi.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        imbt_marker.setVisibility(View.GONE);
+                        imbt_navi.setVisibility(View.GONE);
+                        imbt_trash.setVisibility(View.GONE);
+                        imbt_pop_menu.setVisibility(View.VISIBLE);
                         notrack = !notrack;
                         DRAW(googleMap);
+                    }
+                });
+
+                imbt_pop_menu.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        imbt_marker.setVisibility(View.VISIBLE);
+                        imbt_navi.setVisibility(View.VISIBLE);
+                        imbt_trash.setVisibility(View.VISIBLE);
+                        imbt_pop_menu.setVisibility(View.GONE);
                     }
                 });
 
                 imbt_trash.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        imbt_marker.setVisibility(View.GONE);
+                        imbt_navi.setVisibility(View.GONE);
+                        imbt_trash.setVisibility(View.GONE);
+                        imbt_pop_menu.setVisibility(View.VISIBLE);
+
                         File flist[] = MyActivityUtil.getFiles(filetype);
                         try {
                             alertDeleteDialog(flist[position]);

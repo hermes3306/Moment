@@ -8,254 +8,256 @@
 
 
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/White"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/tasks48"
-            android:gravity="center_horizontal|left"
-            android:text="월요일 아침"
-            android:textColor="@color/Black"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/date_str"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="35sp"
-            android:gravity="center_horizontal|left"
-            android:text="2021년5월10일 12:51 오전"
-            android:textColor="@color/Gray"
-            android:textSize="16sp" />
-
-        <com.google.android.gms.maps.MapView
-            android:id="@+id/mapView"
-            android:layout_width="match_parent"
-            android:layout_height="250sp"
-            android:layout_weight="1" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/White"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tv_distance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@color/Black"
-                android:text="0.00"
-                android:gravity="center_horizontal"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/tv_duration"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:text="0:0"
-                android:textColor="@color/Black"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/tv_minperkm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@color/Black"
-                android:text="0:00"
-                android:gravity="center_horizontal"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/tv_carolies"
-                android:layout_width="93dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:text="0"
-                android:textColor="@color/Black"
-                android:textSize="18sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/White"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/textView71"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:text="KM"
-                android:textColor="@color/Gray"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/textView12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:text="TIME"
-                android:textColor="@color/Gray"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/textView31"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:text="Min/KM"
-                android:textColor="@color/Gray"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/textView41"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:text="Calories"
-                android:textColor="@color/Gray"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/actlist48"
+                android:drawableLeft="@drawable/tasks48"
                 android:gravity="center_horizontal|left"
-                android:text="5번째로 빠릅니다."
-                android:textColor="@color/Cyan"
-                android:textSize="18sp" />
+                android:text="월요일 아침"
+                android:textColor="@color/Black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
             <TextView
-                android:id="@+id/textView15"
+                android:id="@+id/date_str"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:gravity="center_horizontal|left"
                 android:layout_marginLeft="35sp"
+                android:gravity="center_horizontal|left"
+                android:text="2021년5월10일 12:51 오전"
                 android:textColor="@color/Gray"
-                android:text="6-11마일 운동을 비교해 보세요." />
+                android:textSize="16sp" />
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/mapView"
+                android:layout_width="match_parent"
+                android:layout_height="250sp"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/White"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_distance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="0.00"
+                    android:textColor="@color/Black"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/tv_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="0:0"
+                    android:textColor="@color/Black"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/tv_minperkm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="0:00"
+                    android:textColor="@color/Black"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/tv_carolies"
+                    android:layout_width="93dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="0"
+                    android:textColor="@color/Black"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/White"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView71"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="KM"
+                    android:textColor="@color/Gray"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/textView12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="TIME"
+                    android:textColor="@color/Gray"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/textView31"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="Min/KM"
+                    android:textColor="@color/Gray"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/textView41"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="Calories"
+                    android:textColor="@color/Gray"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/actlist48"
+                    android:gravity="center_horizontal|left"
+                    android:text="5번째로 빠릅니다."
+                    android:textColor="@color/Cyan"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/textView15"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="35sp"
+                    android:gravity="center_horizontal|left"
+                    android:text="6-11마일 운동을 비교해 보세요."
+                    android:textColor="@color/Gray"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/time48"
+                android:gravity="center_horizontal|left"
+                android:text="Progress"
+                android:textColor="@color/Black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textView118"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/tasks48"
+                android:gravity="center_horizontal|left"
+                android:text="Chart"
+                android:textColor="@color/Black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/chart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="35sp"
+                android:gravity="center_horizontal|left"
+                android:text="페이스, 경사도"
+                android:textColor="@color/Gray"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/textView238"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/file48"
+                android:gravity="center_horizontal|left"
+                android:text="Memo"
+                android:textColor="@color/Black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/memo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="35sp"
+                android:gravity="center_horizontal|left"
+                android:text="본 활동에는 메모가 없습니다."
+                android:textColor="@color/Gray"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/textView22238"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/globe48"
+                android:gravity="center_horizontal|left"
+                android:text="How was the weather?"
+                android:textColor="@color/Black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/weather"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="35sp"
+                android:gravity="center_horizontal|left"
+                android:text="날씨를 확인하여 모든 활동을 준비하세요."
+                android:textColor="@color/Gray"
+                android:textSize="16sp" />
+
+
+            <TextView
+                android:id="@+id/textView222238"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/run48"
+                android:gravity="center_horizontal|left"
+                android:text="Who do you run together?"
+                android:textColor="@color/Black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/co_runner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="35sp"
+                android:gravity="center_horizontal|left"
+                android:text="Jason"
+                android:textColor="@color/Gray"
+                android:textSize="16sp" />
+
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/textView8"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/time48"
-            android:gravity="center_horizontal|left"
-            android:text="Progress"
-            android:textColor="@color/Black"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/textView118"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/tasks48"
-            android:gravity="center_horizontal|left"
-            android:text="Chart"
-            android:textColor="@color/Black"
-            android:textSize="18sp" />
-        <TextView
-            android:id="@+id/chart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="페이스, 경사도"
-            android:layout_marginLeft="35sp"
-            android:textColor="@color/Gray"
-            android:gravity="center_horizontal|left"
-            android:textSize="16sp"
-            />
-
-        <TextView
-            android:id="@+id/textView238"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/file48"
-            android:gravity="center_horizontal|left"
-            android:text="Memo"
-            android:textColor="@color/Black"
-            android:textSize="18sp" />
-        <TextView
-            android:id="@+id/memo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="본 활동에는 메모가 없습니다."
-            android:layout_marginLeft="35sp"
-            android:gravity="center_horizontal|left"
-            android:textColor="@color/Gray"
-            android:textSize="16sp"
-            />
-
-        <TextView
-            android:id="@+id/textView22238"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/globe48"
-            android:gravity="center_horizontal|left"
-            android:text="How was the weather?"
-            android:textColor="@color/Black"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/weather"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal|left"
-            android:text="날씨를 확인하여 모든 활동을 준비하세요."
-            android:layout_marginLeft="35sp"
-            android:textColor="@color/Gray"
-            android:textSize="16sp" />
-
-
-        <TextView
-            android:id="@+id/textView222238"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/run48"
-            android:gravity="center_horizontal|left"
-            android:text="Who do you run together?"
-            android:textColor="@color/Black"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/co_runner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="35sp"
-            android:gravity="center_horizontal|left"
-            android:text="Jason"
-            android:textColor="@color/Gray"
-            android:textSize="16sp" />
-
-    </LinearLayout>
     </ScrollView>
 
     <LinearLayout
@@ -292,48 +294,44 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="bottom|fill_horizontal"
-        android:layout_marginBottom="50dp"
-        android:orientation="vertical"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="top|fill_horizontal"
-        android:orientation="vertical"
-        tools:layout_editor_absoluteY="150dp">
+        android:gravity="center|right"
+        android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/imbt_marker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_marginTop="270dp"
             android:background="@android:color/transparent"
-            app:srcCompat="@drawable/marker2_48" />
+            android:visibility="gone"
+            app:srcCompat="@drawable/drawmarker32" />
 
         <ImageButton
             android:id="@+id/imbt_navi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_marginTop="270dp"
             android:background="@android:color/transparent"
-            app:srcCompat="@drawable/check48" />
+            android:visibility="gone"
+            app:srcCompat="@drawable/arrow1" />
 
         <ImageButton
             android:id="@+id/imbt_trash"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_marginTop="270dp"
+            android:visibility="gone"
             android:background="@android:color/transparent"
             app:srcCompat="@drawable/trash_48" />
-
-
+        <ImageButton
+            android:id="@+id/imbt_pop_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:visibility="visible"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/gears48" />
     </LinearLayout>
-
-
-
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

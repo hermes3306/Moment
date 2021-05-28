@@ -1,9 +1,9 @@
 <resources>
     <!-- Track color -->
     <string-array name="track_color">
+        <item>Red</item>
         <item>Cyan</item>
         <item>Blue</item>
-        <item>Red</item>
         <item>White</item>
         <item>Black</item>
         <item>Yellow</item>
