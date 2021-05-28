@@ -1,25 +1,21 @@
 package com.jason.moment;
 
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
-import android.os.IBinder;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,25 +34,19 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.material.snackbar.Snackbar;
 import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.AddressUtil;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CalcTime;
 import com.jason.moment.util.CaloryUtil;
 import com.jason.moment.util.Config;
-import com.jason.moment.util.FileUtil;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StringUtil;
-import com.jason.moment.util.UI;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -64,13 +54,8 @@ import java.util.Locale;
 
 public class FileActivity extends AppCompatActivity implements View.OnClickListener{
     public static String TAG = "FileActivity";
-
-    String _layout_names[] = {"Basic","Night","White"};
-    int _layout[] = {
-            R.layout.activity_file1,
-            R.layout.activity_file2,
-            R.layout.activity_file3
-    };
+    Context _ctx=null;
+    GoogleMap _googleMap;
 
     public static int position = 0;
     public static int filetype = -1;
@@ -89,12 +74,14 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     public static Marker bef_last_marker=null;
 
     public static final int REQUEST_ACTIVITY_FILE_LIST = 0x0001;
-    public static boolean nomarker = true;
+    public static boolean nomarker = false;
     public static boolean notrack = false;
     public static boolean satellite = false;
 
     File _file_list[] = null;
     File _file = null;
+    MyActivity lastActivity = null;
+
 
     private void initializeContentViews(int layout) {
         setContentView(layout);
@@ -103,7 +90,8 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_file1);
+        _ctx = this;
+        setContentView(R.layout.activity_file);
 
         Intent intent = getIntent();
         position = intent.getExtras().getInt("pos");
@@ -128,19 +116,21 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         mMapView.onResume();
 
         mMapView.getMapAsync(new OnMapReadyCallback() {
-            final TextView tv_cursor = (TextView) findViewById(R.id.tv_cursor);
-            final TextView tv_cursor2 = (TextView) findViewById(R.id.tv_cursor2);
 
-            final TextView tv_file = (TextView) findViewById(R.id.tv_file);
-            final TextView tv_heading = (TextView) findViewById(R.id.tv_heading);
+
+            final TextView tv_activity_name = (TextView)findViewById(R.id.name);
+            final TextView tv_date_str = (TextView)findViewById(R.id.date_str);
+
+            final TextView memo = findViewById(R.id.memo);
+            final TextView weather = findViewById(R.id.weather);
+            final TextView co_runner = findViewById(R.id.co_runner);
             final ImageButton imbt_prev = (ImageButton) findViewById(R.id.imbt_prev);
             final ImageButton imbt_next = (ImageButton) findViewById(R.id.imbt_next);
             final TextView tv_distance = (TextView) findViewById(R.id.tv_distance);
             final TextView tv_duration = (TextView) findViewById(R.id.tv_duration);
             final TextView tv_minperkm = (TextView) findViewById(R.id.tv_minperkm);
             final TextView tv_carolies = (TextView) findViewById(R.id.tv_carolies);
-            final TextView tv_address = (TextView) findViewById(R.id.tv_address);
-            final SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
+
             final ImageButton imbt_marker = (ImageButton) findViewById(R.id.imbt_marker);
             final ImageButton imbt_navi = (ImageButton) findViewById(R.id.imbt_navi);
             final ImageButton imbt_trash = (ImageButton) findViewById(R.id.imbt_trash);
@@ -168,7 +158,6 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     add1 = AddressUtil.getAddress(_ctx, mActivityList.get(0));
                     add2 = AddressUtil.getAddress(_ctx, mActivityList.get(mActivityList.size()-1));
                     marker_pos = mActivityList.size()-1;
-                    seekBar.setMax(mActivityList.size()-1);
                 }
 
                 Geocoder geocoder = new Geocoder(_ctx, Locale.getDefault());
@@ -187,16 +176,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     addinfo = addresses.get(0).getAddressLine(0).toString();
                 }
 
-                String inx_str= "" + seekBar.getProgress() + "/" + seekBar.getMax();
-                String inx_str2= "" + (position+1)  + "/" + (flist.length);
-
-                tv_cursor.setText(inx_str);
-                tv_cursor2.setText(inx_str2);
                 //tv_file.setText(myfile.getName().substring(0, myfile.getName().length()-4));
-                tv_file.setText(myfile.getName());
-
-
-                Log.d(TAG, "-- FileActivity, Tot # of Activity: " + inx_str);
 
                 if(mActivityList.size()==0) return;
 
@@ -210,8 +190,9 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     String _minDist = String.format("%.2f", activityStat.distanceKm);
                     String sinfo = "" + date_str;
 
-                    tv_heading.setText(sinfo);
-                    tv_address.setText(addinfo);
+                    tv_activity_name.setText(activityStat.name);
+                    tv_date_str.setText(activityStat.date_str);
+
                     tv_distance.setText(_minDist);
                     tv_duration.setText(activityStat.duration);
                     tv_minperkm.setText(String.format("  %.2f",activityStat.minperKm));
@@ -220,22 +201,13 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     Toast.makeText(getApplicationContext(), "ERR: No Statistics Information !", Toast.LENGTH_LONG).show();
                     String _minDist = String.format("-");
                     String sinfo = "" + date_str + "  (" + _minDist + "Km)";
-                    tv_heading.setText(sinfo);
                     tv_distance.setText(_minDist);
                     tv_duration.setText("-");
                     tv_minperkm.setText("-");
                     tv_carolies.setText("-");
                 }
 
-                if(!nomarker) drawMarkers(googleMap,mActivityList);
-                if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
-                if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-
-                if(nomarker || notrack) {
-                    drawStartMarker(googleMap,mActivityList);
-                    drawEndMarker(googleMap,mActivityList);
-                }
+                DRAW(googleMap);
 
                 Display display = getWindowManager().getDefaultDisplay();
                 DisplayMetrics metrics = new DisplayMetrics();
@@ -267,6 +239,14 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 file.delete();
+                                File flist[] = MyActivityUtil.getFiles(filetype);
+                                if(flist==null) {
+                                    Toast.makeText(getApplicationContext(),"No more files!",Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+                                if (position >= 0 && position < flist.length-1) {}
+                                else position=0;
+                                GO(_googleMap, flist[position]);
                             }
                         });
                 builder.setNegativeButton("취소",
@@ -277,72 +257,60 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 builder.show();
             }
 
+            public void DRAW(GoogleMap googleMap) {
+                MapUtil.initialize(); //MapUtil은 사용하기 전에 반드시 초기화를 해서 마크정도 초기화
+                googleMap.clear();
+                if(mActivityList.size()==0) {
+                    Toast.makeText(_ctx,"No activities!", Toast.LENGTH_SHORT).show();
+                } else {
+                    lastActivity = mActivityList.get(mActivityList.size()-1);
+                }
+
+                if(!nomarker) MapUtil.drawMarkers(googleMap,mActivityList);
+                if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
+                if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                if(nomarker || notrack) {
+                    MapUtil.drawStartMarker(googleMap,mActivityList);
+                    MapUtil.drawEndMarker(googleMap,mActivityList);
+                }
+
+                Display display = getWindowManager().getDefaultDisplay();
+                DisplayMetrics metrics = new DisplayMetrics();
+                display.getMetrics( metrics );
+                int width = metrics.widthPixels;
+                int height = metrics.heightPixels;
+
+                boolean got_bound_wo_error = false;
+                int try_cnt = 0;
+
+                Log.d(TAG,"-- before add all marker to do do Bound build!");
+                ArrayList<Marker> _markers = new ArrayList<>();
+                for(int i=0;i<mActivityList.size();i++) {
+                    Marker marker = googleMap.addMarker(
+                            new MarkerOptions().position(mActivityList.get(i).toLatLng()).title("").visible(false));
+                    _markers.add(marker);
+                }
+                Log.d(TAG,"-- after add all marker to do do Bound build!");
+
+                do {
+                    try {
+                        MapUtil.doBoundBuild(googleMap, _markers, width, height);
+                        got_bound_wo_error = true;
+                    } catch (Exception e) {
+                        try_cnt++;
+                    }
+                }while(!got_bound_wo_error && try_cnt < 3);
+                if(!got_bound_wo_error) {
+                    int myzoom = 16;
+                    if(lastActivity!=null) MapUtil.moveCamera(googleMap, lastActivity, myzoom);
+                }
+            }
+
             @Override
             public void onMapReady(final GoogleMap googleMap) {
+                _googleMap = googleMap;
                 GO(googleMap, _file);
-
-                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                    }
-
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                    }
-
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-                        if(mActivityList == null) return;
-                        marker_pos_prev = marker_pos;
-                        marker_pos = seekBar.getProgress();
-
-                        LatLng nextpos = new LatLng(mActivityList.get(marker_pos).latitude,
-                                mActivityList.get(marker_pos).longitude);
-                        LatLng prevpos = new LatLng(mActivityList.get(0).latitude,
-                                mActivityList.get(0).longitude);
-
-                        CalDistance cd =  new CalDistance(prevpos, nextpos);
-                        double dist = cd.getDistance();
-
-                        String diststr = null;
-                        String elapsedstr=null;
-                        if(dist > 1000.0f) diststr = cd.getDistanceKmStr();
-                        else diststr = cd.getDistanceMStr();
-
-                        CalcTime ct = new CalcTime(mActivityList.get(marker_pos_prev), mActivityList.get(marker_pos));
-                        long elapsed = ct.getElapsed();
-
-                        if(elapsed > 60*60000) elapsedstr = ct.getElapsedHourStr();
-                        else if(elapsed > 60000) elapsedstr = ct.getElapsedMinStr();
-                        else elapsedstr = ct.getElapsedSecStr();
-
-                        moveCamera(googleMap, nextpos);
-
-                        float color = (marker_pos==0? BitmapDescriptorFactory.HUE_ROSE:BitmapDescriptorFactory.HUE_CYAN);
-                        Marker marker = googleMap.addMarker(new MarkerOptions().position(nextpos).title(AddressUtil.getAddressDong(_ctx, mActivityList.get(marker_pos)))
-                                .icon(BitmapDescriptorFactory.defaultMarker(color))
-                                .draggable(true)
-                                .visible(true)
-                                .snippet(elapsedstr + " ("+diststr+")"));
-
-                        if(bef_last_marker!=null) bef_last_marker.remove();
-                        if(last_marker!=null) last_marker.remove();
-                        last_marker = marker;
-
-                        marker.showInfoWindow();
-
-                        MapUtil.drawTrackInRange(_ctx,googleMap,mActivityList,marker_pos_prev, marker_pos);
-
-                        //
-                        tv_heading.setText(MyActivityUtil.getTimeStr(mActivityList, marker_pos));
-                        tv_address.setText(AddressUtil.getAddress(_ctx, mActivityList.get(marker_pos)));
-
-                        String inx_str= "" + seekBar.getProgress() + "/" + seekBar.getMax();
-                        String inx_str2= "" + (position+1)  + "/" + (flist.length);
-                        tv_cursor.setText(inx_str);
-                        tv_cursor2.setText(inx_str2);
-                        tv_file.setText(_file.getName().substring(0, _file.getName().length()-4));
-
-                    }
-                });
 
                 imbt_prev.setOnClickListener(new View.OnClickListener(){
                     public void onClick(View view) {
@@ -355,15 +323,6 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
 
                         if (position > 0 && position <= flist.length) position--;
                         else position=flist.length-1;
-                        GO(googleMap, flist[position]);
-                    }
-                });
-
-                tv_cursor2.setOnClickListener(new View.OnClickListener(){
-                    public void onClick(View view) {
-                        File flist[] = MyActivityUtil.getFiles(filetype);
-                        if (position >= 0 && position < flist.length-1) position++;
-                        else position=0;
                         GO(googleMap, flist[position]);
                     }
                 });
@@ -386,15 +345,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onClick(View v) {
                         nomarker = !nomarker;
-                        googleMap.clear();
-                        if(!nomarker) drawMarkers(googleMap,mActivityList);
-                        if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
-                        if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                        else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                        if(nomarker || notrack) {
-                            drawStartMarker(googleMap,mActivityList);
-                            drawEndMarker(googleMap,mActivityList);
-                        }
+                        DRAW(googleMap);
                     }
                 });
 
@@ -402,15 +353,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onClick(View v) {
                         notrack = !notrack;
-                        googleMap.clear();
-                        if(!nomarker) drawMarkers(googleMap,mActivityList);
-                        if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
-                        if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                        else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                        if(nomarker || notrack) {
-                            drawStartMarker(googleMap,mActivityList);
-                            drawEndMarker(googleMap,mActivityList);
-                        }
+                        DRAW(googleMap);
                     }
                 });
 
@@ -430,19 +373,6 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         GO(googleMap, flist[position]);
                     }
                 });
-
-                tv_address.setOnClickListener(new View.OnClickListener(){
-                    public void onClick(View view) {
-                        if(tog_add) {
-                            seekBar.setProgress(0,true);
-                        }else {
-                            seekBar.setProgress(mActivityList.size()-1, true);
-                        }
-                        tog_add = !tog_add;
-                    }
-                });
-
-
 
             } /* on  MapReady */
         });
@@ -525,70 +455,6 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         return as;
     }
 
-    public static void drawStartMarker(GoogleMap gmap, ArrayList<MyActivity> list) {
-        if(list.size()==0) return;
-        LatLng ll = new LatLng(list.get(0).latitude, list.get(0).longitude);
-        Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title("출발")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                .draggable(true)
-                .visible(true)
-                .snippet("출발"));
-        markers.add(marker);
-    }
-
-    public static void drawEndMarker(GoogleMap gmap, ArrayList<MyActivity> list) {
-        if(list.size()==0) return;
-        LatLng ll = new LatLng(list.get(list.size()-1).latitude, list.get(list.size()-1).longitude);
-        Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title("종료")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                .draggable(true)
-                .visible(true)
-                .snippet("종료"));
-        markers.add(marker);
-    }
-
-    public static void drawMarkers(GoogleMap gmap, ArrayList<MyActivity> list) {
-        double tot_distance = MyActivityUtil.getTotalDistanceInDouble(list);
-
-        int disunit = 1000;
-        String unitstr = "미터";
-        if (tot_distance > 1000) {  // 1km 이상
-            disunit = 1000;
-            unitstr = "킬로";
-        } else disunit = 100;
-
-        double t_distance = 0;
-        double t_lap = disunit;
-        for(int i=0; i < list.size(); i++) {
-            LatLng ll = new LatLng(list.get(i).latitude, list.get(i).longitude);
-            float color = (i==0) ?  BitmapDescriptorFactory.HUE_GREEN : ((i==list.size()-1)? BitmapDescriptorFactory.HUE_RED  :  BitmapDescriptorFactory.HUE_CYAN);
-
-            String title = StringUtil.getDateTimeString(list.get(i));
-            if(i==0) drawStartMarker(gmap,list);
-            else if(i==list.size()-1) drawEndMarker(gmap,list);
-            else {
-                CalDistance cd = new CalDistance(list.get(i-1).latitude, list.get(i-1).longitude, list.get(i).latitude, list.get(i).longitude);
-                double dist = cd.getDistance();
-                if(Double.isNaN(dist)) continue;
-                if(Double.isNaN(dist + t_distance)) continue;
-
-                t_distance = t_distance + dist;
-                if(t_distance > t_lap) {
-                    int interval = (int)(t_distance / disunit);
-                    //Log.e(TAG, "" + interval + unitstr);
-                    t_lap += disunit;
-
-                    Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title(title)
-                            .icon(BitmapDescriptorFactory.defaultMarker(color))
-                            .draggable(true)
-                            .visible(true)
-                            .snippet(""+interval + unitstr));
-                    markers.add(marker);
-                }
-            }
-        }
-    }
-
     public static void doBoundBuild(GoogleMap gmap, int width, int height) throws Exception {
         if(markers.size()==0) return;
 
@@ -637,24 +503,98 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 configIntent.putExtra("1", 1);
                 startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
                 break;
-            case R.id.imLayout:
-                Resources r = getResources();
-                AlertDialog.Builder builder = new AlertDialog.Builder(FileActivity.this )
-                        .setItems(_layout_names, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                initializeContentViews(_layout[i]);
-                                //Toast.makeText(getApplicationContext(),screen_layout[i], Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .setTitle("Choose a layout")
-                        .setPositiveButton("OK",null)
-                        .setNegativeButton("Cancel",null);
-                AlertDialog mSportSelectDialog = builder.create();
-                mSportSelectDialog.show();
-                break;
             default:
                 break;
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu2, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                Log.d(TAG,"-- Setting Activities!");
+                Intent configIntent = new Intent(this, ConfigActivity.class);
+                configIntent.putExtra("1", 1);
+                startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
+                return true;
+
+            case R.id.run_activity:
+                Log.d(TAG,"-- Run Activity!");
+                Intent runIntent = new Intent(this, RunActivity.class);
+                runIntent.putExtra("1", 1);
+                startActivityForResult(runIntent, Config.CALL_RUN_ACTIVITY);
+                return true;
+
+            case R.id.file_activity2:
+                Log.d(TAG,"-- FileActivity2!");
+                Intent fileactivity2 = new Intent(this, FileActivity2.class);
+                fileactivity2.putExtra("1", 1);
+                startActivityForResult(fileactivity2, Config.CALL_FILE_ACTIVITY);
+                return true;
+
+            case R.id.ReportActivity:
+                Log.d(TAG,"-- Report Activity!");
+                Intent reportActivity = new Intent(this, MyReportActivity.class);
+                reportActivity.putExtra("activity_file_name", "20210522_110818");
+                startActivityForResult(reportActivity, Config.CALL_REPORT_ACTIVITY);
+                return true;
+
+            case R.id.quote_activity:
+                Log.d(TAG,"-- Quote Activity!");
+                Intent quoteIntent = new Intent(this, QuoteActivity.class);
+                quoteIntent.putExtra("1", 1);
+                startActivityForResult(quoteIntent, Config.CALL_QUOTE_ACTIVITY);
+                return true;
+
+            case R.id.scrollpic_activity:
+                Log.d(TAG,"-- Scroll Pic Activity!");
+                Intent scrollPicIntent = new Intent(this, ScrollPicActivity.class);
+                startActivityForResult(scrollPicIntent, Config.CALL_SCROLL_PIC_ACTIVITY);
+
+                return true;
+
+            case R.id.scrollAllpic_activity:
+                Log.d(TAG,"-- Scroll Pic Activity!");
+                Intent scrollAllPicIntent = new Intent(this, ScrollAllPicActivity.class);
+                startActivityForResult(scrollAllPicIntent, Config.CALL_SCROLL_ALL_PIC_ACTIVITY);
+
+                return true;
+
+            case R.id.pic_activity:
+                Log.d(TAG,"-- Pic Activity!");
+                File folder= Config.PIC_SAVE_DIR;
+
+                File[] files = folder.listFiles(new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        return name.endsWith("jpeg");
+                    }
+                });
+
+                if(files==null) {
+                    Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
+                    return false;
+                } else if (files.length==0) {
+                    Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
+                    return false;
+                }
+                Intent picIntent = new Intent(this, PicActivity.class);
+                ArrayList<File> fileArrayList= new ArrayList<File>();
+                for(int i=0;i< files.length;i++) {
+                    fileArrayList.add(files[i]);
+                }
+                picIntent.putExtra("files", fileArrayList);
+                startActivity(picIntent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

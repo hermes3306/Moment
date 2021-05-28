@@ -26,6 +26,7 @@ import android.os.IBinder;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -58,6 +59,7 @@ import com.jason.moment.util.GooglemapUtil;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
+import com.jason.moment.util.NotificationUtil;
 import com.jason.moment.util.StartupBatch;
 import com.jason.moment.util.UI;
 import com.jason.moment.util.WebUtil;
@@ -97,6 +99,9 @@ public class MapsActivity extends AppCompatActivity implements
     public TextView tv_map_address;
     public ImageButton imbt_prev = null;
     public ImageButton imbt_next = null;
+    public TextView tv_activity_name = null;
+    public TextView tv_date_str = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,6 +150,8 @@ public class MapsActivity extends AppCompatActivity implements
         tv_map_address = (TextView) findViewById(R.id.tv_map_address);
         imbt_prev = (ImageButton) findViewById(R.id.imbt_prev);
         imbt_next = (ImageButton) findViewById(R.id.imbt_next);
+        tv_date_str = (TextView) findViewById(R.id.tv_date_str);
+        tv_activity_name = (TextView) findViewById(R.id.tv_activity_name);
 
         if (Config._start_service) {
             startService(new Intent(MapsActivity.this, LocService2.class)); // 서비스 시작
@@ -242,8 +249,10 @@ public class MapsActivity extends AppCompatActivity implements
         deleteLocationManager();
         if(Config._save_onPause) {
             ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).todayActivity();
+            String activity_file_name = DateUtil.today();
             MyActivityUtil.serialize(myal, DateUtil.today());
             Toast.makeText(_ctx,"saved into " + DateUtil.today(), Toast.LENGTH_SHORT ).show();
+            //NotificationUtil.notify_new_activity(_ctx, activity_file_name);
         }
         paused = true;
         super.onPause();
@@ -287,8 +296,16 @@ public class MapsActivity extends AppCompatActivity implements
         String _title = DateToString(new Date(), "hh:mm:ss");
         String _snippet = getAddress(getApplicationContext(),new LatLng(location.getLatitude(), location.getLongitude()));
         tv_map_address.setText(_snippet);
+
+        /* 함수로 정리해야 함 */
+        Date d = myloc.lastActivity().toDate();
+        String name = DateUtil.getActivityName(d);
+        String date_str = DateUtil.getDateString(d);
+        tv_activity_name.setText(name);
+        tv_date_str.setText(date_str);
+
         showActivities();
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, mMap.getCameraPosition().zoom));
+        //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, mMap.getCameraPosition().zoom));
     }
 
     @Override
@@ -388,7 +405,7 @@ public class MapsActivity extends AppCompatActivity implements
     };
 
     ArrayList<MyActivity> mActivityList=null;
-    int cntofactivities=100;
+    int cntofactivities=0;
     int marker_pos_prev=0;
     int marker_pos=0;
     public static Marker last_marker=null;
@@ -404,41 +421,49 @@ public class MapsActivity extends AppCompatActivity implements
                 if(mActivityList== null) {
                     MyLoc myloc = new MyLoc(_ctx);
                     mActivityList = myloc.todayActivity();
+                    if(mActivityList.size()==0) break;
                 }
+                cntofactivities = mActivityList.size();
                 step = cntofactivities / 10;
                 if (marker_pos - step > 0) {
                     marker_pos -= step;
                 }
                 else break;
-                showNavigate();
                 LatLng ll1 = mActivityList.get(marker_pos).toLatLng();
                 float myzoom = mMap.getCameraPosition().zoom;
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll1, myzoom));
                 MapUtil.drawTrack(_ctx,mMap,mActivityList);
+                showNavigate();
                 break;
             case R.id.imbt_next:
                 Log.d(TAG,"-- marker_pos:" + marker_pos + " cntofactivities:" + cntofactivities );
                 if(mActivityList==null) {
                     MyLoc myloc = new MyLoc(_ctx);
                     mActivityList = myloc.todayActivity();
+                    if(mActivityList.size()==0) break;
                 }
+                cntofactivities = mActivityList.size();
                 step = cntofactivities / 10;
                 if(marker_pos + step  < cntofactivities-1) {
                     marker_pos+= step;
-                }
-                else break;
-                showNavigate();
+                } else break;
+
+                Log.d(TAG,"-- cntofactivities:" + cntofactivities);
+                Log.d(TAG,"-- marker_pos:" + marker_pos);
+                Log.d(TAG,"-- step:" + step);
+
                 LatLng ll2 = mActivityList.get(marker_pos).toLatLng();
                 float myzoom2 = mMap.getCameraPosition().zoom;
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll2, myzoom2));
                 MapUtil.drawTrack(_ctx,mMap,mActivityList);
+                showNavigate();
                 break;
 
             case R.id.imGlobe:
                 satellite = !satellite;
                 if(!satellite) mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 else mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                //showActivities();
+                showActivities();
                 break;
             case R.id.imSave:
                 ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).todayActivity();
@@ -465,6 +490,7 @@ public class MapsActivity extends AppCompatActivity implements
                 //this is used for temporary
             case R.id.imDown:
                 new CloudUtil().DownloadAll(_ctx, Config._default_ext);
+                NotificationUtil.notify_download_activity(_ctx);
                 break;
 
             case R.id.imb_start_camera:
@@ -479,7 +505,7 @@ public class MapsActivity extends AppCompatActivity implements
                 break;
 
             case R.id.imGallary:
-                Intent picIntent = new Intent(MapsActivity.this, Pic3Activity.class);
+                Intent picIntent = new Intent(MapsActivity.this, Pic_Full_Screen_Activity.class);
                 startActivityForResult(picIntent, Config.CALL_PIC3_ACTIVITY);
                 break;
 
@@ -556,8 +582,24 @@ public class MapsActivity extends AppCompatActivity implements
 
     private void showActivities() {
         MyLoc myLoc = new MyLoc(getApplicationContext());
-        ArrayList<MyActivity> mal = myLoc.todayActivity();
-        MapUtil.drawTrack(_ctx,mMap,mal);
+        if(myLoc==null) return;
+        ArrayList<LatLng> todaypath = myLoc.todayPath();
+        if(todaypath==null) return;
+        ArrayList<MyActivity> mActivityList = myLoc.todayActivity();
+        if(mActivityList==null) return;
+
+        ArrayList<Marker> _markers = new ArrayList<>();
+        for(int i=0;i<mActivityList.size();i++) {
+            Marker marker = mMap.addMarker(
+                    new MarkerOptions().position(mActivityList.get(i).toLatLng()).title("").visible(false));
+            _markers.add(marker);
+        }
+        MyActivity lastActivity=null;
+        if(mActivityList.size()!=0) {
+            lastActivity = mActivityList.get(mActivityList.size()-1);
+        }
+        Display display = getWindowManager().getDefaultDisplay();
+        MapUtil.DRAW(_ctx,mMap,_markers, display,mActivityList);
     }
 
     private void showActivities_old() {
@@ -601,6 +643,7 @@ public class MapsActivity extends AppCompatActivity implements
             case Config.PICK_FROM_CAMERA:
                 Log.d(TAG, "-- PIC_FROM_CAMERA: ");
                 CameraUtil.showImg(_ctx, currentFileName);
+                NotificationUtil.notify_new_picture(_ctx, currentFileName);
                 break;
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
@@ -637,15 +680,6 @@ public class MapsActivity extends AppCompatActivity implements
                 Intent runIntent = new Intent(MapsActivity.this, RunActivity.class);
                 runIntent.putExtra("1", 1);
                 startActivityForResult(runIntent, Config.CALL_RUN_ACTIVITY);
-                return true;
-
-            case R.id.downloadcsv:
-                Log.d(TAG,"-- Download Activity!");
-                try {
-                    downloadCSV();
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
                 return true;
 
             case R.id.file_activity2:
@@ -713,16 +747,6 @@ public class MapsActivity extends AppCompatActivity implements
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    // just test purpose
-    public void downloadCSV() throws Exception{
-        String _urls[] = new String[] {
-                "http://ezehub.club/moment/upload/20210520.csv",
-                "http://ezehub.club/moment/upload/20210521.csv"
-        };
-        WebUtil.downloadFileAsync2(_ctx, _urls);
-    }
-
 
     private Marker mMarker  = null;
     public void drawMarker(LatLng ll) {

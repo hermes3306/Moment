@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import androidx.annotation.Dimension;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,6 +48,7 @@ import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
+import com.jason.moment.util.NotificationUtil;
 import com.jason.moment.util.StringUtil;
 
 import org.jetbrains.annotations.TestOnly;
@@ -211,6 +213,8 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.imb_start_camera:
                 takePic();
+                break;
+            case R.id.tv_start_km:
                 break;
             case R.id.imb_start_list:
                 //recordVideo();
@@ -399,6 +403,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         super.onPause();
         Log.d(TAG, "-- onPause.");
         MyActivityUtil.serialize(list, activity_file_name );
+        NotificationUtil.notify_new_activity(_ctx, activity_file_name);
     }
 
     @Override
@@ -451,6 +456,9 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                 .setContentIntent(contentIntent)
                 .setContentInfo("Info");
         NotificationManager notificationManager = (NotificationManager) _ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationManager.createNotificationChannel(new NotificationChannel("default", "기본 채널", NotificationManager.IMPORTANCE_DEFAULT));
+        }
         notificationManager.notify(_id, b.build());
     }
 
@@ -468,8 +476,14 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                         detail+= "\n총운동 시간:" + tv_start_time.getText();
                         detail+= "\n평균 분/Km:" + tv_start_avg.getText();
                         detail+= "\n소모칼로리:" + tv_start_calory.getText();
-                        notificationQuit(100,"Jason","활동이 저장되었습니다.", detail);
+                        notificationQuit(Config._notify_id,Config._notify_ticker,
+                                "활동이 저장되었습니다.", detail);
                         deleteLocationManager();
+
+                        Intent myReportIntent = new Intent(StartActivity.this, MyReportActivity.class);
+                        myReportIntent.putExtra("activity_file_name", activity_file_name);
+                        startActivity(myReportIntent);
+
                         StartActivity.this.quit = true;
                         StartActivity.this.finish();
                     }
@@ -502,19 +516,17 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                     tv_start_time.setText(elapsed);
                     long t1 = System.currentTimeMillis();
                     dist = MyActivityUtil.getTotalDistanceInDouble(list);
-
                     long t2 = System.currentTimeMillis();
                     if(dist<1000) { /* 1KM 이하 */
                         String s1 = String.format("%.0f", dist);
                         tv_start_km.setText(s1);
                         tv_start_km_str.setText("Meters");
                     } else if(dist>1000) { /* 1KM 이상 */
-                        String s1 = String.format("%1.f", dist/1000.0);
+                        String s1 = String.format("%.1f", dist/1000.0);
                         tv_start_km.setText(s1);
-                        tv_start_km_str.setText("Meters");
+                        tv_start_km_str.setText("Kilometers");
                     } else if(dist >10000){ /* 10KM 이상*/
-                        String s1 = String.format("%.2f", dist/1000.0);
-                        tv_start_km.setAutoSizeTextTypeWithDefaults(TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+                        String s1 = String.format("%.1f", dist/1000.0);
                         tv_start_km.setText(s1);
                         tv_start_km_str.setText("Kilometers");
                     }

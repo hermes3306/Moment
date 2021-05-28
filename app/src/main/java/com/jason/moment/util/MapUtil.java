@@ -2,7 +2,10 @@ package com.jason.moment.util;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -15,11 +18,15 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.jason.moment.R;
 
 import java.util.ArrayList;
 
 public class MapUtil {
     private static String TAG = "MapUtil";
+    public static boolean nomarker = false;
+    public static boolean notrack = false;
+    public static boolean satellite = false;
 
      static int colors[] = {
             Color.RED,
@@ -34,11 +41,9 @@ public class MapUtil {
     };
 
     public static ArrayList<Marker> markers = null;
-
     public static void initialize() {
         markers = new ArrayList<Marker>();
     }
-
     public static void moveCamera(GoogleMap googleMap, MyActivity myactivity, float _zoom) {
         LatLng cur_loc = myactivity.toLatLng();
         CameraPosition cameraPosition = new CameraPosition.Builder().target(cur_loc).zoom(_zoom).build();
@@ -47,9 +52,10 @@ public class MapUtil {
 
     public static void drawStartMarker(GoogleMap gmap, ArrayList<MyActivity> list) {
         if(list.size()==0) return;
+        float color =  Config._marker_start_color;
         LatLng ll = new LatLng(list.get(0).latitude, list.get(0).longitude);
         Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title("출발")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                .icon(BitmapDescriptorFactory.defaultMarker(color))
                 .draggable(true)
                 .visible(true)
                 .snippet("출발"));
@@ -58,9 +64,10 @@ public class MapUtil {
 
     public static void drawEndMarker(GoogleMap gmap, ArrayList<MyActivity> list) {
         if(list.size()==0) return;
+        float color =  Config._marker_end_color;
         LatLng ll = new LatLng(list.get(list.size()-1).latitude, list.get(list.size()-1).longitude);
         Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title("종료")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                .icon(BitmapDescriptorFactory.defaultMarker(color))
                 .draggable(true)
                 .visible(true)
                 .snippet("종료"));
@@ -80,7 +87,7 @@ public class MapUtil {
         double t_lap = disunit;
         for(int i=0; i < list.size(); i++) {
             LatLng ll = new LatLng(list.get(i).latitude, list.get(i).longitude);
-            float color = (i==0) ?  BitmapDescriptorFactory.HUE_GREEN : ((i==list.size()-1)? BitmapDescriptorFactory.HUE_RED  :  BitmapDescriptorFactory.HUE_CYAN);
+            float color =  Config._marker_color;
 
             String title = StringUtil.getDateTimeString(list.get(i));
             /* drawMarkers 호출시 StartMarker/EndMarker별도로 호출함 */
@@ -98,10 +105,18 @@ public class MapUtil {
                     //Log.e(TAG, "" + interval + unitstr);
                     t_lap += disunit;
 
+//                    Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title(title)
+//                            .icon(BitmapDescriptorFactory.defaultMarker(color))
+//                            .draggable(true)
+//                            .visible(true)
+//                            .alpha(Config._marker_alpha)
+//                            .snippet(""+interval + unitstr));
+
                     Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title(title)
-                            .icon(BitmapDescriptorFactory.defaultMarker(color))
+                            .icon(BitmapDescriptorFactory.fromResource(Config._marker_icon))
                             .draggable(true)
                             .visible(true)
+                            .alpha(Config._marker_alpha)
                             .snippet(""+interval + unitstr));
                     markers.add(marker);
                 }
@@ -165,12 +180,52 @@ public class MapUtil {
         polyLine_previous = polyLine;
     }
 
+    public static void DRAW(Context _ctx, GoogleMap googleMap, ArrayList<Marker> _markers, Display display, ArrayList<MyActivity>mActivityList) {
+        MapUtil.initialize(); //MapUtil은 사용하기 전에 반드시 초기화를 해서 마크정도 초기화
+        googleMap.clear();
+        MyActivity lastActivity=null;
+        if(mActivityList.size()==0) {
+            Toast.makeText(_ctx,"No activities!", Toast.LENGTH_SHORT).show();
+        } else {
+            lastActivity = mActivityList.get(mActivityList.size()-1);
+        }
 
-    public static void doBoundBuild(GoogleMap gmap, int width, int height) throws Exception {
-        if(markers.size()==0) return;
+        if(!nomarker) MapUtil.drawMarkers(googleMap,mActivityList);
+        if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
+        if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        if(nomarker || notrack) {
+            MapUtil.drawStartMarker(googleMap,mActivityList);
+            MapUtil.drawEndMarker(googleMap,mActivityList);
+        }
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics( metrics );
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+
+        boolean got_bound_wo_error = false;
+        int try_cnt = 0;
+
+        do {
+            try {
+                MapUtil.doBoundBuild(googleMap, _markers, width, height);
+                got_bound_wo_error = true;
+            } catch (Exception e) {
+                try_cnt++;
+            }
+        }while(!got_bound_wo_error && try_cnt < 3);
+        if(!got_bound_wo_error) {
+            int myzoom = 16;
+            if(lastActivity!=null) MapUtil.moveCamera(googleMap, lastActivity, myzoom);
+        }
+    }
+
+
+    public static void doBoundBuild(GoogleMap gmap, ArrayList<Marker> _markers, int width, int height) throws Exception {
+        if(_markers.size()==0) return;
 
         LatLngBounds.Builder builder= new LatLngBounds.Builder();
-        for (Marker marker : markers) {
+        for (Marker marker : _markers) {
             builder.include(marker.getPosition());
         }
         LatLngBounds bounds = builder.build();

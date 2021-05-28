@@ -5,10 +5,10 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Environment;
 import android.util.Log;
-import android.view.animation.LinearInterpolator;
 
 import androidx.preference.PreferenceManager;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.jason.moment.R;
 
@@ -19,14 +19,23 @@ import java.util.Date;
 public class Config {
 
     static String TAG                       = "Config";
-    static String _ver                      = "1.139";
+    static String _ver                      = "1.2391";
 
+    public static String _notify_ticker     = "Jason";
+    public static int _notify_id            = 100;
 
     /* 지도 */
+    public static float _marker_start_color = BitmapDescriptorFactory.HUE_GREEN;
+    public static float _marker_end_color = BitmapDescriptorFactory.HUE_RED;
+    public static float _marker_color = BitmapDescriptorFactory.HUE_CYAN;
+    public static int _marker_icon = R.drawable.drawmarker24;
+
+    public static float _marker_alpha = 0.9f;
+
     public static int _track_color          = Color.RED;
     public static int _track_width          = 10;
     public static int _default_start_layout = R.layout.activity_start_style1;
-    public static int _default_file_layout  = R.layout.activity_file1;
+    public static int _default_file_layout  = R.layout.activity_file;
 
     /* 파일 디코딩시 목표 크기 지정 100:흐림 400:보통 800:또렷 */
     public static int PIC_REQUIRED_SIZE     = 400;
@@ -50,8 +59,9 @@ public class Config {
     public static File PIC_SAVE_DIR         = null;
     public static File MOV_SAVE_DIR       = null;
 
-    //public static String        _serverURL      = "http://ezehub.club/moment";
-    public static String        _serverURL      = "http://ezehub.club/moment:8080";
+    //public static String        _serverURL      = "http://ezehub.club/moment";        //Z
+    //public static String        _serverURL      = "http://ezehub.club:8080/moment";   //W
+    public static String        _serverURL      = "http://ezehub.club:8888/moment";     //M
     public static String        _serverFolder   = "/upload";
     public static String        _uploadURL      = _serverURL + "/upload.php";
     public static String        _listFiles      = _serverURL + "/list.php";
@@ -86,7 +96,7 @@ public class Config {
     public static boolean       _start_timer    = false; // start timer background scheduler
 
     public static String        _filename_fmt   ="yyyyMMdd";
-    public static boolean       _save_onPause = false;
+    public static boolean       _save_onPause = true;
 
     public static int           _file_type_all  = 1;
     public static int           _file_type_day  = 2;
@@ -130,6 +140,7 @@ public class Config {
         int _preference_val = 0;
         try {
             _preference_val = Integer.parseInt(sharedPreferences.getString(name, "0"));
+            Log.e(TAG,"-- getIntPreference value:" + _preference_val);
         }catch(Exception e) {
             Log.d(TAG, "-- Err(getIntPreference for name:" + name  + e.toString());
             e.printStackTrace();

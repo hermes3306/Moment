@@ -82,19 +82,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="291dp"
                 android:layout_gravity="center_horizontal"
-
-
+                android:onClick="onClick"
                 android:text="12.1"
                 android:textAlignment="center"
                 android:textColor="#00BCD4"
-                android:textSize="210dp" />
+                android:textSize="190dp" />
 
             <TextView
                 android:id="@+id/tv_start_km_str"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="KM"
+                android:text="Kilometers"
+                android:onClick="onClick"
                 android:textAlignment="center"
                 android:textSize="30dp" />
         </LinearLayout>
