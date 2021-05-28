@@ -298,16 +298,9 @@ public class MapsActivity extends AppCompatActivity implements
         tv_map_address.setText(_snippet);
 
         /* 함수로 정리해야 함 */
-        String H = DateUtil.DateToString(myloc.lastActivity().toDate(),"H");
-        int t = Integer.parseInt(H);
-        if(t >= 4 && t < 12) H = "아침 활동";
-        else if(t>=12 && t <=18) H = "오후 활동";
-        else if(t>18) H= "저녁 활동";
-        else if(t>21) H= "야간 활동";
-        else if(t<4) H= "새벽 활동";
-        String name = DateUtil.DateToString(myloc.lastActivity().toDate(),"E요일 ") + " " + H;
-        String date_str = DateUtil.DateToString(myloc.lastActivity().toDate(),"yyyy년MM월dd일 HH:mm a");
-
+        Date d = myloc.lastActivity().toDate();
+        String name = DateUtil.getActivityName(d);
+        String date_str = DateUtil.getDateString(d);
         tv_activity_name.setText(name);
         tv_date_str.setText(date_str);
 
@@ -512,7 +505,7 @@ public class MapsActivity extends AppCompatActivity implements
                 break;
 
             case R.id.imGallary:
-                Intent picIntent = new Intent(MapsActivity.this, Pic3Activity.class);
+                Intent picIntent = new Intent(MapsActivity.this, Pic_Full_Screen_Activity.class);
                 startActivityForResult(picIntent, Config.CALL_PIC3_ACTIVITY);
                 break;
 

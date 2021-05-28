@@ -12,7 +12,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.jason.moment.FileActivity;
 import com.jason.moment.MyReportActivity;
-import com.jason.moment.Pic3Activity;
+import com.jason.moment.Pic_Full_Screen_Activity;
 import com.jason.moment.R;
 
 
@@ -69,7 +69,7 @@ public class NotificationUtil {
     public static void notify_new_picture(Context context, String picture_name) {
         String title = "("+notification_id+")새로운 사진이 저장되었습니다.";
         String detail = "사진의 이름은 " + picture_name + " 입니다.";
-        Intent intent = new Intent(context, Pic3Activity.class);
+        Intent intent = new Intent(context, Pic_Full_Screen_Activity.class);
         intent.putExtra("picture_name", picture_name);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder b = new NotificationCompat.Builder(context,"default");

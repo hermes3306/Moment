@@ -26,5 +26,21 @@ public class DateUtil {
         return false;
     }
 
+    public static String getActivityName(Date d) {
+        String H = DateUtil.DateToString(d,"H");
+        int t = Integer.parseInt(H);
+        if(t >= 4 && t < 12) H = "아침 활동";
+        else if(t>=12 && t <=18) H = "오후 활동";
+        else if(t>18) H= "저녁 활동";
+        else if(t>21) H= "야간 활동";
+        else if(t<4) H= "새벽 활동";
+        String activityName = DateUtil.DateToString(d,"E요일 ") + " " + H;
+        return activityName;
+    }
+
+    public static String getDateString(Date d) {
+        String date_str = DateUtil.DateToString(d,"yyyy년MM월dd일 HH:mm a");
+        return date_str;
+    }
 
 }

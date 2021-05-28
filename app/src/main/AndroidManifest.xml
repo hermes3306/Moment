@@ -33,7 +33,7 @@
             android:label="@string/title_activity_pic3"
             android:theme="@style/Theme.AppCompat" />
         <activity
-            android:name=".Pic3Activity"
+            android:name=".Pic_Full_Screen_Activity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_pic3"
             android:theme="@style/Theme.AppCompat" />

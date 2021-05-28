@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.google.android.material.snackbar.Snackbar;
 import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
+import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.NotificationUtil;
 
 import java.io.File;
@@ -44,7 +45,7 @@ import java.util.Date;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class Pic3Activity extends AppCompatActivity implements View.OnClickListener{
+public class Pic_Full_Screen_Activity extends AppCompatActivity implements View.OnClickListener{
     private static String TAG = "PicActivity";
     ArrayList<File> _files=null;
     int pos=0;
@@ -52,6 +53,8 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
     int mDegree=0;
     Context _ctx;
     TextView tv;
+    TextView tv_activity_name;
+    TextView tv_date_str;
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -147,6 +150,8 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
         mControlsView3 = findViewById(R.id.fullscreen_content_controls3);
         mContentView = findViewById(R.id.iv_pic);
         tv = findViewById(R.id.tv_picinfo);
+        tv_activity_name = (TextView)findViewById(R.id.name);
+        tv_date_str = (TextView)findViewById(R.id.date_str);
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -323,12 +328,19 @@ public class Pic3Activity extends AppCompatActivity implements View.OnClickListe
         matrix.postRotate(90);
         mDegree = 90;
 
-        Bitmap bitmap = decodeFile(new File(file_path));
+        File _file = new File(file_path);
+        Bitmap bitmap = decodeFile(_file);
 
         bitmap = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(), bitmap.getHeight(),matrix,true);
         iv_pic.setImageBitmap(bitmap);
 
         tv.setText("" + (pos+1) + "/" + size);
+        /* 함수로 정리해야 함 */
+        Date d = new Date(_file.lastModified());
+        String name = DateUtil.getActivityName(d);
+        String date_str = DateUtil.getDateString(d);
+        tv_activity_name.setText(name);
+        tv_date_str.setText(date_str);
     }
 
     public void show1_old() {
