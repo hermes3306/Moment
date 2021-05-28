@@ -40,6 +40,14 @@ public class MapUtil {
             Color.LTGRAY
     };
 
+    public static void toggleNoMarker() {
+        nomarker = !nomarker;
+    }
+
+    public static void toggleNoTrack() {
+        notrack = !notrack;
+    }
+
     public static ArrayList<Marker> markers = null;
     public static void initialize() {
         markers = new ArrayList<Marker>();
@@ -175,7 +183,7 @@ public class MapUtil {
         if(!right_color) color=colors[0];
 
         Log.d(TAG,"-- track color index is: " + col_inx);
-        Log.d(TAG,"-- track color is: " + colors[0]);
+        Log.d(TAG,"-- track color is: " + colors[col_inx]);
 
         if(width<0) width=10;
         plo.color((int)color);

@@ -20,6 +20,7 @@ import androidx.core.content.FileProvider;
 
 import com.jason.moment.R;
 import com.jason.moment.StartActivity;
+import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 
 import java.io.File;
@@ -52,9 +53,10 @@ public class CameraUtil {
         ImageView iv = view.findViewById(R.id.dialog_imageview);
         showImg(iv, fname);
         alertadd.setView(view);
-        alertadd.setNeutralButton("Here!", new DialogInterface.OnClickListener() {
+        alertadd.setPositiveButton("Upload!", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dlg, int sumthin) {
-
+                CloudUtil cu = new CloudUtil();
+                cu.Upload(parentContext,fname);
             }
         });
         alertadd.show();

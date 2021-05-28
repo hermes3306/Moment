@@ -30,6 +30,7 @@ import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.NotificationUtil;
+import com.jason.moment.util.camera.CameraUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -318,6 +319,9 @@ public class Pic_Full_Screen_Activity extends AppCompatActivity implements View.
     }
 
     public void show1() {
+        if(_files==null) return;
+        if(_files.size()==0) return;
+
         String file_path = _files.get(pos).getAbsolutePath();
         currentFileName = _files.get(pos).getName();
 
@@ -463,18 +467,17 @@ public class Pic_Full_Screen_Activity extends AppCompatActivity implements View.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "-- onActivityResult called!");
-        if (requestCode == Config.PICK_FROM_CAMERA && resultCode == RESULT_OK) {
-            Log.d(TAG, "-- resultCode - PICK_FROM_CAMERA");
-            if (data == null) {
-                Log.d(TAG, "-- Intent data is NULL!!!!");
-            } else {
-                Bundle extras = data.getExtras();
-//            Bitmap imageBitmap = (Bitmap) extras.get("data");
-//            imageView.setImageBitmap(imageBitmap);
-            }
-            reload();
-            galleryAddPic(currentFileName); }
+        switch(requestCode) {
+            case Config.PICK_FROM_CAMERA:
+                Log.d(TAG, "-- PIC_FROM_CAMERA: ");
+                CameraUtil.showImg(_ctx, currentFileName);
+                NotificationUtil.notify_new_picture(_ctx, currentFileName);
+                break;
+            case Config.PICK_FROM_VIDEO:
+                Log.d(TAG, "-- PICK_FROM_VIDEO: ");
+                CameraUtil.showVideo(_ctx, currentFileName);
+                break;
+        }
     }
 
     private void sharePic() {

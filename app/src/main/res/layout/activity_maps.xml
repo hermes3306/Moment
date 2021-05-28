@@ -200,7 +200,7 @@
             android:visibility="gone"
             android:background="@android:color/transparent"
             android:onClick="onClick"
-            app:srcCompat="@drawable/circlearrowdn48" />
+            app:srcCompat="@drawable/circlearrowdn32" />
 
         <ImageButton
             android:id="@+id/imbt_up"
@@ -210,7 +210,7 @@
             android:visibility="gone"
             android:background="@android:color/transparent"
             android:onClick="onClick"
-            app:srcCompat="@drawable/circlearrowup48" />
+            app:srcCompat="@drawable/circlearrowup32" />
 
         <ImageButton
             android:id="@+id/imbt_pop_menu"

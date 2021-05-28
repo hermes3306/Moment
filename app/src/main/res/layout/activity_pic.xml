@@ -71,6 +71,7 @@
                 android:background="@android:color/transparent"
                 android:onClick="onClick"
                 android:src="@drawable/trash_48" />
+
             <ImageButton
                 android:id="@+id/imShare"
                 android:layout_width="wrap_content"
@@ -78,6 +79,7 @@
                 android:background="@android:color/transparent"
                 android:onClick="onClick"
                 android:src="@drawable/share2_48" />
+
             <ImageButton
                 android:id="@+id/imDown"
                 android:layout_width="wrap_content"
@@ -85,7 +87,7 @@
                 android:layout_gravity="right"
                 android:background="@android:color/transparent"
                 android:onClick="onClick"
-                android:src="@drawable/clouddownload48" />
+                android:src="@drawable/circlearrowdn48" />
             <ImageButton
                 android:id="@+id/uploadall"
                 android:layout_width="wrap_content"

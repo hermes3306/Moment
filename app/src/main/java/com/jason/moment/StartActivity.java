@@ -44,6 +44,7 @@ import androidx.preference.PreferenceManager;
 
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CaloryUtil;
+import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.MyActivity;
@@ -134,7 +135,9 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         switch(requestCode) {
             case Config.PICK_FROM_CAMERA:
                 Log.d(TAG, "-- PIC_FROM_CAMERA: ");
-                showImg(currentMediaName);
+                //showImg(currentMediaName);
+                CloudUtil cu = new CloudUtil();
+                cu.Upload(_ctx,currentMediaName);
                 break;
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
@@ -170,7 +173,8 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         alertadd.setView(view);
         alertadd.setNeutralButton("Upload!", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dlg, int sumthin) {
-
+                CloudUtil cu = new CloudUtil();
+                cu.Upload(_ctx, currentMediaName);
             }
         });
         alertadd.show();

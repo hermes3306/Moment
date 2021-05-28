@@ -91,9 +91,9 @@ public class MapsActivity extends AppCompatActivity implements
     private static final int DEFAULT_ZOOM = 15;
     public static boolean firstCall = true;
     public static boolean paused = false;
-    public static boolean nomarkers = true;
-    public static boolean notrack = false;
-    public static boolean satellite = false;
+//    public static boolean nomarkers = true;
+//    public static boolean notrack = false;
+//    public static boolean satellite = false;
 
     public ImageView imv_start;
     public TextView tv_map_address;
@@ -498,7 +498,7 @@ public class MapsActivity extends AppCompatActivity implements
                 break;
 
             case R.id.imbt_marker:
-                nomarkers = !nomarkers;
+                MapUtil.toggleNoMarker();
                 showActivities();
                 hidePopMenu(false);
                 Display display = getWindowManager().getDefaultDisplay();
@@ -514,7 +514,7 @@ public class MapsActivity extends AppCompatActivity implements
                 MapUtil.DRAW(_ctx,googleMap,_markers,display,mActivityList );
                 break;
             case R.id.imbt_navi:
-                notrack = !notrack;
+                MapUtil.toggleNoTrack();
                 display = getWindowManager().getDefaultDisplay();
                 _markers = new ArrayList<>();
                 myLoc = new MyLoc(_ctx);
@@ -671,25 +671,6 @@ public class MapsActivity extends AppCompatActivity implements
         MapUtil.DRAW(_ctx,googleMap,_markers, display,mActivityList);
     }
 
-    private void showActivities_old() {
-        MyLoc myLoc = new MyLoc(getApplicationContext());
-        if(myLoc==null) return;
-        ArrayList<LatLng> todaypath = myLoc.todayPath();
-        if(todaypath==null) return;
-        ArrayList<MyActivity> mActivityList = myLoc.todayActivity();
-        if(mActivityList==null) return;
-        GooglemapUtil.drawTrack2(googleMap, todaypath );
-        Log.d(TAG, "-- nomarkers = " + nomarkers + " notrack = " + notrack);
-        googleMap.clear();
-        if(!nomarkers) drawMarkers(googleMap,mActivityList);
-        if(!notrack) drawTrack(googleMap,mActivityList);
-        if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        if(nomarkers || notrack) {
-            drawStartMarker(googleMap,mActivityList);
-            drawEndMarker(googleMap,mActivityList);
-        }
-    }
 
     // 사진 촬영 기능
     String currentFileName;
