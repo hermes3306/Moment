@@ -19,7 +19,7 @@ import java.util.Date;
 public class Config {
 
     static String TAG                       = "Config";
-    static String _ver                      = "21.2";
+    static String _ver                      = "1221.2";
 
     public static String _notify_ticker     = "Jason";
     public static int _notify_id            = 100;
@@ -59,9 +59,9 @@ public class Config {
     public static File PIC_SAVE_DIR         = null;
     public static File MOV_SAVE_DIR       = null;
 
-    //public static String        _serverURL      = "http://ezehub.club/moment";        //Z
+    public static String        _serverURL      = "http://ezehub.club/moment";        //Z
     //public static String        _serverURL      = "http://ezehub.club:8080/moment";   //W
-    public static String        _serverURL      = "http://ezehub.club:8888/moment";   //M
+    //public static String        _serverURL      = "http://ezehub.club:8888/moment";   //M
     //public static String        _serverURL      = "http://ezehub.club:8899/moment";     //DESKTOP1
     public static String        _serverFolder   = "/upload";
     public static String        _uploadURL      = _serverURL + "/upload.php";
