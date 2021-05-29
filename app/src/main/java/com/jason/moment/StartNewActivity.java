@@ -48,6 +48,7 @@ import androidx.preference.PreferenceManager;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jason.moment.util.ActivityStat;
@@ -386,42 +387,14 @@ public class StartNewActivity extends AppCompatActivity implements
         MyActivity lastActivity = null;
         if(mal==null) return;
         if(mal.size()==0) return;
-        else lastActivity = mal.get(mal.size()-1);
-
-        MapUtil.initialize();
-        MapUtil.drawMarkers(googleMap,mal);
-        MapUtil.drawTrack(_ctx,googleMap,mal);
-
+        ArrayList<Marker> _markers = new ArrayList<>();
         Display display = getWindowManager().getDefaultDisplay();
-        DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics( metrics );
-        int width = metrics.widthPixels;
-        int height = metrics.heightPixels;
-
-        boolean got_bound_wo_error = false;
-        int try_cnt = 0;
-
-        do {
-            try {
-                Log.d(TAG,"-- before add all marker to do do Bound build!");
-                ArrayList<Marker> _markers = new ArrayList<>();
-                for(int i=0;i<mal.size();i++) {
-                    Marker marker = googleMap.addMarker(
-                            new MarkerOptions().position(mal.get(i).toLatLng()).title("").visible(false));
-                    _markers.add(marker);
-                }
-                Log.d(TAG,"-- after add all marker to do do Bound build!");
-
-                MapUtil.doBoundBuild(googleMap, _markers, width, height);
-                got_bound_wo_error = true;
-            } catch (Exception e) {
-                try_cnt++;
-            }
-        }while(!got_bound_wo_error && try_cnt < 3);
-        if(!got_bound_wo_error) {
-            int myzoom = 16;
-            if(lastActivity!=null) MapUtil.moveCamera(googleMap, lastActivity, myzoom);
+        for(int i=0;i<mal.size();i++) {
+            Marker marker = googleMap.addMarker(
+                    new MarkerOptions().position(mal.get(i).toLatLng()).title("").visible(false));
+            _markers.add(marker);
         }
+        MapUtil.DRAW(_ctx,googleMap,_markers,display,list );
     }
 
 
