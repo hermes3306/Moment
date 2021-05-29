@@ -578,7 +578,7 @@ public class StartNewActivity extends AppCompatActivity implements
 
         super.onCreate(savedInstanceState);
         initialize_Mapview(savedInstanceState);
-
+        initializeLocationManager();
         activity_file_name = StringUtil.DateToString(new Date(),"yyyyMMdd_HHmmss");
         startMyTimer();
         start_time = new Date();

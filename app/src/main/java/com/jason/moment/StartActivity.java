@@ -398,8 +398,8 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         int inx = Config.getIntPreference(this,"start_screen");
         //setContentView();
         initializeContentViews(start_layout[inx]);
-        initializeLocationManager();
 
+        initializeLocationManager();
         activity_file_name = StringUtil.DateToString(new Date(),"yyyyMMdd_HHmmss");
         startMyTimer();
         start_time = new Date();
