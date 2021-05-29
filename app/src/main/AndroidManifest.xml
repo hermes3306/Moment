@@ -44,6 +44,9 @@
             android:name=".StartActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity
+            android:name=".StartNewActivity"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
             android:name=".ConfigActivity"
             android:label="@string/title_activity_config"
             android:theme="@style/Theme.AppCompat" />

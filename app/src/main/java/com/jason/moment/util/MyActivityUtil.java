@@ -505,8 +505,9 @@ public class MyActivityUtil {
                 continue;
             }
             dist_meter = dist_meter + dist_2;
-            pos = i-1;
+
             if (dist_meter >= targetDist ) {
+                pos = i;
                 break;
             }
         }

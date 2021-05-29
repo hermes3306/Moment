@@ -56,4 +56,10 @@
         android:orderInCategory="100"
         android:title="Report Activity"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/StartNewActivity"
+        android:orderInCategory="100"
+        android:title="Start New Activity"
+        app:showAsAction="never" />
 </menu>

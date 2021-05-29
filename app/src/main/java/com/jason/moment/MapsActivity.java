@@ -746,6 +746,12 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivityForResult(reportActivity, Config.CALL_REPORT_ACTIVITY);
                 return true;
 
+            case R.id.StartNewActivity:
+                Log.d(TAG,"-- Start New Activity!");
+                Intent startNewActivity = new Intent(MapsActivity.this, StartNewActivity.class);
+                startActivityForResult(startNewActivity, Config.CALL_START_NEW_ACTIVITY);
+                return true;
+
             case R.id.quote_activity:
                 Log.d(TAG,"-- Quote Activity!");
                 Intent quoteIntent = new Intent(MapsActivity.this, QuoteActivity.class);
