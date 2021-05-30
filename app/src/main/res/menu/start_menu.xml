@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/start_vodeo"
-        android:title="Video" />
+        android:id="@+id/view_pics"
+        android:title="View Pics" />
+    <item
+        android:id="@+id/view_videos"
+        android:title="View Videos" />
+    <item
+        android:id="@+id/record_video"
+        android:title="Record a Video" />
     <item
         android:id="@+id/start_layout_select"
-        android:title="Layout" />
+        android:title="Chose a Layout" />
     <item
         android:id="@+id/action_map"
-        android:title="Map"/>
+        android:title="View Map"/>
     <item
         android:id="@+id/imSetting"
         android:title="Setting" />

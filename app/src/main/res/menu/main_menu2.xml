@@ -58,8 +58,8 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/StartNewActivity"
+        android:id="@+id/StartActivity"
         android:orderInCategory="100"
-        android:title="Start New Activity"
+        android:title="Start Activity(OLD)"
         app:showAsAction="never" />
 </menu>

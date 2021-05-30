@@ -302,9 +302,14 @@ public class CloudUtil {
             @Override
             protected Void doInBackground(Void... voids) {
                 asyncDialog.setMax(100);
-                File file = null;
-                file = new File(Config.PIC_SAVE_DIR, filename);
-                Log.d(TAG, "Picture File name:" + filename);
+                File file;
+                File folder = null;
+                if(filename.endsWith(Config._csv_ext)) folder = Config.CSV_SAVE_DIR;
+                if(filename.endsWith(Config._mnt_ext)) folder = Config.MNT_SAVE_DIR;
+                if(filename.endsWith(Config._pic_ext)) folder = Config.PIC_SAVE_DIR;
+                if(filename.endsWith(Config._mov_ext)) folder = Config.MOV_SAVE_DIR;
+                file = new File(folder, filename);
+                Log.d(TAG, "Upload File name:" + filename);
 
                 try {
                     URL serverUrl = new URL(_serverUrl);
@@ -395,7 +400,4 @@ public class CloudUtil {
             }
         }.execute();
     }
-
-
-
 }

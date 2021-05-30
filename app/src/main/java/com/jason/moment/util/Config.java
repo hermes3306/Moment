@@ -21,6 +21,12 @@ public class Config {
     static String TAG                       = "Config";
     static String _ver                      = "1221.2";
 
+    public static String _pic_ext           = ".jpeg";
+    public static String _mov_ext           = ".mp4";
+    public static String _csv_ext           = ".csv";
+    public static String _mnt_ext           = ".mnt";
+
+
     public static String _notify_ticker     = "Jason";
     public static int _notify_id            = 100;
 
@@ -152,13 +158,13 @@ public class Config {
 
     public static String getTmpPicName() {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String name  = "IMG_" + timeStamp + ".jpeg";
+        String name  = "IMG_" + timeStamp + _pic_ext;
         return name;
     }
 
     public static String getVideoName() {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String name  = "VIDEO_" + timeStamp + ".jpeg";
+        String name  = "VIDEO_" + timeStamp + _mov_ext;
         return name;
     }
     public static String get_today_filename() {

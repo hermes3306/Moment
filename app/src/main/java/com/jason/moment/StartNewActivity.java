@@ -76,6 +76,10 @@ import static java.lang.Integer.parseInt;
 public class StartNewActivity extends AppCompatActivity implements
         OnMapReadyCallback,
         View.OnClickListener{
+
+    public ArrayList<String> pic_filenames = new ArrayList<>();
+    public ArrayList<String> mov_filenames = new ArrayList<>();
+
     String TAG = "StartNewActivity";
     String activity_filename = null;
     Context _ctx = null;
@@ -152,10 +156,14 @@ public class StartNewActivity extends AppCompatActivity implements
                 //showImg(currentMediaName);
                 CloudUtil cu = new CloudUtil();
                 cu.Upload(_ctx,currentMediaName);
+                pic_filenames.add(currentMediaName);
                 break;
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
-                showVideo(currentMediaName);
+                //showVideo(currentMediaName);
+                cu = new CloudUtil();
+                cu.Upload(_ctx,currentMediaName);
+                mov_filenames.add(currentMediaName);
                 break;
         }
     }
@@ -194,6 +202,29 @@ public class StartNewActivity extends AppCompatActivity implements
         alertadd.show();
     }
 
+    private void showImages(final int pos) {
+        if(pic_filenames.size()<pos+1) {
+            Toast.makeText(_ctx,"No Pics!",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartNewActivity.this);
+        LayoutInflater factory = LayoutInflater.from(StartNewActivity.this);
+
+        /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
+        final View view = factory.inflate(R.layout.layout_imageview, null);
+        ImageView iv = view.findViewById(R.id.dialog_imageview);
+        showImg(iv, pic_filenames.get(pos));
+        alertadd.setView(view);
+        alertadd.setPositiveButton("Next", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dlg, int sumthin) {
+                if(pic_filenames.size() >(pos+1)) {
+                    showImages(pos+1);
+                }
+            }
+        });
+        alertadd.show();
+    }
+
     public void showVideo(VideoView vv, String fname) {
         MediaController m;
         m = new MediaController(this);
@@ -204,6 +235,29 @@ public class StartNewActivity extends AppCompatActivity implements
                 mediaFile);
         vv.setVideoURI(mediaUri);
         vv.start();
+    }
+
+    private void showVideos(int pos) {
+        if(mov_filenames.size()<pos+1) {
+            Toast.makeText(_ctx,"No Movies!",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartNewActivity.this);
+        LayoutInflater factory = LayoutInflater.from(StartNewActivity.this);
+
+        /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
+        final View view = factory.inflate(R.layout.layout_videoview, null);
+        VideoView vv = view.findViewById(R.id.dialog_video_view);
+        showVideo(vv, pic_filenames.get(pos));
+        alertadd.setView(view);
+        alertadd.setPositiveButton("Next", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dlg, int sumthin) {
+                if(pic_filenames.size() >(pos+1)) {
+                    showVideos(pos+1);
+                }
+            }
+        });
+        alertadd.show();
     }
 
     private void showVideo(String fname) {
@@ -294,8 +348,14 @@ public class StartNewActivity extends AppCompatActivity implements
             case R.id.action_map:
                 int i=0;
                 break;
-            case R.id.start_vodeo:
+            case R.id.record_video:
                 recordVideo();
+                break;
+            case R.id.view_pics:
+                showImages(0);
+                break;
+            case R.id.view_videos:
+                showVideos(0);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -396,7 +456,6 @@ public class StartNewActivity extends AppCompatActivity implements
         }
         MapUtil.DRAW(_ctx,googleMap,_markers,display,list );
     }
-
 
     private class GPSListener implements LocationListener {
         public GPSListener(String gpsProvider) {

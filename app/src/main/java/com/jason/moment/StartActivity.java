@@ -67,6 +67,9 @@ import static java.lang.Integer.parseInt;
 public class StartActivity extends AppCompatActivity implements View.OnClickListener{
     public static String TAG = "StartActivity";
 
+    public ArrayList<String> pic_filenames = new ArrayList<>();
+    public ArrayList<String> mov_filenames = new ArrayList<>();
+
     int start_layout[] = {
             R.layout.activity_start_style3,
             R.layout.activity_start_style1,
@@ -142,6 +145,8 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
                 showVideo(currentMediaName);
+                cu = new CloudUtil();
+                cu.Upload(_ctx,currentMediaName);
                 break;
         }
     }
@@ -268,7 +273,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
             case R.id.action_map:
                 int i=0;
                 break;
-            case R.id.start_vodeo:
+            case R.id.record_video:
                 recordVideo();
                 break;
         }

@@ -309,9 +309,8 @@ public class MapsActivity extends AppCompatActivity implements
             } else return;
         }
 
-        String _title = DateToString(new Date(), "hh:mm:ss");
-        String _snippet = getAddress(getApplicationContext(),new LatLng(location.getLatitude(), location.getLongitude()));
-        tv_map_address.setText(_snippet);
+        String address = AddressUtil.getAddress(_ctx,new LatLng(location.getLatitude(), location.getLongitude()));
+//        tv_map_address.setText(address);
 
         /* 함수로 정리해야 함 */
         Date d = myloc.lastActivity().toDate();
@@ -319,6 +318,26 @@ public class MapsActivity extends AppCompatActivity implements
         String date_str = DateUtil.getDateString(d);
         tv_activity_name.setText(name);
         tv_date_str.setText(date_str);
+
+        tv_activity_name.setOnClickListener(new View.OnClickListener() {
+            boolean toggle=true;
+            @Override
+            public void onClick(View v) {
+                toggle=!toggle;
+                if(toggle) tv_date_str.setText(address);
+                else tv_date_str.setText(date_str);
+            }
+        });
+
+        tv_date_str.setOnClickListener(new View.OnClickListener() {
+            boolean toggle=true;
+            @Override
+            public void onClick(View v) {
+                toggle=!toggle;
+                if(toggle) tv_date_str.setText(address);
+                else tv_date_str.setText(date_str);
+            }
+        });
 
         showActivities();
         //googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, googleMap.getCameraPosition().zoom));
@@ -567,9 +586,9 @@ public class MapsActivity extends AppCompatActivity implements
                 break;
             case R.id.imvStart:
                 Log.d(TAG,"-- image View start.");
-                Intent runIntent = new Intent(MapsActivity.this, StartActivity.class);
+                Intent runIntent = new Intent(MapsActivity.this, StartNewActivity.class);
                 runIntent.putExtra("1", 1);
-                startActivityForResult(runIntent, Config.CALL_START_ACTIVITY);
+                startActivityForResult(runIntent, Config.CALL_START_NEW_ACTIVITY);
                 break;
 
             case R.id.imGallary:
@@ -698,6 +717,7 @@ public class MapsActivity extends AppCompatActivity implements
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
                 CameraUtil.showVideo(_ctx, currentFileName);
+                NotificationUtil.notify_new_video(_ctx, currentFileName);
                 break;
         }
     }
@@ -746,10 +766,10 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivityForResult(reportActivity, Config.CALL_REPORT_ACTIVITY);
                 return true;
 
-            case R.id.StartNewActivity:
-                Log.d(TAG,"-- Start New Activity!");
-                Intent startNewActivity = new Intent(MapsActivity.this, StartNewActivity.class);
-                startActivityForResult(startNewActivity, Config.CALL_START_NEW_ACTIVITY);
+            case R.id.StartActivity:
+                Log.d(TAG,"-- Start Activity(old)!");
+                Intent startNewActivity = new Intent(MapsActivity.this, StartActivity.class);
+                startActivityForResult(startNewActivity, Config.CALL_START_ACTIVITY);
                 return true;
 
             case R.id.quote_activity:
@@ -808,7 +828,7 @@ public class MapsActivity extends AppCompatActivity implements
     public void drawMarker(LatLng ll) {
         Log.d(TAG,"-- drawMarker.");
         String _head = DateToString(new Date(), "hh:mm:ss");
-        String _body = getAddress(getApplicationContext(),ll);
+        String _body = AddressUtil.getAddress(getApplicationContext(),ll);
         drawMarker(ll,_head,_body);
         mMarker.showInfoWindow();
     }
@@ -1002,24 +1022,6 @@ public class MapsActivity extends AppCompatActivity implements
         SimpleDateFormat dateformatyyyyMMdd = new SimpleDateFormat(dformat);
         String date_to_string = dateformatyyyyMMdd.format(date);
         return date_to_string;
-    }
-
-    public static String getAddress(final Context _ctx, LatLng ll) {
-        Log.d(TAG,"-- getAddress.");
-        Geocoder geocoder = new Geocoder(_ctx, Locale.getDefault());
-        List<Address> addresses = null;
-        try {
-            addresses = geocoder.getFromLocation(ll.latitude, ll.longitude,1);
-        }catch(Exception e) {
-            e.printStackTrace();
-        }
-
-        String addinfo = null;
-        if(addresses == null || addresses.size() ==0) {
-        }else {
-            addinfo = addresses.get(0).getAddressLine(0).toString();
-        }
-        return addinfo;
     }
 
     // MyTimerTask can run even though the app run in background
