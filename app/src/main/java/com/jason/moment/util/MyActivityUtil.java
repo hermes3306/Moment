@@ -96,6 +96,20 @@ public class MyActivityUtil {
         return as;
     }
 
+    public static ArrayList<String> deserializeMediaInfoFromCSV(File file) {
+        ArrayList<String> ml = new ArrayList<String>();
+        try(BufferedReader in = new BufferedReader(new FileReader(file))) {
+            String str;
+            String head = in.readLine();
+            if(head.startsWith("x,y,d,t")) return null;
+            String[] tokens = head.split(",");
+            for(int i=0;i<tokens.length;i++) ml.add(tokens[i]);
+        }
+        catch (IOException e) {
+            System.out.println("File Read Error");
+        }
+        return ml;
+    }
 
     public static ArrayList<MyActivity> deserializeFromCSV(File file) {
         ArrayList<MyActivity> mal = new ArrayList<MyActivity>();
@@ -132,6 +146,43 @@ public class MyActivityUtil {
 
     public static Date getActivityTime(MyActivity ma) {
         return ma.toDate();
+    }
+
+    public static void serializeIntoCSV(ArrayList<MyActivity> list, ArrayList<String> medias, String fileName) {
+        if(list == null) return;
+        if(list.size()==0) return;
+
+        try {
+            File f = new File(CSV_SAVE_DIR, fileName);
+            FileWriter file = new FileWriter(f);
+            BufferedWriter output = new BufferedWriter(file);
+            Log.e(TAG, "-- **** CSV Activity file: " + fileName);
+
+            System.out.println(f.getAbsolutePath());
+
+            // for media files 2021/05/31
+            for(int i=0;i<medias.size();i++) {
+                output.write(medias.get(i));
+                if(i<medias.size()-1) output.write(",");
+                else output.write("\n");
+            }
+
+            // output.write("x,y,d,t\n");
+            for(int i=0;i<list.size();i++ ) {
+                MyActivity a = list.get(i);
+                output.write("" + a.latitude);
+                output.write("," + a.longitude);
+
+                Date d = getActivityTime(a);
+                String crd = com.jason.moment.util.StringUtil.DateToString(d, "yyyy/MM/dd");
+                String crt = com.jason.moment.util.StringUtil.DateToString(d, "HH:mm:ss");
+                output.write("," + crd + "," + crt + "\n");
+                output.flush();
+            }
+            output.close();
+        }catch(Exception e) {
+            e.getStackTrace();
+        }
     }
 
     public static void serializeIntoCSV(ArrayList<MyActivity> list, String fileName) {

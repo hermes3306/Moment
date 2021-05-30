@@ -101,7 +101,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     Uri currentFileUri;
 
     private void recordVideo() {
-        currentMediaName = Config.getVideoName();
+        currentMediaName = Config.getTmpVideoName();
         File mediaFile = new File(Config.MOV_SAVE_DIR, currentMediaName);
         Uri mediaUri = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",

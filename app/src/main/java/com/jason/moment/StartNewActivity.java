@@ -70,6 +70,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static java.lang.Float.POSITIVE_INFINITY;
 import static java.lang.Float.parseFloat;
 import static java.lang.Integer.parseInt;
 
@@ -79,9 +80,9 @@ public class StartNewActivity extends AppCompatActivity implements
 
     public ArrayList<String> pic_filenames = new ArrayList<>();
     public ArrayList<String> mov_filenames = new ArrayList<>();
+    public ArrayList<String> media_filenames = new ArrayList<>();
 
     String TAG = "StartNewActivity";
-    String activity_filename = null;
     Context _ctx = null;
     int _default_layout = R.layout.activity_start_new;
     private GoogleMap googleMap=null;
@@ -116,7 +117,7 @@ public class StartNewActivity extends AppCompatActivity implements
     Uri currentFileUri;
 
     private void recordVideo() {
-        currentMediaName = Config.getVideoName();
+        currentMediaName = Config.getTmpVideoName();
         File mediaFile = new File(Config.MOV_SAVE_DIR, currentMediaName);
         Uri mediaUri = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",
@@ -157,6 +158,7 @@ public class StartNewActivity extends AppCompatActivity implements
                 CloudUtil cu = new CloudUtil();
                 cu.Upload(_ctx,currentMediaName);
                 pic_filenames.add(currentMediaName);
+                media_filenames.add(currentMediaName);
                 break;
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
@@ -164,6 +166,7 @@ public class StartNewActivity extends AppCompatActivity implements
                 cu = new CloudUtil();
                 cu.Upload(_ctx,currentMediaName);
                 mov_filenames.add(currentMediaName);
+                media_filenames.add(currentMediaName);
                 break;
         }
     }
@@ -202,6 +205,50 @@ public class StartNewActivity extends AppCompatActivity implements
         alertadd.show();
     }
 
+    private void showMedias(final int pos) {
+        if(media_filenames.size()<pos+1) {
+            Toast.makeText(_ctx,"No Medias!",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartNewActivity.this);
+        LayoutInflater factory = LayoutInflater.from(StartNewActivity.this);
+
+        /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
+        if(media_filenames.get(pos).endsWith(Config._pic_ext)) {
+            View view1 = factory.inflate(R.layout.layout_imageview, null);
+            ImageView iv = view1.findViewById(R.id.dialog_imageview);
+            TextView tv = view1.findViewById(R.id.view_title);
+            tv.setText("" + (pos+1) + "/" + media_filenames.size());
+            showImg(iv, media_filenames.get(pos));
+            alertadd.setView(view1);
+        }
+        else {
+            View view2 = factory.inflate(R.layout.layout_videoview, null);
+            VideoView vv = view2.findViewById(R.id.dialog_video_view);
+            TextView tv2 = view2.findViewById(R.id.view_title);
+            tv2.setText("" + (pos+1) + "/" + media_filenames.size());
+            showVideo(vv, media_filenames.get(pos));
+            alertadd.setView(view2);
+        }
+
+        alertadd.setPositiveButton("Next", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dlg, int sumthin) {
+                if(media_filenames.size() >(pos+1)) {
+                    showMedias(pos+1);
+                }
+            }
+        });
+        alertadd.setNegativeButton("Prev", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dlg, int sumthin) {
+                if(0 < pos) {
+                    showMedias(pos-1);
+                }
+            }
+        });
+        alertadd.show();
+
+    }
+
     private void showImages(final int pos) {
         if(pic_filenames.size()<pos+1) {
             Toast.makeText(_ctx,"No Pics!",Toast.LENGTH_SHORT).show();
@@ -222,6 +269,13 @@ public class StartNewActivity extends AppCompatActivity implements
                 }
             }
         });
+        alertadd.setNegativeButton("Prev", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dlg, int sumthin) {
+                if(0 < pos) {
+                    showImages(pos-1);
+                }
+            }
+        });
         alertadd.show();
     }
 
@@ -229,7 +283,7 @@ public class StartNewActivity extends AppCompatActivity implements
         MediaController m;
         m = new MediaController(this);
 
-        File mediaFile = new File(Config.MOV_SAVE_DIR, currentMediaName);
+        File mediaFile = new File(Config.MOV_SAVE_DIR, fname);
         Uri mediaUri = FileProvider.getUriForFile(this,
                 "com.jason.moment.file_provider",
                 mediaFile);
@@ -242,18 +296,28 @@ public class StartNewActivity extends AppCompatActivity implements
             Toast.makeText(_ctx,"No Movies!",Toast.LENGTH_SHORT).show();
             return;
         }
+        Log.d(TAG,"-- pos:" + pos);
+        for(int i=0;i<mov_filenames.size();i++) Log.d(TAG,"-- " + mov_filenames.get(i));
+
         AlertDialog.Builder alertadd = new AlertDialog.Builder(StartNewActivity.this);
         LayoutInflater factory = LayoutInflater.from(StartNewActivity.this);
 
         /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
         final View view = factory.inflate(R.layout.layout_videoview, null);
         VideoView vv = view.findViewById(R.id.dialog_video_view);
-        showVideo(vv, pic_filenames.get(pos));
+        showVideo(vv, mov_filenames.get(pos));
         alertadd.setView(view);
         alertadd.setPositiveButton("Next", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dlg, int sumthin) {
-                if(pic_filenames.size() >(pos+1)) {
+                if(mov_filenames.size() >(pos+1)) {
                     showVideos(pos+1);
+                }
+            }
+        });
+        alertadd.setNegativeButton("Prev", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dlg, int sumthin) {
+                if(0 < pos) {
+                    showVideos(pos-1);
                 }
             }
         });
@@ -269,9 +333,8 @@ public class StartNewActivity extends AppCompatActivity implements
         VideoView vv = view.findViewById(R.id.dialog_video_view);
         showVideo(vv, fname);
         alertadd.setView(view);
-        alertadd.setPositiveButton("Upload!", new DialogInterface.OnClickListener() {
+        alertadd.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dlg, int sumthin) {
-
             }
         });
         alertadd.show();
@@ -288,15 +351,28 @@ public class StartNewActivity extends AppCompatActivity implements
             case R.id.start_dash_ll_04:
             case R.id.start_dash_ll_05:
                 LinearLayout startActionBar = findViewById(R.id.startActionBar);
-                if(viewStartActionBar) startActionBar.setVisibility(View.VISIBLE);
-                else startActionBar.setVisibility(View.GONE);
+                LinearLayout action_menu_bar = findViewById(R.id.action_menu_bar);
+                if(viewStartActionBar) {
+                    startActionBar.setVisibility(View.VISIBLE);
+                    action_menu_bar.setVisibility(View.VISIBLE);
+                }
+                else {
+                    startActionBar.setVisibility(View.GONE);
+                    action_menu_bar.setVisibility(View.GONE);
+                }
                 viewStartActionBar = !viewStartActionBar;
+                break;
+            case R.id.imb_start_media_view:
+                showMedias(0);
                 break;
             case R.id.iv_start_pause:
                 alertQuitDialog();
                 break;
             case R.id.imb_start_camera:
                 takePic();
+                break;
+            case R.id.imb_start_movie:
+                recordVideo();
                 break;
             case R.id.tv_start_km:
                 break;
@@ -698,6 +774,13 @@ public class StartNewActivity extends AppCompatActivity implements
                                 "활동이 저장되었습니다.", detail);
                         deleteLocationManager();
 
+                        CloudUtil cu = new CloudUtil();
+                        if(Config._default_ext == Config._csv) {
+                            cu.Upload(_ctx,activity_file_name + Config._csv_ext);
+                        }else {
+                            cu.Upload(_ctx,activity_file_name + Config._mnt_ext);
+                        }
+
                         Intent myReportIntent = new Intent(StartNewActivity.this, MyReportActivity.class);
                         myReportIntent.putExtra("activity_file_name", activity_file_name);
                         startActivity(myReportIntent);
@@ -740,11 +823,11 @@ public class StartNewActivity extends AppCompatActivity implements
                         tv_start_km.setText(s1);
                         tv_start_km_str.setText("Meters");
                     } else if(dist>1000) { /* 1KM 이상 */
-                        String s1 = String.format("%.1f", dist/1000.0);
+                        String s1 = String.format("%.2f", dist/1000.0);
                         tv_start_km.setText(s1);
                         tv_start_km_str.setText("Kilometers");
                     } else if(dist >10000){ /* 10KM 이상*/
-                        String s1 = String.format("%.1f", dist/1000.0);
+                        String s1 = String.format("%.3f", dist/1000.0);
                         tv_start_km.setText(s1);
                         tv_start_km_str.setText("Kilometers");
                     }

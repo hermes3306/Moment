@@ -7,8 +7,10 @@ import androidx.core.content.FileProvider;
 import androidx.preference.PreferenceManager;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -109,6 +111,26 @@ public class MapsActivity extends AppCompatActivity implements
     public ImageButton imbt_marker = null;
 //    public ImageButton imbt_trash = null;
     public ImageButton imbt_navi = null;
+
+    public void alertQuitDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("활동을 중지하시겠습니까?");
+        builder.setMessage("활동을 정말 중지하시겠습니까?");
+        builder.setPositiveButton("중지",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        saveToday();
+                        Toast.makeText(getApplicationContext(), "JASON's 활동이 저장되었습니다!" , Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+        builder.setNegativeButton("취소",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+        builder.show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -258,17 +280,27 @@ public class MapsActivity extends AppCompatActivity implements
         initializeMap();
     }
 
+    void saveToday() {
+        ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).todayActivity();
+        String activity_file_name = DateUtil.today();
+        if(myal.size()>0) {
+            MyActivityUtil.serialize(myal, DateUtil.today());
+            //NotificationUtil.notify_new_activity(_ctx, activity_file_name);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG,"-- onBackPressed.");
+        alertQuitDialog();
+    }
+
     @Override
     protected void onPause() {
         Log.d(TAG,"-- onPause().");
         deleteLocationManager();
         if(Config._save_onPause) {
-            ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).todayActivity();
-            String activity_file_name = DateUtil.today();
-            if(myal.size()>0) {
-                MyActivityUtil.serialize(myal, DateUtil.today());
-                //NotificationUtil.notify_new_activity(_ctx, activity_file_name);
-            }
+            saveToday();
         }
         paused = true;
         super.onPause();

@@ -205,34 +205,28 @@
                 android:textSize="20dp"
                 android:textStyle="bold" />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/action_menu_bar"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="wrap_content">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:alpha="0.3"
+                android:background="@color/Gray" />
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/startActionBar"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="@color/Cyan"
+            android:layout_height="80dp"
+            android:background="@color/White"
             android:gravity="center_horizontal"
             android:layout_alignParentBottom="true"
             android:visibility="gone"
             android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/imb_start_camera"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/transparent48"
-                android:gravity="center"
-                android:onClick="onClick"
-                app:srcCompat="@drawable/camw48" />
-
-            <ImageView
-                android:id="@+id/iv_start_pause"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_weight="1"
-                android:gravity="center_vertical|center_horizontal"
-                android:onClick="onClick"
-                app:srcCompat="@drawable/pausey64" />
 
             <ImageButton
                 android:id="@+id/imb_start_list"
@@ -242,7 +236,47 @@
                 android:background="@drawable/transparent48"
                 android:gravity="center"
                 android:onClick="onClick"
-                app:srcCompat="@drawable/setw48" />
+                app:srcCompat="@drawable/setting_gray_48" />
+
+            <ImageButton
+                android:id="@+id/imb_start_media_view"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/transparent48"
+                android:gravity="center"
+                android:onClick="onClick"
+                app:srcCompat="@drawable/play_gray" />
+
+            <ImageView
+                android:id="@+id/iv_start_pause"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:gravity="center_vertical|center_horizontal"
+                android:onClick="onClick"
+                app:srcCompat="@drawable/pausey64" />
+
+            <ImageButton
+                android:id="@+id/imb_start_movie"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/transparent48"
+                android:gravity="center"
+                android:onClick="onClick"
+                app:srcCompat="@drawable/play_movie48" />
+
+            <ImageButton
+                android:id="@+id/imb_start_camera"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/transparent48"
+                android:gravity="center"
+                android:onClick="onClick"
+                app:srcCompat="@drawable/camera_48" />
         </LinearLayout>
     </LinearLayout>
 

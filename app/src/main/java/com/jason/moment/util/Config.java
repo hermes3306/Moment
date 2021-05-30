@@ -19,7 +19,7 @@ import java.util.Date;
 public class Config {
 
     static String TAG                       = "Config";
-    static String _ver                      = "1221.2";
+    static String _ver                      = "12121.2";
 
     public static String _pic_ext           = ".jpeg";
     public static String _mov_ext           = ".mp4";
@@ -162,7 +162,7 @@ public class Config {
         return name;
     }
 
-    public static String getVideoName() {
+    public static String getTmpVideoName() {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String name  = "VIDEO_" + timeStamp + _mov_ext;
         return name;

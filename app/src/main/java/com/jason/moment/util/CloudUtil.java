@@ -346,15 +346,19 @@ public class CloudUtil {
                     FileInputStream fis = new FileInputStream(file);
 
                     //asyncDialog.setMax( (int) (file.length() / 1024));
-                    asyncDialog.setMax( 100 );
+                    asyncDialog.setMax( (int)file.length() );
                     byte[] buffer = new byte[1024];
                     int readcount = 0;
-                    int i=1;
+                    int i=1;int readcountSum=0;
                     while ((readcount = fis.read(buffer)) != -1) {
                         //Log.e(TAG, "readcount:" + readcount);
+                        readcountSum += readcount;
                         out.write(buffer, 0, readcount);
-                        float progress = ((1024 * i) / file.length()) * 100;
-                        asyncDialog.setProgress((int)progress);
+                        float progress = (readcount / file.length()) * 100;
+                        asyncDialog.setProgress(readcountSum);
+                        Log.d(TAG,"-- file.length(): " + file.length());
+                        Log.d(TAG,"-- progress(i): " + progress);
+                        Log.d(TAG,"-- progress(i): " + (int)progress);
                         i++;
                     }
                     out.flush();
