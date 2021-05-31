@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -136,6 +137,45 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
                     }
                 });
         builder.show();
+    }
+
+    static float distance = 0;
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                //손가락으로 화면을 누르기 시작했을 때 할 일
+                Log.e(TAG,"--ACTION_DOWN!");
+                distance = event.getX();
+                Log.e(TAG,"--event.getX():" + distance);
+                break;
+            case MotionEvent.ACTION_UP:
+                //손가락을 화면에서 뗄 때 할 일
+                Log.e(TAG,"--ACTION_UP!");
+                distance = distance - event.getX();
+                Log.e(TAG,"--distance:" + distance);
+                if (Math.abs(distance) < 100) { return false; }
+                if ( distance > 0 ) {
+                    // 손가락을 왼쪽으로 움직였으면 오른쪽 화면이 나타나야 한다.
+                    if (pos < size - 1) pos++; else pos = 0;
+                    show1();
+                } else {
+                    if(pos>0) pos--; else pos=size-1;
+                    show1();
+                }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                //터치 후 손가락을 움직일 때 할 일
+                Log.e(TAG,"--ACTION_MOVE!");
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                // 터치가 취소될 때 할 일
+                Log.e(TAG,"--ACTION_CANCEL!");
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 
 

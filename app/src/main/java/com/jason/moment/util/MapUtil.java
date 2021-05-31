@@ -22,7 +22,7 @@ import com.jason.moment.R;
 
 import java.util.ArrayList;
 
-public class MapUtil {
+public class    MapUtil {
     private static String TAG = "MapUtil";
     public static boolean nomarker = false;
     public static boolean notrack = false;
