@@ -825,16 +825,33 @@ public class MapsActivity extends AppCompatActivity implements
 
                 return true;
 
-            case R.id.pic_activity:
-                Log.d(TAG,"-- Pic Activity!");
+            case R.id.media_activity:
+                Log.d(TAG,"-- Media Activity!");
                 File folder= Config.PIC_SAVE_DIR;
-
-                File[] files = folder.listFiles(new FilenameFilter() {
+                File[] files1 = folder.listFiles(new FilenameFilter() {
                     @Override
                     public boolean accept(File dir, String name) {
-                        return name.endsWith("jpeg");
+                        return name.endsWith(Config._pic_ext);
                     }
                 });
+
+                folder = Config.MOV_SAVE_DIR;
+                File[] files2 = folder.listFiles(new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        return name.endsWith(Config._mov_ext);
+                    }
+                });
+
+                File[] files = null;
+                if(files1==null && files2 != null) files = files2;
+                else if(files1!=null && files2 == null) files = files1;
+                else if(files1==null && files2==null) files=null;
+                else files = new File[files1.length + files2.length];
+
+                int j=0;
+                if(files1 != null) for(int i=0;i<files1.length;i++) files[j++] = files1[i];
+                if(files2 != null) for(int i=0;i<files1.length;i++) files[j++] = files2[i];
 
                 if(files==null) {
                     Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
@@ -843,17 +860,46 @@ public class MapsActivity extends AppCompatActivity implements
                     Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
                     return false;
                 }
-                Intent picIntent = new Intent(MapsActivity.this, PicActivity.class);
+                Intent mediaIntent = new Intent(MapsActivity.this, MediaActivity.class);
                 ArrayList<File> fileArrayList= new ArrayList<File>();
                 for(int i=0;i< files.length;i++) {
                     fileArrayList.add(files[i]);
                 }
-                picIntent.putExtra("files", fileArrayList);
-                startActivity(picIntent);
+                mediaIntent.putExtra("files", fileArrayList);
+                startActivity(mediaIntent);
                 return true;
-            default:
-                return super.onOptionsItemSelected(item);
+
+        case R.id.pic_activity:
+        Log.d(TAG,"-- Pic Activity!");
+        folder= Config.PIC_SAVE_DIR;
+
+        files = folder.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith("jpeg");
+            }
+        });
+
+        if(files==null) {
+            Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
+            return false;
+        } else if (files.length==0) {
+            Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
+            return false;
         }
+        Intent picIntent = new Intent(MapsActivity.this, PicActivity.class);
+        fileArrayList= new ArrayList<File>();
+        for(int i=0;i< files.length;i++) {
+            fileArrayList.add(files[i]);
+        }
+        picIntent.putExtra("files", fileArrayList);
+        startActivity(picIntent);
+        return true;
+        default:
+        return super.onOptionsItemSelected(item);
+    }
+
+
     }
 
     private Marker mMarker  = null;

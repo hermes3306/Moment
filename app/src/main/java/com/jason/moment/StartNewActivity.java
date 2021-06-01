@@ -231,20 +231,21 @@ public class StartNewActivity extends AppCompatActivity implements
             alertadd.setView(view2);
         }
 
-        alertadd.setPositiveButton("Next", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dlg, int sumthin) {
-                if(media_filenames.size() >(pos+1)) {
-                    showMedias(pos+1);
+        if(media_filenames.size() > pos+1 ) {
+            alertadd.setPositiveButton("Next", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dlg, int sumthin) {
+                    showMedias(pos + 1);
                 }
-            }
-        });
-        alertadd.setNegativeButton("Prev", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dlg, int sumthin) {
-                if(0 < pos) {
-                    showMedias(pos-1);
+            });
+        }
+
+        if(0 < pos) {
+            alertadd.setNegativeButton("Prev", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dlg, int sumthin) {
+                    showMedias(pos - 1);
                 }
-            }
-        });
+            });
+        }
         alertadd.show();
 
     }

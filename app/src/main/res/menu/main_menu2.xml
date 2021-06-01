@@ -40,6 +40,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/media_activity"
+        android:orderInCategory="100"
+        android:title="Media"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/quote_activity"
         android:orderInCategory="100"
         android:title="Quote"
