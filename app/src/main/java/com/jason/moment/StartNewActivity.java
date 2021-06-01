@@ -697,7 +697,7 @@ public class StartNewActivity extends AppCompatActivity implements
     public void onPause() {
         super.onPause();
         Log.d(TAG, "-- onPause.");
-        MyActivityUtil.serialize(list, activity_file_name );
+        MyActivityUtil.serialize(list, media_filenames, activity_file_name );
         NotificationUtil.notify_new_activity(_ctx, activity_file_name);
     }
 
@@ -764,7 +764,7 @@ public class StartNewActivity extends AppCompatActivity implements
         builder.setPositiveButton("중지",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        MyActivityUtil.serialize(list, activity_file_name );
+                        MyActivityUtil.serialize(list, media_filenames, activity_file_name );
                         Toast.makeText(getApplicationContext(), "JASON's 활동이 저장되었습니다!" + activity_file_name, Toast.LENGTH_SHORT).show();
 
                         String detail = "총운동 거리:" + tv_start_km.getText();
@@ -850,11 +850,11 @@ public class StartNewActivity extends AppCompatActivity implements
                     tv_start_calory.setText("" + String.format("%.1f", burntkCal));
                     if(last==null) {
                         last = new Date();
-                        MyActivityUtil.serialize(list, activity_file_name );
+                        MyActivityUtil.serialize(list, media_filenames, activity_file_name );
                     }else {
                         Date now = new Date();
                         if(DateUtil.isLongerThan1Min(last, now)) {
-                            MyActivityUtil.serialize(list, activity_file_name );
+                            MyActivityUtil.serialize(list, media_filenames, activity_file_name );
                             last = now;
                         }
                     }

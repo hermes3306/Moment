@@ -148,7 +148,7 @@ public class MyActivityUtil {
         return ma.toDate();
     }
 
-    public static void serializeIntoCSV(ArrayList<MyActivity> list, ArrayList<String> medias, String fileName) {
+    public static void serializeIntoCSV(ArrayList<MyActivity> list, ArrayList<String> media_list, String fileName) {
         if(list == null) return;
         if(list.size()==0) return;
 
@@ -160,11 +160,18 @@ public class MyActivityUtil {
 
             System.out.println(f.getAbsolutePath());
 
-            // for media files 2021/05/31
-            for(int i=0;i<medias.size();i++) {
-                output.write(medias.get(i));
-                if(i<medias.size()-1) output.write(",");
-                else output.write("\n");
+            // for media files 2021/06/02
+            if(media_list!=null) {
+                if(media_list.size()>0) {
+                    for(int i=0;i<media_list.size();i++) {
+                        output.write(media_list.get(i));
+                        if(i != media_list.size()-1) output.write(",");
+                    }
+                } else {
+                    output.write("x,y,d,t\n");
+                }
+            }else {
+                output.write("x,y,d,t\n");
             }
 
             // output.write("x,y,d,t\n");
@@ -184,6 +191,7 @@ public class MyActivityUtil {
             e.getStackTrace();
         }
     }
+
 
     public static void serializeIntoCSV(ArrayList<MyActivity> list, String fileName) {
         if(list == null) return;
@@ -263,6 +271,17 @@ public class MyActivityUtil {
         }
     }
 
+    public static void serialize(ArrayList<MyActivity> list, ArrayList<String> media_list, String _filename) {
+        String filename = _filename;
+        if(filename.endsWith(".mnt") || filename.endsWith(".csv")) {
+            filename =  filename.substring(0,filename.length()-4);
+        }
+        if(_default_ext == Config._csv) {
+            serializeIntoCSV(list, media_list,filename + ".csv");
+        }else if(_default_ext == Config._ser) {
+            serializeIntoMnt(list,filename + ".mnt");
+        }
+    }
     public static void serializeIntoMnt(ArrayList<MyActivity> list, String fileName) {
         if(list == null) return;
 
