@@ -3,13 +3,6 @@ plugins {
 }
 
 android {
-    signingConfigs {
-        debug {
-            storePassword 'Re91na00!!'
-            keyPassword 'Re91na00!!'
-            keyAlias 'Moment'
-        }
-    }
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
