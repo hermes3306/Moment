@@ -96,6 +96,22 @@ public class MyActivityUtil {
         return as;
     }
 
+    public static ArrayList<String> deserializeMediaInfoFromCSV(String file_name) {
+        File file = new File(CSV_SAVE_DIR, file_name);
+        ArrayList<String> ml = new ArrayList<String>();
+        try(BufferedReader in = new BufferedReader(new FileReader(file))) {
+            String str;
+            String head = in.readLine();
+            if(head.startsWith("x,y,d,t")) return null;
+            String[] tokens = head.split(",");
+            for(int i=0;i<tokens.length;i++) ml.add(tokens[i]);
+        }
+        catch (IOException e) {
+            System.out.println("File Read Error");
+        }
+        return ml;
+    }
+
     public static ArrayList<String> deserializeMediaInfoFromCSV(File file) {
         ArrayList<String> ml = new ArrayList<String>();
         try(BufferedReader in = new BufferedReader(new FileReader(file))) {
@@ -167,6 +183,7 @@ public class MyActivityUtil {
                         output.write(media_list.get(i));
                         if(i != media_list.size()-1) output.write(",");
                     }
+                    output.write("\n");
                 } else {
                     output.write("x,y,d,t\n");
                 }

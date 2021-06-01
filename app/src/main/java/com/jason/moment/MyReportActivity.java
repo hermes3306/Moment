@@ -44,6 +44,11 @@ public class MyReportActivity extends AppCompatActivity implements
     private void showActivities() {
         MyLoc myLoc = new MyLoc(getApplicationContext());
         //ArrayList<MyActivity> mal = myLoc.todayActivity();
+
+        ArrayList<String> media_list = MyActivityUtil.deserializeMediaInfoFromCSV(activity_filename);
+        Log.e(TAG,"-- showActivities");
+
+        for(int i=0;i<media_list.size();i++) Log.d(TAG,"-- " + media_list.get(i));
         ArrayList<MyActivity> mal = MyActivityUtil.deserialize(activity_filename);
         MyActivity lastActivity = null;
         if(mal.size()==0) {
