@@ -18,6 +18,8 @@ import android.graphics.Matrix;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -683,8 +685,35 @@ public class StartNewActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         _ctx = this;
-        Config.initialize(_ctx);
 
+        File f =  new File(Config.MP3_SAVE_DIR,"tiger.mp3");
+        Uri myUri = FileProvider.getUriForFile(this,
+                "com.jason.moment.file_provider",
+                f);
+        MediaPlayer mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try {
+            mediaPlayer.setDataSource(getApplicationContext(), myUri);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+        }catch(Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, e.toString());
+        }
+
+//        String url = "http://ezehub.club/moment/tiger.mp3"; // your URL here
+//        MediaPlayer mediaPlayer2 = new MediaPlayer();
+//        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+//        try {
+//            mediaPlayer2.setDataSource(url);
+//            mediaPlayer2.prepare(); // might take long! (for buffering, etc)
+//            mediaPlayer2.start();
+//        }catch(Exception e) {
+//            e.printStackTrace();
+//            Log.d(TAG, e.toString());
+//        }
+
+        Config.initialize(_ctx);
         super.onCreate(savedInstanceState);
         initialize_Mapview(savedInstanceState);
         initializeLocationManager();

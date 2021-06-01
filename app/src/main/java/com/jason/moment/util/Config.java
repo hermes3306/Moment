@@ -19,7 +19,7 @@ import java.util.Date;
 public class Config {
 
     static String TAG                       = "Config";
-    static String _ver                      = "12121.2";
+    static String _ver                      = "9";
 
     public static String _pic_ext           = ".jpeg";
     public static String _mov_ext           = ".mp4";
@@ -58,12 +58,14 @@ public class Config {
     static File external_pub_files_path_mnt = null;    /* 9. 외부 공유저장소 (MNT) */
     static File external_pub_files_path_pic = null;    /* 10. 외부 공유저장소 (PIC) */
     static File external_pub_files_path_mov = null;    /* 11. 외부 공유저장소 (MOV) */
+    static File external_pub_files_path_mp3 = null;    /* 12. 외부 공유저장소 (MP3) */
 
     static File _SAVE_DIRS[]                = null;
     public static File CSV_SAVE_DIR         = null;
     public static File MNT_SAVE_DIR         = null;
     public static File PIC_SAVE_DIR         = null;
-    public static File MOV_SAVE_DIR       = null;
+    public static File MOV_SAVE_DIR         = null;
+    public static File MP3_SAVE_DIR         = null;
 
     public static String        _serverURL      = "http://ezehub.club/moment";        //Z
     //public static String        _serverURL      = "http://ezehub.club:8080/moment";   //W
@@ -133,6 +135,7 @@ public class Config {
     static String pic_folder_name       = "Moment_PIC" + _ver;
     static String mov_folder_name       = "Moment_MOV" + _ver;
     static String jsn_folder_name       = "Moment_JSN" + _ver;
+    static String mp3_folder_name       = "Moment_MP3" + _ver;
 
 
     public static String getPreference(Context context, String name) {
@@ -194,6 +197,7 @@ public class Config {
     public static File mediaStorageDir4pic  = new File(mediaStorage, pic_folder_name);
     public static File mediaStorageDir4mov  = new File(mediaStorage, mov_folder_name);
     public static File mediaStorageDir4jsn  = new File(mediaStorage, jsn_folder_name);
+    public static File mediaStorageDir4mp3  = new File(mediaStorage, mp3_folder_name);
 
     static {
         if(!mediaStorageDir4mnt.exists()) mediaStorageDir4mnt.mkdirs();
@@ -201,6 +205,7 @@ public class Config {
         if(!mediaStorageDir4pic.exists()) mediaStorageDir4pic.mkdirs();
         if(!mediaStorageDir4mov.exists()) mediaStorageDir4mov.mkdirs();
         if(!mediaStorageDir4jsn.exists()) mediaStorageDir4jsn.mkdirs();
+        if(!mediaStorageDir4mp3.exists()) mediaStorageDir4mp3.mkdirs();
     }
 
     static boolean initialized_file_provider = false;
@@ -216,8 +221,9 @@ public class Config {
         external_pub_files_path2 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES); /* 7.외부 공유저장소 */
         external_pub_files_path_csv = new File(external_pub_files_path1, csv_folder_name);    /* 8. 외부 공유저장소 (CSV)*/
         external_pub_files_path_mnt = new File(external_pub_files_path1, mnt_folder_name);   /* 9. 외부 공유저장소 (MNT) */
-        external_pub_files_path_pic = new File(external_pub_files_path1, pic_folder_name);   /* 9. 외부 공유저장소 (PIC) */
-        external_pub_files_path_mov = new File(external_pub_files_path1, mov_folder_name);   /* 9. 외부 공유저장소 (MOV) */
+        external_pub_files_path_pic = new File(external_pub_files_path1, pic_folder_name);   /* 10. 외부 공유저장소 (PIC) */
+        external_pub_files_path_mov = new File(external_pub_files_path1, mov_folder_name);   /* 11. 외부 공유저장소 (MOV) */
+        external_pub_files_path_mp3 = new File(external_pub_files_path1, mp3_folder_name);   /* 12. 외부 공유저장소 (MP3) */
 
         _SAVE_DIRS = new File[] {
             cache_path,                     /* 0. 내부 저장소 */
@@ -231,7 +237,8 @@ public class Config {
             external_pub_files_path_csv,    /* 8. 외부 공유 저장소 (CSV) */
             external_pub_files_path_mnt,    /* 9. 외부 공유 저장소 (MNT)) */
             external_pub_files_path_pic,    /* 10. 외부 공유 저장소 (PIC)) */
-            external_pub_files_path_mov     /* 11. 외부 공유 저장소 (MOV)) */
+            external_pub_files_path_mov,    /* 11. 외부 공유 저장소 (MOV)) */
+            external_pub_files_path_mp3     /* 12. 외부 공유 저장소 (MP3)) */
         };
 
         Log.d(TAG, "--cache_path:" + cache_path);
@@ -247,11 +254,13 @@ public class Config {
         MNT_SAVE_DIR   = _SAVE_DIRS[9];
         PIC_SAVE_DIR   = _SAVE_DIRS[10];
         MOV_SAVE_DIR   = _SAVE_DIRS[11];
+        MP3_SAVE_DIR   = _SAVE_DIRS[12];
 
         if(!CSV_SAVE_DIR.exists()) CSV_SAVE_DIR.mkdirs();
         if(!MNT_SAVE_DIR.exists()) MNT_SAVE_DIR.mkdirs();
         if(!PIC_SAVE_DIR.exists()) PIC_SAVE_DIR.mkdirs();
         if(!MOV_SAVE_DIR.exists()) MOV_SAVE_DIR.mkdirs();
+        if(!MP3_SAVE_DIR.exists()) MP3_SAVE_DIR.mkdirs();
 
         initialized_file_provider = true;
     }
