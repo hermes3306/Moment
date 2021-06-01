@@ -722,7 +722,6 @@ public class MapsActivity extends AppCompatActivity implements
         MapUtil.DRAW(_ctx,googleMap,_markers, display,mActivityList);
     }
 
-
     // 사진 촬영 기능
     String currentFileName;
     private void takePic() {
