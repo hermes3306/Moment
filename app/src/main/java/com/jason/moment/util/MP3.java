@@ -65,6 +65,15 @@ public class MP3 {
                 }
             });
         }
+
+        if(playlist1.length > 0) {
+            alertadd.setNeutralButton("Play All", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dlg, int sumthin) {
+                    playNext(context);
+                }
+            });
+        }
+
         alertadd.show();
 
     }
