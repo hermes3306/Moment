@@ -58,6 +58,7 @@ import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.FileUtil;
 import com.jason.moment.util.GooglemapUtil;
+import com.jason.moment.util.MP3;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
@@ -776,6 +777,14 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
                 return true;
 
+            case R.id.download_mp3:
+                CloudUtil cu = new CloudUtil();
+                cu.DownloadMP3(_ctx);
+                return true;
+
+            case R.id.play_all:
+                MP3.play_all(_ctx);
+                return true;
             case R.id.run_activity:
                 Log.d(TAG,"-- Run Activity!");
                 Intent runIntent = new Intent(MapsActivity.this, RunActivity.class);

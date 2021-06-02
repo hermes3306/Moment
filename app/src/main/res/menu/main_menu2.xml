@@ -10,6 +10,16 @@
         android:title="Setting..."
         app:showAsAction="never" />
     <item
+        android:id="@+id/download_mp3"
+        android:orderInCategory="100"
+        android:title="Download MP3"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/play_all"
+        android:orderInCategory="100"
+        android:title="Play all MP3"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/run_activity"
         android:orderInCategory="100"
         android:title="Run Activity"

@@ -100,6 +100,68 @@ public class CloudUtil {
         httpConn.disconnect();
     }
 
+    public void DownloadMP3(final Context context) {
+        new AsyncTask<Void,Void,Void>() {
+            String listUrl = null;
+            String listOfFiles = null;
+            String linesOfFiles[] = null;
+            String fileURL[] = null;
+            File saveDir = null;
+
+            ProgressDialog asyncDialog = new ProgressDialog(context);
+            @Override
+            protected Void doInBackground(Void... voids) {
+                try {
+                    listUrl = Config._listMP3Files;
+                    Log.d(TAG,"-- list url:" + listUrl);
+
+                    try {
+                        listOfFiles = getUrlContent(listUrl);
+                    }catch(Exception e) {
+                        e.printStackTrace();
+                        Log.e(TAG,"-- ERR:" +e.toString());
+                    }
+                    Log.d(TAG,"-- listOfFiles:" + listOfFiles);
+
+                    linesOfFiles = listOfFiles.split("<br>");
+                    fileURL = new String[linesOfFiles.length] ;
+                    for(int i=0;i< linesOfFiles.length;i++) {
+                        fileURL[i] = Config._serverURL + Config._sererMP3Folder + "/" + linesOfFiles[i];
+                        Log.d(TAG, "-- fileUrl:" + fileURL[i]);
+                    }
+
+                    saveDir = Config.MP3_SAVE_DIR;
+
+                    asyncDialog.setMax(fileURL.length);
+                    for(int i=0;i<fileURL.length;i++) {
+                        download(fileURL[i], saveDir);
+                        asyncDialog.setProgress(i);
+                    }
+                }catch(Exception e) {
+                    Log.e(TAG, "--" + e.toString());
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                asyncDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                asyncDialog.setMessage("Downloading...");
+                asyncDialog.show();
+                super.onPreExecute();
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                asyncDialog.dismiss();
+                super.onPostExecute(aVoid);
+                Toast.makeText(context, "Download success", Toast.LENGTH_LONG).show();
+            }
+        }.execute();
+    }
+
+
     public void DownloadAll(final Context context, final int ftype) {
         new AsyncTask<Void,Void,Void>() {
             String listUrl = null;

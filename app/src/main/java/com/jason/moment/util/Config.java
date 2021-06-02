@@ -72,11 +72,13 @@ public class Config {
     //public static String        _serverURL      = "http://ezehub.club:8888/moment";   //M
     //public static String        _serverURL      = "http://ezehub.club:8899/moment";     //DESKTOP1
     public static String        _serverFolder   = "/upload";
+    public static String        _sererMP3Folder = "/mp3";
     public static String        _uploadURL      = _serverURL + "/upload.php";
     public static String        _listFiles      = _serverURL + "/list.php";
     public static String        _listImageFiles = _serverURL + "/list.php?dir=upload&&ext=jpeg";
     public static String        _listCSVFiles   = _serverURL + "/list.php?dir=upload&&ext=csv";
     public static String        _listSerFiles   = _serverURL + "/list.php?dir=upload&&ext=mnt";
+    public static String        _listMP3Files   = _serverURL + "/list.php?dir=mp3&&ext=mp3";
 
     public static final int     _csv            = 0;
     public static final int     _ser            = 1;
