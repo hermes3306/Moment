@@ -782,6 +782,10 @@ public class MapsActivity extends AppCompatActivity implements
                 cu.DownloadMP3(_ctx);
                 return true;
 
+            case R.id.mp3Player:
+                MP3.showPlayer(_ctx);
+                return true;
+
             case R.id.play_all:
                 MP3.play_all(_ctx);
                 return true;
