@@ -786,9 +786,10 @@ public class MapsActivity extends AppCompatActivity implements
                 MP3.showPlayer(_ctx);
                 return true;
 
-            case R.id.play_all:
-                MP3.play_all(_ctx);
+            case R.id.stopMp3:
+                MP3.stop(_ctx);
                 return true;
+
             case R.id.run_activity:
                 Log.d(TAG,"-- Run Activity!");
                 Intent runIntent = new Intent(MapsActivity.this, RunActivity.class);

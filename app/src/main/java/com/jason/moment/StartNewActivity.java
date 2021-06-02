@@ -59,6 +59,7 @@ import com.jason.moment.util.CaloryUtil;
 import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
+import com.jason.moment.util.MP3;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
@@ -403,6 +404,12 @@ public class StartNewActivity extends AppCompatActivity implements
 
         int id = item.getItemId();
         switch(id) {
+            case R.id.mp3Player:
+                MP3.showPlayer(_ctx);
+                return true;
+            case R.id.stopMp3:
+                MP3.stop(_ctx);
+                return true;
             case R.id.start_layout_select:
                 AlertDialog.Builder builder = new AlertDialog.Builder(StartNewActivity.this )
                         .setItems(screen_layout, new DialogInterface.OnClickListener() {

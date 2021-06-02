@@ -19,7 +19,7 @@ import java.util.Date;
 public class Config {
 
     static String TAG                       = "Config";
-    static String _ver                      = "9";
+    static String _ver                      = "19";
 
     public static String _pic_ext           = ".jpeg";
     public static String _mov_ext           = ".mp4";

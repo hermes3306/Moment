@@ -40,6 +40,7 @@ import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CalcTime;
 import com.jason.moment.util.CaloryUtil;
 import com.jason.moment.util.Config;
+import com.jason.moment.util.MP3;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
@@ -540,6 +541,12 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.mp3Player:
+                MP3.showPlayer(_ctx);
+                return true;
+            case R.id.stopMp3:
+                MP3.stop(_ctx);
+                return true;
             case R.id.action_settings:
                 Log.d(TAG,"-- Setting Activities!");
                 Intent configIntent = new Intent(this, ConfigActivity.class);

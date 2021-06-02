@@ -40,7 +40,7 @@ public class MP3 {
     public static void showPlayer(Context context) {
         AlertDialog.Builder alertadd = new AlertDialog.Builder(context);
         LayoutInflater factory = LayoutInflater.from(context);
-        if(!played) playRN(context,0);
+        if(!played) playRN(context,pos);
 
         View view1 = factory.inflate(R.layout.layout_mp3view, null);
         ImageView iv = view1.findViewById(R.id.dialog_imageview);
@@ -74,6 +74,7 @@ public class MP3 {
             });
         }
 
+
         alertadd.show();
 
     }
@@ -86,32 +87,13 @@ public class MP3 {
         return playlist1;
     }
 
-    public static void play_all(Context context) {
-        if(mediaPlayer == null) {
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        }
 
-        if (playlist1 == null) {
-            playlist1 = Config.MP3_SAVE_DIR.listFiles();
-            Log.d(TAG, "-- # of MP3:" + playlist1.length);
-        }
-
-        Uri myUri = FileProvider.getUriForFile(context,
-                "com.jason.moment.file_provider", playlist1[pos]);
-        Log.d(TAG,"-- MP3 players will play:" + playlist1[pos].getName());
-
-        try {
-            mediaPlayer.setDataSource(context, myUri);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-            played = true;
-            if(timer==null) timer = new Timer();
-            if(pos<playlist1.length) playNext(context);
-        }catch(Exception e) {
-            e.printStackTrace();
-            Log.d(TAG, e.toString());
-        }
+    public static void stop(Context context) {
+        if(timer!=null) timer.cancel();
+        timer=null;
+        mediaPlayer.stop();
+        mediaPlayer=null;
+        played=false;
     }
 
     public static void playRN(Context context, int new_pos) {
