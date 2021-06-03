@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -53,6 +54,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.jason.moment.service.GPSLogger;
+import com.jason.moment.service.GPSLoggerServiceConnection;
+import com.jason.moment.service.LocService;
+import com.jason.moment.service.LocServiceConnection;
 import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CaloryUtil;
@@ -77,15 +82,27 @@ import static java.lang.Float.POSITIVE_INFINITY;
 import static java.lang.Float.parseFloat;
 import static java.lang.Integer.parseInt;
 
-public class StartNewActivity extends AppCompatActivity implements
+public class StartRunActivity extends AppCompatActivity implements
         OnMapReadyCallback,
         View.OnClickListener{
+
+    // Loc Service binding
+    private ServiceConnection locServiceConnection = null;
+    LocService locService = null;
+    public void setLocService(LocService l) {
+        this.locService = l;
+    }
+    public LocService getLocService() {
+        return locService;
+    }
+    private Intent locServiceIntent = null;
+
 
     public ArrayList<String> pic_filenames = new ArrayList<>();
     public ArrayList<String> mov_filenames = new ArrayList<>();
     public ArrayList<String> media_filenames = new ArrayList<>();
 
-    String TAG = "StartNewActivity";
+    String TAG = "StartRunActivity";
     Context _ctx = null;
     int _default_layout = R.layout.activity_start_new;
     private GoogleMap googleMap=null;
@@ -96,20 +113,20 @@ public class StartNewActivity extends AppCompatActivity implements
             R.layout.activity_start_style2
     };
 
-    public TextView tv_start_km;
-    public TextView tv_start_km_str;
-    public TextView tv_start_time;
-    public TextView tv_start_avg;
-    public TextView tv_start_cur;
-    public TextView tv_start_calory;
+    private TextView tv_start_km;
+    private TextView tv_start_km_str;
+    private TextView tv_start_time;
+    private TextView tv_start_avg;
+    private TextView tv_start_cur;
+    private TextView tv_start_calory;
 
-    public Date start_time;
-    public double dist=0;
-    public boolean quit=false;
+    private Date start_time;
+    private double dist=0;
+    private boolean quit=false;
 
-    public ArrayList list = null;
-    public MyActivity first = null;
-    public MyActivity last = null;
+    private ArrayList list = null;
+    private MyActivity first = null;
+    private MyActivity last = null;
     private String activity_file_name;
     public String getActivity_file_name() {return activity_file_name;}
 
@@ -192,8 +209,8 @@ public class StartNewActivity extends AppCompatActivity implements
     }
 
     private void showImg(String fname) {
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartNewActivity.this);
-        LayoutInflater factory = LayoutInflater.from(StartNewActivity.this);
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartRunActivity.this);
+        LayoutInflater factory = LayoutInflater.from(StartRunActivity.this);
 
         /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
         final View view = factory.inflate(R.layout.layout_imageview, null);
@@ -214,8 +231,8 @@ public class StartNewActivity extends AppCompatActivity implements
             Toast.makeText(_ctx,"No Medias!",Toast.LENGTH_SHORT).show();
             return;
         }
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartNewActivity.this);
-        LayoutInflater factory = LayoutInflater.from(StartNewActivity.this);
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartRunActivity.this);
+        LayoutInflater factory = LayoutInflater.from(StartRunActivity.this);
 
         /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
         if(media_filenames.get(pos).endsWith(Config._pic_ext)) {
@@ -259,8 +276,8 @@ public class StartNewActivity extends AppCompatActivity implements
             Toast.makeText(_ctx,"No Pics!",Toast.LENGTH_SHORT).show();
             return;
         }
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartNewActivity.this);
-        LayoutInflater factory = LayoutInflater.from(StartNewActivity.this);
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartRunActivity.this);
+        LayoutInflater factory = LayoutInflater.from(StartRunActivity.this);
 
         /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
         final View view = factory.inflate(R.layout.layout_imageview, null);
@@ -304,8 +321,8 @@ public class StartNewActivity extends AppCompatActivity implements
         Log.d(TAG,"-- pos:" + pos);
         for(int i=0;i<mov_filenames.size();i++) Log.d(TAG,"-- " + mov_filenames.get(i));
 
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartNewActivity.this);
-        LayoutInflater factory = LayoutInflater.from(StartNewActivity.this);
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartRunActivity.this);
+        LayoutInflater factory = LayoutInflater.from(StartRunActivity.this);
 
         /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
         final View view = factory.inflate(R.layout.layout_videoview, null);
@@ -330,8 +347,8 @@ public class StartNewActivity extends AppCompatActivity implements
     }
 
     private void showVideo(String fname) {
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartNewActivity.this);
-        LayoutInflater factory = LayoutInflater.from(StartNewActivity.this);
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartRunActivity.this);
+        LayoutInflater factory = LayoutInflater.from(StartRunActivity.this);
 
         /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
         final View view = factory.inflate(R.layout.layout_videoview, null);
@@ -383,7 +400,7 @@ public class StartNewActivity extends AppCompatActivity implements
                 break;
             case R.id.imb_start_list:
                 //recordVideo();
-                PopupMenu p = new PopupMenu(StartNewActivity.this, v);
+                PopupMenu p = new PopupMenu(StartRunActivity.this, v);
                 getMenuInflater().inflate(R.menu.start_menu, p.getMenu());
                 p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -412,7 +429,7 @@ public class StartNewActivity extends AppCompatActivity implements
                 MP3.stop(_ctx);
                 return true;
             case R.id.start_layout_select:
-                AlertDialog.Builder builder = new AlertDialog.Builder(StartNewActivity.this )
+                AlertDialog.Builder builder = new AlertDialog.Builder(StartRunActivity.this )
                         .setItems(screen_layout, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -428,7 +445,7 @@ public class StartNewActivity extends AppCompatActivity implements
                 break;
             case R.id.imSetting:
                 Log.d(TAG,"-- Setting Activities!");
-                Intent configIntent = new Intent(StartNewActivity.this, ConfigActivity.class);
+                Intent configIntent = new Intent(StartRunActivity.this, ConfigActivity.class);
                 configIntent.putExtra("1", 1);
                 startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
                 break;
@@ -572,7 +589,6 @@ public class StartNewActivity extends AppCompatActivity implements
             }
 
             if(googleMap != null) showActivities();
-
         }
 
         @Override
@@ -584,9 +600,9 @@ public class StartNewActivity extends AppCompatActivity implements
         }
     }
 
-    StartNewActivity.GPSListener[] mLocationListeners = new StartNewActivity.GPSListener[] {
-            new StartNewActivity.GPSListener(LocationManager.GPS_PROVIDER),
-            new StartNewActivity.GPSListener(LocationManager.NETWORK_PROVIDER)
+    StartRunActivity.GPSListener[] mLocationListeners = new StartRunActivity.GPSListener[] {
+            new StartRunActivity.GPSListener(LocationManager.GPS_PROVIDER),
+            new StartRunActivity.GPSListener(LocationManager.NETWORK_PROVIDER)
     };
 
     private void deleteLocationManager() {
@@ -694,6 +710,14 @@ public class StartNewActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         _ctx = this;
         Config.initialize(_ctx);
+
+        // Create LocService Intent and bind it with a connection
+        locServiceIntent = new Intent(this, LocService.class);
+        locServiceIntent.putExtra("activity_file_name", activity_file_name);
+        startService(new Intent(StartRunActivity.this, LocService.class)); // 서비스 시작
+        locServiceConnection = new LocServiceConnection(this); // 서비스 바인딩
+        bindService(locServiceIntent,locServiceConnection, 0);
+
         super.onCreate(savedInstanceState);
         initialize_Mapview(savedInstanceState);
         initializeLocationManager();
@@ -704,18 +728,34 @@ public class StartNewActivity extends AppCompatActivity implements
 
     @Override
     public void onPause() {
-        super.onPause();
         Log.d(TAG, "-- onPause.");
-        MyActivityUtil.serialize(list, media_filenames, activity_file_name );
-        NotificationUtil.notify_new_activity(_ctx, activity_file_name);
+        // loc Service is not run more than unbind and stop service else just unbind and next bind again
+        if(locService != null) {
+            if(!locService.isRunning()) {
+                Log.d(TAG, "LocService is not running, trying to stopService()");
+                unbindService(locServiceConnection);
+                stopService(locServiceIntent);
+            } else{
+                unbindService(locServiceConnection);
+            }
+        }
+        super.onPause();
     }
 
     @Override
     public void onResume() {
-        super.onResume();
         Log.d(TAG, "-- onResume.");
+
+        // Start LocationService
+        startService(locServiceIntent);
+        // Bind to GPS service.
+        // We can't use BIND_AUTO_CREATE here, because when we'll ubound
+        // later, we want to keep the service alive in background
+        bindService(locServiceIntent, locServiceConnection, 0);
+        super.onResume();
+
     }
-    
+
 
     @Override
     public void onBackPressed() {
@@ -773,6 +813,10 @@ public class StartNewActivity extends AppCompatActivity implements
         builder.setPositiveButton("중지",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Config.INTENT_STOP_TRACKING);
+                        sendBroadcast(intent);
+                        Log.d(TAG,"-- sent Broadcast message: INTENT_STOP_TRACKING...");
+
                         MyActivityUtil.serialize(list, media_filenames, activity_file_name );
                         Toast.makeText(getApplicationContext(), "JASON's 활동이 저장되었습니다!" + activity_file_name, Toast.LENGTH_SHORT).show();
 
@@ -791,25 +835,25 @@ public class StartNewActivity extends AppCompatActivity implements
                             cu.Upload(_ctx,activity_file_name + Config._mnt_ext);
                         }
 
-                        Intent myReportIntent = new Intent(StartNewActivity.this, MyReportActivity.class);
+                        Intent myReportIntent = new Intent(StartRunActivity.this, MyReportActivity.class);
                         myReportIntent.putExtra("activity_file_name", activity_file_name);
                         startActivity(myReportIntent);
 
-                        StartNewActivity.this.quit = true;
-                        StartNewActivity.this.finish();
+                        StartRunActivity.this.quit = true;
+                        StartRunActivity.this.finish();
                     }
                 });
         builder.setNegativeButton("취소",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        StartNewActivity.this.quit = false;
+                        StartRunActivity.this.quit = false;
                     }
                 });
         builder.show();
     }
 
     private void startMyTimer() {
-        TimerTask mTask = new StartNewActivity.MyTimerTask();
+        TimerTask mTask = new StartRunActivity.MyTimerTask();
         Timer mTimer = new Timer();
         mTimer.schedule(mTask, 0, 1000);
     }
@@ -819,7 +863,7 @@ public class StartNewActivity extends AppCompatActivity implements
         public Date last=null;
         public void run() {
             long start = System.currentTimeMillis();
-            StartNewActivity.this.runOnUiThread(new Runnable() {
+            StartRunActivity.this.runOnUiThread(new Runnable() {
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 public void run() {
                     Date d = new Date();

@@ -3,8 +3,10 @@ package com.jason.moment.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.location.LocationManager;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.preference.PreferenceManager;
 
@@ -16,10 +18,22 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static java.lang.Float.parseFloat;
+import static java.lang.Integer.parseInt;
+
 public class Config {
 
     static String TAG                       = "Config";
     static String _ver                      = "19";
+
+    // 정리 필요함
+    public final static String PACKAGE_NAME = Config.class.getPackage().getName();
+    public final static String INTENT_TRACK_WP = Config.PACKAGE_NAME + ".intent.TRACK_WP";
+    public final static String INTENT_UPDATE_WP = Config.PACKAGE_NAME + ".intent.UPDATE_WP";
+    public final static String INTENT_DELETE_WP = Config.PACKAGE_NAME + ".intent.DELETE_WP";
+    public final static String INTENT_START_TRACKING = Config.PACKAGE_NAME + ".intent.START_TRACKING";
+    public final static String INTENT_STOP_TRACKING = Config.PACKAGE_NAME + ".intent.STOP_TRACKING";
+
 
     public static String _pic_ext           = ".jpeg";
     public static String _mov_ext           = ".mp4";
@@ -153,9 +167,9 @@ public class Config {
         int _preference_val = 0;
         try {
             _preference_val = Integer.parseInt(sharedPreferences.getString(name, "0"));
-            Log.e(TAG,"-- getIntPreference value:" + _preference_val);
+            //Log.e(TAG,"-- getIntPreference value:" + _preference_val);
         }catch(Exception e) {
-            Log.d(TAG, "-- Err(getIntPreference for name:" + name  + e.toString());
+            Log.e(TAG, "-- Err(getIntPreference for name:" + name  + e.toString());
             e.printStackTrace();
         }
         return _preference_val;
@@ -269,6 +283,27 @@ public class Config {
 
     public static void initialize(Context _ctx) {
         initialize_file_provider(_ctx);
+
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(_ctx /* Activity context */);
+        Config._enable_network_provider = sharedPreferences.getBoolean("NetworkProvider", Config._enable_network_provider);
+        String _loc_interval = sharedPreferences.getString("interval", "");
+        String _loc_distance = sharedPreferences.getString("distance", "");
+
+        try {
+            Config._loc_interval = parseInt(_loc_interval);
+            Config._loc_distance = parseFloat(_loc_distance);
+        } catch (Exception e) {
+            Log.e(TAG, "-- " + e);
+            e.printStackTrace();
+        }
+        String t = "Loc_interval:" + Config._loc_interval / 1000 + " sec\n" +
+                "Loc_distance:" + Config._loc_distance + " meter\n" +
+                "Network provider: " + Config._enable_network_provider;
+        Toast.makeText(_ctx, t, Toast.LENGTH_LONG).show();
+        Log.d(TAG, t);
+
     }
+
 
 }

@@ -73,7 +73,7 @@ public class MyLoc {
 
 // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(MyLocContract.LocEntry.TABLE_NAME, null, values);
-        Log.d(TAG, "-- db.insert");
+        //Log.d(TAG, "-- db.insert");
     }
 
     public void ins(double lat, double lng, String dt, String ti) {
@@ -132,7 +132,7 @@ public class MyLoc {
     public ArrayList<MyActivity> Path2Activity(String selection,
                                                String selectionArgs[],
                                                String order_by) {
-        Log.d(TAG, "--Path2Activity ()");
+        //Log.d(TAG, "--Path2Activity ()");
         //MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         //SQLiteDatabase dbr = dbHelper.getReadableDatabase();
 
@@ -161,7 +161,7 @@ public class MyLoc {
             l.add(new MyActivity(lat, lng, dt, ti));
             //Log.d(TAG, "-- " + itemId + ", " + lat + ", " + lng + ", " + dt + ", " + ti);
         }
-        Log.d(TAG, "-- Total number of path:" + l.size());
+        //Log.d(TAG, "-- Total number of path:" + l.size());
         return l;
     }
 
@@ -173,7 +173,7 @@ public class MyLoc {
                                   String selectionArgs[],
                                   String order_by
                                   ) {
-        Log.d(TAG, "-- Path()");
+        //Log.d(TAG, "-- Path()");
         // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         // SQLiteDatabase dbr = dbHelper.getReadableDatabase();
         Cursor cursor = dbr.query(
@@ -201,38 +201,38 @@ public class MyLoc {
             l.add(new LatLng(lat, lng));
             //Log.d(TAG, "-- " + itemId + ", " + lat + ", " + lng + ", " + dt + ", " + ti);
         }
-        Log.d(TAG, "-- Total number of path:" + l.size());
+        //Log.d(TAG, "-- Total number of path:" + l.size());
         return l;
     }
 
     public ArrayList<LatLng> todayPath() {
-        Log.d(TAG, "-- todayPath()");
+        //Log.d(TAG, "-- todayPath()");
         // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         // SQLiteDatabase dbr = dbHelper.getReadableDatabase();
 
         String selection = MyLocContract.LocEntry.COLUMN_NAME_CRDATE + " == ?";
         String order_by = MyLocContract.LocEntry.COLUMN_NAME_CRTIME + " ASC";
         String today = DateUtil.DateToString(new Date(), "yyyy/MM/dd");
-        Log.d(TAG, "-- Today is " + today);
+        //Log.d(TAG, "-- Today is " + today);
         String[] selectionArgs = { today };
         return Path(selection, selectionArgs, order_by);
     }
 
     public ArrayList<MyActivity> todayActivity() {
-        Log.d(TAG, "-- todayActivity()");
+        //Log.d(TAG, "-- todayActivity()");
         // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         // SQLiteDatabase dbr = dbHelper.getReadableDatabase();
 
         String selection = MyLocContract.LocEntry.COLUMN_NAME_CRDATE + " == ?";
         String order_by = MyLocContract.LocEntry.COLUMN_NAME_CRTIME + " ASC";
         String today = DateUtil.DateToString(new Date(), "yyyy/MM/dd");
-        Log.d(TAG, "-- Today is " + today);
+        //Log.d(TAG, "-- Today is " + today);
         String[] selectionArgs = { today };
         return Path2Activity(selection, selectionArgs, order_by);
     }
 
     public MyActivity lastActivity() {
-        Log.d(TAG, "-- lastActivity()");
+        //Log.d(TAG, "-- lastActivity()");
         // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         // SQLiteDatabase dbr = dbHelper.getReadableDatabase();
 
@@ -240,7 +240,7 @@ public class MyLoc {
         String order_by = " crdate DESC, crtime DESC limit 1";
 
         ArrayList<MyActivity> mal =  Path2Activity(null, null, order_by);
-        Log.d(TAG,"-- lastActivity called, the size of activities  " + mal.size());
+        //Log.d(TAG,"-- lastActivity called, the size of activities  " + mal.size());
         if(mal.size()>0) return mal.get(0);
         else return null;
     }

@@ -178,12 +178,12 @@ public class    MapUtil {
         int col_inx=-1;
         for(int i=0;i<colors.length;i++) {
             if(color == colors[i]) { right_color = true;col_inx=i;}
-            Log.d(TAG, "-- colors["+i+"] = " + colors[i]);
+            //Log.d(TAG, "-- colors["+i+"] = " + colors[i]);
         }
         if(!right_color) color=colors[0];
 
-        Log.d(TAG,"-- track color index is: " + col_inx);
-        Log.d(TAG,"-- track color is: " + colors[col_inx]);
+//        Log.d(TAG,"-- track color index is: " + col_inx);
+//        Log.d(TAG,"-- track color is: " + colors[col_inx]);
 
         if(width<0) width=10;
         plo.color((int)color);

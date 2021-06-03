@@ -1,4 +1,5 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory app:title="Map">
         <ListPreference
@@ -46,6 +47,7 @@
 
     <PreferenceCategory app:title="Location">
         <SwitchPreferenceCompat
+            android:defaultValue="true"
             app:key="NetworkProvider"
             app:title="Enable Network Provider..." />
         <ListPreference

@@ -50,6 +50,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.snackbar.Snackbar;
+import com.jason.moment.service.GPSLogger;
+import com.jason.moment.service.GPSLoggerServiceConnection;
 import com.jason.moment.util.AddressUtil;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CalcTime;
@@ -89,6 +91,7 @@ public class MapsActivity extends AppCompatActivity implements
     private GoogleMap googleMap=null;
     private Context _ctx;
     private LocationManager mLocManager = null;
+    private Intent gpsLoggerServiceIntent = null;
 
     private static String TAG = "MapsActivity";
     private static final int DEFAULT_ZOOM = 15;
@@ -192,11 +195,31 @@ public class MapsActivity extends AppCompatActivity implements
 //        imbt_trash = (ImageButton) findViewById(R.id.imbt_trash);
 
         if (Config._start_service) {
-            startService(new Intent(MapsActivity.this, LocService2.class)); // 서비스 시작
+            //startService(new Intent(MapsActivity.this, LocService2.class)); // 서비스 시작
+            gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
+            gpsLoggerServiceIntent.putExtra("TID", 100);
+            startService(new Intent(MapsActivity.this, GPSLogger.class)); // 서비스 시작
+            gpsLoggerConnection = new GPSLoggerServiceConnection(this); // 서비스 바인딩
+            bindService(gpsLoggerServiceIntent,gpsLoggerConnection, 0);
         }
         if (Config._start_timer) {
             startMyTimer(); // Timer 시작(onPause()에서도 10초마다 실행됨
         }
+    }
+
+    // GPS Logger 관련 함수 들
+    // 정리 필요함
+    private ServiceConnection gpsLoggerConnection = null;
+    private long currentTrackId=0;
+    GPSLogger gpsLogger = null;
+    public long getCurrentTrackId() {
+        return this.currentTrackId;
+    }
+    public void setGpsLogger(GPSLogger l) {
+        this.gpsLogger = l;
+    }
+    public GPSLogger getGpsLogger() {
+        return gpsLogger;
     }
 
     private void startMyTimer() {
@@ -259,6 +282,16 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         Log.d(TAG,"-- onResume.");
+
+        // Start GPS Logger service
+        if(Config._start_service) {
+            startService(gpsLoggerServiceIntent);
+            // Bind to GPS service.
+            // We can't use BIND_AUTO_CREATE here, because when we'll ubound
+            // later, we want to keep the service alive in background
+            bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
+        }
+
         initializeMap();
         if(mLocManager==null) initializeLocationManager();
         paused = false;
@@ -304,6 +337,20 @@ public class MapsActivity extends AppCompatActivity implements
             saveToday();
         }
         paused = true;
+
+        if(Config._start_service) {
+            // 정리 필요
+            if (gpsLogger != null) {
+                if (!gpsLogger.isTracking()) {
+                    Log.d(TAG, "Service is not tracking, trying to stopService()");
+                    unbindService(gpsLoggerConnection);
+                    stopService(gpsLoggerServiceIntent);
+                } else {
+                    unbindService(gpsLoggerConnection);
+                }
+            }
+        }
+
         super.onPause();
     }
 
@@ -619,9 +666,27 @@ public class MapsActivity extends AppCompatActivity implements
                 break;
             case R.id.imvStart:
                 Log.d(TAG,"-- image View start.");
-                Intent runIntent = new Intent(MapsActivity.this, StartNewActivity.class);
-                runIntent.putExtra("1", 1);
-                startActivityForResult(runIntent, Config.CALL_START_NEW_ACTIVITY);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Activity Type");
+                builder.setMessage("Choose Activity Type");
+                builder.setPositiveButton("StartRunActivity",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent runIntent = new Intent(MapsActivity.this, StartRunActivity.class);
+                                runIntent.putExtra("1", 1);
+                                startActivityForResult(runIntent, Config.CALL_START_NEW_ACTIVITY);
+                            }
+                        });
+                builder.setNegativeButton("StartNewActivity",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent runIntent = new Intent(MapsActivity.this, StartNewActivity.class);
+                                runIntent.putExtra("1", 1);
+                                startActivityForResult(runIntent, Config.CALL_START_NEW_ACTIVITY);
+                            }
+                        });
+                builder.show();
                 break;
 
             case R.id.imGallary:
