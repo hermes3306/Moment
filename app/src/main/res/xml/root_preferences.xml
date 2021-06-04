@@ -47,7 +47,7 @@
 
     <PreferenceCategory app:title="Location">
         <SwitchPreferenceCompat
-            android:defaultValue="true"
+            android:defaultValue="false"
             app:key="NetworkProvider"
             app:title="Enable Network Provider..." />
         <ListPreference

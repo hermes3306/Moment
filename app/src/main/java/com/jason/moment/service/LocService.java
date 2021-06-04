@@ -130,9 +130,9 @@ public class LocService extends Service implements LocationListener {
     private void stopRunningAndSave() {
         Log.d(TAG, "-- stopRunningAndSave # S" + activity_file_name);
         isRunning = false;
-        CloudUtil cu = new CloudUtil();
-        cu.Upload(getApplicationContext(), "S" + activity_file_name);
         MyActivityUtil.serialize(list, "S" + activity_file_name);
+        //        CloudUtil cu = new CloudUtil();
+        //        cu.Upload(getApplicationContext(), "S" + activity_file_name);
         this.stopSelf();
     }
 
@@ -179,6 +179,7 @@ public class LocService extends Service implements LocationListener {
 
     @Override
     public void onCreate() {
+        Config.initialize(this);
         Log.d(TAG, "-- LocService onCreate()");
         Log.d(TAG, "-- Location update interval:" + Config._loc_interval);
         Log.d(TAG, "-- Location update distance:" + Config._loc_distance);
@@ -191,6 +192,7 @@ public class LocService extends Service implements LocationListener {
 
         // Register ourselves for location updates
         lmgr1 = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if(Config._enable_network_provider)
         lmgr2 = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         gpsLoggingInterval = Config._loc_interval;
@@ -199,10 +201,10 @@ public class LocService extends Service implements LocationListener {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             lmgr1.requestLocationUpdates(LocationManager.GPS_PROVIDER, Config._loc_interval, Config._loc_distance, this);
         }
-
+        if(Config._enable_network_provider) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             lmgr2.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Config._loc_interval, Config._loc_distance, this);
-        }
+        }}
         super.onCreate();
     }
 
@@ -224,6 +226,7 @@ public class LocService extends Service implements LocationListener {
 
         // Unregister listener
         lmgr1.removeUpdates(this);
+        if(Config._enable_network_provider)
         lmgr2.removeUpdates(this);
 
         // Unregister broadcast receiver

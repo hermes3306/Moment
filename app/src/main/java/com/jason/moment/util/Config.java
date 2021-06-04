@@ -24,7 +24,7 @@ import static java.lang.Integer.parseInt;
 public class Config {
 
     static String TAG                       = "Config";
-    static String _ver                      = "20";
+    static String _ver                      = "210";
 
     // 정리 필요함
     public final static String PACKAGE_NAME = Config.class.getPackage().getName();
@@ -112,7 +112,7 @@ public class Config {
     public static final long    _timer_period   = 10000;    // 1 sec (최초이후 실행 주기)
     public static final long    _timer_delay    = 1000;     // 1 sec (최초실행)
 
-    public static boolean       _enable_network_provider = true;
+    public static boolean       _enable_network_provider = false;
     public static int           _loc_interval   = 1000;     // 1 sec
     public static float         _loc_distance   = 1f;       // 1 meter
     public static double        _minLocChange   = _loc_distance;

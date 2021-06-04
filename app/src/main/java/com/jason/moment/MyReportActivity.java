@@ -48,7 +48,9 @@ public class MyReportActivity extends AppCompatActivity implements
         ArrayList<String> media_list = MyActivityUtil.deserializeMediaInfoFromCSV(activity_filename);
         Log.e(TAG,"-- showActivities");
 
-        for(int i=0;i<media_list.size();i++) Log.d(TAG,"-- " + media_list.get(i));
+        if(media_list!=null) {
+            for(int i=0;i<media_list.size();i++) Log.d(TAG,"-- " + media_list.get(i));
+        }
         ArrayList<MyActivity> mal = MyActivityUtil.deserialize(activity_filename);
         MyActivity lastActivity = null;
         if(mal==null) return;
@@ -57,7 +59,6 @@ public class MyReportActivity extends AppCompatActivity implements
         } else {
             lastActivity = mal.get(mal.size()-1);
         }
-
 
         TextView name = findViewById(R.id.name);
         TextView date_str = findViewById(R.id.date_str);

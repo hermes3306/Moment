@@ -97,6 +97,7 @@ public class MyActivityUtil {
     }
 
     public static ArrayList<String> deserializeMediaInfoFromCSV(String file_name) {
+        if(!file_name.endsWith(".csv")) file_name = file_name + ".csv";
         File file = new File(CSV_SAVE_DIR, file_name);
         ArrayList<String> ml = new ArrayList<String>();
         try(BufferedReader in = new BufferedReader(new FileReader(file))) {
