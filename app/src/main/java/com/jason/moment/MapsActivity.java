@@ -665,28 +665,10 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivity(intent);
                 break;
             case R.id.imvStart:
-                Log.d(TAG,"-- image View start.");
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Activity Type");
-                builder.setMessage("Choose Activity Type");
-                builder.setPositiveButton("StartRunActivity",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent runIntent = new Intent(MapsActivity.this, StartRunActivity.class);
-                                runIntent.putExtra("1", 1);
-                                startActivityForResult(runIntent, Config.CALL_START_NEW_ACTIVITY);
-                            }
-                        });
-                builder.setNegativeButton("StartNewActivity",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent runIntent = new Intent(MapsActivity.this, StartNewActivity.class);
-                                runIntent.putExtra("1", 1);
-                                startActivityForResult(runIntent, Config.CALL_START_NEW_ACTIVITY);
-                            }
-                        });
-                builder.show();
+                Log.d(TAG,"-- StartRunActivity start.");
+                    Intent runIntent = new Intent(MapsActivity.this, StartRunActivity.class);
+                    runIntent.putExtra("1", 1);
+                    startActivityForResult(runIntent, Config.CALL_START_NEW_ACTIVITY);
                 break;
 
             case R.id.imGallary:

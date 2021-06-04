@@ -29,6 +29,7 @@ import com.jason.moment.MapsActivity;
 import com.jason.moment.R;
 import com.jason.moment.StartRunActivity;
 import com.jason.moment.util.CalDistance;
+import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
@@ -41,11 +42,12 @@ public class LocService extends Service implements LocationListener {
      * Last known location
      */
     private Location lastLocation=null;
+    public Location getLastLocation() {return lastLocation;}
 
     /**
      * LocationManager
      */
-    private LocationManager lmgr;
+    private LocationManager lmgr1,lmgr2;
 
     /**
      * Is GPS enabled ?
@@ -126,7 +128,10 @@ public class LocService extends Service implements LocationListener {
      * Stops GPS Logging
      */
     private void stopRunningAndSave() {
+        Log.d(TAG, "-- stopRunningAndSave # S" + activity_file_name);
         isRunning = false;
+        CloudUtil cu = new CloudUtil();
+        cu.Upload(getApplicationContext(), "S" + activity_file_name);
         MyActivityUtil.serialize(list, "S" + activity_file_name);
         this.stopSelf();
     }
@@ -185,13 +190,18 @@ public class LocService extends Service implements LocationListener {
         registerReceiver(receiver, filter);
 
         // Register ourselves for location updates
-        lmgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        lmgr1 = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        lmgr2 = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         gpsLoggingInterval = Config._loc_interval;
         gpsLoggingMinDistance = (long)Config._loc_distance;
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            lmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, Config._loc_interval, Config._loc_distance, this);
+            lmgr1.requestLocationUpdates(LocationManager.GPS_PROVIDER, Config._loc_interval, Config._loc_distance, this);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            lmgr2.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Config._loc_interval, Config._loc_distance, this);
         }
         super.onCreate();
     }
@@ -213,7 +223,8 @@ public class LocService extends Service implements LocationListener {
         }
 
         // Unregister listener
-        lmgr.removeUpdates(this);
+        lmgr1.removeUpdates(this);
+        lmgr2.removeUpdates(this);
 
         // Unregister broadcast receiver
         unregisterReceiver(receiver);

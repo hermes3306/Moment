@@ -51,6 +51,7 @@ public class MyReportActivity extends AppCompatActivity implements
         for(int i=0;i<media_list.size();i++) Log.d(TAG,"-- " + media_list.get(i));
         ArrayList<MyActivity> mal = MyActivityUtil.deserialize(activity_filename);
         MyActivity lastActivity = null;
+        if(mal==null) return;
         if(mal.size()==0) {
             Toast.makeText(_ctx,"No activities!", Toast.LENGTH_SHORT).show();
         } else {

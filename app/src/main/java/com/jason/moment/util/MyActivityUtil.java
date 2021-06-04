@@ -107,7 +107,8 @@ public class MyActivityUtil {
             for(int i=0;i<tokens.length;i++) ml.add(tokens[i]);
         }
         catch (IOException e) {
-            System.out.println("File Read Error");
+            e.printStackTrace();
+            Log.e(TAG,"-- Err:" + e);
         }
         return ml;
     }
@@ -122,7 +123,7 @@ public class MyActivityUtil {
             for(int i=0;i<tokens.length;i++) ml.add(tokens[i]);
         }
         catch (IOException e) {
-            System.out.println("File Read Error");
+            Log.e(TAG, "-- Err:" + e);
         }
         return ml;
     }
@@ -134,7 +135,6 @@ public class MyActivityUtil {
             String head = in.readLine();
 
             while ((str = in.readLine()) != null) {
-                System.out.println(str);
                 String[] tokens = str.split(",");
 
                 double latitude = Double.parseDouble(tokens[0]);
@@ -147,7 +147,8 @@ public class MyActivityUtil {
             }
         }
         catch (IOException e) {
-            System.out.println("File Read Error");
+            Log.e(TAG, "-- Err:" +e);
+            e.printStackTrace();
         }
         return mal;
     }
@@ -174,7 +175,6 @@ public class MyActivityUtil {
             BufferedWriter output = new BufferedWriter(file);
             Log.e(TAG, "-- **** CSV Activity file: " + fileName);
 
-            System.out.println(f.getAbsolutePath());
 
             // for media files 2021/06/02
             if(media_list!=null) {
@@ -219,8 +219,6 @@ public class MyActivityUtil {
             FileWriter file = new FileWriter(f);
             BufferedWriter output = new BufferedWriter(file);
             Log.e(TAG, "-- **** CSV Activity file: " + fileName);
-
-            System.out.println(f.getAbsolutePath());
 
             output.write("x,y,d,t\n");
             for(int i=0;i<list.size();i++ ) {

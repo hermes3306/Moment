@@ -17,8 +17,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -96,11 +94,13 @@ public class StartRunActivity extends AppCompatActivity implements
         return locService;
     }
     private Intent locServiceIntent = null;
+    Location lastloc=null;
 
 
     public ArrayList<String> pic_filenames = new ArrayList<>();
     public ArrayList<String> mov_filenames = new ArrayList<>();
     public ArrayList<String> media_filenames = new ArrayList<>();
+    String activity_file_name=null;
 
     String TAG = "StartRunActivity";
     Context _ctx = null;
@@ -127,10 +127,7 @@ public class StartRunActivity extends AppCompatActivity implements
     private ArrayList list = null;
     private MyActivity first = null;
     private MyActivity last = null;
-    private String activity_file_name;
     public String getActivity_file_name() {return activity_file_name;}
-
-    public LocationManager mLocManager = null;
 
     // 사진 촬영 기능
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -413,7 +410,6 @@ public class StartRunActivity extends AppCompatActivity implements
         }
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Resources r = getResources();
@@ -433,13 +429,9 @@ public class StartRunActivity extends AppCompatActivity implements
                         .setItems(screen_layout, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                //initializeContentViews(start_layout[i]);
-                                //Toast.makeText(getApplicationContext(),screen_layout[i], Toast.LENGTH_SHORT).show();
                             }
                         })
                         .setTitle("Choose a layout");
-//                    .setPositiveButton("OK",null)
-//                    .setNegativeButton("Cancel",null);
                 AlertDialog mSportSelectDialog = builder.create();
                 mSportSelectDialog.show();
                 break;
@@ -465,78 +457,6 @@ public class StartRunActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    private void showActivities_OLD() {
-        ArrayList<MyActivity> mal = list;
-        MyActivity lastActivity = null;
-        if(mal==null) {
-            return;
-        }
-        if(mal.size()==0) {
-            return;
-        } else {
-            lastActivity = mal.get(mal.size()-1);
-        }
-        TextView name = findViewById(R.id.name);
-        TextView date_str = findViewById(R.id.date_str);
-        TextView distancekm = findViewById(R.id.distancekm);
-        TextView duration = findViewById(R.id.duration);
-        TextView calories = findViewById(R.id.calories);
-        TextView minperkm = findViewById(R.id.minperkm);
-        TextView memo = findViewById(R.id.memo);
-        TextView weather = findViewById(R.id.weather);
-        TextView co_runner = findViewById(R.id.co_runner);
-
-        ActivityStat activityStat = MyActivityUtil.getActivityStat(mal);
-        if(activityStat!=null) {
-            name.setText(activityStat.name);
-            date_str.setText(activityStat.date_str);
-            distancekm.setText("" + String.format("%.1f", activityStat.distanceKm));
-            duration.setText(activityStat.duration);
-            calories.setText("" + activityStat.calories);
-            minperkm.setText("" + String.format("%.1f", activityStat.minperKm));
-            memo.setText(activityStat.memo);
-            weather.setText(activityStat.weather);
-            co_runner.setText(activityStat.co_runner);
-        }
-
-        MapUtil.initialize();
-        MapUtil.drawMarkers(googleMap,mal);
-        MapUtil.drawTrack(_ctx,googleMap,mal);
-//        if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-//        else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-
-        Display display = getWindowManager().getDefaultDisplay();
-        DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics( metrics );
-        int width = metrics.widthPixels;
-        int height = metrics.heightPixels;
-
-        boolean got_bound_wo_error = false;
-        int try_cnt = 0;
-
-        do {
-            try {
-                Log.d(TAG,"-- before add all marker to do do Bound build!");
-                ArrayList<Marker> _markers = new ArrayList<>();
-                for(int i=0;i<mal.size();i++) {
-                    Marker marker = googleMap.addMarker(
-                            new MarkerOptions().position(mal.get(i).toLatLng()).title("").visible(false));
-                    _markers.add(marker);
-                }
-                Log.d(TAG,"-- after add all marker to do do Bound build!");
-
-                MapUtil.doBoundBuild(googleMap, _markers, width, height);
-                got_bound_wo_error = true;
-            } catch (Exception e) {
-                try_cnt++;
-            }
-        }while(!got_bound_wo_error && try_cnt < 3);
-        if(!got_bound_wo_error) {
-            int myzoom = 16;
-            if(lastActivity!=null) MapUtil.moveCamera(googleMap, lastActivity, myzoom);
-        }
-    }
-
     private void setHeadMessages() {
         TextView name = findViewById(R.id.name);
         TextView date_str = findViewById(R.id.date_str);
@@ -559,109 +479,6 @@ public class StartRunActivity extends AppCompatActivity implements
             _markers.add(marker);
         }
         MapUtil.DRAW(_ctx,googleMap,_markers,display,list );
-    }
-
-    private class GPSListener implements LocationListener {
-        public GPSListener(String gpsProvider) {
-        }
-
-        private Location lastloc = null;
-        @Override
-        public void onLocationChanged(@NonNull Location location) {
-            Log.d(TAG,"-- onLocationChanged! [" + location.getProvider() + "]" +location.getLatitude() + "," + location.getLongitude());
-            Date d = new Date();
-            if(list==null) {
-                list = new ArrayList<MyActivity>();
-            }
-            double dist;
-            if(lastloc==null) {
-                dist = 0;
-                last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
-                list.add(last);
-                lastloc = location;
-            }else {
-                dist = CalDistance.dist(lastloc.getLatitude(), lastloc.getLongitude(), location.getLatitude(), location.getLongitude());
-                if(dist > Config._minLocChange) {
-                    last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
-                    list.add(last);
-                    lastloc = location;
-                }
-            }
-
-            if(googleMap != null) showActivities();
-        }
-
-        @Override
-        public void onProviderEnabled(@NonNull String provider) {
-        }
-
-        @Override
-        public void onProviderDisabled(@NonNull String provider) {
-        }
-    }
-
-    StartRunActivity.GPSListener[] mLocationListeners = new StartRunActivity.GPSListener[] {
-            new StartRunActivity.GPSListener(LocationManager.GPS_PROVIDER),
-            new StartRunActivity.GPSListener(LocationManager.NETWORK_PROVIDER)
-    };
-
-    private void deleteLocationManager() {
-        if(mLocManager!=null) {
-            mLocManager.removeUpdates(mLocationListeners[0]);
-            mLocManager.removeUpdates(mLocationListeners[1]);
-            mLocManager = null;
-        }
-    }
-
-    private void initializeLocationManager() {
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
-        Config._enable_network_provider = sharedPreferences.getBoolean("NetworkProvider", Config._enable_network_provider);
-        String _loc_interval = sharedPreferences.getString("interval", "");
-        String _loc_distance = sharedPreferences.getString("distance", "");
-
-        try {
-            Config._loc_interval = parseInt(_loc_interval);
-            Config._loc_distance = parseFloat(_loc_distance);
-        }catch(Exception e) {
-            Log.e(TAG,"-- " + e);
-            e.printStackTrace();
-        }
-        String t = "Loc_interval:"+ Config._loc_interval / 1000 + " sec\n" +
-                "Loc_distance:" + Config._loc_distance + " meter\n" +
-                "Network provider: " + Config._enable_network_provider;
-        //Toast.makeText(getApplicationContext(),t, Toast.LENGTH_LONG).show();
-        Log.d(TAG,t);
-
-        if (mLocManager == null) {
-            mLocManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        }
-        try {
-            mLocManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
-                    Config._loc_interval,
-                    Config._loc_distance,
-                    mLocationListeners[0]
-            );
-        } catch (SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
-        }
-        if(Config._enable_network_provider) {
-            try {
-                mLocManager.requestLocationUpdates(
-                        LocationManager.NETWORK_PROVIDER,
-                        Config._loc_interval,
-                        Config._loc_distance,
-                        mLocationListeners[1]
-                );
-            } catch (SecurityException ex) {
-                Log.i(TAG, "fail to request location update, ignore", ex);
-            } catch (IllegalArgumentException ex) {
-                Log.d(TAG, "network provider does not exist, " + ex.getMessage());
-            }
-        }
     }
 
     private void initialize_views() {
@@ -711,6 +528,8 @@ public class StartRunActivity extends AppCompatActivity implements
         _ctx = this;
         Config.initialize(_ctx);
 
+        if(list==null) list = new ArrayList<>();
+
         // Create LocService Intent and bind it with a connection
         locServiceIntent = new Intent(this, LocService.class);
         locServiceIntent.putExtra("activity_file_name", activity_file_name);
@@ -720,7 +539,6 @@ public class StartRunActivity extends AppCompatActivity implements
 
         super.onCreate(savedInstanceState);
         initialize_Mapview(savedInstanceState);
-        initializeLocationManager();
         activity_file_name = StringUtil.DateToString(new Date(),"yyyyMMdd_HHmmss");
         startMyTimer();
         start_time = new Date();
@@ -756,6 +574,17 @@ public class StartRunActivity extends AppCompatActivity implements
 
     }
 
+    public void stopTracking() {
+        Intent intent = new Intent(Config.INTENT_STOP_TRACKING);
+        sendBroadcast(intent);
+    }
+
+    @Override
+    public void onDestroy() {
+        stopTracking();
+        Log.d(TAG,"-- sent Broadcast message: INTENT_STOP_TRACKING...");
+        super.onDestroy();
+    }
 
     @Override
     public void onBackPressed() {
@@ -826,14 +655,7 @@ public class StartRunActivity extends AppCompatActivity implements
                         detail+= "\n소모칼로리:" + tv_start_calory.getText();
                         notificationQuit(Config._notify_id,Config._notify_ticker,
                                 "활동이 저장되었습니다.", detail);
-                        deleteLocationManager();
-
-                        CloudUtil cu = new CloudUtil();
-                        if(Config._default_ext == Config._csv) {
-                            cu.Upload(_ctx,activity_file_name + Config._csv_ext);
-                        }else {
-                            cu.Upload(_ctx,activity_file_name + Config._mnt_ext);
-                        }
+                        stopTracking();
 
                         Intent myReportIntent = new Intent(StartRunActivity.this, MyReportActivity.class);
                         myReportIntent.putExtra("activity_file_name", activity_file_name);
@@ -860,13 +682,31 @@ public class StartRunActivity extends AppCompatActivity implements
 
     // MyTimerTask can run even though the app run in background
     public class MyTimerTask extends TimerTask{
-        public Date last=null;
         public void run() {
             long start = System.currentTimeMillis();
             StartRunActivity.this.runOnUiThread(new Runnable() {
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 public void run() {
                     Date d = new Date();
+                    if(locService == null) return;
+                    Location location = locService.getLastLocation();
+                    if(location == null) return;
+
+                    if(lastloc==null) {
+                        dist = 0;
+                        last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
+                        list.add(last);
+                        lastloc = location;
+                    }else {
+                        dist = CalDistance.dist(lastloc.getLatitude(), lastloc.getLongitude(), location.getLatitude(), location.getLongitude());
+                        if(dist > Config._minLocChange) {
+                            last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
+                            list.add(last);
+                            lastloc = location;
+                            if(googleMap != null) showActivities();
+                        }
+                    }
+
                     String elapsed = StringUtil.elapsedStr(start_time,d);
                     tv_start_time.setText(elapsed);
                     long t1 = System.currentTimeMillis();
@@ -899,18 +739,7 @@ public class StartRunActivity extends AppCompatActivity implements
                     int stepsTaken = (int) (dist / Config._strideLengthInMeters);
 
                     burntkCal = CaloryUtil.calculateEnergyExpenditure((float)dist / 1000f, durationInSeconds);
-
                     tv_start_calory.setText("" + String.format("%.1f", burntkCal));
-                    if(last==null) {
-                        last = new Date();
-                        MyActivityUtil.serialize(list, media_filenames, activity_file_name );
-                    }else {
-                        Date now = new Date();
-                        if(DateUtil.isLongerThan1Min(last, now)) {
-                            MyActivityUtil.serialize(list, media_filenames, activity_file_name );
-                            last = now;
-                        }
-                    }
                 }
             });
         } /* end of run() */

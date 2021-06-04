@@ -24,7 +24,7 @@ import static java.lang.Integer.parseInt;
 public class Config {
 
     static String TAG                       = "Config";
-    static String _ver                      = "19";
+    static String _ver                      = "20";
 
     // 정리 필요함
     public final static String PACKAGE_NAME = Config.class.getPackage().getName();
@@ -98,7 +98,7 @@ public class Config {
     public static final int     _ser            = 1;
     public static final int     _jsn            = 2;
     public static final int     _img            = 3;
-    public static int           _default_ext    = _ser;
+    public static int           _default_ext    = _csv;
 
     public static final LatLng  _olympic_park   = new LatLng(37.519019,127.124820 );
     public static final float   _height         = 1.75f;  // in meters
@@ -112,7 +112,7 @@ public class Config {
     public static final long    _timer_period   = 10000;    // 1 sec (최초이후 실행 주기)
     public static final long    _timer_delay    = 1000;     // 1 sec (최초실행)
 
-    public static boolean       _enable_network_provider = false;
+    public static boolean       _enable_network_provider = true;
     public static int           _loc_interval   = 1000;     // 1 sec
     public static float         _loc_distance   = 1f;       // 1 meter
     public static double        _minLocChange   = _loc_distance;
@@ -293,6 +293,7 @@ public class Config {
         try {
             Config._loc_interval = parseInt(_loc_interval);
             Config._loc_distance = parseFloat(_loc_distance);
+
         } catch (Exception e) {
             Log.e(TAG, "-- " + e);
             e.printStackTrace();
