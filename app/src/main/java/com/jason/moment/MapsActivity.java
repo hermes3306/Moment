@@ -824,6 +824,29 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
                 return true;
 
+            case R.id.activityList:
+                File dir = null;
+                if(Config._default_ext == Config._csv) dir = Config.CSV_SAVE_DIR;
+                else dir = Config.MNT_SAVE_DIR;
+                File _flist[] = dir.listFiles();
+                String fnamelist[] = new String[_flist.length];
+                for(int i=0;i<_flist.length;i++) {
+                    fnamelist[i] = _flist[i].getName().substring(0,_flist[i].getName().length()-4);
+                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this )
+                        .setItems(fnamelist, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(_ctx, MyReportActivity.class);
+                                intent.putExtra("activity_file_name", fnamelist[i]);
+                                startActivity(intent);
+                            }
+                        })
+                        .setTitle("Choose an activity");
+                AlertDialog mSportSelectDialog = builder.create();
+                mSportSelectDialog.show();
+                return true;
+
             case R.id.download_mp3:
                 CloudUtil cu = new CloudUtil();
                 cu.DownloadMP3(_ctx);

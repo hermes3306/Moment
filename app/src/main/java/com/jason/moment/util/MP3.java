@@ -102,12 +102,17 @@ public class MP3 {
         if(mediaPlayer == null) {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            return;
         }
 
-        if (playlist1 == null) {
+        if (playlist1 != null) {
             playlist1 = Config.MP3_SAVE_DIR.listFiles();
             Log.d(TAG, "-- # of MP3:" + playlist1.length);
+        } else {
+            Toast.makeText(context,"No mp3 files", Toast.LENGTH_SHORT).show();
+            return;
         }
+
         mediaPlayer.reset();
         Uri myUri = FileProvider.getUriForFile(context,
                 "com.jason.moment.file_provider", playlist1[pos]);

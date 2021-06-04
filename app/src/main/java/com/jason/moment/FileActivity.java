@@ -586,7 +586,6 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(TAG,"-- Scroll Pic Activity!");
                 Intent scrollPicIntent = new Intent(this, ScrollPicActivity.class);
                 startActivityForResult(scrollPicIntent, Config.CALL_SCROLL_PIC_ACTIVITY);
-
                 return true;
 
             case R.id.scrollAllpic_activity:

@@ -10,6 +10,11 @@
         android:title="Setting..."
         app:showAsAction="never" />
     <item
+        android:id="@+id/activityList"
+        android:orderInCategory="100"
+        android:title="Activity List"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/mp3Player"
         android:orderInCategory="100"
         android:title="Mp3 Player"

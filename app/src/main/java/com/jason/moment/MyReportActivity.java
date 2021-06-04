@@ -51,13 +51,13 @@ public class MyReportActivity extends AppCompatActivity implements
         if(media_list!=null) {
             for(int i=0;i<media_list.size();i++) Log.d(TAG,"-- " + media_list.get(i));
         }
-        ArrayList<MyActivity> mal = MyActivityUtil.deserialize(activity_filename);
+        ArrayList<MyActivity> mActivityList = MyActivityUtil.deserialize(activity_filename);
         MyActivity lastActivity = null;
-        if(mal==null) return;
-        if(mal.size()==0) {
+        if(mActivityList==null) return;
+        if(mActivityList.size()==0) {
             Toast.makeText(_ctx,"No activities!", Toast.LENGTH_SHORT).show();
         } else {
-            lastActivity = mal.get(mal.size()-1);
+            lastActivity = mActivityList.get(mActivityList.size()-1);
         }
 
         TextView name = findViewById(R.id.name);
@@ -70,7 +70,7 @@ public class MyReportActivity extends AppCompatActivity implements
         TextView weather = findViewById(R.id.weather);
         TextView co_runner = findViewById(R.id.co_runner);
 
-        ActivityStat activityStat = MyActivityUtil.getActivityStat(mal);
+        ActivityStat activityStat = MyActivityUtil.getActivityStat(mActivityList);
         if(activityStat!=null) {
             name.setText(activityStat.name);
             date_str.setText(activityStat.date_str);
@@ -82,43 +82,14 @@ public class MyReportActivity extends AppCompatActivity implements
             weather.setText(activityStat.weather);
             co_runner.setText(activityStat.co_runner);
         }
-
-        MapUtil.initialize();
-        MapUtil.drawMarkers(googleMap,mal);
-        MapUtil.drawTrack(_ctx,googleMap,mal);
-        if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-
+        ArrayList<Marker> _markers = new ArrayList<>();
         Display display = getWindowManager().getDefaultDisplay();
-        DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics( metrics );
-        int width = metrics.widthPixels;
-        int height = metrics.heightPixels;
-
-        boolean got_bound_wo_error = false;
-        int try_cnt = 0;
-
-        do {
-            try {
-                Log.d(TAG,"-- before add all marker to do do Bound build!");
-                ArrayList<Marker> _markers = new ArrayList<>();
-                for(int i=0;i<mal.size();i++) {
-                    Marker marker = googleMap.addMarker(
-                            new MarkerOptions().position(mal.get(i).toLatLng()).title("").visible(false));
-                    _markers.add(marker);
-                }
-                Log.d(TAG,"-- after add all marker to do do Bound build!");
-
-                MapUtil.doBoundBuild(googleMap, _markers, width, height);
-                got_bound_wo_error = true;
-            } catch (Exception e) {
-                try_cnt++;
-            }
-        }while(!got_bound_wo_error && try_cnt < 3);
-        if(!got_bound_wo_error) {
-            int myzoom = 16;
-            if(lastActivity!=null) MapUtil.moveCamera(googleMap, lastActivity, myzoom);
+        for(int i=0;i<mActivityList.size();i++) {
+            Marker marker = googleMap.addMarker(
+                    new MarkerOptions().position(mActivityList.get(i).toLatLng()).title("").visible(false));
+            _markers.add(marker);
         }
+        MapUtil.DRAW(_ctx,googleMap,_markers,display,mActivityList);
     }
 
     protected void initialize_views(Bundle savedInstanceState) {
