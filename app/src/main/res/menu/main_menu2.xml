@@ -40,27 +40,9 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/downloadcsv"
-        android:orderInCategory="100"
-        android:title="Downloadd CSV"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/scrollpic_activity"
         android:orderInCategory="100"
         android:title="Scroll Picture"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/scrollAllpic_activity"
-        android:orderInCategory="100"
-        android:title="Scroll All Picture"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/pic_activity"
-        android:orderInCategory="100"
-        android:title="Picture"
         app:showAsAction="never" />
 
     <item

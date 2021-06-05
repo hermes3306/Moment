@@ -32,6 +32,7 @@ public class MP3 {
     static int pos=0;
     static boolean played = false;
     static TextView tv = null;
+    static Context context;
 
     public static int current() {
         return pos;
@@ -45,6 +46,11 @@ public class MP3 {
         View view1 = factory.inflate(R.layout.layout_mp3view, null);
         ImageView iv = view1.findViewById(R.id.dialog_imageview);
         tv = view1.findViewById(R.id.view_title);
+
+        if(playlist1==null) {
+            Toast.makeText(context,"No musics!",Toast.LENGTH_SHORT).show();
+            return;
+        }
         //tv.setText("" + (pos+1) + "/" + playlist1.length);
         tv.setText(playlist1[pos].getName());
         alertadd.setView(view1);

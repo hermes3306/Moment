@@ -874,7 +874,6 @@ public class MapsActivity extends AppCompatActivity implements
                 Log.d(TAG,"-- Scroll Pic Activity!");
                 Intent scrollAllPicIntent = new Intent(MapsActivity.this, ScrollAllPicActivity.class);
                 startActivityForResult(scrollAllPicIntent, Config.CALL_SCROLL_ALL_PIC_ACTIVITY);
-
                 return true;
 
             case R.id.media_activity:
@@ -903,7 +902,7 @@ public class MapsActivity extends AppCompatActivity implements
 
                 int j=0;
                 if(files1 != null) for(int i=0;i<files1.length;i++) files[j++] = files1[i];
-                if(files2 != null) for(int i=0;i<files1.length;i++) files[j++] = files2[i];
+                if(files2 != null) for(int i=0;i<files2.length;i++) files[j++] = files2[i];
 
                 if(files==null) {
                     Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();

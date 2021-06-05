@@ -14,6 +14,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -105,6 +106,13 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void showVideo(VideoView vv, String fname) {
+        //Video Loop
+        vv.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            public void onCompletion(MediaPlayer mp) {
+                vv.start(); //need to make transition seamless.
+            }
+        });
+
         MediaController m;
         m = new MediaController(this);
         File mediaFile = new File(Config.MOV_SAVE_DIR, fname);
