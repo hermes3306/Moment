@@ -42,12 +42,7 @@ public class MyReportActivity extends AppCompatActivity implements
     boolean satellite=false;
 
     private void showActivities() {
-        MyLoc myLoc = new MyLoc(getApplicationContext());
-        //ArrayList<MyActivity> mal = myLoc.todayActivity();
-
         ArrayList<String> media_list = MyActivityUtil.deserializeMediaInfoFromCSV(activity_filename);
-        Log.e(TAG,"-- showActivities");
-
         if(media_list!=null) {
             for(int i=0;i<media_list.size();i++) Log.d(TAG,"-- " + media_list.get(i));
         }
@@ -56,6 +51,7 @@ public class MyReportActivity extends AppCompatActivity implements
         if(mActivityList==null) return;
         if(mActivityList.size()==0) {
             Toast.makeText(_ctx,"No activities!", Toast.LENGTH_SHORT).show();
+            finish();
         } else {
             lastActivity = mActivityList.get(mActivityList.size()-1);
         }
@@ -82,20 +78,13 @@ public class MyReportActivity extends AppCompatActivity implements
             weather.setText(activityStat.weather);
             co_runner.setText(activityStat.co_runner);
         }
-        ArrayList<Marker> _markers = new ArrayList<>();
-        Display display = getWindowManager().getDefaultDisplay();
-        for(int i=0;i<mActivityList.size();i++) {
-            Marker marker = googleMap.addMarker(
-                    new MarkerOptions().position(mActivityList.get(i).toLatLng()).title("").visible(false));
-            _markers.add(marker);
-        }
-        MapUtil.DRAW(_ctx,googleMap,_markers,display,mActivityList);
+        MapView mv = findViewById(R.id.mapView);
+        MapUtil.DRAW(_ctx,googleMap, mv.getWidth(),mv.getHeight(),mActivityList);
     }
 
     protected void initialize_views(Bundle savedInstanceState) {
         setContentView(R.layout.activity_my_report);
         MapView mapView = findViewById(R.id.mapView);
-
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
         mapView.getMapAsync(this);
@@ -115,7 +104,6 @@ public class MyReportActivity extends AppCompatActivity implements
             googleMap.getUiSettings().setMyLocationButtonEnabled(true);
             googleMap.getUiSettings().setCompassEnabled(true);
             googleMap.getUiSettings().setZoomControlsEnabled(true);
-
         }
     }
 
@@ -125,7 +113,6 @@ public class MyReportActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         activity_filename = intent.getExtras().getString("activity_file_name");
-        Toast.makeText(_ctx, "Activity filename: " + activity_filename, Toast.LENGTH_LONG).show();
         initialize_views(savedInstanceState);
     }
 

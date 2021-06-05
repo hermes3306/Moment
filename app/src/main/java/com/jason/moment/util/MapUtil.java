@@ -43,7 +43,6 @@ public class    MapUtil {
     public static void toggleNoMarker() {
         nomarker = !nomarker;
     }
-
     public static void toggleNoTrack() {
         notrack = !notrack;
     }
@@ -158,7 +157,6 @@ public class    MapUtil {
         if (myActivityArrayList == null) return;
         int color_inx = Config.getIntPreference(context, "track_color");
         int width = Config.getIntPreference(context, "track_width");
-
         int color = colors[color_inx];
 
         ArrayList<LatLng> latLngArrayListInRange = new ArrayList<>();
@@ -168,10 +166,8 @@ public class    MapUtil {
         drawTrack(map,latLngArrayListInRange,color, width);
     }
 
-    static Polyline polyLine_previous = null;
     public static void drawTrack(GoogleMap map, ArrayList<LatLng> latLngArrayList,int color, int width) {
         if(latLngArrayList == null) return;
-        if(polyLine_previous!=null) polyLine_previous.remove();
         PolylineOptions plo = new PolylineOptions();
 
 
@@ -191,11 +187,10 @@ public class    MapUtil {
         Polyline polyLine = map.addPolyline(plo);
         polyLine.setWidth(width);
         polyLine.setPoints(latLngArrayList);
-        polyLine_previous = polyLine;
     }
 
-    public static void DRAW(Context _ctx, GoogleMap googleMap, ArrayList<Marker> _markers, Display display, ArrayList<MyActivity>mActivityList) {
-        MapUtil.initialize(); //MapUtil은 사용하기 전에 반드시 초기화를 해서 마크정도 초기화
+    public static void DRAW(Context _ctx, GoogleMap googleMap, int width, int height, ArrayList<MyActivity>mActivityList) {
+        MapUtil.initialize(); //MapUtil은 사용하기 전에 반드시 초기화를 해서 마크정보 초기화
         googleMap.clear();
         MyActivity lastActivity=null;
         if(mActivityList.size()==0) {
@@ -203,7 +198,6 @@ public class    MapUtil {
         } else {
             lastActivity = mActivityList.get(mActivityList.size()-1);
         }
-
         if(!nomarker) MapUtil.drawMarkers(googleMap,mActivityList);
         if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
         if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
@@ -212,17 +206,22 @@ public class    MapUtil {
             MapUtil.drawStartMarker(googleMap,mActivityList);
             MapUtil.drawEndMarker(googleMap,mActivityList);
         }
-        DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics( metrics );
-        int width = metrics.widthPixels;
-        int height = metrics.heightPixels;
+        ArrayList<Marker> _markers = new ArrayList<>();
+        for(int i=0;i<mActivityList.size();i++) {
+            Marker marker = googleMap.addMarker(
+                    new MarkerOptions().position(mActivityList.get(i).toLatLng()).title("").visible(false));
+            _markers.add(marker);
+        }
+        findBestBound(googleMap, _markers, width, height, lastActivity);
+    }
 
+    public static void findBestBound(GoogleMap googleMap, ArrayList<Marker> _markers, int w, int h, MyActivity lastAct) {
         boolean got_bound_wo_error = false;
         int try_cnt = 0;
 
         do {
             try {
-                MapUtil.doBoundBuild(googleMap, _markers, width, height);
+                MapUtil.doBoundBuild(googleMap, _markers, w, h);
                 got_bound_wo_error = true;
             } catch (Exception e) {
                 try_cnt++;
@@ -230,8 +229,16 @@ public class    MapUtil {
         }while(!got_bound_wo_error && try_cnt < 3);
         if(!got_bound_wo_error) {
             int myzoom = 16;
-            if(lastActivity!=null) MapUtil.moveCamera(googleMap, lastActivity, myzoom);
+            if(lastAct!=null) MapUtil.moveCamera(googleMap, lastAct, myzoom);
         }
+    }
+
+    public static void DRAW(Context _ctx, GoogleMap googleMap, Display display, ArrayList<MyActivity>mActivityList) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics( metrics );
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+        DRAW(_ctx, googleMap, width, height, mActivityList);
     }
 
 

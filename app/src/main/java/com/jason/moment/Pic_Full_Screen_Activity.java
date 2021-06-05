@@ -467,10 +467,14 @@ public class Pic_Full_Screen_Activity extends AppCompatActivity implements View.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK) return;
         switch(requestCode) {
             case Config.PICK_FROM_CAMERA:
                 Log.d(TAG, "-- PIC_FROM_CAMERA: ");
+
+                CloudUtil.getInstance().Upload(_ctx,currentFileName);
                 CameraUtil.showImg(_ctx, currentFileName);
+
                 NotificationUtil.notify_new_picture(_ctx, currentFileName);
                 break;
             case Config.PICK_FROM_VIDEO:

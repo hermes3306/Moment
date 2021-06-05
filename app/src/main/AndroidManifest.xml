@@ -25,8 +25,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Moment"
         android:usesCleartextTraffic="true">
-        <activity android:name=".MyReportActivity"
-            android:theme="@style/Theme.AppCompat"></activity>
+
+        <activity
+            android:name=".MyReportActivity"
+            android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".ScrollPicActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -43,11 +45,9 @@
         <activity
             android:name=".StartActivity"
             android:theme="@style/Theme.AppCompat" />
-
         <activity
             android:name=".StartRunActivity"
             android:theme="@style/Theme.AppCompat" />
-
         <activity
             android:name=".StartNewActivity"
             android:theme="@style/Theme.AppCompat" />
@@ -63,6 +63,9 @@
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".MediaActivity"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name=".VideoActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".FileActivity"
@@ -104,35 +107,31 @@
 
         <service
             android:name=".LocService2"
-            android:foregroundServiceType="location"
+            android:enabled="true"
             android:exported="false"
-            android:enabled="true" >
+            android:foregroundServiceType="location">
             <intent-filter>
                 <action android:name="com.jason.moment.GPS_SERVICE" />
             </intent-filter>
         </service>
-
         <service
             android:name=".service.GPSLogger"
-            android:foregroundServiceType="location"
+            android:enabled="true"
             android:exported="false"
-            android:enabled="true" >
+            android:foregroundServiceType="location">
             <intent-filter>
                 <action android:name="com.jason.moment.service.GPSLogger" />
             </intent-filter>
         </service>
-
         <service
             android:name=".service.LocService"
-            android:foregroundServiceType="location"
+            android:enabled="true"
             android:exported="false"
-            android:enabled="true" >
+            android:foregroundServiceType="location">
             <intent-filter>
                 <action android:name="com.jason.moment.service.LocService" />
             </intent-filter>
         </service>
-
-
     </application>
 
 </manifest>

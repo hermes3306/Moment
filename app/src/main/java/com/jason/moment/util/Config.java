@@ -97,6 +97,7 @@ public class Config {
     public static String        _uploadURL      = _serverURL + "/upload.php";
     public static String        _listFiles      = _serverURL + "/list.php";
     public static String        _listImageFiles = _serverURL + "/list.php?dir=upload&&ext=jpeg";
+    public static String        _listMovFiles   = _serverURL + "/list.php?dir=upload&&ext=mp4";
     public static String        _listCSVFiles   = _serverURL + "/list.php?dir=upload&&ext=csv";
     public static String        _listSerFiles   = _serverURL + "/list.php?dir=upload&&ext=mnt";
     public static String        _listMP3Files   = _serverURL + "/list.php?dir=mp3&&ext=mp3";
@@ -105,6 +106,9 @@ public class Config {
     public static final int     _ser            = 1;
     public static final int     _jsn            = 2;
     public static final int     _img            = 3;
+    public static final int     _mov            = 4;
+    public static final int     _mp3            = 5;
+
     public static int           _default_ext    = _csv;
 
     public static final LatLng  _olympic_park   = new LatLng(37.519019,127.124820 );
@@ -287,9 +291,15 @@ public class Config {
         Config._enable_network_provider = sharedPreferences.getBoolean("NetworkProvider", Config._enable_network_provider);
         String _loc_interval = sharedPreferences.getString("interval", "");
         String _loc_distance = sharedPreferences.getString("distance", "");
+        int colors[] = {
+                Color.RED, Color.CYAN, Color.BLUE, Color.WHITE, Color.BLACK, Color.YELLOW, Color.DKGRAY, Color.GREEN, Color.LTGRAY
+        };
+
         try {
             Config._loc_interval = parseInt(_loc_interval);
             Config._loc_distance = parseFloat(_loc_distance);
+            Config._track_color = colors[Config.getIntPreference(_ctx, "track_color")];
+            Config._track_width = Config.getIntPreference(_ctx, "track_width");
         } catch (Exception e) {
             Log.e(TAG, "-- " + e);
             e.printStackTrace();

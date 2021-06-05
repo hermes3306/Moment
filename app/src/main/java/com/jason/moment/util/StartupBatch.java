@@ -8,6 +8,8 @@ import com.jason.moment.util.db.MyLoc;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,15 +31,37 @@ public class StartupBatch {
             //deleteDB();
             //geturl();
             //MyLoc.getInstance(_ctx).createNew(); // DB를 초기화
+            //clearShortRunActivities(_ctx);
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
-            Log.d(TAG,"-- Err: " + e);
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            Log.d(TAG,"-- Err: " + exceptionAsString);
         }finally{
             _executed = true;
             Log.d(TAG,"-- Startup Batch End...");
         }
         return;
+    }
+    public void  clearShortRunActivities(Context _ctx) {
+        File files[] = Config.CSV_SAVE_DIR.listFiles();
+        for(int i=0;i<files.length;i++) {
+            ArrayList<MyActivity> mal = MyActivityUtil.deserialize(files[i]);
+            if(mal.size() < 10) {
+                files[i].delete();
+                Log.d(TAG,"-- file["+files[i].getName()+"] deleted!");
+            }
+        }
+
+        files = Config.MNT_SAVE_DIR.listFiles();
+        for(int i=0;i<files.length;i++) {
+            ArrayList<MyActivity> mal = MyActivityUtil.deserialize(files[i]);
+            if(mal.size() < 10) {
+                files[i].delete();
+                Log.d(TAG,"-- file["+files[i].getName()+"] deleted!");
+            }
+        }
     }
 
     public void geturl() throws Exception{

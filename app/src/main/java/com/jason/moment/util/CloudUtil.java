@@ -23,8 +23,12 @@ public class CloudUtil {
     static String TAG = "CloudUtil";
     private static final int BUFFER_SIZE = 4096;
 
-    ////// ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
-    /////  no return
+    private static CloudUtil _instance=null;
+    public static CloudUtil getInstance() {
+        if(_instance==null) _instance = new CloudUtil();
+        return _instance;
+    }
+
     public static String getUrlContent(String urlstr) throws IOException {
         Log.d(TAG, "-- urlstr to download:" + urlstr);
         StringBuilder sb = new StringBuilder();
@@ -180,6 +184,8 @@ public class CloudUtil {
                         listUrl = Config._listSerFiles;
                     }else if(ftype==Config._img) {
                         listUrl = Config._listImageFiles;
+                    }else if(ftype==Config._mov) {
+                        listUrl = Config._listMovFiles;
                     }
                     Log.d(TAG,"-- list url:" + listUrl);
 
@@ -199,6 +205,7 @@ public class CloudUtil {
                     }
 
                     if(ftype==Config._img) saveDir = Config.mediaStorageDir4pic;
+                    else if(ftype==Config._mov) saveDir = Config.mediaStorageDir4mov;
                     else saveDir = (Config._default_ext==Config._csv)? Config.mediaStorageDir4csv : Config.mediaStorageDir4mnt;
 
                     asyncDialog.setMax(fileURL.length);
@@ -251,6 +258,10 @@ public class CloudUtil {
                     flist = Config.mediaStorageDir4mnt.listFiles();
                 }else if(ftype==Config._img) {
                     flist = Config.PIC_SAVE_DIR.listFiles();
+                }else if(ftype==Config._mov) {
+                    flist = Config.MOV_SAVE_DIR.listFiles();
+                }else if(ftype==Config._mp3) {
+                    flist = Config.MP3_SAVE_DIR.listFiles();
                 }
 
                 asyncDialog.setMax(flist.length);

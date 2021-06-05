@@ -5,14 +5,14 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
-import com.jason.moment.MapsActivity;
+import com.jason.moment.StartNewActivity;
 import com.jason.moment.StartRunActivity;
 import com.jason.moment.util.Config;
 
-public class LocServiceConnection implements ServiceConnection {
-
+public class LocServiceConnection2 implements ServiceConnection {
+    // for StartRunActivity
     private StartRunActivity activity;
-    public LocServiceConnection(StartRunActivity tl) {
+    public LocServiceConnection2(StartRunActivity tl) {
         activity = tl;
     }
 

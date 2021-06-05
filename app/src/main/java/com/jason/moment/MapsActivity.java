@@ -147,7 +147,7 @@ public class MapsActivity extends AppCompatActivity implements
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.v(TAG, "-- Received intent " + intent.getAction());
+            Log.d(TAG, "-- Received intent " + intent.getAction());
 
             if (Config.INTENT_LOCATION_CHANGED.equals(intent.getAction())) {
                 // Track a way point
@@ -364,21 +364,6 @@ public class MapsActivity extends AppCompatActivity implements
     private ArrayList<MyActivity> list = new ArrayList<>();
     ImageButton imb_wifi_off;
     ImageButton imb_wifi_on;
-
-    private void showGPS(boolean show) {
-
-        ImageButton imb_wifi_off = (ImageButton)findViewById(R.id.imbt_wifi_off);
-        ImageButton imb_wifi_on = (ImageButton)findViewById(R.id.imbt_wifi_on);
-
-        if(show) {
-            imb_wifi_on.setVisibility(View.VISIBLE);
-            imb_wifi_off.setVisibility(View.GONE);
-        }
-        else {
-            imb_wifi_on.setVisibility(View.GONE);
-            imb_wifi_off.setVisibility(View.VISIBLE);
-        }
-    }
 
     static Timer timer = new Timer();
     private void showGPS() {
@@ -611,7 +596,7 @@ public class MapsActivity extends AppCompatActivity implements
                             new MarkerOptions().position(list.get(i).toLatLng()).title("").visible(false));
                     _markers.add(marker);
                 }
-                MapUtil.DRAW(_ctx,googleMap,_markers,display,list );
+                MapUtil.DRAW(_ctx,googleMap,display,list );
                 break;
             case R.id.imbt_navi:
                 MapUtil.toggleNoTrack();
@@ -622,7 +607,7 @@ public class MapsActivity extends AppCompatActivity implements
                             new MarkerOptions().position(list.get(i).toLatLng()).title("").visible(false));
                     _markers.add(marker);
                 }
-                MapUtil.DRAW(_ctx,googleMap,_markers,display,list );
+                MapUtil.DRAW(_ctx,googleMap,display,list );
                 hidePopMenu(false);
                 break;
             case R.id.imbt_pop_menu:
@@ -660,9 +645,8 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivity(intent);
                 break;
             case R.id.imvStart:
-                Log.d(TAG,"-- StartRunActivity start.");
-                    Intent runIntent = new Intent(MapsActivity.this, StartRunActivity.class);
-                    runIntent.putExtra("1", 1);
+                Log.d(TAG,"-- StartNewActivity start.");
+                    Intent runIntent = new Intent(MapsActivity.this, StartNewActivity.class);
                     startActivityForResult(runIntent, Config.CALL_START_NEW_ACTIVITY);
                 break;
 
@@ -671,11 +655,9 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivityForResult(picIntent, Config.CALL_PIC3_ACTIVITY);
                 break;
 
-            case R.id.imSetting:
-                Log.d(TAG,"-- Setting Activities!");
-                Intent configIntent = new Intent(MapsActivity.this, ConfigActivity.class);
-                configIntent.putExtra("1", 1);
-                startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
+            case R.id.imVideo:
+                Intent videoIntent = new Intent(MapsActivity.this, VideoActivity.class);
+                startActivity(videoIntent);
                 break;
 
             default:
@@ -751,12 +733,7 @@ public class MapsActivity extends AppCompatActivity implements
         if(mal.size()==0) return;
         ArrayList<Marker> _markers = new ArrayList<>();
         Display display = getWindowManager().getDefaultDisplay();
-        for(int i=0;i<mal.size();i++) {
-            Marker marker = googleMap.addMarker(
-                    new MarkerOptions().position(mal.get(i).toLatLng()).title("").visible(false));
-            _markers.add(marker);
-        }
-        MapUtil.DRAW(_ctx,googleMap,_markers,display,list );
+        MapUtil.DRAW(_ctx,googleMap,display,list );
     }
 
     // 사진 촬영 기능
@@ -776,14 +753,17 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK) return;
         switch(requestCode) {
             case Config.PICK_FROM_CAMERA:
                 Log.d(TAG, "-- PIC_FROM_CAMERA: ");
+                CloudUtil.getInstance().Upload(_ctx,currentFileName);
                 CameraUtil.showImg(_ctx, currentFileName);
                 NotificationUtil.notify_new_picture(_ctx, currentFileName);
                 break;
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
+                CloudUtil.getInstance().Upload(_ctx,currentFileName);
                 CameraUtil.showVideo(_ctx, currentFileName);
                 NotificationUtil.notify_new_video(_ctx, currentFileName);
                 break;
@@ -871,9 +851,9 @@ public class MapsActivity extends AppCompatActivity implements
                 return true;
 
             case R.id.StartActivity:
-                Log.d(TAG,"-- Start Activity(old)!");
-                Intent startNewActivity = new Intent(MapsActivity.this, StartActivity.class);
-                startActivityForResult(startNewActivity, Config.CALL_START_ACTIVITY);
+                Log.d(TAG,"-- Start Run Activity!");
+                Intent _StartActivity = new Intent(MapsActivity.this, StartRunActivity.class);
+                startActivityForResult(_StartActivity, Config.CALL_START_ACTIVITY);
                 return true;
 
             case R.id.quote_activity:

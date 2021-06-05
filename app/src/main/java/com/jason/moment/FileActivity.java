@@ -117,8 +117,6 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         mMapView.onResume();
 
         mMapView.getMapAsync(new OnMapReadyCallback() {
-
-
             final TextView tv_activity_name = (TextView)findViewById(R.id.name);
             final TextView tv_date_str = (TextView)findViewById(R.id.date_str);
 
@@ -208,28 +206,9 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     tv_carolies.setText("-");
                 }
 
-                DRAW(googleMap);
-
-                Display display = getWindowManager().getDefaultDisplay();
-                DisplayMetrics metrics = new DisplayMetrics();
-                display.getMetrics( metrics );
-                int width = metrics.widthPixels;
-                int height = metrics.heightPixels;
-
-                boolean got_bound_wo_error = false;
-                int try_cnt = 0;
-
-                do {
-                    try {
-                        Log.e(TAG, "Tying to get Bound with width:" + width + ", height:" + height);
-                        doBoundBuild(googleMap, width, height);
-                        got_bound_wo_error = true;
-                    } catch (Exception e) {
-                        try_cnt++;
-                        Log.e(TAG, e.toString() + "Trying to get again... (try_cnt:" +try_cnt+")");
-                    }
-                }while(!got_bound_wo_error && try_cnt < 3);
-                if(!got_bound_wo_error) { myzoom = 16; moveCamera(googleMap, myzoom); }
+                int width = mMapView.getWidth();
+                int height = mMapView.getHeight();
+                MapUtil.DRAW(_ctx,googleMap,width,height,mActivityList);
             }
 
             public void alertDeleteDialog(File file) {
@@ -459,9 +438,6 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
 
         Log.d(TAG, "-- start_date:" + start_date);
         Log.d(TAG, "-- stop_date:" + stop_date);
-
-        Log.e(TAG, "-- 출발:" + start.toString());
-        Log.e(TAG, "-- 종료:" + stop.toString());
 
         String duration = StringUtil.elapsedStr(start_date, stop_date); // <- Error code
         Log.e(TAG, duration);

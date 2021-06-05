@@ -322,11 +322,11 @@ public class MyActivityUtil {
 
     public static ArrayList<MyActivity> deserialize(File file) {
         Log.d(TAG,"-- about to deserialize:" + file.getAbsolutePath());
-        if(_default_ext == Config._csv) {
+        if(file.getName().endsWith(Config._csv_ext)) {
             return deserializeFromCSV(file);
-        }else if(_default_ext == Config._ser) {
+        } else {
             return deserializeFromMnt(file);
-        } else return null;
+        }
     }
 
     public static ArrayList<MyActivity> deserialize(String activity_filename) {

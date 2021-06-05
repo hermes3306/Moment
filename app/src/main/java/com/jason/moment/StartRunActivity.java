@@ -55,7 +55,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.jason.moment.service.GPSLogger;
 import com.jason.moment.service.GPSLoggerServiceConnection;
 import com.jason.moment.service.LocService;
-import com.jason.moment.service.LocServiceConnection;
+import com.jason.moment.service.LocServiceConnection2;
 import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CaloryUtil;
@@ -85,7 +85,7 @@ public class StartRunActivity extends AppCompatActivity implements
         View.OnClickListener{
 
     // Loc Service binding
-    private ServiceConnection locServiceConnection = null;
+    private ServiceConnection LocServiceConnection2 = null;
     LocService locService = null;
     public void setLocService(LocService l) {
         this.locService = l;
@@ -478,7 +478,7 @@ public class StartRunActivity extends AppCompatActivity implements
                     new MarkerOptions().position(mal.get(i).toLatLng()).title("").visible(false));
             _markers.add(marker);
         }
-        MapUtil.DRAW(_ctx,googleMap,_markers,display,list );
+        MapUtil.DRAW(_ctx,googleMap,display,list );
     }
 
     private void initialize_views() {
@@ -525,7 +525,7 @@ public class StartRunActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        _ctx = this;
+        this._ctx = this;
         Config.initialize(_ctx);
 
         if(list==null) list = new ArrayList<>();
@@ -534,8 +534,8 @@ public class StartRunActivity extends AppCompatActivity implements
         locServiceIntent = new Intent(this, LocService.class);
         locServiceIntent.putExtra("activity_file_name", activity_file_name);
         startService(new Intent(StartRunActivity.this, LocService.class)); // 서비스 시작
-        locServiceConnection = new LocServiceConnection(this); // 서비스 바인딩
-        bindService(locServiceIntent,locServiceConnection, 0);
+        LocServiceConnection2 = new LocServiceConnection2(this); // 서비스 바인딩
+        bindService(locServiceIntent,LocServiceConnection2, 0);
 
         super.onCreate(savedInstanceState);
         initialize_Mapview(savedInstanceState);
@@ -551,10 +551,10 @@ public class StartRunActivity extends AppCompatActivity implements
         if(locService != null) {
             if(!locService.isRunning()) {
                 Log.d(TAG, "LocService is not running, trying to stopService()");
-                unbindService(locServiceConnection);
+                unbindService(LocServiceConnection2);
                 stopService(locServiceIntent);
             } else{
-                unbindService(locServiceConnection);
+                unbindService(LocServiceConnection2);
             }
         }
         super.onPause();
@@ -569,7 +569,7 @@ public class StartRunActivity extends AppCompatActivity implements
         // Bind to GPS service.
         // We can't use BIND_AUTO_CREATE here, because when we'll ubound
         // later, we want to keep the service alive in background
-        bindService(locServiceIntent, locServiceConnection, 0);
+        bindService(locServiceIntent, LocServiceConnection2, 0);
         super.onResume();
 
     }

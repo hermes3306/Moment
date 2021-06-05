@@ -83,8 +83,10 @@ public class CameraUtil {
         VideoView vv = view.findViewById(R.id.dialog_video_view);
         showVideo(parentContext, vv, fname);
         alertadd.setView(view);
-        alertadd.setNeutralButton("Here!", new DialogInterface.OnClickListener() {
+        alertadd.setPositiveButton("Upload!", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dlg, int sumthin) {
+                CloudUtil cu = new CloudUtil();
+                cu.Upload(parentContext,fname);
             }
         });
         alertadd.show();
