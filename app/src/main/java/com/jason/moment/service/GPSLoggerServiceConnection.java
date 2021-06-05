@@ -36,17 +36,12 @@ public class GPSLoggerServiceConnection implements ServiceConnection {
 
         activity.setGpsLogger( ((GPSLogger.GPSLoggerBinder) service).getService());
 
-        // Update record status regarding of current tracking state
-//        GpsStatusRecord gpsStatusRecord = (GpsStatusRecord) activity.findViewById(R.id.gpsStatus);
-//        if (gpsStatusRecord != null) {
-//            gpsStatusRecord.manageRecordingIndicator(activity.getGpsLogger().isTracking());
-//        }
-
         // If not already tracking, start tracking
         if (!activity.getGpsLogger().isTracking()) {
             //activity.setEnabledActionButtons(false);
+            //activity.getGpsLogger().setTracking(true);
             Intent intent = new Intent(Config.INTENT_START_TRACKING);
-            intent.putExtra("TID", activity.getCurrentTrackId());
+            intent.putExtra("activity_file_name", activity.getCurrentTrackId());
             activity.sendBroadcast(intent);
         }
     }

@@ -8,10 +8,12 @@ import androidx.preference.PreferenceManager;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -24,6 +26,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -82,6 +85,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.view.View.GONE;
 import static java.lang.Integer.parseInt;
 
 // 2021/05/03, MapsActivity extends AppCompatActivity instead of FragmentActivity
@@ -137,6 +141,34 @@ public class MapsActivity extends AppCompatActivity implements
         builder.show();
     }
 
+    /**
+     * Receives Intent for new Location from GPS services
+     */
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.v(TAG, "-- Received intent " + intent.getAction());
+
+            if (Config.INTENT_LOCATION_CHANGED.equals(intent.getAction())) {
+                // Track a way point
+                Bundle extras = intent.getExtras();
+                if (extras != null) {
+                    Log.d(TAG, "-- got broad casting message of INTENT_LOCATION_CHANGED ");
+                    Location location = (Location)extras.get("location");
+                    Log.d(TAG,"-- Broad casting Location received:" + location);
+                    onLocationChanged(location);
+                }
+            }
+        }
+    };
+
+    @Override
+    public void onDestroy() {
+        // Unregister broadcast receiver
+        unregisterReceiver(receiver);
+        super.onDestroy();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this._ctx = this;
@@ -145,9 +177,16 @@ public class MapsActivity extends AppCompatActivity implements
         StartupBatch sb = new StartupBatch(_ctx);
         sb.execute();
 
+        // Register our broadcast receiver
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Config.INTENT_LOCATION_CHANGED);
+        registerReceiver(receiver, filter);
+        Log.d(TAG, "-- INTENT LOCATION CHANGED registerReceiver()");
+
         // list와 mActivityList 정리 필요함.
         // list = mActivityList = MyLoc.getInstance(_ctx).todayActivity();
         list = MyLoc.getInstance(_ctx).getToodayActivities();
+        currentTrackId = DateUtil.today();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
@@ -202,7 +241,8 @@ public class MapsActivity extends AppCompatActivity implements
         if (Config._start_service) {
             //startService(new Intent(MapsActivity.this, LocService2.class)); // 서비스 시작
             gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
-            gpsLoggerServiceIntent.putExtra("TID", 100);
+            String activity_file_name = DateUtil.today();
+            gpsLoggerServiceIntent.putExtra("activity_file_name", activity_file_name );
             startService(new Intent(MapsActivity.this, GPSLogger.class)); // 서비스 시작
             gpsLoggerConnection = new GPSLoggerServiceConnection(this); // 서비스 바인딩
             bindService(gpsLoggerServiceIntent,gpsLoggerConnection, 0);
@@ -215,9 +255,9 @@ public class MapsActivity extends AppCompatActivity implements
     // GPS Logger 관련 함수 들
     // 정리 필요함
     private ServiceConnection gpsLoggerConnection = null;
-    private long currentTrackId=0;
+    private String currentTrackId;
     GPSLogger gpsLogger = null;
-    public long getCurrentTrackId() {
+    public String getCurrentTrackId() {
         return this.currentTrackId;
     }
     public void setGpsLogger(GPSLogger l) {
@@ -361,10 +401,30 @@ public class MapsActivity extends AppCompatActivity implements
     private Location last_location = null;
     private MyActivity last_activity = null;
     private ArrayList<MyActivity> list = new ArrayList<>();
+    ImageButton imb_wifi_off;
+    ImageButton imb_wifi_on;
+
+    private void showGPS(boolean show) {
+
+        ImageButton imb_wifi_off = (ImageButton)findViewById(R.id.imbt_wifi_off);
+        ImageButton imb_wifi_on = (ImageButton)findViewById(R.id.imbt_wifi_on);
+
+        if(show) {
+            imb_wifi_on.setVisibility(View.VISIBLE);
+            imb_wifi_off.setVisibility(View.GONE);
+        }
+        else {
+            imb_wifi_on.setVisibility(View.GONE);
+            imb_wifi_off.setVisibility(View.VISIBLE);
+        }
+    }
 
     private double dist=0;
     @Override
     public void onLocationChanged(Location location) {
+        // new loc notify
+        showGPS(true);
+
         // insert into MyLoc 
         LocationUtil.getInstance().onLocationChanged(_ctx,location);
         Date d = new Date();
@@ -383,6 +443,7 @@ public class MapsActivity extends AppCompatActivity implements
             }
         }
         showActivities();
+        showGPS(false);
     }
 
     @Override
@@ -408,7 +469,7 @@ public class MapsActivity extends AppCompatActivity implements
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * we just add a marker near sydney, Australia.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -497,15 +558,15 @@ public class MapsActivity extends AppCompatActivity implements
             imbt_marker.setVisibility(View.VISIBLE);
             imbt_navi.setVisibility(View.VISIBLE);
 //            imbt_trash.setVisibility(View.VISIBLE);
-            imbt_pop_menu.setVisibility(View.GONE);
+            imbt_pop_menu.setVisibility(GONE);
         }else {
             imbt_pop_menu.setVisibility(View.VISIBLE);
             //imbt_globe.setVisibility(View.GONE);
-            imbt_save.setVisibility(View.GONE);
-            imbt_up.setVisibility(View.GONE);
-            imbt_down.setVisibility(View.GONE);
-            imbt_marker.setVisibility(View.GONE);
-            imbt_navi.setVisibility(View.GONE);
+            imbt_save.setVisibility(GONE);
+            imbt_up.setVisibility(GONE);
+            imbt_down.setVisibility(GONE);
+            imbt_marker.setVisibility(GONE);
+            imbt_navi.setVisibility(GONE);
             //imbt_trash.setVisibility(View.GONE);
         }
     }

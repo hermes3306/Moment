@@ -95,7 +95,7 @@ public class GPSLogger extends Service implements LocationListener {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.v(TAG, "Received intent " + intent.getAction());
+            Log.v(TAG, "-- Received intent " + intent.getAction());
 
             if (Config.INTENT_TRACK_WP.equals(intent.getAction())) {
                 // Track a way point
@@ -110,10 +110,14 @@ public class GPSLogger extends Service implements LocationListener {
                     }
                 }
             } else if (Config.INTENT_START_TRACKING.equals(intent.getAction()) ) {
+                Log.d(TAG, "-- INTENT_START_TRACKING");
                 Bundle extras = intent.getExtras();
                 if (extras != null) {
-                    String trackId = extras.getString("activity_file_name");
-                    startTracking(trackId);
+                    activity_file_name = extras.getString("activity_file_name");
+                    Log.d(TAG, "-- activity_file_name" + activity_file_name);
+                    startTracking(activity_file_name);
+                } else {
+                    Log.d(TAG, "-- activity_file_name" + null);
                 }
             } else if (Config.INTENT_STOP_TRACKING.equals(intent.getAction()) ) {
                 stopTrackingAndSave();
@@ -163,7 +167,7 @@ public class GPSLogger extends Service implements LocationListener {
 
     @Override
     public void onCreate() {
-        Log.v(TAG, "Service onCreate()");
+        Log.v(TAG, "-- Service onCreate()");
         //dataHelper = new DataHelper(this);
 
         Config.initialize(getApplicationContext());
@@ -187,7 +191,7 @@ public class GPSLogger extends Service implements LocationListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.v(TAG, "Service onStartCommand(-,"+flags+","+startId+")");
+        Log.v(TAG, "-- Service onStartCommand(-,"+flags+","+startId+")");
         createNotificationChannel();
         startForeground(NOTIFICATION_ID, getNotification());
         return Service.START_STICKY;
@@ -217,7 +221,7 @@ public class GPSLogger extends Service implements LocationListener {
      */
     private void startTracking(String trackId) {
         activity_file_name = trackId;
-        Log.v(TAG, "-- Starting track logging for track #" + trackId);
+        Log.d(TAG, "-- Starting track logging for track #" + trackId);
         // Refresh notification with correct Track ID
         NotificationManager nmgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         nmgr.notify(NOTIFICATION_ID, getNotification());
@@ -233,6 +237,10 @@ public class GPSLogger extends Service implements LocationListener {
         this.stopSelf();
     }
 
+    public void setTracking(boolean b) {
+        isTracking = b;
+    }
+
     @Override
     public void onLocationChanged(Location location) {
         // on background run this will write data to database
@@ -246,6 +254,11 @@ public class GPSLogger extends Service implements LocationListener {
             lastLocation = location;
             if (isTracking) {
                 LocationUtil.getInstance().onLocationChanged(getApplicationContext(),location);
+
+                Log.d(TAG, "-- Location Changed Intent Broadcasting to MapActivity...");
+                Intent intent = new Intent(Config.INTENT_LOCATION_CHANGED);
+                intent.putExtra("location", location);
+                sendBroadcast(intent);
             }
         }
     }

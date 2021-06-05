@@ -34,6 +34,8 @@ public class Config {
     public final static String INTENT_START_TRACKING = Config.PACKAGE_NAME + ".intent.START_TRACKING";
     public final static String INTENT_STOP_TRACKING = Config.PACKAGE_NAME + ".intent.STOP_TRACKING";
 
+    // my first broadcasting intent
+    public final static String INTENT_LOCATION_CHANGED = Config.PACKAGE_NAME+ ".intent.LOCATION_CHANGED";
 
     public static String _pic_ext           = ".jpeg";
     public static String _mov_ext           = ".mp4";
