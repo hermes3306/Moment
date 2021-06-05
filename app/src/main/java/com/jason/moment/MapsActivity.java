@@ -95,7 +95,7 @@ public class MapsActivity extends AppCompatActivity implements
         LocationListener {
     private GoogleMap googleMap=null;
     private Context _ctx;
-    private LocationManager mLocManager = null;
+
     private Intent gpsLoggerServiceIntent = null;
 
     private static String TAG = "MapsActivity";
@@ -287,43 +287,6 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-    private void deleteLocationManager() {
-        if(mLocManager!=null) {
-            mLocManager.removeUpdates(this);
-            mLocManager = null;
-        }
-    }
-
-    private void initializeLocationManager() {
-        mLocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-
-        if(Config._enable_network_provider) mLocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Config._loc_interval, Config._loc_distance, this);
-        mLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Config._loc_interval, Config._loc_distance, this);
-
-        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
-        boolean enabledGPS = service.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        boolean enabledWiFi = service.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        if (!enabledGPS) {
-            Toast.makeText(this, "GPS signal not found", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(intent);
-        } else if (!enabledWiFi) {
-            Toast.makeText(this, "Network signal not found", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(intent);
-        }
-    }
-
     @Override
     protected void onResume() {
         Log.d(TAG,"-- onResume.");
@@ -341,7 +304,6 @@ public class MapsActivity extends AppCompatActivity implements
         }
 
         initializeMap();
-        if(mLocManager==null) initializeLocationManager();
         paused = false;
         super.onResume();
 
@@ -379,7 +341,6 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         Log.d(TAG,"-- onPause().");
-        deleteLocationManager();
         SerializeTodayActivity();
         paused = true;
 
@@ -419,11 +380,39 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
+    static Timer timer = new Timer();
+    private void showGPS() {
+        if(timer != null) {
+            timer.cancel();
+            timer.purge();
+            timer = new Timer();
+        }
+        ImageButton imb_wifi_off = (ImageButton)findViewById(R.id.imbt_wifi_off);
+        ImageButton imb_wifi_on = (ImageButton)findViewById(R.id.imbt_wifi_on);
+        imb_wifi_on.setVisibility(View.VISIBLE);
+        imb_wifi_off.setVisibility(View.GONE);
+
+        // Tempory timer to show GPS signaal
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                long start = System.currentTimeMillis();
+                MapsActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        imb_wifi_on.setVisibility(View.GONE);
+                        imb_wifi_off.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+        },1000);
+    }
+
     private double dist=0;
     @Override
     public void onLocationChanged(Location location) {
         // new loc notify
-        showGPS(true);
+        showGPS();
 
         // insert into MyLoc 
         LocationUtil.getInstance().onLocationChanged(_ctx,location);
@@ -443,7 +432,6 @@ public class MapsActivity extends AppCompatActivity implements
             }
         }
         showActivities();
-        showGPS(false);
     }
 
     @Override

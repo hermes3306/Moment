@@ -243,6 +243,17 @@ public class GPSLogger extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
+        if(Config._sharedPreferenceChanged) {
+            Config.init_preference_values(getApplicationContext());
+            gpsLoggingInterval = Config._loc_interval;
+            gpsLoggingMinDistance = (long)Config._loc_distance;
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                lmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, gpsLoggingInterval, gpsLoggingMinDistance, this);
+            }
+            Log.d(TAG,"-- Shared Preference changed! reload ok!");
+            Config._sharedPreferenceChanged = false;
+        }
+
         // on background run this will write data to database
         Log.d("GPSLogger", "--- New Loc:" + location);
         // We're receiving location, so GPS is enabled
