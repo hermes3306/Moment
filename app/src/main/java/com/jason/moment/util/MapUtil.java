@@ -62,23 +62,24 @@ public class    MapUtil {
         if(list.size()==0) return;
         float color =  Config._marker_start_color;
         LatLng ll = new LatLng(list.get(0).latitude, list.get(0).longitude);
-        Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title("출발")
+
+        Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title("Start")
                 .icon(BitmapDescriptorFactory.defaultMarker(color))
                 .draggable(true)
                 .visible(true)
-                .snippet("출발"));
+                .snippet(list.get(0).cr_time));
         markers.add(marker);
     }
 
     public static void drawEndMarker(GoogleMap gmap, ArrayList<MyActivity> list) {
-        if(list.size()==0) return;
+        if(list.size()<=1) return;
         float color =  Config._marker_end_color;
         LatLng ll = new LatLng(list.get(list.size()-1).latitude, list.get(list.size()-1).longitude);
-        Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title("종료")
+        Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title("End")
                 .icon(BitmapDescriptorFactory.defaultMarker(color))
                 .draggable(true)
                 .visible(true)
-                .snippet("종료"));
+                .snippet(list.get(list.size()-1).cr_time));
         markers.add(marker);
     }
 
@@ -124,8 +125,8 @@ public class    MapUtil {
                             .icon(BitmapDescriptorFactory.fromResource(Config._marker_icon))
                             .draggable(true)
                             .visible(true)
-                            .alpha(Config._marker_alpha)
-                            .snippet(""+interval + unitstr));
+                            .alpha(Config._marker_alpha).title(""+interval + unitstr)
+                            .snippet(list.get(i).cr_time));
                     markers.add(marker);
                 }
             }

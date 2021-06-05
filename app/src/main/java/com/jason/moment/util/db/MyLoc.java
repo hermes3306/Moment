@@ -27,6 +27,11 @@ public class MyLoc {
     private static String TAG = "MyLoc";
     private Context ctx;
 
+    private static MyLoc instance=null;
+    public static MyLoc getInstance(Context ctx) {
+        if(instance==null) instance = new MyLoc(ctx);
+        return instance;
+    }
 
     private static MyLocDbHelper dbHelper = null;
     private static SQLiteDatabase db = null;
@@ -205,8 +210,8 @@ public class MyLoc {
         return l;
     }
 
-    public ArrayList<LatLng> todayPath() {
-        //Log.d(TAG, "-- todayPath()");
+    public ArrayList<LatLng> path_of_today() {
+        //Log.d(TAG, "-- path_of_today()");
         // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         // SQLiteDatabase dbr = dbHelper.getReadableDatabase();
 
@@ -218,7 +223,7 @@ public class MyLoc {
         return Path(selection, selectionArgs, order_by);
     }
 
-    public ArrayList<MyActivity> todayActivity() {
+    public ArrayList<MyActivity> getToodayActivities() {
         //Log.d(TAG, "-- todayActivity()");
         // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         // SQLiteDatabase dbr = dbHelper.getReadableDatabase();
@@ -246,7 +251,7 @@ public class MyLoc {
     }
 
     public void drawPath(GoogleMap gmap) {
-        ArrayList<LatLng> l = todayPath();
+        ArrayList<LatLng> l = path_of_today();
         if(l==null) return;
         PolylineOptions plo = new PolylineOptions();
         plo.color(Color.RED);

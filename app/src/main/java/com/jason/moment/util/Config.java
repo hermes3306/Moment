@@ -45,8 +45,8 @@ public class Config {
     public static int _notify_id            = 100;
 
     /* 지도 */
-    public static float _marker_start_color = BitmapDescriptorFactory.HUE_GREEN;
-    public static float _marker_end_color = BitmapDescriptorFactory.HUE_RED;
+    public static float _marker_start_color = BitmapDescriptorFactory.HUE_RED;
+    public static float _marker_end_color = BitmapDescriptorFactory.HUE_GREEN;
     public static float _marker_color = BitmapDescriptorFactory.HUE_CYAN;
     public static int _marker_icon = R.drawable.drawmarker24;
 
@@ -117,7 +117,7 @@ public class Config {
     public static float         _loc_distance   = 1f;       // 1 meter
     public static double        _minLocChange   = _loc_distance;
 
-    public static boolean       _start_service  = false; // start location service
+    public static boolean       _start_service  = true; // start location service
     public static boolean       _start_timer    = false; // start timer background scheduler
 
     public static String        _filename_fmt   ="yyyyMMdd";
@@ -215,14 +215,7 @@ public class Config {
     public static File mediaStorageDir4jsn  = new File(mediaStorage, jsn_folder_name);
     public static File mediaStorageDir4mp3  = new File(mediaStorage, mp3_folder_name);
 
-    static {
-        if(!mediaStorageDir4mnt.exists()) mediaStorageDir4mnt.mkdirs();
-        if(!mediaStorageDir4csv.exists()) mediaStorageDir4csv.mkdirs();
-        if(!mediaStorageDir4pic.exists()) mediaStorageDir4pic.mkdirs();
-        if(!mediaStorageDir4mov.exists()) mediaStorageDir4mov.mkdirs();
-        if(!mediaStorageDir4jsn.exists()) mediaStorageDir4jsn.mkdirs();
-        if(!mediaStorageDir4mp3.exists()) mediaStorageDir4mp3.mkdirs();
-    }
+
 
     static boolean initialized_file_provider = false;
     public static void initialize_file_provider(Context _ctx) {
@@ -303,7 +296,15 @@ public class Config {
                 "Network provider: " + Config._enable_network_provider;
         Toast.makeText(_ctx, t, Toast.LENGTH_LONG).show();
         Log.d(TAG, t);
+    }
 
+    static {
+        if(!mediaStorageDir4mnt.exists()) mediaStorageDir4mnt.mkdirs();
+        if(!mediaStorageDir4csv.exists()) mediaStorageDir4csv.mkdirs();
+        if(!mediaStorageDir4pic.exists()) mediaStorageDir4pic.mkdirs();
+        if(!mediaStorageDir4mov.exists()) mediaStorageDir4mov.mkdirs();
+        if(!mediaStorageDir4jsn.exists()) mediaStorageDir4jsn.mkdirs();
+        if(!mediaStorageDir4mp3.exists()) mediaStorageDir4mp3.mkdirs();
     }
 
 

@@ -28,6 +28,7 @@ public class StartupBatch {
             //genTodayDB4Sample();
             //deleteDB();
             //geturl();
+            //MyLoc.getInstance(_ctx).createNew(); // DB를 초기화
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             Log.d(TAG,"-- Err: " + e);

@@ -26,8 +26,10 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import com.jason.moment.MapsActivity;
+import com.jason.moment.MyReportActivity;
 import com.jason.moment.R;
 import com.jason.moment.util.Config;
+import com.jason.moment.util.LocationUtil;
 
 
 public class GPSLogger extends Service implements LocationListener {
@@ -58,7 +60,7 @@ public class GPSLogger extends Service implements LocationListener {
      * System notification id.
      */
     private static final int NOTIFICATION_ID = 1;
-    private static String CHANNEL_ID = "GPSLogger_Channel";
+    private static String CHANNEL_ID = "Moment_Channel";
 
     /**
      * Last known location
@@ -73,7 +75,7 @@ public class GPSLogger extends Service implements LocationListener {
     /**
      * Current Track ID
      */
-    private long currentTrackId = -1;
+    private String activity_file_name = "-1";
 
     /**
      * the timestamp of the last GPS fix we used
@@ -104,39 +106,13 @@ public class GPSLogger extends Service implements LocationListener {
                     if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         lastLocation = lmgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                         if (lastLocation != null) {
-//                            Long trackId = extras.getLong(TrackContentProvider.Schema.COL_TRACK_ID);
-//                            String uuid = extras.getString(OSMTracker.INTENT_KEY_UUID);
-//                            String name = extras.getString(OSMTracker.INTENT_KEY_NAME);
-//                            String link = extras.getString(OSMTracker.INTENT_KEY_LINK);
-//
-//                            dataHelper.wayPoint(trackId, lastLocation, name, link, uuid, sensorListener.getAzimuth(), sensorListener.getAccuracy(), pressureListener.getPressure());
-//
-//                            // If there is a waypoint in the track, there should also be a trackpoint
-//                            dataHelper.track(currentTrackId, lastLocation, sensorListener.getAzimuth(), sensorListener.getAccuracy(), pressureListener.getPressure());
                         }
                     }
-                }
-            } else if (Config.INTENT_UPDATE_WP.equals(intent.getAction())) {
-                // Update an existing waypoint
-                Bundle extras = intent.getExtras();
-                if (extras != null) {
-//                    Long trackId = extras.getLong(TrackContentProvider.Schema.COL_TRACK_ID);
-//                    String uuid = extras.getString(OSMTracker.INTENT_KEY_UUID);
-//                    String name = extras.getString(OSMTracker.INTENT_KEY_NAME);
-//                    String link = extras.getString(OSMTracker.INTENT_KEY_LINK);
-//                    dataHelper.updateWayPoint(trackId, uuid, name, link);
-                }
-            } else if (Config.INTENT_DELETE_WP.equals(intent.getAction())) {
-                // Delete an existing waypoint
-                Bundle extras = intent.getExtras();
-                if (extras != null) {
-//                    String uuid = extras.getString(Config.INTENT_KEY_UUID);
-//                    dataHelper.deleteWayPoint(uuid);
                 }
             } else if (Config.INTENT_START_TRACKING.equals(intent.getAction()) ) {
                 Bundle extras = intent.getExtras();
                 if (extras != null) {
-                    Long trackId = extras.getLong("TID");
+                    String trackId = extras.getString("activity_file_name");
                     startTracking(trackId);
                 }
             } else if (Config.INTENT_STOP_TRACKING.equals(intent.getAction()) ) {
@@ -190,17 +166,12 @@ public class GPSLogger extends Service implements LocationListener {
         Log.v(TAG, "Service onCreate()");
         //dataHelper = new DataHelper(this);
 
+        Config.initialize(getApplicationContext());
         gpsLoggingInterval = Config._loc_interval;
         gpsLoggingMinDistance = (long)Config._loc_distance;
 
-//        use_barometer =  PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getBoolean(
-//                OSMTracker.Preferences.KEY_USE_BAROMETER, OSMTracker.Preferences.VAL_USE_BAROMETER);
-
         // Register our broadcast receiver
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Config.INTENT_TRACK_WP);
-        filter.addAction(Config.INTENT_UPDATE_WP);
-        filter.addAction(Config.INTENT_DELETE_WP);
         filter.addAction(Config.INTENT_START_TRACKING);
         filter.addAction(Config.INTENT_STOP_TRACKING);
         registerReceiver(receiver, filter);
@@ -211,12 +182,6 @@ public class GPSLogger extends Service implements LocationListener {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             lmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, gpsLoggingInterval, gpsLoggingMinDistance, this);
         }
-
-//        //register for Orientation updates
-//        sensorListener.register(this);
-//        // register for atmospheric pressure updates
-//        pressureListener.register(this, use_barometer);
-
         super.onCreate();
     }
 
@@ -244,19 +209,14 @@ public class GPSLogger extends Service implements LocationListener {
 
         // Cancel any existing notification
         stopNotifyBackgroundService();
-
-//        // stop sensors
-//        sensorListener.unregister();
-//        pressureListener.unregister();
-
         super.onDestroy();
     }
 
     /**
      * Start GPS tracking.
      */
-    private void startTracking(long trackId) {
-        currentTrackId = trackId;
+    private void startTracking(String trackId) {
+        activity_file_name = trackId;
         Log.v(TAG, "-- Starting track logging for track #" + trackId);
         // Refresh notification with correct Track ID
         NotificationManager nmgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -269,25 +229,23 @@ public class GPSLogger extends Service implements LocationListener {
      */
     private void stopTrackingAndSave() {
         isTracking = false;
-//        dataHelper.stopTracking(currentTrackId);
-        currentTrackId = -1;
+        activity_file_name = "-1";
         this.stopSelf();
     }
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.d("AAABBB", "--- New Loc:" + location);
+        // on background run this will write data to database
+        Log.d("GPSLogger", "--- New Loc:" + location);
         // We're receiving location, so GPS is enabled
         isGpsEnabled = true;
 
         // first of all we check if the time from the last used fix to the current fix is greater than the logging interval
         if((lastGPSTimestamp + gpsLoggingInterval) < System.currentTimeMillis()){
             lastGPSTimestamp = System.currentTimeMillis(); // save the time of this fix
-
             lastLocation = location;
-
             if (isTracking) {
-                //dataHelper.track(currentTrackId, location, sensorListener.getAzimuth(), sensorListener.getAccuracy(), pressureListener.getPressure());
+                LocationUtil.getInstance().onLocationChanged(getApplicationContext(),location);
             }
         }
     }
@@ -296,13 +254,13 @@ public class GPSLogger extends Service implements LocationListener {
      * Builds the notification to display when tracking in background.
      */
     private Notification getNotification() {
-        Intent startTrackLogger = new Intent(this, MapsActivity.class);
-        //startTrackLogger.putExtra(TrackContentProvider.Schema.COL_TRACK_ID, currentTrackId);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, startTrackLogger, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent myReportIntent = new Intent(this, MyReportActivity.class);
+        myReportIntent.putExtra("activity_file_name", activity_file_name);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, myReportIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications_black_24dp)
-                .setContentTitle("Notification")
-                .setContentText("Notification")
+                .setContentTitle("Moment")
+                .setContentText("New Activity("+activity_file_name+")")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(contentIntent)
                 .setAutoCancel(true);
@@ -314,8 +272,8 @@ public class GPSLogger extends Service implements LocationListener {
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // FIXME: following two strings must be obtained from 'R.string' to support translations
-            CharSequence name = "GPS Logger";
-            String description = "Display when tracking in Background";
+            CharSequence name = "Moment";
+            String description = "New Activity("+activity_file_name+")";
             int importance = NotificationManager.IMPORTANCE_LOW;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
