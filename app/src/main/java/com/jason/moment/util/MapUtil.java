@@ -23,12 +23,12 @@ import com.jason.moment.R;
 import java.util.ArrayList;
 
 public class    MapUtil {
-    private static String TAG = "MapUtil";
+    private static final String TAG = "MapUtil";
     public static boolean nomarker = false;
     public static boolean notrack = false;
     public static boolean satellite = false;
 
-    static int colors[] = {
+    static int[] colors = {
             Color.RED,
             Color.CYAN,
             Color.BLUE,

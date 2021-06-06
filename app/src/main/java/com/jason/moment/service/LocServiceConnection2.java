@@ -11,7 +11,7 @@ import com.jason.moment.util.Config;
 
 public class LocServiceConnection2 implements ServiceConnection {
     // for StartRunActivity
-    private StartRunActivity activity;
+    private final StartRunActivity activity;
     public LocServiceConnection2(StartRunActivity tl) {
         activity = tl;
     }

@@ -19,7 +19,7 @@ public class FileUtil {
         if(flist==null) return null;
         if(flist.length==0) return flist;
 
-        if(reverserorder) Arrays.sort(flist, Collections.<File>reverseOrder());
+        if(reverserorder) Arrays.sort(flist, Collections.reverseOrder());
         else Arrays.sort(flist);
         return flist;
     }
@@ -32,7 +32,7 @@ public class FileUtil {
             }
         };
         File[] flist  = folder.listFiles(fnf);
-        if(reverserorder) Arrays.sort(flist, Collections.<File>reverseOrder());
+        if(reverserorder) Arrays.sort(flist, Collections.reverseOrder());
         else Arrays.sort(flist);
         return flist;
     }

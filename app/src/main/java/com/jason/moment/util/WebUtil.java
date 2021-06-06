@@ -16,7 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class WebUtil {
-    private static String TAG = "WebUtil";
+    private static final String TAG = "WebUtil";
     private static final int BUFFER_SIZE = 4096;
 
     public static String getUrlContent(String urlstr) throws IOException {
@@ -62,8 +62,8 @@ public class WebUtil {
                 }
             } else {
                 // extracts file name from URL
-                fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1,
-                        fileURL.length());
+                fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1
+                );
             }
 
             Log.e(TAG,"--Content-Type = " + contentType);
@@ -118,8 +118,8 @@ public class WebUtil {
                 }
             } else {
                 // extracts file name from URL
-                fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1,
-                        fileURL.length());
+                fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1
+                );
             }
 
             Log.e(TAG,"--Content-Type = " + contentType);
@@ -151,9 +151,9 @@ public class WebUtil {
     }
 
 
-    public static void downloadFileAsync(final Context ctx, final String fileURL[], final String saveDir) {
+    public static void downloadFileAsync(final Context ctx, final String[] fileURL, final String saveDir) {
         AsyncTask aTask = new AsyncTask<String, Void, Boolean>() {
-            ProgressDialog asyncDialog = new ProgressDialog(ctx);
+            final ProgressDialog asyncDialog = new ProgressDialog(ctx);
             @Override
             protected Boolean doInBackground(String... url) {
                 try {
@@ -198,10 +198,10 @@ public class WebUtil {
         }
     }
 
-    public static void downloadFileAsync2(final Context ctx, final String fileURL[]) {
+    public static void downloadFileAsync2(final Context ctx, final String[] fileURL) {
         File saveDir = (Config._default_ext==Config._csv)? Config.mediaStorageDir4csv : Config.mediaStorageDir4mnt;
         AsyncTask aTask = new AsyncTask<String, Void, Boolean>() {
-            ProgressDialog asyncDialog = new ProgressDialog(ctx);
+            final ProgressDialog asyncDialog = new ProgressDialog(ctx);
             @Override
             protected Boolean doInBackground(String... url) {
                 try {

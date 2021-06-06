@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
-    private String TAG = "Test";
+    private final String TAG = "Test";
     @Test
     public void addition_isCorrect() {
         assertEquals(4, 2 + 2);

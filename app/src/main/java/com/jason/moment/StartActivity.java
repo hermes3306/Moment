@@ -70,7 +70,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     public ArrayList<String> pic_filenames = new ArrayList<>();
     public ArrayList<String> mov_filenames = new ArrayList<>();
 
-    int start_layout[] = {
+    int[] start_layout = {
             R.layout.activity_start_style3,
             R.layout.activity_start_style1,
             R.layout.activity_start_style2
@@ -244,8 +244,8 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Resources r = getResources();
-        String screen_layout[] = r.getStringArray(R.array.start_screen);
-        String screen_layout_value[] = r.getStringArray(R.array.start_screen);
+        String[] screen_layout = r.getStringArray(R.array.start_screen);
+        String[] screen_layout_value = r.getStringArray(R.array.start_screen);
 
         int id = item.getItemId();
         switch(id) {

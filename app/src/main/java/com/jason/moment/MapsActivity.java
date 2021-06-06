@@ -98,7 +98,7 @@ public class MapsActivity extends AppCompatActivity implements
 
     private Intent gpsLoggerServiceIntent = null;
 
-    private static String TAG = "MapsActivity";
+    private static final String TAG = "MapsActivity";
     private static final int DEFAULT_ZOOM = 15;
     public static boolean firstCall = true;
     public static boolean paused = false;
@@ -144,7 +144,7 @@ public class MapsActivity extends AppCompatActivity implements
     /**
      * Receives Intent for new Location from GPS services
      */
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "-- Received intent " + intent.getAction());
@@ -632,7 +632,10 @@ public class MapsActivity extends AppCompatActivity implements
                 NotificationUtil.notify_download_activity(_ctx);
                 hidePopMenu(false);
                 break;
-
+            case R.id.imb_record_video:
+                Log.d(TAG,"-- image record video.");
+                recordVideo();
+                break;
             case R.id.imb_start_camera:
                 Log.d(TAG,"-- image button Camera.");
                 takePic();
@@ -656,7 +659,7 @@ public class MapsActivity extends AppCompatActivity implements
                 break;
 
             case R.id.imVideo:
-                Intent videoIntent = new Intent(MapsActivity.this, VideoActivity.class);
+                Intent videoIntent = new Intent(MapsActivity.this, com.jason.moment.MediaActivity.class);
                 startActivity(videoIntent);
                 break;
 
@@ -750,6 +753,18 @@ public class MapsActivity extends AppCompatActivity implements
         startActivityForResult(intent, Config.PICK_FROM_CAMERA);
     }
 
+    private void recordVideo() {
+        currentFileName = Config.getTmpVideoName();
+        File mediaFile = new File(Config.MOV_SAVE_DIR, currentFileName);
+        Uri mediaUri = FileProvider.getUriForFile(this,
+                "com.jason.moment.file_provider",
+                mediaFile);
+
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, mediaUri);
+        startActivityForResult(intent, Config.PICK_FROM_VIDEO);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -758,13 +773,13 @@ public class MapsActivity extends AppCompatActivity implements
             case Config.PICK_FROM_CAMERA:
                 Log.d(TAG, "-- PIC_FROM_CAMERA: ");
                 CloudUtil.getInstance().Upload(_ctx,currentFileName);
-                CameraUtil.showImg(_ctx, currentFileName);
+//                CameraUtil.showImg(_ctx, currentFileName);
                 NotificationUtil.notify_new_picture(_ctx, currentFileName);
                 break;
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
                 CloudUtil.getInstance().Upload(_ctx,currentFileName);
-                CameraUtil.showVideo(_ctx, currentFileName);
+//                CameraUtil.showVideo(_ctx, currentFileName);
                 NotificationUtil.notify_new_video(_ctx, currentFileName);
                 break;
         }
@@ -797,8 +812,8 @@ public class MapsActivity extends AppCompatActivity implements
                 File dir = null;
                 if(Config._default_ext == Config._csv) dir = Config.CSV_SAVE_DIR;
                 else dir = Config.MNT_SAVE_DIR;
-                File _flist[] = dir.listFiles();
-                String fnamelist[] = new String[_flist.length];
+                File[] _flist = dir.listFiles();
+                String[] fnamelist = new String[_flist.length];
                 for(int i=0;i<_flist.length;i++) {
                     fnamelist[i] = _flist[i].getName().substring(0,_flist[i].getName().length()-4);
                 }
@@ -836,13 +851,6 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivityForResult(runIntent, Config.CALL_RUN_ACTIVITY);
                 return true;
 
-            case R.id.file_activity2:
-                Log.d(TAG,"-- FileActivity2!");
-                Intent fileactivity2 = new Intent(MapsActivity.this, FileActivity2.class);
-                fileactivity2.putExtra("1", 1);
-                startActivityForResult(fileactivity2, Config.CALL_FILE_ACTIVITY);
-                return true;
-
             case R.id.ReportActivity:
                 Log.d(TAG,"-- Report Activity!");
                 Intent reportActivity = new Intent(MapsActivity.this, MyReportActivity.class);
@@ -850,22 +858,22 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivityForResult(reportActivity, Config.CALL_REPORT_ACTIVITY);
                 return true;
 
-            case R.id.StartActivity:
+            case R.id.StartRunActivity:
                 Log.d(TAG,"-- Start Run Activity!");
                 Intent _StartActivity = new Intent(MapsActivity.this, StartRunActivity.class);
                 startActivityForResult(_StartActivity, Config.CALL_START_ACTIVITY);
                 return true;
 
-            case R.id.quote_activity:
-                Log.d(TAG,"-- Quote Activity!");
-                Intent quoteIntent = new Intent(MapsActivity.this, QuoteActivity.class);
-                quoteIntent.putExtra("1", 1);
-                startActivityForResult(quoteIntent, Config.CALL_QUOTE_ACTIVITY);
-                return true;
+//            case R.id.quote_activity:
+//                Log.d(TAG,"-- Quote Activity!");
+//                Intent quoteIntent = new Intent(MapsActivity.this, QuoteActivity.class);
+//                quoteIntent.putExtra("1", 1);
+//                startActivityForResult(quoteIntent, Config.CALL_QUOTE_ACTIVITY);
+//                return true;
 
             case R.id.scrollpic_activity:
                 Log.d(TAG,"-- Scroll Pic Activity!");
-                Intent scrollPicIntent = new Intent(MapsActivity.this, ScrollPicActivity.class);
+                Intent scrollPicIntent = new Intent(MapsActivity.this, Pic_Full_Screen_Activity.class);
                 startActivityForResult(scrollPicIntent, Config.CALL_SCROLL_PIC_ACTIVITY);
 
                 return true;
@@ -877,32 +885,20 @@ public class MapsActivity extends AppCompatActivity implements
                 return true;
 
             case R.id.media_activity:
-                Log.d(TAG,"-- Media Activity!");
+                Intent mediaIntent = new Intent(MapsActivity.this, PicNVideoActivity.class);
+                startActivity(mediaIntent);
+                return true;
+
+            case R.id.pic_activity:
+                Log.d(TAG,"-- Pic Activity!");
                 File folder= Config.PIC_SAVE_DIR;
-                File[] files1 = folder.listFiles(new FilenameFilter() {
+
+                File[] files = folder.listFiles(new FilenameFilter() {
                     @Override
                     public boolean accept(File dir, String name) {
-                        return name.endsWith(Config._pic_ext);
+                        return name.endsWith("jpeg");
                     }
                 });
-
-                folder = Config.MOV_SAVE_DIR;
-                File[] files2 = folder.listFiles(new FilenameFilter() {
-                    @Override
-                    public boolean accept(File dir, String name) {
-                        return name.endsWith(Config._mov_ext);
-                    }
-                });
-
-                File[] files = null;
-                if(files1==null && files2 != null) files = files2;
-                else if(files1!=null && files2 == null) files = files1;
-                else if(files1==null && files2==null) files=null;
-                else files = new File[files1.length + files2.length];
-
-                int j=0;
-                if(files1 != null) for(int i=0;i<files1.length;i++) files[j++] = files1[i];
-                if(files2 != null) for(int i=0;i<files2.length;i++) files[j++] = files2[i];
 
                 if(files==null) {
                     Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
@@ -911,46 +907,17 @@ public class MapsActivity extends AppCompatActivity implements
                     Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
                     return false;
                 }
-                Intent mediaIntent = new Intent(MapsActivity.this, MediaActivity.class);
+                Intent picIntent = new Intent(MapsActivity.this, PicActivity.class);
                 ArrayList<File> fileArrayList= new ArrayList<File>();
                 for(int i=0;i< files.length;i++) {
                     fileArrayList.add(files[i]);
                 }
-                mediaIntent.putExtra("files", fileArrayList);
-                startActivity(mediaIntent);
+                picIntent.putExtra("files", fileArrayList);
+                startActivity(picIntent);
                 return true;
-
-        case R.id.pic_activity:
-        Log.d(TAG,"-- Pic Activity!");
-        folder= Config.PIC_SAVE_DIR;
-
-        files = folder.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith("jpeg");
-            }
-        });
-
-        if(files==null) {
-            Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
-            return false;
-        } else if (files.length==0) {
-            Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
-            return false;
+            default:
+            return super.onOptionsItemSelected(item);
         }
-        Intent picIntent = new Intent(MapsActivity.this, PicActivity.class);
-        fileArrayList= new ArrayList<File>();
-        for(int i=0;i< files.length;i++) {
-            fileArrayList.add(files[i]);
-        }
-        picIntent.putExtra("files", fileArrayList);
-        startActivity(picIntent);
-        return true;
-        default:
-        return super.onOptionsItemSelected(item);
-    }
-
-
     }
 
     private Marker mMarker  = null;
@@ -1118,7 +1085,7 @@ public class MapsActivity extends AppCompatActivity implements
     // return Location of current location of GPS
     public Location getLocation() {
         Log.d(TAG,"-- getLocation.");
-        String locationProvider =  mLocationManager.GPS_PROVIDER;
+        String locationProvider = LocationManager.GPS_PROVIDER;
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }

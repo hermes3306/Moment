@@ -13,7 +13,7 @@ import java.util.Random;
 
 public class LocalWordService extends Service {
     private final IBinder mBinder = new MyBinder();
-    private List<String> resultList = new ArrayList<String>();
+    private final List<String> resultList = new ArrayList<String>();
     private int counter = 1;
 
     @Override

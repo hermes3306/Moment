@@ -14,12 +14,13 @@ public class ActivityStat {
         public String duration;
         public double minperKm;
         public int calories;
+        public long durationInLong;
 
         public String memo;
         public String weather;
         public String co_runner;
-        public int progress_info[];
-        public int chart_info[];
+        public int[] progress_info;
+        public int[] chart_info;
 
         public ActivityStat(Date start, Date end, String duration, double distanceM, double distanceKm, double minperKm, int calories) {
             this.start = start;
@@ -29,6 +30,7 @@ public class ActivityStat {
             this.distanceKm = distanceKm;
             this.minperKm = minperKm;
             this.calories = calories;
+            this.durationInLong = end.getTime() - start.getTime();
 
             String H = DateUtil.DateToString(start,"H");
             int t = Integer.parseInt(H);
@@ -40,6 +42,10 @@ public class ActivityStat {
 
             this.name = DateUtil.DateToString(start,"E요일 ") + " " + H;
             this.date_str = DateUtil.DateToString(start,"yyyy년MM월dd일 HH:mm a");
+        }
+
+        public String toString() {
+            return "" + name + "," + distanceKm + "Km," + duration + "," + minperKm + "," + calories;
         }
 
 }

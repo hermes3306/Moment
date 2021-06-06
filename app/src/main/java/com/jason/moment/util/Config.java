@@ -81,7 +81,7 @@ public class Config {
     static File external_pub_files_path_mov = null;    /* 11. 외부 공유저장소 (MOV) */
     static File external_pub_files_path_mp3 = null;    /* 12. 외부 공유저장소 (MP3) */
 
-    static File _SAVE_DIRS[]                = null;
+    static File[] _SAVE_DIRS = null;
     public static File CSV_SAVE_DIR         = null;
     public static File MNT_SAVE_DIR         = null;
     public static File PIC_SAVE_DIR         = null;
@@ -188,13 +188,13 @@ public class Config {
 
     public static String getTmpPicName() {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String name  = "IMG_" + timeStamp + _pic_ext;
+        String name  = "" + timeStamp + _pic_ext;
         return name;
     }
 
     public static String getTmpVideoName() {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String name  = "VIDEO_" + timeStamp + _mov_ext;
+        String name  = "" + timeStamp + _mov_ext;
         return name;
     }
     public static String get_today_filename() {
@@ -291,7 +291,7 @@ public class Config {
         Config._enable_network_provider = sharedPreferences.getBoolean("NetworkProvider", Config._enable_network_provider);
         String _loc_interval = sharedPreferences.getString("interval", "");
         String _loc_distance = sharedPreferences.getString("distance", "");
-        int colors[] = {
+        int[] colors = {
                 Color.RED, Color.CYAN, Color.BLUE, Color.WHITE, Color.BLACK, Color.YELLOW, Color.DKGRAY, Color.GREEN, Color.LTGRAY
         };
 

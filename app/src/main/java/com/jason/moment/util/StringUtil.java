@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class StringUtil {
-    private static String TAG = "StringUtil";
+    private static final String TAG = "StringUtil";
 
     public static Date StringToDate(MyActivity a) {
         return StringToDate(a.cr_date + "_" + a.cr_time,"yyyy/MM/dd_HH:mm:ss" );

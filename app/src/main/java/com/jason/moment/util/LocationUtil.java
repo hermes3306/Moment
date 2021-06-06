@@ -8,7 +8,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.jason.moment.util.db.MyLoc;
 
 public class LocationUtil {
-    private String TAG="LocationUtil";
+    private final String TAG="LocationUtil";
     private static boolean first_called=true;
     private Location last_location=null;
 

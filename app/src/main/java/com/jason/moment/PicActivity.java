@@ -31,7 +31,7 @@ import java.util.Comparator;
 import java.util.Date;
 
 public class PicActivity extends AppCompatActivity implements View.OnClickListener{
-    private String TAG = "PicActivity";
+    private final String TAG = "PicActivity";
     ArrayList<File> _files=null;
     int pos=0;
     int size=0;
@@ -66,7 +66,7 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
 
     public void reload() {
         File folder= Config.PIC_SAVE_DIR;
-        File files[] = folder.listFiles();
+        File[] files = folder.listFiles();
 
         Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
         //Arrays.sort(files, Comparator.comparingLong(File::lastModified));
@@ -217,7 +217,7 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
             try {
                 Log.e(TAG,"-- before createImageFile");
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                String imageFileName = "IMG_" + timeStamp + ".jpeg";
+                String imageFileName = "" + timeStamp + ".jpeg";
                 photoFile = new File(Config.PIC_SAVE_DIR, imageFileName);
                 Toast.makeText(_ctx, "photoFile " + photoFile.getAbsolutePath() + " is used for this picture!", Toast.LENGTH_LONG).show();
                 Log.d(TAG,"-- >>>>after createImageFile" + photoFile.getAbsolutePath());

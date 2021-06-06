@@ -3,6 +3,7 @@ package com.jason.moment.util;
 import android.content.Context;
 import android.util.Log;
 
+import com.jason.moment.util.db.MyActiviySummary;
 import com.jason.moment.util.db.MyLoc;
 
 import java.io.BufferedReader;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class StartupBatch {
-    private Context _ctx;
+    private final Context _ctx;
     public StartupBatch(Context ctx) {
         _ctx = ctx;
     }
@@ -32,6 +33,11 @@ public class StartupBatch {
             //geturl();
             //MyLoc.getInstance(_ctx).createNew(); // DB를 초기화
             //clearShortRunActivities(_ctx);
+            //clearRunActivitiesStartsWith(_ctx,"S");
+            //renameMediaFiles(_ctx);
+            rebuildActivitySummaries(_ctx);
+            query_rank_speed(_ctx);
+
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             StringWriter sw = new StringWriter();
@@ -44,8 +50,50 @@ public class StartupBatch {
         }
         return;
     }
+
+    public void query_rank_speed(Context _ctx) {
+        ArrayList<ActivitySummary> mas =
+                MyActiviySummary.getInstance(_ctx).query_rank_speed();
+        for(int i=0;i<mas.size();i++) Log.d(TAG, "--" + mas.get(i).toString() );
+    }
+
+    public void rebuildActivitySummaries(Context _ctx) {
+        MyActiviySummary.getInstance(_ctx).createNew();
+        File[] files = Config.CSV_SAVE_DIR.listFiles();
+        for(int i=0;i<files.length;i++) {
+            ArrayList<MyActivity> mal = MyActivityUtil.deserialize(files[i]);
+            ActivityStat as = MyActivityUtil.getActivityStat(mal);
+            //String name = as.name;
+            String name = files[i].getName();
+            if(name.length() <15 ) continue;
+
+            double dist = as.distanceKm;
+            long duration = as.durationInLong;
+            double minpk = as.minperKm;
+            int cal = as.calories;
+            MyActiviySummary.getInstance(_ctx).ins(name,dist,duration,minpk,cal);
+            Log.d(TAG, " -- new Activity summary: " + as.toString());
+        }
+    }
+
+    public void renameMediaFiles(Context _ctx) {
+        File[] files = Config.PIC_SAVE_DIR.listFiles();
+        for(int i=0;i<files.length;i++) {
+            String org = files[i].getName();
+            String tar = org.substring(4);
+            if(org.startsWith("IMG")) files[i].renameTo(new File(Config.PIC_SAVE_DIR, tar));
+        }
+
+        files = Config.MOV_SAVE_DIR.listFiles();
+        for(int i=0;i<files.length;i++) {
+            String org = files[i].getName();
+            String tar = org.substring(6);
+            if(org.startsWith("MOV")) files[i].renameTo(new File(Config.MOV_SAVE_DIR, tar));
+        }
+    }
+
     public void  clearShortRunActivities(Context _ctx) {
-        File files[] = Config.CSV_SAVE_DIR.listFiles();
+        File[] files = Config.CSV_SAVE_DIR.listFiles();
         for(int i=0;i<files.length;i++) {
             ArrayList<MyActivity> mal = MyActivityUtil.deserialize(files[i]);
             if(mal.size() < 10) {
@@ -60,6 +108,26 @@ public class StartupBatch {
             if(mal.size() < 10) {
                 files[i].delete();
                 Log.d(TAG,"-- file["+files[i].getName()+"] deleted!");
+            }
+        }
+    }
+
+    public void  clearRunActivitiesStartsWith(Context _ctx, String StartsWith) {
+        File[] files = Config.CSV_SAVE_DIR.listFiles();
+        for(int i=0;i<files.length;i++) {
+            ArrayList<MyActivity> mal = MyActivityUtil.deserialize(files[i]);
+            if(files[i].getName().startsWith(StartsWith)) {
+                files[i].delete();
+                Log.d(TAG, "-- file[" + files[i].getName() + "] deleted!");
+            }
+        }
+
+        files = Config.MNT_SAVE_DIR.listFiles();
+        for(int i=0;i<files.length;i++) {
+            ArrayList<MyActivity> mal = MyActivityUtil.deserialize(files[i]);
+            if(files[i].getName().startsWith(StartsWith)) {
+                files[i].delete();
+                Log.d(TAG, "-- file[" + files[i].getName() + "] deleted!");
             }
         }
     }
@@ -106,7 +174,7 @@ public class StartupBatch {
         Config._default_ext = Config._csv;
         MyActivityUtil.initialize();
 
-        File flist[] = MyActivityUtil.getAllFiles();
+        File[] flist = MyActivityUtil.getAllFiles();
 //        for (int i=0;i<flist.length;i++) {
 //            Log.e(TAG, "-- VVVV orig files " + i + " " + flist[i].getName());
 //        }
@@ -128,7 +196,7 @@ public class StartupBatch {
         Config._default_ext = Config._ser;
         MyActivityUtil.initialize();
 
-        File flist[] = MyActivityUtil.getAllFiles();
+        File[] flist = MyActivityUtil.getAllFiles();
 //        for (int i=0;i<flist.length;i++) {
 //            Log.e(TAG, "-- VVVV orig files " + i + " " + flist[i].getName());
 //        }

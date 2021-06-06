@@ -27,7 +27,7 @@ public class AddressUtil {
         if(addresses == null || addresses.size() ==0) {
             Log.e(TAG, "No Addresses found !!");
         }else {
-            addinfo = addresses.get(0).getAddressLine(0).toString();
+            addinfo = addresses.get(0).getAddressLine(0);
             if(addinfo != null) addinfo = addinfo.replace("대한민국", "");
 //            Log.d(TAG, "--getAddress[0] = " + addinfo);
 //            String dong = addresses.get(0).getSubThoroughfare() ;
@@ -63,7 +63,7 @@ public class AddressUtil {
                     (addresses.get(0).getPremises()==null?"":" " + addresses.get(0).getPremises());
         }
         if(addinfoDong.contains("null")) {
-            addinfoDong = addresses.get(0).getAddressLine(0).toString();
+            addinfoDong = addresses.get(0).getAddressLine(0);
         }
         return addinfoDong;
     }
@@ -84,7 +84,7 @@ public class AddressUtil {
         }else {
             ArrayList<String> list = new ArrayList<String>();
             for(int i=0;i<addresses.size();i++) {
-                list.add(addresses.get(i).getAddressLine(0).toString());
+                list.add(addresses.get(i).getAddressLine(0));
             }
             return list;
         }

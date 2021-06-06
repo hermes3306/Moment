@@ -79,7 +79,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     public static boolean notrack = false;
     public static boolean satellite = false;
 
-    File _file_list[] = null;
+    File[] _file_list = null;
     File _file = null;
     MyActivity lastActivity = null;
 
@@ -97,7 +97,6 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = getIntent();
         position = intent.getExtras().getInt("pos");
         filetype = intent.getExtras().getInt("filetype");
-
         _file_list = MyActivityUtil.getFiles(filetype);
         if(_file_list == null) {
             Toast.makeText(getApplicationContext(),"No files found!", Toast.LENGTH_LONG).show();
@@ -134,7 +133,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             final ImageButton imbt_navi = (ImageButton) findViewById(R.id.imbt_navi);
             final ImageButton imbt_trash = (ImageButton) findViewById(R.id.imbt_trash);
             final ImageButton imbt_pop_menu = (ImageButton) findViewById(R.id.imbt_pop_menu);
-            final File flist[] = MyActivityUtil.getFiles(filetype);
+            final File[] flist = MyActivityUtil.getFiles(filetype);
 
             public void GO(final GoogleMap googleMap, File myfile) {
                 Log.e(TAG, "-- filename to see: " + myfile.getAbsolutePath());
@@ -172,7 +171,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 if(addresses == null || addresses.size() ==0) {
                     Log.e(TAG, "No Addresses found !!");
                 }else {
-                    addinfo = addresses.get(0).getAddressLine(0).toString();
+                    addinfo = addresses.get(0).getAddressLine(0);
                 }
 
                 //tv_file.setText(myfile.getName().substring(0, myfile.getName().length()-4));
@@ -219,7 +218,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 file.delete();
-                                File flist[] = MyActivityUtil.getFiles(filetype);
+                                File[] flist = MyActivityUtil.getFiles(filetype);
                                 if(flist==null) {
                                     Toast.makeText(getApplicationContext(),"No more files!",Toast.LENGTH_LONG).show();
                                     return;
@@ -295,7 +294,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 imbt_prev.setOnClickListener(new View.OnClickListener(){
                     public void onClick(View view) {
 
-                        File flist[] = MyActivityUtil.getFiles(filetype);
+                        File[] flist = MyActivityUtil.getFiles(filetype);
                         if(flist==null) {
                             Toast.makeText(getApplicationContext(),"No more files!",Toast.LENGTH_LONG).show();
                             return;
@@ -309,7 +308,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
 
                 imbt_next.setOnClickListener(new View.OnClickListener(){
                     public void onClick (View view) {
-                        File flist[] = MyActivityUtil.getFiles(filetype);
+                        File[] flist = MyActivityUtil.getFiles(filetype);
                         if(flist==null) {
                             Toast.makeText(getApplicationContext(),"No more files!",Toast.LENGTH_LONG).show();
                             return;
@@ -362,7 +361,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         imbt_trash.setVisibility(View.GONE);
                         imbt_pop_menu.setVisibility(View.VISIBLE);
 
-                        File flist[] = MyActivityUtil.getFiles(filetype);
+                        File[] flist = MyActivityUtil.getFiles(filetype);
                         try {
                             alertDeleteDialog(flist[position]);
                             flist = MyActivityUtil.getFiles(filetype);
@@ -537,13 +536,6 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(runIntent, Config.CALL_RUN_ACTIVITY);
                 return true;
 
-            case R.id.file_activity2:
-                Log.d(TAG,"-- FileActivity2!");
-                Intent fileactivity2 = new Intent(this, FileActivity2.class);
-                fileactivity2.putExtra("1", 1);
-                startActivityForResult(fileactivity2, Config.CALL_FILE_ACTIVITY);
-                return true;
-
             case R.id.ReportActivity:
                 Log.d(TAG,"-- Report Activity!");
                 Intent reportActivity = new Intent(this, MyReportActivity.class);
@@ -551,12 +543,12 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(reportActivity, Config.CALL_REPORT_ACTIVITY);
                 return true;
 
-            case R.id.quote_activity:
-                Log.d(TAG,"-- Quote Activity!");
-                Intent quoteIntent = new Intent(this, QuoteActivity.class);
-                quoteIntent.putExtra("1", 1);
-                startActivityForResult(quoteIntent, Config.CALL_QUOTE_ACTIVITY);
-                return true;
+//            case R.id.quote_activity:
+//                Log.d(TAG,"-- Quote Activity!");
+//                Intent quoteIntent = new Intent(this, QuoteActivity.class);
+//                quoteIntent.putExtra("1", 1);
+//                startActivityForResult(quoteIntent, Config.CALL_QUOTE_ACTIVITY);
+//                return true;
 
             case R.id.scrollpic_activity:
                 Log.d(TAG,"-- Scroll Pic Activity!");
@@ -564,12 +556,11 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(scrollPicIntent, Config.CALL_SCROLL_PIC_ACTIVITY);
                 return true;
 
-            case R.id.scrollAllpic_activity:
-                Log.d(TAG,"-- Scroll Pic Activity!");
-                Intent scrollAllPicIntent = new Intent(this, ScrollAllPicActivity.class);
-                startActivityForResult(scrollAllPicIntent, Config.CALL_SCROLL_ALL_PIC_ACTIVITY);
-
-                return true;
+//            case R.id.scrollAllpic_activity:
+//                Log.d(TAG,"-- Scroll Pic Activity!");
+//                Intent scrollAllPicIntent = new Intent(this, ScrollAllPicActivity.class);
+//                startActivityForResult(scrollAllPicIntent, Config.CALL_SCROLL_ALL_PIC_ACTIVITY);\
+//                return true;
 
             case R.id.pic_activity:
                 Log.d(TAG,"-- Pic Activity!");

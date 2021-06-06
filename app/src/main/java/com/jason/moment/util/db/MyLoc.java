@@ -24,8 +24,8 @@ import java.util.List;
 import static java.security.AccessController.getContext;
 
 public class MyLoc {
-    private static String TAG = "MyLoc";
-    private Context ctx;
+    private static final String TAG = "MyLoc";
+    private final Context ctx;
 
     private static MyLoc instance=null;
     public static MyLoc getInstance(Context ctx) {
@@ -40,8 +40,8 @@ public class MyLoc {
     public MyLoc(Context ctx) {
         this.ctx = ctx;
         if(dbHelper == null) dbHelper = new MyLocDbHelper(ctx);
-        if(db == null) this.db = dbHelper.getWritableDatabase();
-        if(dbr == null) this.dbr = dbHelper.getReadableDatabase();
+        if(db == null) db = dbHelper.getWritableDatabase();
+        if(dbr == null) dbr = dbHelper.getReadableDatabase();
     }
 
     public void createNew() {
@@ -135,7 +135,7 @@ public class MyLoc {
     // selectionArgs    = " 2021/05/01";
     // order_by         = " crtime desc";
     public ArrayList<MyActivity> Path2Activity(String selection,
-                                               String selectionArgs[],
+                                               String[] selectionArgs,
                                                String order_by) {
         //Log.d(TAG, "--Path2Activity ()");
         //MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
@@ -175,7 +175,7 @@ public class MyLoc {
     // selectionArgs    = " 2021/05/01";
     // order_by         = " crtime desc";
     public ArrayList<LatLng> Path(String selection,
-                                  String selectionArgs[],
+                                  String[] selectionArgs,
                                   String order_by
                                   ) {
         //Log.d(TAG, "-- Path()");

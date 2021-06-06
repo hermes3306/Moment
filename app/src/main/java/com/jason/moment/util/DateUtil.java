@@ -22,8 +22,7 @@ public class DateUtil {
     }
 
     public static boolean isLongerThan1Min(Date before, Date after) {
-        if(after.getTime()-before.getTime() > 1000 * 60) return true;
-        return false;
+        return after.getTime() - before.getTime() > 1000 * 60;
     }
 
     public static String getActivityName(Date d) {

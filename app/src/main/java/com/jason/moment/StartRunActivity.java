@@ -107,7 +107,7 @@ public class StartRunActivity extends AppCompatActivity implements
     int _default_layout = R.layout.activity_start_new;
     private GoogleMap googleMap=null;
 
-    int start_layout[] = {
+    int[] start_layout = {
             R.layout.activity_start_style3,
             R.layout.activity_start_style1,
             R.layout.activity_start_style2
@@ -125,7 +125,7 @@ public class StartRunActivity extends AppCompatActivity implements
     private boolean quit=false;
 
     private ArrayList list = null;
-    private MyActivity first = null;
+    private final MyActivity first = null;
     private MyActivity last = null;
     public String getActivity_file_name() {return activity_file_name;}
 
@@ -413,8 +413,8 @@ public class StartRunActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Resources r = getResources();
-        String screen_layout[] = r.getStringArray(R.array.start_screen);
-        String screen_layout_value[] = r.getStringArray(R.array.start_screen);
+        String[] screen_layout = r.getStringArray(R.array.start_screen);
+        String[] screen_layout_value = r.getStringArray(R.array.start_screen);
 
         int id = item.getItemId();
         switch(id) {

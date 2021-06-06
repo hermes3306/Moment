@@ -66,7 +66,7 @@ public class LocService extends Service implements LocationListener {
      * System notification id.
      */
     private static final int NOTIFICATION_ID = 12345;
-    private static String CHANNEL_ID = "LocService_Channel";
+    private static final String CHANNEL_ID = "LocService_Channel";
     private String activity_file_name;
     private ArrayList<MyActivity> list = null;
     private MyActivity last = null;
@@ -79,7 +79,7 @@ public class LocService extends Service implements LocationListener {
     /**
      * Receives Intent for way point tracking, and stop/start logging.
      */
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {

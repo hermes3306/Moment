@@ -54,13 +54,13 @@ public class GPSLogger extends Service implements LocationListener {
     /**
      * Use barometer yes/no ?
      */
-    private boolean use_barometer = false;
+    private final boolean use_barometer = false;
 
     /**
      * System notification id.
      */
     private static final int NOTIFICATION_ID = 1;
-    private static String CHANNEL_ID = "Moment_Channel";
+    private static final String CHANNEL_ID = "Moment_Channel";
 
     /**
      * Last known location
@@ -91,7 +91,7 @@ public class GPSLogger extends Service implements LocationListener {
     /**
      * Receives Intent for way point tracking, and stop/start logging.
      */
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {

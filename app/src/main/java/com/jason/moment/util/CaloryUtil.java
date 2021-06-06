@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class CaloryUtil {
-    private static String TAG = "CaloryUtil";
+    private static final String TAG = "CaloryUtil";
     /**
      * Calculated the energy expenditure for an activity. Adapted from the following website https://sites.google.com/site/compendiumofphysicalactivities/corrected-mets
      *

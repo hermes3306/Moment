@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 
 public class CloudUtil {
     static String TAG = "CloudUtil";
@@ -73,8 +74,8 @@ public class CloudUtil {
                 }
             } else {
                 // extracts file name from URL
-                fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1,
-                        fileURL.length());
+                fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1
+                );
             }
 
             Log.e(TAG,"--Content-Type = " + contentType);
@@ -108,11 +109,11 @@ public class CloudUtil {
         new AsyncTask<Void,Void,Void>() {
             String listUrl = null;
             String listOfFiles = null;
-            String linesOfFiles[] = null;
-            String fileURL[] = null;
+            String[] linesOfFiles = null;
+            String[] fileURL = null;
             File saveDir = null;
 
-            ProgressDialog asyncDialog = new ProgressDialog(context);
+            final ProgressDialog asyncDialog = new ProgressDialog(context);
             @Override
             protected Void doInBackground(Void... voids) {
                 try {
@@ -170,11 +171,11 @@ public class CloudUtil {
         new AsyncTask<Void,Void,Void>() {
             String listUrl = null;
             String listOfFiles = null;
-            String linesOfFiles[] = null;
-            String fileURL[] = null;
+            String[] linesOfFiles = null;
+            String[] fileURL = null;
             File saveDir = null;
 
-            ProgressDialog asyncDialog = new ProgressDialog(context);
+            final ProgressDialog asyncDialog = new ProgressDialog(context);
             @Override
             protected Void doInBackground(Void... voids) {
                 try {
@@ -241,17 +242,17 @@ public class CloudUtil {
         final String _serverUrl = Config._uploadURL;
         // Pop Up a Dialog
         new AsyncTask<Void,Void,Void>() {
-            ProgressDialog asyncDialog = new ProgressDialog(context);
+            final ProgressDialog asyncDialog = new ProgressDialog(context);
             HttpURLConnection urlConnection = null;
             String attachmentName = null;
             String attachmentFileName = null;
-            String crlf = "\r\n";
-            String twoHyphens = "--";
-            String boundary =  "*****";
+            final String crlf = "\r\n";
+            final String twoHyphens = "--";
+            final String boundary =  "*****";
 
             @Override
             protected Void doInBackground(Void... voids) {
-                File flist[] = null;
+                File[] flist = null;
                 if(ftype==Config._csv) {
                     flist = Config.mediaStorageDir4csv.listFiles();
                 } else if(ftype==Config._ser) {
@@ -297,7 +298,7 @@ public class CloudUtil {
 
                         request.writeBytes("--" + boundary + this.crlf);
                         request.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"" + this.crlf);
-                        request.writeBytes("Content-Type: " + httpUrlConnection.guessContentTypeFromName(file.getName()) + this.crlf);
+                        request.writeBytes("Content-Type: " + URLConnection.guessContentTypeFromName(file.getName()) + this.crlf);
                         request.writeBytes("Content-Transfer-Encoding: binary" + this.crlf);
                         request.writeBytes(this.crlf);
                         request.flush();
@@ -364,13 +365,13 @@ public class CloudUtil {
         final String _serverUrl = Config._uploadURL;
         // Pop Up a Dialog
         new AsyncTask<Void,Void,Void>() {
-            ProgressDialog asyncDialog = new ProgressDialog(context);
+            final ProgressDialog asyncDialog = new ProgressDialog(context);
             HttpURLConnection urlConnection = null;
-            String attachmentName = null;
-            String attachmentFileName = null;
-            String crlf = "\r\n";
-            String twoHyphens = "--";
-            String boundary =  "*****";
+            final String attachmentName = null;
+            final String attachmentFileName = null;
+            final String crlf = "\r\n";
+            final String twoHyphens = "--";
+            final String boundary =  "*****";
 
             @Override
             protected Void doInBackground(Void... voids) {
@@ -410,7 +411,7 @@ public class CloudUtil {
 
                     request.writeBytes("--" + boundary + this.crlf);
                     request.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"" + this.crlf);
-                    request.writeBytes("Content-Type: " + httpUrlConnection.guessContentTypeFromName(file.getName()) + this.crlf);
+                    request.writeBytes("Content-Type: " + URLConnection.guessContentTypeFromName(file.getName()) + this.crlf);
                     request.writeBytes("Content-Transfer-Encoding: binary" + this.crlf);
                     request.writeBytes(this.crlf);
                     request.flush();

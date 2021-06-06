@@ -28,7 +28,7 @@ public class LocService2 extends Service {
     private static final int TWO_MINUTES = 1000 * 60 * 2;
     private static final int storageopt = 0; //0: DB, 1: Memory
 
-    private IBinder mIBinder = new MyBinder();
+    private final IBinder mIBinder = new MyBinder();
     class MyBinder extends Binder{
         LocService2 getService(){
             return LocService2.this;
@@ -199,10 +199,7 @@ public class LocService2 extends Service {
             return true;
         } else if (isNewer && !isLessAccurate) {
             return true;
-        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
-            return true;
-        }
-        return false;
+        } else return isNewer && !isSignificantlyLessAccurate && isFromSameProvider;
     }
 
     /** Checks whether two providers are the same */

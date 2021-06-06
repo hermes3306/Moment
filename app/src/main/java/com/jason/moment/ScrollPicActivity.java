@@ -48,7 +48,7 @@ package com.jason.moment;
  * status bar and navigation/system bar) with user interaction.
  */
 public class ScrollPicActivity extends AppCompatActivity implements View.OnClickListener{
-    private String TAG = "ScrollPicActivity";
+    private final String TAG = "ScrollPicActivity";
     ArrayList<File> _files=null;
     int pos=0;
     int size=0;
@@ -254,7 +254,7 @@ public class ScrollPicActivity extends AppCompatActivity implements View.OnClick
 
     public void reload() {
         File folder= Config.PIC_SAVE_DIR;
-        File files[] = folder.listFiles();
+        File[] files = folder.listFiles();
 
         Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
         //Arrays.sort(files, Comparator.comparingLong(File::lastModified));
@@ -394,7 +394,7 @@ public class ScrollPicActivity extends AppCompatActivity implements View.OnClick
             try {
                 Log.e(TAG,"-- before createImageFile");
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                String imageFileName = "IMG_" + timeStamp + ".jpeg";
+                String imageFileName = "" + timeStamp + ".jpeg";
                 photoFile = new File(Config.PIC_SAVE_DIR, imageFileName);
                 Toast.makeText(_ctx, "photoFile " + photoFile.getAbsolutePath() + " is used for this picture!", Toast.LENGTH_LONG).show();
                 Log.d(TAG,"-- >>>>after createImageFile" + photoFile.getAbsolutePath());

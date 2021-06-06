@@ -111,7 +111,7 @@ public class StartNewActivity extends AppCompatActivity implements
         },1000);
     }
 
-    int start_layout[] = {
+    int[] start_layout = {
             R.layout.activity_start_style3,
             R.layout.activity_start_style1,
             R.layout.activity_start_style2
@@ -129,7 +129,7 @@ public class StartNewActivity extends AppCompatActivity implements
     private boolean quit=false;
 
     private ArrayList list = null;
-    private MyActivity first = null;
+    private final MyActivity first = null;
     private MyActivity last = null;
     public String getActivity_file_name() {return activity_file_name;}
 
@@ -417,8 +417,8 @@ public class StartNewActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Resources r = getResources();
-        String screen_layout[] = r.getStringArray(R.array.start_screen);
-        String screen_layout_value[] = r.getStringArray(R.array.start_screen);
+        String[] screen_layout = r.getStringArray(R.array.start_screen);
+        String[] screen_layout_value = r.getStringArray(R.array.start_screen);
 
         int id = item.getItemId();
         switch(id) {
@@ -525,7 +525,7 @@ public class StartNewActivity extends AppCompatActivity implements
     /**
      * Receives Intent for new Location from GPS services
      */
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "-- Received intent " + intent.getAction());

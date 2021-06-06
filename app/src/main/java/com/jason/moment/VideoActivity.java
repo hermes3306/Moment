@@ -51,7 +51,7 @@ import java.util.Date;
  * status bar and navigation/system bar) with user interaction.
  */
 public class VideoActivity extends AppCompatActivity implements View.OnClickListener{
-    private static String TAG = "PicActivity";
+    private static final String TAG = "PicActivity";
     String currentFileName;
     ArrayList<File> _files=null;
     int pos=0;

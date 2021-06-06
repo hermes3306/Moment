@@ -197,7 +197,7 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
         build_all_Image_Views();
     }
 
-    int file_height[] = null;
+    int[] file_height = null;
     private void build_all_Image_Views() {
         _files = new ArrayList<>();
         File folder= Config.PIC_SAVE_DIR;
@@ -414,14 +414,14 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
             case R.id.imb_next:
                 hsv.post(new Runnable() {
                     public void run() {
-                        hsv.fullScroll(hsv.FOCUS_DOWN);
+                        hsv.fullScroll(View.FOCUS_DOWN);
                     }
                 });
                 break;
             case R.id.imb_prev:
                 hsv.post(new Runnable() {
                     public void run() {
-                        hsv.fullScroll(hsv.FOCUS_UP);
+                        hsv.fullScroll(View.FOCUS_UP);
                     }
                 });
                 break;

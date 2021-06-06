@@ -19,7 +19,7 @@ public class GPSLoggerServiceConnection implements ServiceConnection {
     /**
      * Reference to TrackLogger activity
      */
-    private MapsActivity activity;
+    private final MapsActivity activity;
 
     public GPSLoggerServiceConnection(MapsActivity tl) {
         activity = tl;

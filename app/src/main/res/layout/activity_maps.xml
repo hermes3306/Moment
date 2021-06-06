@@ -68,15 +68,7 @@
             android:layout_alignParentBottom="true"
             android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/imb_start_camera"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@color/white"
-                android:gravity="center"
-                android:onClick="onClick"
-                app:srcCompat="@drawable/camera_48" />
+
 
             <ImageView
                 android:id="@+id/imvStart"
@@ -97,22 +89,32 @@
                 android:onClick="onClick"
                 app:srcCompat="@drawable/actlist48" />
             <ImageButton
-                android:id="@+id/imGallary"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@color/white"
-                android:onClick="onClick"
-                android:src="@drawable/gallery48" />
-
-            <ImageButton
                 android:id="@+id/imVideo"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/white"
                 android:onClick="onClick"
+                android:src="@drawable/play_gray" />
+
+            <ImageButton
+                android:id="@+id/imb_record_video"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:onClick="onClick"
                 android:src="@drawable/play_movie48" />
+
+            <ImageButton
+                android:id="@+id/imb_start_camera"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:gravity="center"
+                android:onClick="onClick"
+                app:srcCompat="@drawable/camera_48" />
         </LinearLayout>
     </LinearLayout>
 

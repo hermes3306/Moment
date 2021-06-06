@@ -42,7 +42,7 @@ import static com.jason.moment.util.Config.CSV_SAVE_DIR;
 import static com.jason.moment.util.Config.MNT_SAVE_DIR;
 
 public class MyActivityUtil {
-    private static String TAG = "MyActivityUtil";
+    private static final String TAG = "MyActivityUtil";
     private static int  _default_ext;
     private static String _default_extension;
     private static boolean _default_reverse_order;
@@ -398,7 +398,7 @@ public class MyActivityUtil {
             }
         });
 
-        if(reverseOrder) Arrays.sort(files, Collections.<File>reverseOrder());
+        if(reverseOrder) Arrays.sort(files, Collections.reverseOrder());
         else Arrays.sort(files);
         return files;
     }
@@ -415,8 +415,12 @@ public class MyActivityUtil {
             }
         });
 
-        if(reverseOrder) Arrays.sort(files, Collections.<File>reverseOrder());
-        else Arrays.sort(files);
+        if(reverseOrder) {
+            Arrays.sort(files, (a, b) -> -a.getName().compareTo(b.getName()));
+        }
+        else {
+            Arrays.sort(files, (a, b) -> a.getName().compareTo(b.getName()));
+        }
         return files;
     }
 
@@ -425,7 +429,7 @@ public class MyActivityUtil {
     }
 
     public static File[] getOnlyActivityFiles() {
-        File files[] = getAllFiles();
+        File[] files = getAllFiles();
         if (files==null) return null;
         if(files.length==0) return null;
 
@@ -434,7 +438,7 @@ public class MyActivityUtil {
             if(files[i].getName().contains("_")) afiles.add(files[i]);
         }
         if(afiles.size()>0) {
-            File result[] = new File[afiles.size()];
+            File[] result = new File[afiles.size()];
             for(int i=0;i<afiles.size();i++) result[i] = afiles.get(i);
             return result;
         }
@@ -442,13 +446,13 @@ public class MyActivityUtil {
     }
 
     public static File[] getOnlyDayFiles() {
-        File files[] = getAllFiles();
+        File[] files = getAllFiles();
         ArrayList<File> afiles = new ArrayList();
         for(int i=0;i<files.length;i++) {
             if(!files[i].getName().contains("_")) afiles.add(files[i]);
         }
         if(afiles.size()>0) {
-            File result[] = new File[afiles.size()];
+            File[] result = new File[afiles.size()];
             for(int i=0;i<afiles.size();i++) result[i] = afiles.get(i);
             return result;
         }

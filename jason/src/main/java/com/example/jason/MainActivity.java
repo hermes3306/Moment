@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         if (id ==R.id.action_102) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("리스트 추가 예제");
-            String str[] = new String[]{
+            String[] str = new String[]{
                 "a","b","c"
             };
             builder.setItems(str, new DialogInterface.OnClickListener(){
