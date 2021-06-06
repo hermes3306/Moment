@@ -71,8 +71,12 @@ public class StartupBatch {
             long duration = as.durationInLong;
             double minpk = as.minperKm;
             int cal = as.calories;
-            MyActiviySummary.getInstance(_ctx).ins(name,dist,duration,minpk,cal);
-            Log.d(TAG, " -- new Activity summary: " + as.toString());
+
+            if(minpk == 0) files[i].delete();
+            else {
+                MyActiviySummary.getInstance(_ctx).ins(name, dist, duration, minpk, cal);
+                Log.d(TAG, " -- new Activity summary: " + as.toString());
+            }
         }
     }
 

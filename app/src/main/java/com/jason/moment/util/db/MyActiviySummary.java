@@ -89,11 +89,17 @@ public class MyActiviySummary {
     }
 
     public ArrayList<ActivitySummary> query_rank_speed() {
-//        String selection = ActStatContract.LocEntry.COLUMN_NAME_NAME + " == ?";
-//        String[] selectionArgs = { "ABC" };
         String order_by = ActStatContract.LocEntry.COLUMN_NAME_MINPKM + " ASC";
         return query(null, null, order_by);
     }
 
+    public int rank(double minpk) {
+        ArrayList<ActivitySummary> asl = query_rank_speed();
+        if (asl.size()==0) return 1;
+        for(int i=0;i<asl.size();i++) {
+            if(minpk < asl.get(i).minpk) return i+1;
+        }
+        return asl.size()+1;
+    }
 
 }

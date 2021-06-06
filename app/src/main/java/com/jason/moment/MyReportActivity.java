@@ -28,6 +28,7 @@ import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
+import com.jason.moment.util.db.MyActiviySummary;
 import com.jason.moment.util.db.MyLoc;
 
 import java.util.ArrayList;
@@ -65,6 +66,7 @@ public class MyReportActivity extends AppCompatActivity implements
         TextView memo = findViewById(R.id.memo);
         TextView weather = findViewById(R.id.weather);
         TextView co_runner = findViewById(R.id.co_runner);
+        TextView tv_rank = findViewById(R.id.tv_rank);
 
         ActivityStat activityStat = MyActivityUtil.getActivityStat(mActivityList);
         if(activityStat!=null) {
@@ -77,6 +79,8 @@ public class MyReportActivity extends AppCompatActivity implements
             memo.setText(activityStat.memo);
             weather.setText(activityStat.weather);
             co_runner.setText(activityStat.co_runner);
+            int rank = MyActiviySummary.getInstance(_ctx).rank(activityStat.minperKm);
+            tv_rank.setText("" + rank + "번째로 빠릅니다.");
         }
         MapView mv = findViewById(R.id.mapView);
         MapUtil.DRAW(_ctx,googleMap, mv.getWidth(),mv.getHeight(),mActivityList);

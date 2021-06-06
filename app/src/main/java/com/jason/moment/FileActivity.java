@@ -45,6 +45,7 @@ import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StringUtil;
+import com.jason.moment.util.db.MyActiviySummary;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -128,6 +129,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             final TextView tv_duration = (TextView) findViewById(R.id.tv_duration);
             final TextView tv_minperkm = (TextView) findViewById(R.id.tv_minperkm);
             final TextView tv_carolies = (TextView) findViewById(R.id.tv_carolies);
+            final TextView tv_rank = (TextView) findViewById(R.id.tv_rank);
 
             final ImageButton imbt_marker = (ImageButton) findViewById(R.id.imbt_marker);
             final ImageButton imbt_navi = (ImageButton) findViewById(R.id.imbt_navi);
@@ -195,6 +197,8 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     tv_duration.setText(activityStat.duration);
                     tv_minperkm.setText(String.format("  %.2f",activityStat.minperKm));
                     tv_carolies.setText("   " + activityStat.calories);
+                    int rank = MyActiviySummary.getInstance(_ctx).rank(activityStat.minperKm);
+                    tv_rank.setText("" + rank + "번째로 빠릅니다.");
                 } else {
                     Toast.makeText(getApplicationContext(), "ERR: No Statistics Information !", Toast.LENGTH_LONG).show();
                     String _minDist = String.format("-");

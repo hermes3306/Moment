@@ -47,6 +47,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CaloryUtil;
 import com.jason.moment.util.CloudUtil;
@@ -57,6 +58,7 @@ import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StringUtil;
+import com.jason.moment.util.db.MyActiviySummary;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -650,6 +652,11 @@ public class StartNewActivity extends AppCompatActivity implements
                         Log.d(TAG,"-- sent Broadcast message: INTENT_STOP_TRACKING...");
 
                         MyActivityUtil.serialize(list, media_filenames, activity_file_name );
+
+                        ActivityStat as = FileActivity.getActivityStat(list);
+                        MyActiviySummary.getInstance(_ctx).ins(activity_file_name,as.distanceKm,as.durationInLong,as.minperKm,as.calories);
+                        Log.d(TAG,"-- Activity Stat inserted !!!!");
+
                         Toast.makeText(getApplicationContext(), "JASON's 활동이 저장되었습니다!" + activity_file_name, Toast.LENGTH_SHORT).show();
 
                         String detail = "총운동 거리:" + tv_start_km.getText();
