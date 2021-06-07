@@ -64,12 +64,12 @@ public class SelfInstallActivity extends AppCompatActivity {
         Text= "New".toString();
 
 
-        ApkName = "SelfInstall01.apk";//"Test1.apk";// //"DownLoadOnSDcard_01.apk"; //
-        AppName = "SelfInstall01";//"Test1"; //
+        ApkName = "moment.apk";//"Test1.apk";// //"DownLoadOnSDcard_01.apk"; //
+        AppName = "moment";//"Test1"; //cd A
 
-        BuildVersionPath = "http://10.0.2.2:82/Version.txt".toString();
-        PackageName = "package:com.SelfInstall01".toString(); //"package:com.Test1".toString();
-        urlpath = "http://10.0.2.2:82/"+ Text.toString()+"_Apk/" + ApkName.toString();
+        BuildVersionPath = "http://ezehub.club/moment/Version.txt".toString();
+        PackageName = "package:com.jason.moment".toString();
+        urlpath = "http://ezehub.club/moment/"+ Text.toString()+"_Apk/" + ApkName.toString();
 
         tvApkStatus =(TextView)findViewById(R.id.tvApkStatus);
         tvApkStatus.setText(Text+" Apk Download.".toString());
