@@ -182,8 +182,14 @@ public class MyActivityUtil {
     }
 
     public static void serializeIntoCSV(ArrayList<MyActivity> list, ArrayList<String> media_list, String fileName) {
-        if(list == null) return;
-        if(list.size()==0) return;
+        if(list == null) {
+            Log.d(TAG,"-- No serialization information, ArrayList<MyActivity> is null ");
+            return;
+        }
+        if(list.size()==0) {
+            Log.d(TAG,"-- No serialization information, ArrayList<MyActivity> size 0 ");
+            return;
+        }
 
         try {
             File f = new File(CSV_SAVE_DIR, fileName);

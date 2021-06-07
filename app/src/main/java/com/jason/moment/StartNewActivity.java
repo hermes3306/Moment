@@ -674,21 +674,24 @@ public class StartNewActivity extends AppCompatActivity implements
                         MyActivityUtil.serialize(list, media_filenames, activity_file_name );
 
                         ActivityStat as = FileActivity.getActivityStat(list);
-                        MyActiviySummary.getInstance(_ctx).ins(activity_file_name,as.distanceKm,as.durationInLong,as.minperKm,as.calories);
-                        Log.d(TAG,"-- Activity Stat inserted !!!!");
+                        if(as !=null) {
+                            MyActiviySummary.getInstance(_ctx).ins(activity_file_name,as.distanceKm,as.durationInLong,as.minperKm,as.calories);
+                            Log.d(TAG,"-- Activity Stat inserted successfully !!!!");
+                        }
 
-                        Toast.makeText(getApplicationContext(), "JASON's 활동이 저장되었습니다!" + activity_file_name, Toast.LENGTH_SHORT).show();
+                        if(as != null) {
+                            Toast.makeText(getApplicationContext(), "JASON's 활동이 저장되었습니다!" + activity_file_name, Toast.LENGTH_SHORT).show();
+                            String detail = "총운동 거리:" + tv_start_km.getText();
+                            detail += "\n총운동 시간:" + tv_start_time.getText();
+                            detail += "\n평균 분/Km:" + tv_start_avg.getText();
+                            detail += "\n소모칼로리:" + tv_start_calory.getText();
+                            notificationQuit(Config._notify_id, Config._notify_ticker,
+                                    "활동이 저장되었습니다.", detail);
 
-                        String detail = "총운동 거리:" + tv_start_km.getText();
-                        detail+= "\n총운동 시간:" + tv_start_time.getText();
-                        detail+= "\n평균 분/Km:" + tv_start_avg.getText();
-                        detail+= "\n소모칼로리:" + tv_start_calory.getText();
-                        notificationQuit(Config._notify_id,Config._notify_ticker,
-                                "활동이 저장되었습니다.", detail);
-
-                        Intent myReportIntent = new Intent(StartNewActivity.this, MyReportActivity.class);
-                        myReportIntent.putExtra("activity_file_name", activity_file_name);
-                        startActivity(myReportIntent);
+                            Intent myReportIntent = new Intent(StartNewActivity.this, MyReportActivity.class);
+                            myReportIntent.putExtra("activity_file_name", activity_file_name);
+                            startActivity(myReportIntent);
+                        }
 
                         StartNewActivity.this.quit = true;
                         StartNewActivity.this.finish();
