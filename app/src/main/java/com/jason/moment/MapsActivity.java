@@ -802,6 +802,13 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
+            case R.id.action_update:
+                Log.d(TAG,"-- Self Install!");
+                Intent self_install = new Intent(MapsActivity.this, SelfInstallActivity.class);
+                startActivity(self_install);
+                return true;
+
             case R.id.action_settings:
                 Log.d(TAG,"-- Setting Activities!");
                 Intent configIntent = new Intent(MapsActivity.this, ConfigActivity.class);

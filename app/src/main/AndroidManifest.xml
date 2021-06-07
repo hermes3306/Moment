@@ -30,6 +30,9 @@
             android:name=".MyReportActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity
+            android:name=".SelfInstallActivity"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
             android:name=".PicNVideoActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity
