@@ -364,11 +364,11 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
 
     public void deleteMov() {
         if(_files.size()==0) {
-            Toast.makeText(_ctx,"No files to be deleted!",0).show();
+            Toast.makeText(_ctx,"No files to be deleted!",Toast.LENGTH_SHORT).show();
             return;
         }
         if(size==1) {
-            Toast.makeText(_ctx,"At least 1 file needed to be located in the folder!",0).show();
+            Toast.makeText(_ctx,"At least 1 file needed to be located in the folder!",Toast.LENGTH_SHORT).show();
             return;
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
@@ -376,6 +376,7 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
         builder.setMessage("파일을 삭제하시겠습니까?");
         builder.setPositiveButton("삭제",
                 new DialogInterface.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
                     public void onClick(DialogInterface dialog, int which) {
                         _files.get(pos).delete();
                         reload();
@@ -396,6 +397,10 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
         switch(requestCode) {
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
+                CloudUtil.getInstance().Upload(_ctx,currentFileName);
+                break;
+            case Config.PICK_FROM_CAMERA:
+                Log.d(TAG, "-- PICK_FROM_CAMERA: ");
                 CloudUtil.getInstance().Upload(_ctx,currentFileName);
                 break;
         }
@@ -433,10 +438,25 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
         startActivityForResult(intent, Config.PICK_FROM_VIDEO);
     }
 
+    private void takePic() {
+        currentFileName = Config.getTmpPicName();
+        File mediaFile = new File(Config.PIC_SAVE_DIR, currentFileName);
+        Uri mediaUri = FileProvider.getUriForFile(this,
+                "com.jason.moment.file_provider",
+                mediaFile);
+
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, mediaUri);
+        startActivityForResult(intent, Config.PICK_FROM_CAMERA);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.imvCamera:
+                takePic();
+                break;
+            case R.id.imvVideo:
                 recordVideo();
                 break;
             case R.id.imb_next:

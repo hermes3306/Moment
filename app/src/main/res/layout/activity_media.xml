@@ -155,14 +155,21 @@
                     app:srcCompat="@drawable/arrow_left48" />
 
                 <ImageView
-                    android:id="@+id/imvCamera"
+                    android:id="@+id/imvVideo"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical|center_horizontal"
                     android:onClick="onClick"
                     app:srcCompat="@drawable/play_movie48" />
-
+                <ImageView
+                    android:id="@+id/imvCamera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:onClick="onClick"
+                    app:srcCompat="@drawable/camera_48" />
                 <ImageButton
                     android:id="@+id/imb_next"
                     android:layout_width="wrap_content"

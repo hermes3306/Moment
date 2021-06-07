@@ -660,8 +660,8 @@ public class MapsActivity extends AppCompatActivity implements
                 break;
 
             case R.id.imVideo:
-                Intent videoIntent = new Intent(MapsActivity.this, com.jason.moment.MediaActivity.class);
-                startActivity(videoIntent);
+                Intent mediaIntent = new Intent(MapsActivity.this, com.jason.moment.MediaActivity.class);
+                startActivity(mediaIntent);
                 break;
 
             default:

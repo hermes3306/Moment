@@ -49,6 +49,7 @@ public class MP3 {
         ImageView iv = view1.findViewById(R.id.dialog_imageview);
         tv = view1.findViewById(R.id.view_title);
 
+        playlist1 = list();
         if(playlist1==null) {
             Toast.makeText(context,"No musics!",Toast.LENGTH_SHORT).show();
             return;
