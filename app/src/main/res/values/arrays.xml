@@ -78,22 +78,34 @@
     <string-array name="distance_values">
         <item>0</item>
         <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
         <item>5</item>
         <item>10</item>
+        <item>15</item>
         <item>20</item>
+        <item>50</item>
     </string-array>
 
     <string-array name="distance">
         <item>0 meter</item>
         <item>1 meter</item>
+        <item>2 meter</item>
+        <item>3 meter</item>
+        <item>4 meter</item>
         <item>5 meter</item>
         <item>10 meter</item>
+        <item>15 meter</item>
         <item>20 meter </item>
+        <item>50 meter </item>
     </string-array>
 
     <string-array name="interval">
         <item>0 sec</item>
         <item>1 sec</item>
+        <item>2 sec</item>
+        <item>3 sec</item>
         <item>5 sec</item>
         <item>10 sec</item>
         <item>20 sec</item>
@@ -102,6 +114,8 @@
     <string-array name="interval_values">
         <item>0</item>
         <item>1000</item>
+        <item>2000</item>
+        <item>3000</item>
         <item>5000</item>
         <item>10000</item>
         <item>20000</item>

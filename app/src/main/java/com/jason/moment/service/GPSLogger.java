@@ -29,7 +29,12 @@ import com.jason.moment.MapsActivity;
 import com.jason.moment.MyReportActivity;
 import com.jason.moment.R;
 import com.jason.moment.util.Config;
+import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.LocationUtil;
+import com.jason.moment.util.MyActivityUtil;
+import com.jason.moment.util.db.MyLoc;
+
+import java.util.Date;
 
 
 public class GPSLogger extends Service implements LocationListener {
@@ -83,6 +88,8 @@ public class GPSLogger extends Service implements LocationListener {
      * the timestamp of the last GPS fix we used
      */
     private long lastGPSTimestamp = 0;
+
+    private long lastSAVETimestamp = 0;
 
     /**
      * the interval (in ms) to log GPS fixes defined in the preferences
@@ -257,6 +264,7 @@ public class GPSLogger extends Service implements LocationListener {
         isTracking = b;
     }
 
+
     @Override
     public void onLocationChanged(Location location) {
         if(Config._sharedPreferenceChanged) {
@@ -281,13 +289,28 @@ public class GPSLogger extends Service implements LocationListener {
             lastLocation = location;
             if (isTracking) {
                 LocationUtil.getInstance().onLocationChanged(getApplicationContext(),location);
-
                 Log.d(TAG, "-- Location Changed Intent Broadcasting to MapActivity...");
                 Intent intent = new Intent(Config.INTENT_LOCATION_CHANGED);
                 intent.putExtra("location", location);
                 sendBroadcast(intent);
             }
         }
+
+        // 한시간 마다 한번씩 DBMS 내용을 파일로 저장함
+        Date d = new Date();
+        if(lastSAVETimestamp==0) {
+            saveTodayActivities();
+            lastSAVETimestamp = d.getTime();
+        } else {
+            if( (d.getTime() - lastSAVETimestamp) > Config._ONE_HOUR) {
+                saveTodayActivities();
+                lastSAVETimestamp = d.getTime();
+            }
+        }
+    }
+
+    private void saveTodayActivities() {
+        MyActivityUtil.serialize(MyLoc.getInstance(getApplication()).getToodayActivities(), DateUtil.today());
     }
 
     /**

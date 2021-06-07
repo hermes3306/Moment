@@ -82,10 +82,7 @@ public class MP3 {
                 }
             });
         }
-
-
         alertadd.show();
-
     }
 
     public static File[] list() {
@@ -95,7 +92,6 @@ public class MP3 {
         }
         return playlist1;
     }
-
 
     public static void stop(Context context) {
         if(timer!=null) timer.cancel();

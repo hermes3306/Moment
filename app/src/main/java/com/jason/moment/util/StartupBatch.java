@@ -35,10 +35,9 @@ public class StartupBatch {
             //clearShortRunActivities(_ctx);
             //clearRunActivitiesStartsWith(_ctx,"S");
             //renameMediaFiles(_ctx);
-            //createNewDatabase(_ctx);
             //rebuildActivitySummaries(_ctx);
-            //genTodayActivitiesIntoMyLocDB(_ctx);
             //query_rank_speed(_ctx);
+
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             StringWriter sw = new StringWriter();
@@ -50,19 +49,6 @@ public class StartupBatch {
             Log.d(TAG,"-- Startup Batch End...");
         }
         return;
-    }
-
-    public void genTodayActivitiesIntoMyLocDB(Context _ctx) {
-        File f = new File(Config.CSV_SAVE_DIR, DateUtil.today() + Config._csv_ext);
-        if(f.exists()) {
-            ArrayList<MyActivity> mal = MyActivityUtil.deserialize(f);
-            MyActivityUtil.importData(_ctx, mal);
-        }
-    }
-
-    public void createNewDatabase(Context _ctx) {
-        MyLoc.getInstance(_ctx).createNew();
-        MyActiviySummary.getInstance(_ctx).createNew();
     }
 
     public void query_rank_speed(Context _ctx) {

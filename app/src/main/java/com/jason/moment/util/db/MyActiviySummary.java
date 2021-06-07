@@ -52,10 +52,6 @@ public class MyActiviySummary {
         Log.d(TAG, "-- ActStat - db.insert with id:" + newRowId);
     }
 
-    // qry
-    // selection        = " crdate == ?";
-    // selectionArgs    = " 2021/05/01";
-    // order_by         = " crtime desc";
     public ArrayList<ActivitySummary> query(String selection,
                                             String[] selectionArgs,
                                             String order_by) {
@@ -68,7 +64,7 @@ public class MyActiviySummary {
                 null,                            // don't filter by row groups
                 order_by                                // The sort order
         );
-        //String name, double dist, long duration, double minpk, int cal
+
         ArrayList<ActivitySummary> l = new ArrayList<>();
         while(cursor.moveToNext()) {
             long itemId = cursor.getLong(

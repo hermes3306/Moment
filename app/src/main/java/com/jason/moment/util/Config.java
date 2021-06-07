@@ -14,7 +14,6 @@ import androidx.preference.PreferenceManager;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.jason.moment.R;
-import com.jason.moment.StartNewActivity;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -30,7 +29,10 @@ public class Config {
     static String TAG                       = "Config";
     static String _ver                      = "3";
 
-    //
+    public static long  _ONE_SEC            = 1000;
+    public static long  _ONE_MIN            = _ONE_SEC * 60;
+    public static long  _ONE_HOUR           = _ONE_MIN * 60;
+
     public static boolean _sharedPreferenceChanged                = false;
 
     // 정리 필요함
@@ -183,9 +185,8 @@ public class Config {
             _preference_val = Integer.parseInt(sharedPreferences.getString(name, "0"));
             //Log.e(TAG,"-- getIntPreference value:" + _preference_val);
         }catch(Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Log.e(TAG,"Err:" + sw.toString());
+            Log.e(TAG, "-- Err(getIntPreference for name:" + name  + e.toString());
+            e.printStackTrace();
         }
         return _preference_val;
     }
@@ -306,9 +307,8 @@ public class Config {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(_ctx /* Activity context */);
         Config._enable_network_provider = sharedPreferences.getBoolean("NetworkProvider", Config._enable_network_provider);
-
-        String _loc_interval = sharedPreferences.getString("interval", "1000");
-        String _loc_distance = sharedPreferences.getString("distance", "1");
+        String _loc_interval = sharedPreferences.getString("interval", "");
+        String _loc_distance = sharedPreferences.getString("distance", "");
         int[] colors = {
                 Color.RED, Color.CYAN, Color.BLUE, Color.WHITE, Color.BLACK, Color.YELLOW, Color.DKGRAY, Color.GREEN, Color.LTGRAY
         };
@@ -319,17 +319,13 @@ public class Config {
             Config._track_color = colors[Config.getIntPreference(_ctx, "track_color")];
             Config._track_width = Config.getIntPreference(_ctx, "track_width");
         } catch (Exception e) {
-            Log.d(TAG,"-- Startup Batch Exception...");
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Log.d(TAG,"-- Err: " + sw.toString());
+            Log.e(TAG, "-- " + e);
+            e.printStackTrace();
         }
     }
 
-    static boolean _file_provider_initialized = false;
     public static void initialize(Context _ctx) {
-        if(!initialized_file_provider) initialize_file_provider(_ctx);
-        _file_provider_initialized = true;
+        initialize_file_provider(_ctx);
         init_preference_values(_ctx);
     }
 
