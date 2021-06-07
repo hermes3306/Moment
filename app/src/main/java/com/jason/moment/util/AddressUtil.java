@@ -7,6 +7,8 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -19,8 +21,9 @@ public class AddressUtil {
         try {
             addresses = geocoder.getFromLocation(ll.latitude, ll.longitude,1);
         }catch(Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, e.toString());
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
 
         String addinfo = null;
@@ -50,8 +53,9 @@ public class AddressUtil {
         try {
             addresses = geocoder.getFromLocation(ma.latitude, ma.longitude,1);
         }catch(Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, e.toString());
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
 
         String addinfoDong = null;
@@ -74,8 +78,9 @@ public class AddressUtil {
         try {
             addresses = geocoder.getFromLocation(ma.latitude, ma.longitude,1);
         }catch(Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, e.toString());
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
 
         String addinfo = null;

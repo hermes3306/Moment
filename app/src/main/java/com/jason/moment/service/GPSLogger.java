@@ -35,6 +35,8 @@ import com.jason.moment.util.LocationUtil;
 public class GPSLogger extends Service implements LocationListener {
 
     private static final String TAG = GPSLogger.class.getSimpleName();
+    LocationListener _myLocationListener = null;
+    Context _ctx = null;
 
     /**
      * Data helper.
@@ -121,6 +123,17 @@ public class GPSLogger extends Service implements LocationListener {
                 }
             } else if (Config.INTENT_STOP_TRACKING.equals(intent.getAction()) ) {
                 stopTrackingAndSave();
+            } else if (Config.INTENT_CONFIG_CHANGE.equals(intent.getAction()) ) {
+                Log.e(TAG, "-- GPSLogger get message of CONFIG_CHANGE");
+
+                Config.initialize(getApplicationContext());
+                gpsLoggingInterval = intent.getLongExtra("gpsLoggingInterval",Config._loc_interval);
+                gpsLoggingMinDistance = intent.getLongExtra("gpsLoggingMinDistance", (long)Config._loc_distance);
+                if (ContextCompat.checkSelfPermission(_ctx, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    lmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, gpsLoggingInterval, gpsLoggingMinDistance, _myLocationListener);
+                    Log.e(TAG, "-- gpsLoggingInterval:" + gpsLoggingInterval);
+                    Log.e(TAG, "-- gpsLoggingMinDistance:" + gpsLoggingMinDistance);
+                }
             }
         }
     };
@@ -168,6 +181,8 @@ public class GPSLogger extends Service implements LocationListener {
     @Override
     public void onCreate() {
         Log.v(TAG, "-- Service onCreate()");
+        _ctx = getApplicationContext();
+        _myLocationListener = this;
         //dataHelper = new DataHelper(this);
 
         Config.initialize(getApplicationContext());
@@ -178,6 +193,7 @@ public class GPSLogger extends Service implements LocationListener {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Config.INTENT_START_TRACKING);
         filter.addAction(Config.INTENT_STOP_TRACKING);
+        filter.addAction(Config.INTENT_CONFIG_CHANGE);
         registerReceiver(receiver, filter);
 
         // Register ourselves for location updates

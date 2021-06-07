@@ -14,8 +14,11 @@ import androidx.preference.PreferenceManager;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.jason.moment.R;
+import com.jason.moment.StartNewActivity;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -25,7 +28,7 @@ import static java.lang.Integer.parseInt;
 public class Config {
 
     static String TAG                       = "Config";
-    static String _ver                      = "210";
+    static String _ver                      = "3";
 
     //
     public static boolean _sharedPreferenceChanged                = false;
@@ -46,7 +49,6 @@ public class Config {
     public static String _mov_ext           = ".mp4";
     public static String _csv_ext           = ".csv";
     public static String _mnt_ext           = ".mnt";
-
 
     public static String _notify_ticker     = "Jason";
     public static int _notify_id            = 100;
@@ -99,6 +101,7 @@ public class Config {
     public static String        _listImageFiles = _serverURL + "/list.php?dir=upload&&ext=jpeg";
     public static String        _listMovFiles   = _serverURL + "/list.php?dir=upload&&ext=mp4";
     public static String        _listCSVFiles   = _serverURL + "/list.php?dir=upload&&ext=csv";
+    //public static String        _listCSVFiles   = _serverURL + "/list.php?dir=tmp&&ext=csv";
     public static String        _listSerFiles   = _serverURL + "/list.php?dir=upload&&ext=mnt";
     public static String        _listMP3Files   = _serverURL + "/list.php?dir=mp3&&ext=mp3";
 
@@ -180,8 +183,9 @@ public class Config {
             _preference_val = Integer.parseInt(sharedPreferences.getString(name, "0"));
             //Log.e(TAG,"-- getIntPreference value:" + _preference_val);
         }catch(Exception e) {
-            Log.e(TAG, "-- Err(getIntPreference for name:" + name  + e.toString());
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
         return _preference_val;
     }
@@ -285,12 +289,26 @@ public class Config {
         initialized_file_provider = true;
     }
 
+    public static void init_preference_values_running(Context _ctx, String interval, String distance) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(_ctx);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("interval",interval);
+        editor.putString("distance",distance);
+        init_preference_values(_ctx);
+        _sharedPreferenceChanged = true;
+    }
+
+    public static void init_preference_value_running_default(Context _ctx) {
+        init_preference_values_running(_ctx, "1000","1"); // 1sec, 1meter
+    }
+
     public static void init_preference_values(Context _ctx) {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(_ctx /* Activity context */);
         Config._enable_network_provider = sharedPreferences.getBoolean("NetworkProvider", Config._enable_network_provider);
-        String _loc_interval = sharedPreferences.getString("interval", "");
-        String _loc_distance = sharedPreferences.getString("distance", "");
+
+        String _loc_interval = sharedPreferences.getString("interval", "1000");
+        String _loc_distance = sharedPreferences.getString("distance", "1");
         int[] colors = {
                 Color.RED, Color.CYAN, Color.BLUE, Color.WHITE, Color.BLACK, Color.YELLOW, Color.DKGRAY, Color.GREEN, Color.LTGRAY
         };
@@ -301,13 +319,17 @@ public class Config {
             Config._track_color = colors[Config.getIntPreference(_ctx, "track_color")];
             Config._track_width = Config.getIntPreference(_ctx, "track_width");
         } catch (Exception e) {
-            Log.e(TAG, "-- " + e);
-            e.printStackTrace();
+            Log.d(TAG,"-- Startup Batch Exception...");
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.d(TAG,"-- Err: " + sw.toString());
         }
     }
 
+    static boolean _file_provider_initialized = false;
     public static void initialize(Context _ctx) {
-        initialize_file_provider(_ctx);
+        if(!initialized_file_provider) initialize_file_provider(_ctx);
+        _file_provider_initialized = true;
         init_preference_values(_ctx);
     }
 

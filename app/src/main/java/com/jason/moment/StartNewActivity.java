@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -41,6 +42,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.FileProvider;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -550,11 +552,28 @@ public class StartNewActivity extends AppCompatActivity implements
         new_location = location;
         showGPS();
     }
+    void boardCastConfigChanged(long gpsLoggingInterval, long gpsLoggingMinDistance ) {
+        Intent intent = new Intent(Config.INTENT_CONFIG_CHANGE);
+        intent.putExtra("gpsLoggingInterval", gpsLoggingInterval);
+        intent.putExtra("gpsLoggingMinDistance", gpsLoggingMinDistance);
+        sendBroadcast(intent);
+        Log.e(TAG, "--INTENT_CONFIG_CHANGED message sent :");
+        Log.e(TAG, "--gpsLoggingInterval:" + gpsLoggingInterval);
+        Log.e(TAG, "--gpsLoggingMinDistance:" +  gpsLoggingMinDistance);
+    }
+
+    long gpsLoggingInterval;
+    long gpsLoggingMinDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this._ctx = this;
-        Config.initialize(_ctx);
+        // 달리기 모드일 경우, 1초, 1미터로 셋팅함
+        Config.init_preference_value_running_default(_ctx);
+        // GPSLogger 서비스로 1초/1미리 환경 Broad Casting 필요함.
+        gpsLoggingInterval = Config._loc_interval;
+        gpsLoggingMinDistance = (long)Config._loc_distance;
+        boardCastConfigChanged(1000,1);
 
         // Register our broadcast receiver
         IntentFilter filter = new IntentFilter();
@@ -588,6 +607,7 @@ public class StartNewActivity extends AppCompatActivity implements
         // Unregister broadcast receiver
         unregisterReceiver(receiver);
         Log.d(TAG, "-- sent Broadcast message: INTENT_STOP_TRACKING...");
+        boardCastConfigChanged(gpsLoggingInterval, gpsLoggingMinDistance);
         super.onDestroy();
     }
 

@@ -20,6 +20,8 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.jason.moment.R;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 public class    MapUtil {
@@ -146,8 +148,9 @@ public class    MapUtil {
             color_inx = Config.getIntPreference(context, "track_color");
             width = Config.getIntPreference(context, "track_width");
         }catch(Exception e){
-            e.printStackTrace();
-            Log.e(TAG,"--" + e);
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
         int color = colors[color_inx];
         drawTrack(map,latLngArrayListInRange,color,width);

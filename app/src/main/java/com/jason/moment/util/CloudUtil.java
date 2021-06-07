@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -46,63 +48,70 @@ public class CloudUtil {
                 sb.append(inputLine);
             in.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
         return sb.toString();
     }
 
-    public static void download(String fileURL, File saveDir)
-            throws IOException {
+    public static void download(String fileURL, File saveDir) {
         Log.e(TAG, "-- Download URL:" + fileURL);
-        URL url = new URL(fileURL);
-        HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
-        int responseCode = httpConn.getResponseCode();
+        try {
+            URL url = new URL(fileURL);
+            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+            int responseCode = httpConn.getResponseCode();
 
-        // always check HTTP response code first
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            String fileName = "";
-            String disposition = httpConn.getHeaderField("Content-Disposition");
-            String contentType = httpConn.getContentType();
-            int contentLength = httpConn.getContentLength();
+            // always check HTTP response code first
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                String fileName = "";
+                String disposition = httpConn.getHeaderField("Content-Disposition");
+                String contentType = httpConn.getContentType();
+                int contentLength = httpConn.getContentLength();
 
-            if (disposition != null) {
-                // extracts file name from header field
-                int index = disposition.indexOf("filename=");
-                if (index > 0) {
-                    fileName = disposition.substring(index + 10,
-                            disposition.length() - 1);
+                if (disposition != null) {
+                    // extracts file name from header field
+                    int index = disposition.indexOf("filename=");
+                    if (index > 0) {
+                        fileName = disposition.substring(index + 10,
+                                disposition.length() - 1);
+                    }
+                } else {
+                    // extracts file name from URL
+                    fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1
+                    );
                 }
+
+                Log.e(TAG, "--Content-Type = " + contentType);
+                Log.e(TAG, "--Content-Disposition = " + disposition);
+                Log.e(TAG, "--Content-Length = " + contentLength);
+                Log.e(TAG, "--fileName = " + fileName);
+
+                // opens input stream from the HTTP connection
+                InputStream inputStream = httpConn.getInputStream();
+                File savefile = new File(saveDir, fileName);
+                // opens an output stream to save into file
+                FileOutputStream outputStream = new FileOutputStream(savefile);
+
+                int bytesRead = -1;
+                byte[] buffer = new byte[BUFFER_SIZE];
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+
+                outputStream.close();
+                inputStream.close();
+
+                Log.e(TAG, "--File downloaded");
             } else {
-                // extracts file name from URL
-                fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1
-                );
+                Log.e(TAG, "--No file to download. Server replied HTTP code: " + responseCode);
             }
-
-            Log.e(TAG,"--Content-Type = " + contentType);
-            Log.e(TAG,"--Content-Disposition = " + disposition);
-            Log.e(TAG,"--Content-Length = " + contentLength);
-            Log.e(TAG,"--fileName = " + fileName);
-
-            // opens input stream from the HTTP connection
-            InputStream inputStream = httpConn.getInputStream();
-            File savefile = new File(saveDir, fileName );
-            // opens an output stream to save into file
-            FileOutputStream outputStream = new FileOutputStream(savefile);
-
-            int bytesRead = -1;
-            byte[] buffer = new byte[BUFFER_SIZE];
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
-            outputStream.close();
-            inputStream.close();
-
-            Log.e(TAG,"--File downloaded");
-        } else {
-            Log.e(TAG,"--No file to download. Server replied HTTP code: " + responseCode);
+            httpConn.disconnect();
+        }catch(Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG, "ERR:" + sw.toString());
         }
-        httpConn.disconnect();
     }
 
     public void DownloadMP3(final Context context) {
@@ -123,8 +132,9 @@ public class CloudUtil {
                     try {
                         listOfFiles = getUrlContent(listUrl);
                     }catch(Exception e) {
-                        e.printStackTrace();
-                        Log.e(TAG,"-- ERR:" +e.toString());
+                        StringWriter sw = new StringWriter();
+                        e.printStackTrace(new PrintWriter(sw));
+                        Log.e(TAG,"Err:" + sw.toString());
                     }
                     Log.d(TAG,"-- listOfFiles:" + listOfFiles);
 
@@ -143,8 +153,9 @@ public class CloudUtil {
                         asyncDialog.setProgress(i);
                     }
                 }catch(Exception e) {
-                    Log.e(TAG, "--" + e.toString());
-                    e.printStackTrace();
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    Log.e(TAG,"Err:" + sw.toString());
                 }
                 return null;
             }
@@ -193,8 +204,9 @@ public class CloudUtil {
                     try {
                         listOfFiles = getUrlContent(listUrl);
                     }catch(Exception e) {
-                        e.printStackTrace();
-                        Log.e(TAG,"-- ERR:" +e.toString());
+                        StringWriter sw = new StringWriter();
+                        e.printStackTrace(new PrintWriter(sw));
+                        Log.e(TAG,"Err:" + sw.toString());
                     }
                     Log.d(TAG,"-- listOfFiles:" + listOfFiles);
 
@@ -215,8 +227,9 @@ public class CloudUtil {
                         asyncDialog.setProgress(i);
                     }
                 }catch(Exception e) {
-                    Log.e(TAG, "--" + e.toString());
-                    e.printStackTrace();
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    Log.e(TAG,"Err:" + sw.toString());
                 }
                 return null;
             }
@@ -337,8 +350,9 @@ public class CloudUtil {
                         asyncDialog.setProgress(i);
 
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.e(TAG, e.toString());
+                        StringWriter sw = new StringWriter();
+                        e.printStackTrace(new PrintWriter(sw));
+                        Log.e(TAG,"Err:" + sw.toString());
                     }
                 }
                 return null;
@@ -456,8 +470,9 @@ public class CloudUtil {
                         sbResult.append(str);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.e(TAG, e.toString());
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    Log.e(TAG,"Err:" + sw.toString());
                 }
                 return null;
             }

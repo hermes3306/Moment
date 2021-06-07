@@ -36,6 +36,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -314,7 +316,11 @@ public class Pic_Full_Screen_Activity extends AppCompatActivity implements View.
             BitmapFactory.Options o2 = new BitmapFactory.Options();
             o2.inSampleSize = scale;
             return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
-        } catch (FileNotFoundException e) {}
+        } catch (FileNotFoundException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
+        }
         return null;
     }
 
@@ -439,9 +445,10 @@ public class Pic_Full_Screen_Activity extends AppCompatActivity implements View.
                 photoFile = new File(Config.PIC_SAVE_DIR, imageFileName);
                 Toast.makeText(_ctx, "photoFile " + photoFile.getAbsolutePath() + " is used for this picture!", Toast.LENGTH_LONG).show();
                 Log.d(TAG,"-- >>>>after createImageFile" + photoFile.getAbsolutePath());
-            } catch (Exception ex) {
-                // Error occurred while creating the File
-                Log.d(TAG,"-- >>>>" +ex.toString());
+            } catch (Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Log.e(TAG,"Err:" + sw.toString());
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {

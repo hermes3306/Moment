@@ -37,6 +37,8 @@ package com.jason.moment;
         import java.io.File;
         import java.io.FileInputStream;
         import java.io.FileNotFoundException;
+        import java.io.PrintWriter;
+        import java.io.StringWriter;
         import java.text.SimpleDateFormat;
         import java.util.ArrayList;
         import java.util.Arrays;
@@ -293,7 +295,11 @@ public class ScrollPicActivity extends AppCompatActivity implements View.OnClick
             BitmapFactory.Options o2 = new BitmapFactory.Options();
             o2.inSampleSize = scale;
             return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
-        } catch (FileNotFoundException e) {}
+        } catch (FileNotFoundException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
+        }
         return null;
     }
 
@@ -310,8 +316,9 @@ public class ScrollPicActivity extends AppCompatActivity implements View.OnClick
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
             iv_pic.setImageBitmap(bitmap);
         }catch(Exception e) {
-            Log.e(TAG,"-- error:" + e.toString());
-            Log.e(TAG, "-- try to delete:" + currentFileName);
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
             _files.get(pos).deleteOnExit();
         }
 
@@ -398,9 +405,10 @@ public class ScrollPicActivity extends AppCompatActivity implements View.OnClick
                 photoFile = new File(Config.PIC_SAVE_DIR, imageFileName);
                 Toast.makeText(_ctx, "photoFile " + photoFile.getAbsolutePath() + " is used for this picture!", Toast.LENGTH_LONG).show();
                 Log.d(TAG,"-- >>>>after createImageFile" + photoFile.getAbsolutePath());
-            } catch (Exception ex) {
-                // Error occurred while creating the File
-                Log.d(TAG,"-- >>>>" +ex.toString());
+            } catch (Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Log.e(TAG,"Err:" + sw.toString());
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {

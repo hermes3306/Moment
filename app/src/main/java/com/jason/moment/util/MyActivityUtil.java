@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.jason.moment.util.db.MyLoc;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,6 +29,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.text.Collator;
 import java.util.ArrayList;
@@ -55,6 +58,14 @@ public class MyActivityUtil {
         _default_ext = Config._default_ext;
         _default_extension = (_default_ext==Config._csv)? ".csv" : ".mnt";
         _default_reverse_order = true;
+    }
+
+    public static void importData(Context _ctx, ArrayList<MyActivity> mal) {
+        for(int i=0;i<mal.size();i++) {
+            MyActivity a = mal.get(i);
+            MyLoc.getInstance(_ctx).ins(a.latitude, a.longitude, a.cr_date, a.cr_time);
+        }
+        Log.d(TAG, "-- import Data success! # of records is " + mal.size());
     }
 
     public static ActivityStat getActivityStat(ArrayList <MyActivity> list) {
@@ -108,8 +119,9 @@ public class MyActivityUtil {
             for(int i=0;i<tokens.length;i++) ml.add(tokens[i]);
         }
         catch (IOException e) {
-            e.printStackTrace();
-            Log.e(TAG,"-- Err:" + e);
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
         return ml;
     }
@@ -124,7 +136,9 @@ public class MyActivityUtil {
             for(int i=0;i<tokens.length;i++) ml.add(tokens[i]);
         }
         catch (IOException e) {
-            Log.e(TAG, "-- Err:" + e);
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
         return ml;
     }
@@ -148,8 +162,9 @@ public class MyActivityUtil {
             }
         }
         catch (IOException e) {
-            Log.e(TAG, "-- Err:" +e);
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
         return mal;
     }
@@ -174,8 +189,7 @@ public class MyActivityUtil {
             File f = new File(CSV_SAVE_DIR, fileName);
             FileWriter file = new FileWriter(f);
             BufferedWriter output = new BufferedWriter(file);
-            Log.e(TAG, "-- **** CSV Activity file: " + fileName);
-
+            Log.e(TAG, "-- **** CSV Activity file: " + fileName + " has been serialized!");
 
             // for media files 2021/06/02
             if(media_list!=null) {
@@ -206,7 +220,9 @@ public class MyActivityUtil {
             }
             output.close();
         }catch(Exception e) {
-            e.getStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
     }
 
@@ -235,7 +251,9 @@ public class MyActivityUtil {
             }
             output.close();
         }catch(Exception e) {
-            e.getStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
     }
 
@@ -266,8 +284,9 @@ public class MyActivityUtil {
 
             Log.d(TAG, jobj.toString());
         }catch(Exception e) {
-            e.printStackTrace();
-            Log.d(TAG, e.toString());
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
     }
 
@@ -315,8 +334,9 @@ public class MyActivityUtil {
             Log.e(TAG, "-- **** Total " + list.size() + "activities saved in to " + file.toString());
             out.close();
         }catch(Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, e.toString());
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
     }
 
@@ -369,7 +389,9 @@ public class MyActivityUtil {
                 }
             } while(ma != null);
         } catch (Exception e) {
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         } finally {
             try {
                 if (in != null) in.close();
@@ -381,7 +403,11 @@ public class MyActivityUtil {
                     file.delete();
                     Log.d(TAG, "-- File ("+ file.getAbsolutePath() +") deleted  !!!!");
                 }
-            }catch(Exception e) {}
+            }catch(Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Log.e(TAG,"Err:" + sw.toString());
+            }
         }
         return list;
     }

@@ -12,6 +12,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -34,7 +36,9 @@ public class WebUtil {
                 sb.append(inputLine);
             in.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
         return sb.toString();
     }
@@ -163,8 +167,9 @@ public class WebUtil {
                         asyncDialog.setProgress(i);
                     }
                 }catch(Exception e) {
-                    Log.e(TAG, "--" + e.toString());
-                    e.printStackTrace();
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    Log.e(TAG,"Err:" + sw.toString());
                     return false;
                 }
                 return true;
@@ -193,7 +198,9 @@ public class WebUtil {
                 Thread.sleep(100); //0.1초 기다림
                 countdown--;
             } catch (Exception e) {
-                Log.e(TAG, e.toString());
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Log.e(TAG,"Err:" + sw.toString());
             }
         }
     }
@@ -211,8 +218,9 @@ public class WebUtil {
                         asyncDialog.setProgress(i);
                     }
                 }catch(Exception e) {
-                    Log.e(TAG, "--" + e.toString());
-                    e.printStackTrace();
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    Log.e(TAG,"Err:" + sw.toString());
                     return false;
                 }
                 return true;
@@ -241,7 +249,9 @@ public class WebUtil {
                 Thread.sleep(100); //0.1초 기다림
                 countdown--;
             } catch (Exception e) {
-                Log.e(TAG, e.toString());
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Log.e(TAG,"Err:" + sw.toString());
             }
         }
     }

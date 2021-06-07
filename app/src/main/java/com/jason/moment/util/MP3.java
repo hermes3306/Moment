@@ -20,6 +20,8 @@ import com.jason.moment.R;
 import com.jason.moment.StartNewActivity;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -128,8 +130,9 @@ public class MP3 {
             mediaPlayer.setDataSource(context, myUri);
             mediaPlayer.prepare();
         }catch(Exception e) {
-            e.printStackTrace();
-            Log.d(TAG, e.toString());
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
         mediaPlayer.start();
         played = true;
@@ -159,8 +162,9 @@ public class MP3 {
                     mediaPlayer.setDataSource(context, myUri);
                     mediaPlayer.prepare();
                 }catch(Exception e) {
-                    e.printStackTrace();
-                    Log.d(TAG, e.toString());
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    Log.e(TAG,"Err:" + sw.toString());
                 }
                 mediaPlayer.start();
 
@@ -197,8 +201,9 @@ public class MP3 {
             mediaPlayer.prepare();
             mediaPlayer.start();
         } catch (Exception e) {
-            e.printStackTrace();
-            Log.d(TAG, e.toString());
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
     }
 
@@ -216,8 +221,9 @@ public class MP3 {
             mediaPlayer.prepare(); // might take long! (for buffering, etc)
             mediaPlayer.start();
         }catch(Exception e) {
-            e.printStackTrace();
-            Log.d(TAG, e.toString());
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
     }
 

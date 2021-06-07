@@ -1,7 +1,11 @@
 package com.jason.moment.util;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.Collator;
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,7 +62,9 @@ public class FileUtil {
         try {
            f.delete();
         }catch(Exception e) {
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.d("FileUtil","Err:" + sw.toString());
         }
     }
 

@@ -21,6 +21,9 @@ import androidx.core.app.NotificationCompat;
 
 import com.jason.moment.util.Config;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class LocService2 extends Service {
     private static final String TAG = "LocService2";
 
@@ -59,7 +62,9 @@ public class LocService2 extends Service {
                 Log.d(TAG, "-- **** LocationManager.GPS_PROVIDER:" + LocationManager.GPS_PROVIDER);
 
             }catch(Exception e) {
-                e.printStackTrace();
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Log.e(TAG,"Err:" + sw.toString());
             }
         }
 
@@ -118,10 +123,14 @@ public class LocService2 extends Service {
                     Config._loc_distance,
                     mLocationListeners[0]
             );
-        } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
+        } catch (java.lang.SecurityException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
+        } catch (IllegalArgumentException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
 
         try {
@@ -132,10 +141,14 @@ public class LocService2 extends Service {
                     mLocationListeners[1]
             );
 
-        } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+        } catch (java.lang.SecurityException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
+        } catch (IllegalArgumentException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
     }
 
@@ -150,8 +163,10 @@ public class LocService2 extends Service {
                         return;
                     }
                     mLocationManager.removeUpdates(mLocationListeners[i]);
-                } catch (Exception ex) {
-                    Log.i(TAG, "fail to remove location listener, ignore", ex);
+                } catch (Exception e) {
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    Log.e(TAG,"Err:" + sw.toString());
                 }
             }
         }

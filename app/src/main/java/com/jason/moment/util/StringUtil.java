@@ -2,6 +2,8 @@ package com.jason.moment.util;
 
 import android.util.Log;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,6 +40,9 @@ public class StringUtil {
             formatter = new SimpleDateFormat(fmt);
             date = (Date)formatter.parse(str_date);
         } catch (ParseException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
             return null;
         }
         return date;

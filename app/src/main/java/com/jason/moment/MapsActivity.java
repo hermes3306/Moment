@@ -77,6 +77,8 @@ import com.jason.moment.util.db.MyLoc;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -292,7 +294,7 @@ public class MapsActivity extends AppCompatActivity implements
         Log.d(TAG,"-- onResume.");
 
         // have to get all the activities from MyLoc DB;
-        list = MyLoc.getInstance(_ctx).getToodayActivities();
+        //list = MyLoc.getInstance(_ctx).getToodayActivities();
 
         // Start GPS Logger service
         if(Config._start_service) {
@@ -314,10 +316,9 @@ public class MapsActivity extends AppCompatActivity implements
         try {
             Config._default_ext = parseInt(_filetype);
         }catch(Exception e) {
-            Log.d(TAG,"-- parseInt filetype error!");
-            Log.d(TAG, "--" + e);
-            Config._default_ext = Config._csv;
-            Log.d(TAG,"-- set default ext as csv!");
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
 
         MyActivityUtil.initialize();
@@ -341,7 +342,7 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         Log.d(TAG,"-- onPause().");
-        SerializeTodayActivity();
+        //SerializeTodayActivity();
         paused = true;
 
         if(Config._start_service) {
@@ -1103,8 +1104,9 @@ public class MapsActivity extends AppCompatActivity implements
                 return location;
             }
         }catch(Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, e.toString());
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
         return null;
     }

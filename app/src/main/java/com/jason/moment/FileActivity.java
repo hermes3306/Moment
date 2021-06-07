@@ -49,6 +49,8 @@ import com.jason.moment.util.db.MyActiviySummary;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -165,8 +167,9 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 try {
                     addresses = geocoder.getFromLocation(mActivityList.get(0).latitude, mActivityList.get(0).longitude,1);
                 }catch(Exception e) {
-                    e.printStackTrace();
-                    Log.e(TAG, e.toString());
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    Log.e(TAG,"Err:" + sw.toString());
                 }
 
                 String addinfo = null;
@@ -372,8 +375,9 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                             if (flist.length > 1) position=position;
                             else position=0;
                         }catch(Exception e) {
-                            e.printStackTrace();
-                            Log.d(TAG, "-- file delete err: " + e.toString());
+                            StringWriter sw = new StringWriter();
+                            e.printStackTrace(new PrintWriter(sw));
+                            Log.e(TAG,"Err:" + sw.toString());
                         }
                         GO(googleMap, flist[position]);
                     }

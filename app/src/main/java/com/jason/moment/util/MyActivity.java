@@ -1,8 +1,12 @@
 package com.jason.moment.util;
 
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -52,6 +56,9 @@ public class MyActivity implements Serializable {
             formatter = new SimpleDateFormat("yyyy/MM/dd_HH:mm:ss");
             date = (Date)formatter.parse(cr_date + "_" + cr_time);
         } catch (ParseException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.d("MyActivity","Err:" + sw.toString());
             return null;
         }
         return date;

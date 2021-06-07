@@ -24,6 +24,8 @@ import android.widget.Toast;
 import com.jason.moment.util.Config;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -221,9 +223,10 @@ public class PicActivity extends AppCompatActivity implements View.OnClickListen
                 photoFile = new File(Config.PIC_SAVE_DIR, imageFileName);
                 Toast.makeText(_ctx, "photoFile " + photoFile.getAbsolutePath() + " is used for this picture!", Toast.LENGTH_LONG).show();
                 Log.d(TAG,"-- >>>>after createImageFile" + photoFile.getAbsolutePath());
-            } catch (Exception ex) {
-                // Error occurred while creating the File
-                Log.d(TAG,"-- >>>>" +ex.toString());
+            } catch (Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Log.e(TAG,"Err:" + sw.toString());
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {

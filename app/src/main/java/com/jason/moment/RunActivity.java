@@ -36,6 +36,8 @@ import com.jason.moment.util.StringUtil;
 import com.jason.moment.util.db.MyLoc;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -109,10 +111,14 @@ public class RunActivity extends AppCompatActivity {
                     Config._loc_distance,
                     mLocationListeners[0]
             );
-        } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
+        } catch (java.lang.SecurityException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
+        } catch (IllegalArgumentException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
 
         if(Config._enable_network_provider) {
@@ -123,10 +129,14 @@ public class RunActivity extends AppCompatActivity {
                         Config._loc_distance,
                         mLocationListeners[1]
                 );
-            } catch (java.lang.SecurityException ex) {
-                Log.i(TAG, "fail to request location update, ignore", ex);
-            } catch (IllegalArgumentException ex) {
-                Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+            } catch (java.lang.SecurityException e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Log.e(TAG,"Err:" + sw.toString());
+            } catch (IllegalArgumentException e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Log.e(TAG,"Err:" + sw.toString());
             }
         }
     }

@@ -55,6 +55,8 @@ import com.jason.moment.util.StringUtil;
 import org.jetbrains.annotations.TestOnly;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -342,8 +344,9 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
             Config._loc_interval = parseInt(_loc_interval);
             Config._loc_distance = parseFloat(_loc_distance);
         }catch(Exception e) {
-            Log.e(TAG,"-- " + e);
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
         String t = "Loc_interval:"+ Config._loc_interval / 1000 + " sec\n" +
                 "Loc_distance:" + Config._loc_distance + " meter\n" +
@@ -361,10 +364,14 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                     Config._loc_distance,
                     mLocationListeners[0]
             );
-        } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
+        } catch (java.lang.SecurityException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
+        } catch (IllegalArgumentException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
         if(Config._enable_network_provider) {
             try {
@@ -374,10 +381,14 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                         Config._loc_distance,
                         mLocationListeners[1]
                 );
-            } catch (java.lang.SecurityException ex) {
-                Log.i(TAG, "fail to request location update, ignore", ex);
-            } catch (IllegalArgumentException ex) {
-                Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+            } catch (java.lang.SecurityException e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Log.e(TAG,"Err:" + sw.toString());
+            } catch (IllegalArgumentException e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Log.e(TAG,"Err:" + sw.toString());
             }
         }
     }
