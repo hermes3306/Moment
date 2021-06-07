@@ -54,6 +54,11 @@ public class MP3 {
             Toast.makeText(context,"No musics!",Toast.LENGTH_SHORT).show();
             return;
         }
+
+        if(playlist1.length==0 ) {
+            Toast.makeText(context,"No musics!",Toast.LENGTH_SHORT).show();
+            return;
+        }
         //tv.setText("" + (pos+1) + "/" + playlist1.length);
         tv.setText(playlist1[pos].getName());
         alertadd.setView(view1);

@@ -31,13 +31,11 @@ public class StartupBatch {
             //genTodayDB4Sample();
             //deleteDB();
             //geturl();
-            //MyLoc.getInstance(_ctx).createNew(); // DB를 초기화
             //clearShortRunActivities(_ctx);
             //clearRunActivitiesStartsWith(_ctx,"S");
             //renameMediaFiles(_ctx);
-            //rebuildActivitySummaries(_ctx);
             //query_rank_speed(_ctx);
-
+            //downAll(_ctx);
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             StringWriter sw = new StringWriter();
@@ -51,10 +49,38 @@ public class StartupBatch {
         return;
     }
 
+    public void downAll(Context _ctx) {
+        CloudUtil.getInstance().DownloadAll(_ctx,Config._csv);
+        CloudUtil.getInstance().DownloadAll(_ctx,Config._mov);
+        CloudUtil.getInstance().DownloadAll(_ctx,Config._mp3);
+        CloudUtil.getInstance().DownloadAll(_ctx,Config._img);
+        MyLoc.getInstance(_ctx).createNew(); // DB를 초기화
+        rebuildActivitySummaries(_ctx);
+        ImportTodayActivity();
+    }
+
     public void query_rank_speed(Context _ctx) {
         ArrayList<ActivitySummary> mas =
                 MyActiviySummary.getInstance(_ctx).query_rank_speed();
         for(int i=0;i<mas.size();i++) Log.d(TAG, "--" + mas.get(i).toString() );
+    }
+
+    public void ImportTodayActivity() {
+        String today = DateUtil.today();
+        File f = new File(Config.CSV_SAVE_DIR, today + Config._csv_ext);
+        ArrayList<MyActivity> mal=null;
+        if(f.exists()) {
+            mal = MyActivityUtil.deserializeFromCSV(today + Config._csv_ext);
+        }
+        if(mal==null) {
+            return;
+        }
+        MyLoc myloc=new MyLoc(_ctx);
+        myloc.deleteAll();
+        for(int i=0;i<mal.size();i++) {
+            MyActivity a = mal.get(i);
+            myloc.ins(a.latitude,a.longitude,a.cr_date, a.cr_time);
+        }
     }
 
     public void rebuildActivitySummaries(Context _ctx) {

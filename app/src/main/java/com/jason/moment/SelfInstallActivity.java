@@ -22,6 +22,7 @@ import android.content.pm.PackageInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -89,11 +90,12 @@ public class SelfInstallActivity extends AppCompatActivity {
 
                 if(checkInstalledApp(AppName.toString()) == true)
                 {
-                    Toast.makeText(getApplicationContext(), "Application Found " + AppName.toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "--Application Found " + AppName.toString(), Toast.LENGTH_SHORT).show();
 
 
                 }else{
-                    Toast.makeText(getApplicationContext(), "Application Not Found. "+ AppName.toString(), Toast.LENGTH_SHORT).show();
+                    Log.d("IS", "--" + AppName.toString());
+                    Toast.makeText(getApplicationContext(), "--Application Not Found. "+ AppName.toString(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -131,7 +133,7 @@ public class SelfInstallActivity extends AppCompatActivity {
         for (int i=0; i<max; i++)
         {
             //apps.get(i).prettyPrint();
-
+            Log.e("IS", "-- " + apps.get(i).appname.toString());
             if(apps.get(i).appname.toString().equals(appName.toString()))
             {
                 /*if(apps.get(i).versionName.toString().contains(VersionName.toString()) == true &&
@@ -270,69 +272,8 @@ public class SelfInstallActivity extends AppCompatActivity {
     }
     public void GetVersionFromServer(String BuildVersionPath)
     {
-        //this is the file you want to download from the remote server
-        //path ="http://10.0.2.2:82/Version.txt";
-        //this is the name of the local file you will create
-        // version.txt contain Version Code = 2; \n Version name = 2.1;
-        URL u;
-        try {
-            u = new URL(BuildVersionPath.toString());
-
-            HttpURLConnection c = (HttpURLConnection) u.openConnection();
-            c.setRequestMethod("GET");
-            c.setDoOutput(true);
-            c.connect();
-
-            //Toast.makeText(getApplicationContext(), "HttpURLConnection Complete.!", Toast.LENGTH_SHORT).show();
-
-            InputStream in = c.getInputStream();
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-            byte[] buffer = new byte[1024]; //that stops the reading after 1024 chars..
-            //in.read(buffer); //  Read from Buffer.
-            //baos.write(buffer); // Write Into Buffer.
-
-            int len1 = 0;
-            while ( (len1 = in.read(buffer)) != -1 )
-            {
-                baos.write(buffer,0, len1); // Write Into ByteArrayOutputStream Buffer.
-            }
-
-            String temp = "";
-            String s = baos.toString();// baos.toString(); contain Version Code = 2; \n Version name = 2.1;
-
-            for (int i = 0; i < s.length(); i++)
-            {
-                i = s.indexOf("=") + 1;
-                while (s.charAt(i) == ' ') // Skip Spaces
-                {
-                    i++; // Move to Next.
-                }
-                while (s.charAt(i) != ';'&& (s.charAt(i) >= '0' && s.charAt(i) <= '9' || s.charAt(i) == '.'))
-                {
-                    temp = temp.toString().concat(Character.toString(s.charAt(i))) ;
-                    i++;
-                }
-                //
-                s = s.substring(i); // Move to Next to Process.!
-                temp = temp + " "; // Separate w.r.t Space Version Code and Version Name.
-            }
-            String[] fields = temp.split(" ");// Make Array for Version Code and Version Name.
-
-            VersionCode = Integer.parseInt(fields[0].toString());// .ToString() Return String Value.
-            VersionName = fields[1].toString();
-
-            baos.close();
-        }
-        catch (MalformedURLException e) {
-            Toast.makeText(getApplicationContext(), "Error." + e.getMessage(), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(getApplicationContext(), "Error." + e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-        //return true;
+            VersionCode = 1;
+            VersionName = "Moment";
     }// Method End.
 
     // Download On My Mobile SDCard or Emulator.

@@ -198,6 +198,8 @@ public class CloudUtil {
                         listUrl = Config._listImageFiles;
                     }else if(ftype==Config._mov) {
                         listUrl = Config._listMovFiles;
+                    }else if(ftype==Config._mp3) {
+                        listUrl = Config._listMP3Files;
                     }
                     Log.d(TAG,"-- list url:" + listUrl);
 

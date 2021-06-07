@@ -27,7 +27,7 @@ import static java.lang.Integer.parseInt;
 public class Config {
 
     static String TAG                       = "Config";
-    static String _ver                      = "3";
+    static String _ver                      = "4";
 
     public static long  _ONE_SEC            = 1000;
     public static long  _ONE_MIN            = _ONE_SEC * 60;
@@ -185,8 +185,9 @@ public class Config {
             _preference_val = Integer.parseInt(sharedPreferences.getString(name, "0"));
             //Log.e(TAG,"-- getIntPreference value:" + _preference_val);
         }catch(Exception e) {
-            Log.e(TAG, "-- Err(getIntPreference for name:" + name  + e.toString());
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
         return _preference_val;
     }
@@ -319,8 +320,9 @@ public class Config {
             Config._track_color = colors[Config.getIntPreference(_ctx, "track_color")];
             Config._track_width = Config.getIntPreference(_ctx, "track_width");
         } catch (Exception e) {
-            Log.e(TAG, "-- " + e);
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG,"Err:" + sw.toString());
         }
     }
 
