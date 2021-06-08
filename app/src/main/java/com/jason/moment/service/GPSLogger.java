@@ -137,6 +137,8 @@ public class GPSLogger extends Service implements LocationListener {
                 gpsLoggingInterval = intent.getLongExtra("gpsLoggingInterval",Config._loc_interval);
                 gpsLoggingMinDistance = intent.getLongExtra("gpsLoggingMinDistance", (long)Config._loc_distance);
                 if (ContextCompat.checkSelfPermission(_ctx, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    // Register ourselves for location updates
+                    lmgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                     lmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, gpsLoggingInterval, gpsLoggingMinDistance, _myLocationListener);
                     Log.e(TAG, "-- gpsLoggingInterval:" + gpsLoggingInterval);
                     Log.e(TAG, "-- gpsLoggingMinDistance:" + gpsLoggingMinDistance);
@@ -264,7 +266,6 @@ public class GPSLogger extends Service implements LocationListener {
         isTracking = b;
     }
 
-
     @Override
     public void onLocationChanged(Location location) {
         if(Config._sharedPreferenceChanged) {
@@ -272,6 +273,7 @@ public class GPSLogger extends Service implements LocationListener {
             gpsLoggingInterval = Config._loc_interval;
             gpsLoggingMinDistance = (long)Config._loc_distance;
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                lmgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 lmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, gpsLoggingInterval, gpsLoggingMinDistance, this);
             }
             Log.d(TAG,"-- Shared Preference changed! reload ok!");

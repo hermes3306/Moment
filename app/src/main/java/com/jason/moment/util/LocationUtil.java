@@ -28,7 +28,7 @@ public class LocationUtil {
         }
         last_location = location;
         Log.d(TAG,"-- onLocationChanged("+location.getLatitude()+","+location.getLongitude()+")");
-        if(!first_called && dist < Config._minLocChange) return;
+        if(!first_called && dist < Config._loc_distance) return;
         Log.d(TAG,"-- onLocationChanged("+dist+"m)");
         MyLoc myloc = new MyLoc(context);
         if(first_called) {
@@ -39,10 +39,10 @@ public class LocationUtil {
                 return;
             }
             double d2 = CalDistance.dist(ma.latitude, ma.longitude, location.getLatitude(), location.getLongitude());
-            if (d2 > Config._minLocChange) myloc.ins(location.getLatitude(), location.getLongitude());
+            if (d2 > Config._loc_distance) myloc.ins(location.getLatitude(), location.getLongitude());
         }
         else {
-            if (dist > Config._minLocChange) {
+            if (dist > Config._loc_distance) {
                 myloc.ins(location.getLatitude(), location.getLongitude());
             } else return;
         }

@@ -33,8 +33,6 @@ public class ConfigActivity extends AppCompatActivity {
         }
     }
 
-
-
     public static class SettingsFragment extends PreferenceFragmentCompat implements
             SharedPreferences.OnSharedPreferenceChangeListener{
 
@@ -62,6 +60,5 @@ public class ConfigActivity extends AppCompatActivity {
             Log.d(TAG,"-- SharedPreferenceChanged:" + key);
             Config._sharedPreferenceChanged = true;
         }
-
     }
 }

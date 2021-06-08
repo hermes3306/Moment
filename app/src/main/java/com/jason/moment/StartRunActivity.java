@@ -699,7 +699,7 @@ public class StartRunActivity extends AppCompatActivity implements
                         lastloc = location;
                     }else {
                         dist = CalDistance.dist(lastloc.getLatitude(), lastloc.getLongitude(), location.getLatitude(), location.getLongitude());
-                        if(dist > Config._minLocChange) {
+                        if(dist > Config._loc_distance) {
                             last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
                             list.add(last);
                             lastloc = location;

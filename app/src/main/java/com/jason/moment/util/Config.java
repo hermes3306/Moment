@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 import static java.lang.Float.parseFloat;
 import static java.lang.Integer.parseInt;
@@ -27,7 +28,7 @@ import static java.lang.Integer.parseInt;
 public class Config {
 
     static String TAG                       = "Config";
-    static String _ver                      = "5";
+    static String _ver                      = "6";
 
     public static long  _ONE_SEC            = 1000;
     public static long  _ONE_MIN            = _ONE_SEC * 60;
@@ -64,7 +65,7 @@ public class Config {
     public static float _marker_alpha = 0.9f;
 
     public static int _track_color          = Color.RED;
-    public static int _track_width          = 10;
+    public static int _track_width          = 15;
     public static int _default_start_layout = R.layout.activity_start_style1;
     public static int _default_file_layout  = R.layout.activity_file;
 
@@ -139,7 +140,6 @@ public class Config {
     public static boolean       _enable_network_provider = false;
     public static int           _loc_interval   = 1000;     // 1 sec
     public static float         _loc_distance   = 1f;       // 1 meter
-    public static double        _minLocChange   = _loc_distance;
 
     public static boolean       _start_service  = true; // start location service
     public static boolean       _start_timer    = false; // start timer background scheduler
@@ -178,21 +178,19 @@ public class Config {
     static String mp3_folder_name       = "Moment_MP3" + _ver;
     static String apk_folder_name       = "Moment_APK" + _ver;
 
+    private static SharedPreferences sharedPreferences = null;
+    private static Context _ctx4SharedPreferences = null;
+
 
     public static String getPreference(Context context, String name) {
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(context /* Activity context */);
-        String _preference_val = sharedPreferences.getString(name, "");
+        String _preference_val = sharedPreferences.getString(name, "0");
         return _preference_val;
     }
 
     public static int getIntPreference(Context context, String name) {
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(context /* Activity context */);
         int _preference_val = 0;
         try {
             _preference_val = Integer.parseInt(sharedPreferences.getString(name, "0"));
-            //Log.e(TAG,"-- getIntPreference value:" + _preference_val);
         }catch(Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
@@ -304,25 +302,30 @@ public class Config {
         initialized_file_provider = true;
     }
 
-    public static void init_preference_values_running(Context _ctx, String interval, String distance) {
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(_ctx);
-        SharedPreferences.Editor editor = sp.edit();
+    public static void init_preference_values_running(String interval, String distance) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("interval",interval);
         editor.putString("distance",distance);
-        init_preference_values(_ctx);
         _sharedPreferenceChanged = true;
     }
 
-    public static void init_preference_value_running_default(Context _ctx) {
-        init_preference_values_running(_ctx, "1000","1"); // 1sec, 1meter
+    public static void init_preference_value_running_default() {
+        init_preference_values_running("1000","1"); // 1sec, 1meter
     }
 
     public static void init_preference_values(Context _ctx) {
-        SharedPreferences sharedPreferences =
+        _ctx4SharedPreferences = _ctx;
+        if(sharedPreferences==null ) sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(_ctx /* Activity context */);
+
+        Map<String,?> keys = sharedPreferences.getAll();
+        for(Map.Entry<String,?> entry : keys.entrySet()){
+            Log.d(TAG,"--    " + entry.getKey() + ": " + entry.getValue().toString());
+        }
+
         Config._enable_network_provider = sharedPreferences.getBoolean("NetworkProvider", Config._enable_network_provider);
-        String _loc_interval = sharedPreferences.getString("interval", "");
-        String _loc_distance = sharedPreferences.getString("distance", "");
+        String _loc_interval = sharedPreferences.getString("interval", "10000");
+        String _loc_distance = sharedPreferences.getString("distance", "1");
         int[] colors = {
                 Color.RED, Color.CYAN, Color.BLUE, Color.WHITE, Color.BLACK, Color.YELLOW, Color.DKGRAY, Color.GREEN, Color.LTGRAY
         };

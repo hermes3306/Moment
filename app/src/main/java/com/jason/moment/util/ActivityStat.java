@@ -12,7 +12,9 @@ public class ActivityStat {
         public double distanceKm;
         public double distanceM;
         public String duration;
+        public String durationM;
         public double minperKm;
+        public String minperKms;
         public int calories;
         public long durationInLong;
 
@@ -31,6 +33,17 @@ public class ActivityStat {
             this.minperKm = minperKm;
             this.calories = calories;
             this.durationInLong = end.getTime() - start.getTime();
+
+            long t_dur_h = durationInLong/Config._ONE_HOUR;
+            long t_dur_m = (durationInLong - (t_dur_h * Config._ONE_HOUR)) / Config._ONE_MIN;
+            long t_dur_s = (durationInLong - (t_dur_h * Config._ONE_HOUR) - (t_dur_m * Config._ONE_MIN)) / Config._ONE_SEC;
+            if(t_dur_h>0) this.durationM =  "" +  t_dur_h + ":" + t_dur_m + ":" + t_dur_s;
+            else  this.durationM = t_dur_m + ":" + t_dur_s;
+
+            long t_sec = (long)(minperKm * 60);
+            long t_min = t_sec / 60;
+            t_sec = (long)(minperKm * 60) - t_min * 60;
+            this.minperKms = "" + t_min + ":" + t_sec;
 
             String H = DateUtil.DateToString(start,"H");
             int t = Integer.parseInt(H);

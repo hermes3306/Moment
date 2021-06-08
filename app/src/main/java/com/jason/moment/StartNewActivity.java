@@ -552,6 +552,7 @@ public class StartNewActivity extends AppCompatActivity implements
         new_location = location;
         showGPS();
     }
+
     void boardCastConfigChanged(long gpsLoggingInterval, long gpsLoggingMinDistance ) {
         Intent intent = new Intent(Config.INTENT_CONFIG_CHANGE);
         intent.putExtra("gpsLoggingInterval", gpsLoggingInterval);
@@ -569,10 +570,15 @@ public class StartNewActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         this._ctx = this;
         // 달리기 모드일 경우, 1초, 1미터로 셋팅함
-        Config.init_preference_value_running_default(_ctx);
+        Config.initialize(_ctx);
+
         // GPSLogger 서비스로 1초/1미리 환경 Broad Casting 필요함.
         gpsLoggingInterval = Config._loc_interval;
         gpsLoggingMinDistance = (long)Config._loc_distance;
+
+        Config._loc_interval = 1000;
+        Config._loc_distance = 1;
+        Config.init_preference_values_running("1000","1"); // 1sec, 1meter
         boardCastConfigChanged(1000,1);
 
         // Register our broadcast receiver
@@ -608,6 +614,10 @@ public class StartNewActivity extends AppCompatActivity implements
         unregisterReceiver(receiver);
         Log.d(TAG, "-- sent Broadcast message: INTENT_STOP_TRACKING...");
         boardCastConfigChanged(gpsLoggingInterval, gpsLoggingMinDistance);
+        Config._loc_distance = gpsLoggingMinDistance;
+        Config._loc_interval = (int)gpsLoggingInterval;
+        Config.init_preference_values_running(String.format("%d",gpsLoggingInterval),String.format("%d",gpsLoggingMinDistance));
+        Config._sharedPreferenceChanged = true;
         super.onDestroy();
     }
 
@@ -733,7 +743,7 @@ public class StartNewActivity extends AppCompatActivity implements
                         last_location = location;
                     }else {
                         dist = CalDistance.dist(last_location.getLatitude(), last_location.getLongitude(), location.getLatitude(), location.getLongitude());
-                        if(dist > Config._minLocChange) {
+                        if(dist > Config._loc_distance) {
                             last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
                             list.add(last);
                             last_location = location;

@@ -84,23 +84,16 @@ public class    MapUtil {
         markers.add(marker);
     }
 
-    public static void drawMarkers(GoogleMap gmap, ArrayList<MyActivity> list) {
+    public static void drawAllMarkers(GoogleMap gmap, ArrayList<MyActivity> list) {
         double tot_distance = MyActivityUtil.getTotalDistanceInDouble(list);
-        int disunit = 1000;
-        String unitstr = "미터";
-        if (tot_distance > 1000) {  // 1km 이상
-            disunit = 1000;
-            unitstr = "킬로";
-        } else disunit = 100;
+        int disunit = (int)(tot_distance / 10);
 
         double t_distance = 0;
         double t_lap = disunit;
         for(int i=0; i < list.size(); i++) {
             LatLng ll = new LatLng(list.get(i).latitude, list.get(i).longitude);
-            float color =  Config._marker_color;
-
             String title = StringUtil.getDateTimeString(list.get(i));
-            /* drawMarkers 호출시 StartMarker/EndMarker별도로 호출함 */
+
             if(i==0) drawStartMarker(gmap,list);
             else if(i==list.size()-1) drawEndMarker(gmap,list);
             else {
@@ -112,28 +105,22 @@ public class    MapUtil {
                 t_distance = t_distance + dist;
                 if(t_distance > t_lap) {
                     int interval = (int)(t_distance / disunit);
-                    //Log.e(TAG, "" + interval + unitstr);
                     t_lap += disunit;
-
-//                    Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title(title)
-//                            .icon(BitmapDescriptorFactory.defaultMarker(color))
-//                            .draggable(true)
-//                            .visible(true)
-//                            .alpha(Config._marker_alpha)
-//                            .snippet(""+interval + unitstr));
+                    String _title;
+                    if (t_distance < 1000) _title = String.format("%.0f", t_distance) +"m";
+                    else _title = String.format("%.2f", t_distance/1000) +"km";
 
                     Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title(title)
                             .icon(BitmapDescriptorFactory.fromResource(Config._marker_icon))
                             .draggable(true)
                             .visible(true)
-                            .alpha(Config._marker_alpha).title(""+interval + unitstr)
+                            .alpha(Config._marker_alpha).title(_title)
                             .snippet(list.get(i).cr_time));
                     markers.add(marker);
                 }
             }
         }
     }
-
 
     public static void drawTrackInRange(Context context, GoogleMap map, ArrayList<MyActivity> latLngArrayList, int start, int end) {
         if(latLngArrayList == null) return;
@@ -193,7 +180,7 @@ public class    MapUtil {
     }
 
     public static void DRAW(Context _ctx, GoogleMap googleMap, int width, int height, ArrayList<MyActivity>mActivityList) {
-        MapUtil.initialize(); //MapUtil은 사용하기 전에 반드시 초기화를 해서 마크정보 초기화
+        MapUtil.initialize();   //MapUtil은 사용하기 전에 반드시 초기화를 해서 마크정보 초기화
         googleMap.clear();
         MyActivity lastActivity=null;
         if(mActivityList.size()==0) {
@@ -201,7 +188,7 @@ public class    MapUtil {
         } else {
             lastActivity = mActivityList.get(mActivityList.size()-1);
         }
-        if(!nomarker) MapUtil.drawMarkers(googleMap,mActivityList);
+        if(!nomarker) MapUtil.drawAllMarkers(googleMap,mActivityList);
         if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
         if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);

@@ -60,7 +60,7 @@
                         android:layout_weight="1"
                         android:text=" "/>
                     <TextView
-                        android:id="@+id/tv_km"
+                        android:id="@+id/tv_white_km"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
@@ -69,6 +69,7 @@
                         android:layout_weight="1"
                         android:text="12.56"/>
                     <TextView
+                        android:id="@+id/tv_white_avg"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
@@ -77,6 +78,7 @@
                         android:layout_weight="1"
                         android:text="59:47"/>
                     <TextView
+                        android:id="@+id/tv_white_duration"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"

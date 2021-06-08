@@ -418,7 +418,7 @@ public class MapsActivity extends AppCompatActivity implements
             last_location = location;
         }else {
             dist = CalDistance.dist(last_location.getLatitude(), last_location.getLongitude(), location.getLatitude(), location.getLongitude());
-            if(dist > Config._minLocChange) {
+            if(dist > Config._loc_distance) {
                 last_activity = new MyActivity(location.getLatitude(), location.getLongitude(),d);
                 list.add(last_activity);
                 last_location = location;
@@ -1186,7 +1186,7 @@ public class MapsActivity extends AppCompatActivity implements
                     }
                     last_location = location;
 
-                    if(dist > Config._minLocChange) { // 5meter
+                    if(dist > Config._loc_distance) { // 5meter
                         MyLoc myloc = new MyLoc(getApplicationContext());
                         myloc.ins(location.getLatitude(), location.getLongitude());
                         Log.d(TAG,"-- new Location"+location.getLatitude()+","+location.getLongitude()+")");

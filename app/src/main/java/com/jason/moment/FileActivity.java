@@ -78,7 +78,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     public static Marker bef_last_marker=null;
 
     public static final int REQUEST_ACTIVITY_FILE_LIST = 0x0001;
-    public static boolean nomarker = false;
+    public static boolean nomarker = true;
     public static boolean notrack = false;
     public static boolean satellite = false;
 
@@ -132,6 +132,10 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             final TextView tv_minperkm = (TextView) findViewById(R.id.tv_minperkm);
             final TextView tv_carolies = (TextView) findViewById(R.id.tv_carolies);
             final TextView tv_rank = (TextView) findViewById(R.id.tv_rank);
+
+            final TextView tv_white_km = (TextView) findViewById(R.id.tv_white_km);
+            final TextView tv_white_avg = (TextView) findViewById(R.id.tv_white_avg);
+            final TextView tv_white_duration = (TextView) findViewById(R.id.tv_white_duration);
 
             final ImageButton imbt_marker = (ImageButton) findViewById(R.id.imbt_marker);
             final ImageButton imbt_navi = (ImageButton) findViewById(R.id.imbt_navi);
@@ -188,16 +192,21 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 activityStat= getActivityStat(mActivityList);
 
                 if(activityStat !=null) {
-                    String _minDist = String.format("%.2f", activityStat.distanceKm);
+                    String _minDist = String.format("%.1f", activityStat.distanceKm);
                     String sinfo = "" + date_str;
 
                     tv_activity_name.setText(activityStat.name);
                     tv_date_str.setText(activityStat.date_str);
 
                     tv_distance.setText(_minDist);
-                    tv_duration.setText(activityStat.duration);
-                    tv_minperkm.setText(String.format("  %.2f",activityStat.minperKm));
+                    tv_duration.setText(activityStat.durationM);
+                    tv_minperkm.setText(activityStat.minperKms);
                     tv_carolies.setText("   " + activityStat.calories);
+
+                    tv_white_km.setText(_minDist);
+                    tv_white_avg.setText(activityStat.minperKms);
+                    tv_white_duration.setText(activityStat.durationM);
+
                     try {
                         int rank = MyActiviySummary.getInstance(_ctx).rank(activityStat.minperKm);
                         tv_rank.setText("" + rank + "번째로 빠릅니다.");
@@ -257,7 +266,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     lastActivity = mActivityList.get(mActivityList.size()-1);
                 }
 
-                if(!nomarker) MapUtil.drawMarkers(googleMap,mActivityList);
+                if(!nomarker) MapUtil.drawAllMarkers(googleMap,mActivityList);
                 if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
                 if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
