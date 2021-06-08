@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 public class    MapUtil {
     private static final String TAG = "MapUtil";
-    public static boolean nomarker = false;
+    public static boolean nomarker = true;
     public static boolean notrack = false;
     public static boolean satellite = false;
 
@@ -192,7 +192,7 @@ public class    MapUtil {
         if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
         if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        if(nomarker || notrack) {
+        if(!nomarker) {
             MapUtil.drawStartMarker(googleMap,mActivityList);
             MapUtil.drawEndMarker(googleMap,mActivityList);
         }

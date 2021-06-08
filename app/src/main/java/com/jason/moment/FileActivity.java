@@ -527,20 +527,18 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.imbt_satellite_on:
                 if(!satellite) _googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 v.setVisibility(View.GONE);
-                mapView.setMinimumHeight(mapViewHeight);
                 imbt_satellite_off.setVisibility(View.VISIBLE);
                 imbt_satellite_off.setVisibility(View.VISIBLE);
-                imbt_prev.setVisibility(View.VISIBLE);
-                imbt_next.setVisibility(View.VISIBLE);
+//                imbt_prev.setVisibility(View.VISIBLE);
+//                imbt_next.setVisibility(View.VISIBLE);
                 break;
             case R.id.imbt_satellite_off:
                 if(!satellite) _googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                 v.setVisibility(View.GONE);
                 mapViewHeight = mapView.getHeight();
-                mapView.setMinimumHeight(mapViewHeight+100);
                 imbt_satellite_on.setVisibility(View.VISIBLE);
-                imbt_prev.setVisibility(View.GONE);
-                imbt_next.setVisibility(View.GONE);
+//                imbt_prev.setVisibility(View.GONE);
+//                imbt_next.setVisibility(View.GONE);
                 break;
             case R.id.imSetting:
                 Log.d(TAG, "-- Setting Activities!");
