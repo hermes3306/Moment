@@ -68,7 +68,7 @@
                         android:textSize="17sp"
                         android:textColor="@color/white"
                         android:layout_weight="1"
-                        android:text="3.03"/>
+                        android:text="12.56"/>
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
                         android:textSize="18sp"
                         android:textColor="@color/white"
                         android:layout_weight="1"
-                        android:text="11:47"/>
+                        android:text="59:47"/>
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
                         android:textSize="18sp"
                         android:textColor="@color/white"
                         android:layout_weight="1"
-                        android:text="35:35"/>
+                        android:text="8:20"/>
                     <TextView
 
                         android:layout_width="match_parent"
@@ -113,7 +113,7 @@
                         android:textSize="10sp"
                         android:textColor="@color/white"
                         android:layout_weight="1"
-                        android:text="DISTNACE(KM)"/>
+                        android:text="DISTNACE"/>
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
