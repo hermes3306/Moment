@@ -27,7 +27,7 @@ import static java.lang.Integer.parseInt;
 public class Config {
 
     static String TAG                       = "Config";
-    static String _ver                      = "4";
+    static String _ver                      = "5";
 
     public static long  _ONE_SEC            = 1000;
     public static long  _ONE_MIN            = _ONE_SEC * 60;

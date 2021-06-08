@@ -97,6 +97,7 @@ public class MyActiviySummary {
 
     public int rank(double minpk) {
         ArrayList<ActivitySummary> asl = query_rank_speed();
+        if(asl==null) return -1;
         if (asl.size()==0) return 1;
         for(int i=0;i<asl.size();i++) {
             if(minpk < asl.get(i).minpk) return i+1;

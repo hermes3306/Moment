@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -67,8 +68,6 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
 
     public static ArrayList<Marker> markers = null;
     public static ArrayList<MyActivity> mActivityList = new ArrayList<MyActivity>();
-    public static String add1 = null;
-    public static String add2 = null;
     public static boolean tog_add = true;
 
     public static int marker_pos = 0;
@@ -158,9 +157,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
                 if(mActivityList.size()>1) {
-                    add1 = AddressUtil.getAddress(_ctx, mActivityList.get(0));
-                    add2 = AddressUtil.getAddress(_ctx, mActivityList.get(mActivityList.size()-1));
-                    marker_pos = mActivityList.size()-1;
+                        marker_pos = mActivityList.size()-1;
                 }
 
                 Geocoder geocoder = new Geocoder(_ctx, Locale.getDefault());
@@ -508,9 +505,34 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         return date;
     }
 
+    static int mapViewHeight;
     @Override
     public void onClick(View v) {
+        ImageButton imbt_prev = (ImageButton) findViewById(R.id.imbt_prev);
+        ImageButton imbt_next = (ImageButton) findViewById(R.id.imbt_next);
+        ImageButton imbt_satellite_off = (ImageButton)findViewById(R.id.imbt_satellite_off);
+        ImageButton imbt_satellite_on = (ImageButton)findViewById(R.id.imbt_satellite_on);
+        MapView mapView = (MapView)findViewById(R.id.mapView);
+
         switch (v.getId()) {
+            case R.id.imbt_satellite_on:
+                if(!satellite) _googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                v.setVisibility(View.GONE);
+                mapView.setMinimumHeight(mapViewHeight);
+                imbt_satellite_off.setVisibility(View.VISIBLE);
+                imbt_satellite_off.setVisibility(View.VISIBLE);
+                imbt_prev.setVisibility(View.VISIBLE);
+                imbt_next.setVisibility(View.VISIBLE);
+                break;
+            case R.id.imbt_satellite_off:
+                if(!satellite) _googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                v.setVisibility(View.GONE);
+                mapViewHeight = mapView.getHeight();
+                mapView.setMinimumHeight(mapViewHeight+100);
+                imbt_satellite_on.setVisibility(View.VISIBLE);
+                imbt_prev.setVisibility(View.GONE);
+                imbt_next.setVisibility(View.GONE);
+                break;
             case R.id.imSetting:
                 Log.d(TAG, "-- Setting Activities!");
                 Intent configIntent = new Intent(FileActivity.this, ConfigActivity.class);

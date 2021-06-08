@@ -24,6 +24,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -43,6 +44,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -245,7 +247,13 @@ public class MapsActivity extends AppCompatActivity implements
             gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
             String activity_file_name = DateUtil.today();
             gpsLoggerServiceIntent.putExtra("activity_file_name", activity_file_name );
-            startService(new Intent(MapsActivity.this, GPSLogger.class)); // 서비스 시작
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(new Intent(MapsActivity.this, GPSLogger.class)); // 서비스 시작
+            } else {
+                startService(new Intent(MapsActivity.this, GPSLogger.class)); // 서비스 시작
+            }
+
             gpsLoggerConnection = new GPSLoggerServiceConnection(this); // 서비스 바인딩
             bindService(gpsLoggerServiceIntent,gpsLoggerConnection, 0);
         }
@@ -549,7 +557,27 @@ public class MapsActivity extends AppCompatActivity implements
     public void onClick(View view) {
         Log.d(TAG,"-- onClick.");
         int step = 10;
+        ImageButton imbt_prev = (ImageButton) findViewById(R.id.imbt_prev);
+        ImageButton imbt_next = (ImageButton) findViewById(R.id.imbt_next);
+        ImageButton imbt_wifi_off = (ImageButton)findViewById(R.id.imbt_wifi_off);
+        ImageButton imbt_wifi_on = (ImageButton)findViewById(R.id.imbt_wifi_on);
+
         switch (view.getId()) {
+            case R.id.imbt_wifi_on:
+                googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                view.setVisibility(View.GONE);
+                imbt_wifi_off.setVisibility(View.VISIBLE);
+                imbt_prev.setVisibility(View.VISIBLE);
+                imbt_next.setVisibility(View.VISIBLE);
+                break;
+            case R.id.imbt_wifi_off:
+                googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                view.setVisibility(View.GONE);
+                imbt_wifi_on.setVisibility(View.VISIBLE);
+                imbt_prev.setVisibility(View.GONE);
+                imbt_next.setVisibility(View.GONE);
+                break;
+
             case R.id.imbt_prev:
                 Log.d(TAG,"-- marker_pos:" + marker_pos + " cntofactivities:" + cntofactivities );
                 if(list.size() == 0) break;
