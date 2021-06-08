@@ -78,7 +78,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     public static Marker bef_last_marker=null;
 
     public static final int REQUEST_ACTIVITY_FILE_LIST = 0x0001;
-    public static boolean nomarker = true;
+    public static boolean nomarker = false;
     public static boolean notrack = false;
     public static boolean satellite = false;
 
