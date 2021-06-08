@@ -10,6 +10,7 @@ import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Printer;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -200,8 +201,15 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     tv_duration.setText(activityStat.duration);
                     tv_minperkm.setText(String.format("  %.2f",activityStat.minperKm));
                     tv_carolies.setText("   " + activityStat.calories);
-                    int rank = MyActiviySummary.getInstance(_ctx).rank(activityStat.minperKm);
-                    tv_rank.setText("" + rank + "번째로 빠릅니다.");
+                    try {
+                        int rank = MyActiviySummary.getInstance(_ctx).rank(activityStat.minperKm);
+                        tv_rank.setText("" + rank + "번째로 빠릅니다.");
+                    }catch(Exception e) {
+                        tv_rank.setText("-" + "번째로 빠릅니다.");
+                        StringWriter sw = new StringWriter();
+                        e.printStackTrace(new PrintWriter(sw));
+                        Log.e(TAG, sw.toString());
+                    }
                 } else {
                     Toast.makeText(getApplicationContext(), "ERR: No Statistics Information !", Toast.LENGTH_LONG).show();
                     String _minDist = String.format("-");

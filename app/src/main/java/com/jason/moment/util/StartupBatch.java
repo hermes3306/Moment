@@ -36,6 +36,7 @@ public class StartupBatch {
             //renameMediaFiles(_ctx);
             //query_rank_speed(_ctx);
             //downAll(_ctx);
+            //downAll(_ctx);
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             StringWriter sw = new StringWriter();
