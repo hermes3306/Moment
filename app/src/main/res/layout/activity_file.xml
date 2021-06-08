@@ -50,8 +50,7 @@
                     android:layout_height="250sp" />
 
                 <LinearLayout
-                    android:id="@+id/ll_dashboard"
-                    android:layout_alignParentBottom="true"
+                    android:layout_above="@+id/ll_dashboard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -86,7 +85,6 @@
                         android:layout_weight="1"
                         android:text="8:20"/>
                     <TextView
-
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -95,9 +93,10 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_below="@+id/ll_dashboard"
+                    android:id="@+id/ll_dashboard"
+                    android:layout_alignParentBottom="true"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50dp"
                     android:orientation="horizontal">
                     <TextView
 
