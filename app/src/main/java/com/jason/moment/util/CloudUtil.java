@@ -253,6 +253,44 @@ public class CloudUtil {
         }.execute();
     }
 
+    public void DownloadAsync(final Context context, final File saveDir, final String fileURL) {
+        Log.d(TAG,"-- DownloadAync!!");
+        new AsyncTask<Void,Void,Void>() {
+            String listOfFiles = null;
+            String[] linesOfFiles = null;
+            final ProgressDialog asyncDialog = new ProgressDialog(context);
+            @Override
+            protected Void doInBackground(Void... voids) {
+                Log.d(TAG,"-- doInBackground/DownloadAync!!");
+                try {
+                    asyncDialog.setMax(1);
+                    download(fileURL, saveDir);
+                    asyncDialog.setProgress(1);
+                }catch(Exception e) {
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    Log.e(TAG,"Err:" + sw.toString());
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                asyncDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                asyncDialog.setMessage("Downloading...");
+                asyncDialog.show();
+                super.onPreExecute();
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                asyncDialog.dismiss();
+                super.onPostExecute(aVoid);
+                Toast.makeText(context, "Download success", Toast.LENGTH_LONG).show();
+            }
+        }.execute();
+    }
+
     public void UploadAll(final Context context, int ftype) {
         final String _serverUrl = Config._uploadURL;
         // Pop Up a Dialog

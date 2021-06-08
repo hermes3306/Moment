@@ -27,12 +27,38 @@
             android:textStyle="bold"
             android:text="TextView" />
 
-        <Button
-            android:id="@+id/btnCheckUpdates"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            android:text="Button" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnInstall"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="New"
+                android:layout_weight="1"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnCheckUpdates"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Upgrade"
+                android:layout_weight="1"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnTest"
+                android:layout_width="wrap_content"
+                android:layout_height="45dp"
+                android:layout_weight="1"
+                android:text="Test"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

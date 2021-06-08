@@ -84,6 +84,7 @@ public class Config {
     static File external_pub_files_path_pic = null;    /* 10. 외부 공유저장소 (PIC) */
     static File external_pub_files_path_mov = null;    /* 11. 외부 공유저장소 (MOV) */
     static File external_pub_files_path_mp3 = null;    /* 12. 외부 공유저장소 (MP3) */
+    static File external_pub_files_path_apk = null;    /* 13. 외부 공유저장소 (APK) */
 
     static File[] _SAVE_DIRS = null;
     public static File CSV_SAVE_DIR         = null;
@@ -91,8 +92,14 @@ public class Config {
     public static File PIC_SAVE_DIR         = null;
     public static File MOV_SAVE_DIR         = null;
     public static File MP3_SAVE_DIR         = null;
+    public static File APK_SAVE_DIR         = null;
+
 
     public static String        _serverURL      = "http://ezehub.club/moment";        //Z
+    public static String        _apkname        = "moment.apk";
+    public static String        _apkurl         = _serverURL + "/apk/moment.apk";
+    public static String        _apkver         = _serverURL + "/apk/version";
+
     //public static String        _serverURL      = "http://ezehub.club:8080/moment";   //W
     //public static String        _serverURL      = "http://ezehub.club:8888/moment";   //M
     //public static String        _serverURL      = "http://ezehub.club:8899/moment";     //DESKTOP1
@@ -113,6 +120,7 @@ public class Config {
     public static final int     _img            = 3;
     public static final int     _mov            = 4;
     public static final int     _mp3            = 5;
+    public static final int     _apk            = 6;
 
     public static int           _default_ext    = _csv;
 
@@ -168,6 +176,7 @@ public class Config {
     static String mov_folder_name       = "Moment_MOV" + _ver;
     static String jsn_folder_name       = "Moment_JSN" + _ver;
     static String mp3_folder_name       = "Moment_MP3" + _ver;
+    static String apk_folder_name       = "Moment_APK" + _ver;
 
 
     public static String getPreference(Context context, String name) {
@@ -231,7 +240,7 @@ public class Config {
     public static File mediaStorageDir4mov  = new File(mediaStorage, mov_folder_name);
     public static File mediaStorageDir4jsn  = new File(mediaStorage, jsn_folder_name);
     public static File mediaStorageDir4mp3  = new File(mediaStorage, mp3_folder_name);
-
+    public static File mediaStorageDir4apk  = new File(mediaStorage, apk_folder_name);
 
 
     static boolean initialized_file_provider = false;
@@ -250,6 +259,7 @@ public class Config {
         external_pub_files_path_pic = new File(external_pub_files_path1, pic_folder_name);   /* 10. 외부 공유저장소 (PIC) */
         external_pub_files_path_mov = new File(external_pub_files_path1, mov_folder_name);   /* 11. 외부 공유저장소 (MOV) */
         external_pub_files_path_mp3 = new File(external_pub_files_path1, mp3_folder_name);   /* 12. 외부 공유저장소 (MP3) */
+        external_pub_files_path_apk = new File(external_pub_files_path1, apk_folder_name);   /* 13. 외부 공유저장소 (APK) */
 
         _SAVE_DIRS = new File[] {
             cache_path,                     /* 0. 내부 저장소 */
@@ -264,7 +274,8 @@ public class Config {
             external_pub_files_path_mnt,    /* 9. 외부 공유 저장소 (MNT)) */
             external_pub_files_path_pic,    /* 10. 외부 공유 저장소 (PIC)) */
             external_pub_files_path_mov,    /* 11. 외부 공유 저장소 (MOV)) */
-            external_pub_files_path_mp3     /* 12. 외부 공유 저장소 (MP3)) */
+            external_pub_files_path_mp3,    /* 12. 외부 공유 저장소 (MP3)) */
+            external_pub_files_path_apk     /* 12. 외부 공유 저장소 (MP3)) */
         };
 
         Log.d(TAG, "--cache_path:" + cache_path);
@@ -281,12 +292,14 @@ public class Config {
         PIC_SAVE_DIR   = _SAVE_DIRS[10];
         MOV_SAVE_DIR   = _SAVE_DIRS[11];
         MP3_SAVE_DIR   = _SAVE_DIRS[12];
+        APK_SAVE_DIR   = _SAVE_DIRS[13];
 
         if(!CSV_SAVE_DIR.exists()) CSV_SAVE_DIR.mkdirs();
         if(!MNT_SAVE_DIR.exists()) MNT_SAVE_DIR.mkdirs();
         if(!PIC_SAVE_DIR.exists()) PIC_SAVE_DIR.mkdirs();
         if(!MOV_SAVE_DIR.exists()) MOV_SAVE_DIR.mkdirs();
         if(!MP3_SAVE_DIR.exists()) MP3_SAVE_DIR.mkdirs();
+        if(!APK_SAVE_DIR.exists()) APK_SAVE_DIR.mkdirs();
 
         initialized_file_provider = true;
     }
@@ -338,6 +351,7 @@ public class Config {
         if(!mediaStorageDir4mov.exists()) mediaStorageDir4mov.mkdirs();
         if(!mediaStorageDir4jsn.exists()) mediaStorageDir4jsn.mkdirs();
         if(!mediaStorageDir4mp3.exists()) mediaStorageDir4mp3.mkdirs();
+        if(!mediaStorageDir4apk.exists()) mediaStorageDir4apk.mkdirs();
     }
 
 
