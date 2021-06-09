@@ -20,6 +20,8 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.jason.moment.R;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -59,7 +61,7 @@ public class    MapUtil {
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
-    public static void drawStartMarker(GoogleMap gmap, ArrayList<MyActivity> list) {
+    public static void drawStartMarker(GoogleMap gmap, @NotNull ArrayList<MyActivity> list) {
         if(list.size()==0) return;
         float color =  Config._marker_start_color;
         LatLng ll = new LatLng(list.get(0).latitude, list.get(0).longitude);
@@ -192,7 +194,7 @@ public class    MapUtil {
         if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
         if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        if(!nomarker) {
+        if(nomarker) {
             MapUtil.drawStartMarker(googleMap,mActivityList);
             MapUtil.drawEndMarker(googleMap,mActivityList);
         }
