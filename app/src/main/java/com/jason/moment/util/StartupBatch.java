@@ -35,8 +35,10 @@ public class StartupBatch {
             //clearRunActivitiesStartsWith(_ctx,"S");
             //renameMediaFiles(_ctx);
             //query_rank_speed(_ctx);
+            rebuildActivitySummaries(_ctx);
             //uploadAll(_ctx);
             //downAll(_ctx);
+            //ImportTodayActivity();
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             StringWriter sw = new StringWriter();

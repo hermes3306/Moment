@@ -18,7 +18,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.jason.moment.R;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -28,10 +27,6 @@ import java.util.ArrayList;
 
 public class    MapUtil {
     private static final String TAG = "MapUtil";
-    public static boolean nomarker = true;
-    public static boolean notrack = false;
-    public static boolean satellite = false;
-
     static int[] colors = {
             Color.RED,
             Color.CYAN,
@@ -45,10 +40,10 @@ public class    MapUtil {
     };
 
     public static void toggleNoMarker() {
-        nomarker = !nomarker;
+        C.nomarkers = !C.nomarkers;
     }
     public static void toggleNoTrack() {
-        notrack = !notrack;
+        C.notrack = !C.notrack;
     }
 
     public static ArrayList<Marker> markers = null;
@@ -56,9 +51,10 @@ public class    MapUtil {
         markers = new ArrayList<Marker>();
     }
     public static void moveCamera(GoogleMap googleMap, MyActivity myactivity, float _zoom) {
-        LatLng cur_loc = myactivity.toLatLng();
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(cur_loc).zoom(_zoom).build();
-        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        LatLng _loc = myactivity.toLatLng();
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(_loc).zoom(_zoom).build();
+        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        //googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     public static void drawStartMarker(GoogleMap gmap, @NotNull ArrayList<MyActivity> list) {
@@ -87,6 +83,8 @@ public class    MapUtil {
     }
 
     public static void drawAllMarkers(GoogleMap gmap, ArrayList<MyActivity> list) {
+        if(C.nomarkers) return;
+
         double tot_distance = MyActivityUtil.getTotalDistanceInDouble(list);
         int disunit = (int)(tot_distance / 10);
 
@@ -125,6 +123,7 @@ public class    MapUtil {
     }
 
     public static void drawTrackInRange(Context context, GoogleMap map, ArrayList<MyActivity> latLngArrayList, int start, int end) {
+        if(C.nomarkers) return;
         if(latLngArrayList == null) return;
         ArrayList<LatLng> latLngArrayListInRange = new ArrayList<>();
         for(int i=start; i < end; i++) {
@@ -146,6 +145,7 @@ public class    MapUtil {
     }
 
     public static void drawTrack(Context context, GoogleMap map, ArrayList<MyActivity> myActivityArrayList) {
+        if(C.notrack) return;
         if (myActivityArrayList == null) return;
         int color_inx = Config.getIntPreference(context, "track_color");
         int width = Config.getIntPreference(context, "track_width");
@@ -159,6 +159,7 @@ public class    MapUtil {
     }
 
     public static void drawTrack(GoogleMap map, ArrayList<LatLng> latLngArrayList,int color, int width) {
+        if(C.notrack) return;
         if(latLngArrayList == null) return;
         PolylineOptions plo = new PolylineOptions();
 
@@ -184,17 +185,18 @@ public class    MapUtil {
     public static void DRAW(Context _ctx, GoogleMap googleMap, int width, int height, ArrayList<MyActivity>mActivityList) {
         MapUtil.initialize();   //MapUtil은 사용하기 전에 반드시 초기화를 해서 마크정보 초기화
         googleMap.clear();
-        MyActivity lastActivity=null;
+        MyActivity ActivityAtCenter=null;
         if(mActivityList.size()==0) {
             Toast.makeText(_ctx,"No activities!", Toast.LENGTH_SHORT).show();
         } else {
-            lastActivity = mActivityList.get(mActivityList.size()-1);
+            ActivityAtCenter = mActivityList.get( (mActivityList.size()-1) / 2 );
         }
-        if(!nomarker) MapUtil.drawAllMarkers(googleMap,mActivityList);
-        if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
-        if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        MapUtil.drawAllMarkers(googleMap,mActivityList);
+        MapUtil.drawTrack(_ctx,googleMap,mActivityList);
+        if(!C.satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        if(nomarker) {
+        if(C.nomarkers) {
             MapUtil.drawStartMarker(googleMap,mActivityList);
             MapUtil.drawEndMarker(googleMap,mActivityList);
         }
@@ -204,7 +206,7 @@ public class    MapUtil {
                     new MarkerOptions().position(mActivityList.get(i).toLatLng()).title("").visible(false));
             _markers.add(marker);
         }
-        findBestBound(googleMap, _markers, width, height, lastActivity);
+        findBestBound(googleMap, _markers, width, height, ActivityAtCenter);
     }
 
     public static void findBestBound(GoogleMap googleMap, ArrayList<Marker> _markers, int w, int h, MyActivity lastAct) {
@@ -218,9 +220,9 @@ public class    MapUtil {
             } catch (Exception e) {
                 try_cnt++;
             }
-        }while(!got_bound_wo_error && try_cnt < 3);
+        }while(!got_bound_wo_error && try_cnt < 2);
         if(!got_bound_wo_error) {
-            int myzoom = 16;
+            int myzoom = 14;
             if(lastAct!=null) MapUtil.moveCamera(googleMap, lastAct, myzoom);
         }
     }
@@ -242,23 +244,16 @@ public class    MapUtil {
             builder.include(marker.getPosition());
         }
         LatLngBounds bounds = builder.build();
-        int padding = (int) (width * 0.10); // offset from edges of the map 10% of screen
+        int padding = (int) (width * 0.15); // offset from edges of the map 10% of screen
 
         boolean berr = false;
         try {
-            Log.e(TAG, "newLatLngBounds(bounds):" + bounds);
-            Log.e(TAG, "newLatLngBounds(padding):" + padding);
-
             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
             gmap.moveCamera(cu);
-
         }catch(Exception e) {
             berr = true;
-            Log.e(TAG,"ERR] BoundBuild:" + e.toString());
+            Log.e(TAG,"-- ERR] BoundBuild:" + e.toString());
             throw e;
         }
     }
-
-
-
 }

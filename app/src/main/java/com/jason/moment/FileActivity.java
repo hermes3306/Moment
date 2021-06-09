@@ -1,5 +1,6 @@
 package com.jason.moment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -38,6 +39,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.AddressUtil;
+import com.jason.moment.util.C;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CalcTime;
 import com.jason.moment.util.CaloryUtil;
@@ -78,10 +80,6 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     public static Marker bef_last_marker=null;
 
     public static final int REQUEST_ACTIVITY_FILE_LIST = 0x0001;
-    public static boolean nomarker = false;
-    public static boolean notrack = false;
-    public static boolean satellite = false;
-
     File[] _file_list = null;
     File _file = null;
     MyActivity lastActivity = null;
@@ -144,11 +142,8 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             final File[] flist = MyActivityUtil.getFiles(filetype);
 
             public void GO(final GoogleMap googleMap, File myfile) {
-                Log.e(TAG, "-- filename to see: " + myfile.getAbsolutePath());
                 googleMap.clear();
-                markers = new ArrayList<Marker>();
                 ActivityStat activityStat = null;
-
                 if(myfile != null) mActivityList = MyActivityUtil.deserialize(myfile);
 
                 if(mActivityList==null) {
@@ -156,6 +151,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     return;
                 } else if(mActivityList.size()==0) {
                     Log.e(TAG, "-- " + myfile + " serialized successfully but the size is 0");
+                    return;
                 } else {
                         Log.d(TAG, "-- " + myfile + " is deserialized successfully! with # of " + mActivityList.size());
                 }
@@ -164,32 +160,9 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         marker_pos = mActivityList.size()-1;
                 }
 
-                Geocoder geocoder = new Geocoder(_ctx, Locale.getDefault());
-                List<Address> addresses = null;
-                try {
-                    addresses = geocoder.getFromLocation(mActivityList.get(0).latitude, mActivityList.get(0).longitude,1);
-                }catch(Exception e) {
-                    StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw));
-                    Log.e(TAG,"Err:" + sw.toString());
-                }
-
-                String addinfo = null;
-                if(addresses == null || addresses.size() ==0) {
-                    Log.e(TAG, "No Addresses found !!");
-                }else {
-                    addinfo = addresses.get(0).getAddressLine(0);
-                }
-
-                //tv_file.setText(myfile.getName().substring(0, myfile.getName().length()-4));
-
-                if(mActivityList.size()==0) return;
-
                 MyActivity ta = mActivityList.get(0);
                 String date_str = ta.cr_date + " " + ta.cr_time;
-                Log.d(TAG, "-- FileActivity, getStartTime: " + date_str);
-
-                activityStat= getActivityStat(mActivityList);
+                activityStat= ActivityStat.getActivityStat(mActivityList);
 
                 if(activityStat !=null) {
                     String _minDist = String.format("%.1f", activityStat.distanceKm);
@@ -217,13 +190,11 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         Log.e(TAG, sw.toString());
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(), "ERR: No Statistics Information !", Toast.LENGTH_LONG).show();
-                    String _minDist = String.format("-");
-                    String sinfo = "" + date_str + "  (" + _minDist + "Km)";
-                    tv_distance.setText(_minDist);
-                    tv_duration.setText("-");
-                    tv_minperkm.setText("-");
-                    tv_carolies.setText("-");
+                    myfile.delete();
+                    if(position+1 < flist.length) {
+                        GO(googleMap, flist[++position]);
+                        return;
+                    }
                 }
 
                 int width = mMapView.getWidth();
@@ -257,55 +228,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 builder.show();
             }
 
-            public void DRAW(GoogleMap googleMap) {
-                MapUtil.initialize(); //MapUtil은 사용하기 전에 반드시 초기화를 해서 마크정도 초기화
-                googleMap.clear();
-                if(mActivityList.size()==0) {
-                    Toast.makeText(_ctx,"No activities!", Toast.LENGTH_SHORT).show();
-                } else {
-                    lastActivity = mActivityList.get(mActivityList.size()-1);
-                }
 
-                if(!nomarker) MapUtil.drawAllMarkers(googleMap,mActivityList);
-                if(!notrack) MapUtil.drawTrack(_ctx,googleMap,mActivityList);
-                if(!satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                if(nomarker || notrack) {
-                    MapUtil.drawStartMarker(googleMap,mActivityList);
-                    MapUtil.drawEndMarker(googleMap,mActivityList);
-                }
-
-                Display display = getWindowManager().getDefaultDisplay();
-                DisplayMetrics metrics = new DisplayMetrics();
-                display.getMetrics( metrics );
-                int width = metrics.widthPixels;
-                int height = metrics.heightPixels;
-
-                boolean got_bound_wo_error = false;
-                int try_cnt = 0;
-
-                Log.d(TAG,"-- before add all marker to do do Bound build!");
-                ArrayList<Marker> _markers = new ArrayList<>();
-                for(int i=0;i<mActivityList.size();i++) {
-                    Marker marker = googleMap.addMarker(
-                            new MarkerOptions().position(mActivityList.get(i).toLatLng()).title("").visible(false));
-                    _markers.add(marker);
-                }
-                Log.d(TAG,"-- after add all marker to do do Bound build!");
-
-                do {
-                    try {
-                        MapUtil.doBoundBuild(googleMap, _markers, width, height);
-                        got_bound_wo_error = true;
-                    } catch (Exception e) {
-                        try_cnt++;
-                    }
-                }while(!got_bound_wo_error && try_cnt < 3);
-                if(!got_bound_wo_error) {
-                    int myzoom = 16;
-                    if(lastActivity!=null) MapUtil.moveCamera(googleMap, lastActivity, myzoom);
-                }
-            }
 
             @Override
             public void onMapReady(final GoogleMap googleMap) {
@@ -347,8 +270,10 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         imbt_navi.setVisibility(View.GONE);
                         imbt_trash.setVisibility(View.GONE);
                         imbt_pop_menu.setVisibility(View.VISIBLE);
-                        nomarker = !nomarker;
-                        DRAW(googleMap);
+                        C.nomarkers = !C.nomarkers;
+                        int width = mMapView.getWidth();
+                        int height = mMapView.getHeight();
+                        MapUtil.DRAW(_ctx,googleMap,width,height,mActivityList);
                     }
                 });
 
@@ -359,8 +284,10 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         imbt_navi.setVisibility(View.GONE);
                         imbt_trash.setVisibility(View.GONE);
                         imbt_pop_menu.setVisibility(View.VISIBLE);
-                        notrack = !notrack;
-                        DRAW(googleMap);
+                        C.notrack = !C.notrack;
+                        int width = mMapView.getWidth();
+                        int height = mMapView.getHeight();
+                        MapUtil.DRAW(_ctx,googleMap,width,height,mActivityList);
                     }
                 });
 
@@ -398,107 +325,9 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 });
 
             } /* on  MapReady */
+
         });
     } /* onCreate */
-
-    public void moveCamera(GoogleMap googleMap, float _zoom) {
-        if(mActivityList==null) return;
-        if(mActivityList.size()==0) return;
-
-        LatLng curloc = new LatLng(mActivityList.get(mActivityList.size()-1).latitude,
-                mActivityList.get(mActivityList.size()-1).longitude);
-        myzoom = _zoom;
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(curloc).zoom(_zoom).build();
-        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-    }
-
-    public void moveCamera(GoogleMap googleMap) {
-        if(mActivityList==null) return;
-        if(mActivityList.size()==0) return;
-
-        myzoom = googleMap.getCameraPosition().zoom;
-        LatLng curloc = new LatLng(mActivityList.get(mActivityList.size()-1).latitude,
-                mActivityList.get(mActivityList.size()-1).longitude);
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(curloc).zoom(myzoom).build();
-        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-    }
-
-    public void moveCamera(GoogleMap googleMap, LatLng loc, float _zoom) {
-        myzoom = _zoom;
-        myzoom = googleMap.getCameraPosition().zoom;
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(loc).zoom(myzoom).build();
-        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-    }
-
-    public void moveCamera(GoogleMap googleMap, LatLng loc) {
-        myzoom = googleMap.getCameraPosition().zoom;
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(loc).zoom(myzoom).build();
-        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-    }
-
-
-    public static ActivityStat getActivityStat(ArrayList <MyActivity> list) {
-        if(list == null) {
-            Log.e(TAG,"Activity List null");
-            return null;
-        }
-        if(list.size() < 2) {
-            Log.e(TAG,"Activity size < 2");
-            return null;
-        }
-
-        MyActivity start, stop;
-        start = list.get(0);
-        stop = list.get(list.size()-1);
-
-        Date start_date, stop_date;
-        start_date = StringUtil.StringToDate(start);
-        stop_date = StringUtil.StringToDate(stop);
-
-        Log.d(TAG, "-- start_date:" + start_date);
-        Log.d(TAG, "-- stop_date:" + stop_date);
-
-        String duration = StringUtil.elapsedStr(start_date, stop_date); // <- Error code
-        Log.e(TAG, duration);
-
-        double total_distM = MyActivityUtil.getTotalDistanceInDouble(list);  // <-
-        double total_distKm = total_distM / 1000f;
-        double minpk = MyActivityUtil.getMinPerKm(start_date, stop_date, total_distKm); // <-
-
-        float burntkCal;
-        int durationInSeconds = MyActivityUtil.durationInSeconds(list);
-        int stepsTaken = (int) (total_distM / Config._strideLengthInMeters);
-        burntkCal = CaloryUtil.calculateEnergyExpenditure((float)total_distM / 1000f, durationInSeconds);
-        ActivityStat as = new ActivityStat(start_date, stop_date, duration, total_distM, total_distKm, minpk, (int)burntkCal);
-        return as;
-    }
-
-    public static void doBoundBuild(GoogleMap gmap, int width, int height) throws Exception {
-        if(markers.size()==0) return;
-
-        LatLngBounds.Builder builder= new LatLngBounds.Builder();
-        for (Marker marker : markers) {
-            builder.include(marker.getPosition());
-        }
-        LatLngBounds bounds = builder.build();
-        int padding = (int) (width * 0.10); // offset from edges of the map 10% of screen
-
-        boolean berr = false;
-        try {
-            Log.e(TAG, "newLatLngBounds(bounds):" + bounds);
-            Log.e(TAG, "newLatLngBounds(padding):" + padding);
-
-            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-            gmap.moveCamera(cu);
-
-        }catch(Exception e) {
-            berr = true;
-            Log.e(TAG,"ERR] BoundBuild:" + e.toString());
-            throw e;
-        }
-    }
 
     public static Date getStartTimeDate(ArrayList<MyActivity> list) {
         if(list == null) return null;
@@ -525,20 +354,17 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (v.getId()) {
             case R.id.imbt_satellite_on:
-                if(!satellite) _googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                C.satellite = false;
+                _googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 v.setVisibility(View.GONE);
                 imbt_satellite_off.setVisibility(View.VISIBLE);
                 imbt_satellite_off.setVisibility(View.VISIBLE);
-//                imbt_prev.setVisibility(View.VISIBLE);
-//                imbt_next.setVisibility(View.VISIBLE);
                 break;
             case R.id.imbt_satellite_off:
-                if(!satellite) _googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                C.satellite= true;
+                _googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                 v.setVisibility(View.GONE);
-                mapViewHeight = mapView.getHeight();
                 imbt_satellite_on.setVisibility(View.VISIBLE);
-//                imbt_prev.setVisibility(View.GONE);
-//                imbt_next.setVisibility(View.GONE);
                 break;
             case R.id.imSetting:
                 Log.d(TAG, "-- Setting Activities!");

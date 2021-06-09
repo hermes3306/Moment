@@ -106,9 +106,6 @@ public class MapsActivity extends AppCompatActivity implements
     private static final int DEFAULT_ZOOM = 15;
     public static boolean firstCall = true;
     public static boolean paused = false;
-//    public static boolean nomarkers = true;
-//    public static boolean notrack = false;
-//    public static boolean satellite = false;
 
     public ImageView imv_start;
     public TextView tv_map_address;

@@ -1,9 +1,13 @@
 package com.jason.moment.util;
 
+import android.util.Log;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 public class ActivityStat {
+        static String TAG = "ActivityStat";
         public String name;
         public String date_str;
 
@@ -60,5 +64,39 @@ public class ActivityStat {
         public String toString() {
             return "" + name + "," + distanceKm + "Km," + duration + "," + minperKm + "," + calories;
         }
+
+        public static ActivityStat getActivityStat(ArrayList<MyActivity> list) {
+        if(list == null) {
+            return null;
+        }
+        if(list.size() < 2) {
+            return null;
+        }
+
+        MyActivity start, stop;
+        start = list.get(0);
+        stop = list.get(list.size()-1);
+
+        Date start_date, stop_date;
+        start_date = StringUtil.StringToDate(start);
+        stop_date = StringUtil.StringToDate(stop);
+
+        Log.d(TAG, "-- start_date:" + start_date);
+        Log.d(TAG, "-- stop_date:" + stop_date);
+
+        String duration = StringUtil.elapsedStr(start_date, stop_date); // <- Error code
+        Log.e(TAG, duration);
+
+        double total_distM = MyActivityUtil.getTotalDistanceInDouble(list);  // <-
+        double total_distKm = total_distM / 1000f;
+        double minpk = MyActivityUtil.getMinPerKm(start_date, stop_date, total_distKm); // <-
+
+        float burntkCal;
+        int durationInSeconds = MyActivityUtil.durationInSeconds(list);
+        int stepsTaken = (int) (total_distM / Config._strideLengthInMeters);
+        burntkCal = CaloryUtil.calculateEnergyExpenditure((float)total_distM / 1000f, durationInSeconds);
+        ActivityStat as = new ActivityStat(start_date, stop_date, duration, total_distM, total_distKm, minpk, (int)burntkCal);
+        return as;
+    }
 
 }

@@ -682,8 +682,7 @@ public class StartNewActivity extends AppCompatActivity implements
                         Log.d(TAG,"-- sent Broadcast message: INTENT_STOP_TRACKING...");
 
                         MyActivityUtil.serialize(list, media_filenames, activity_file_name );
-
-                        ActivityStat as = FileActivity.getActivityStat(list);
+                        ActivityStat as = ActivityStat.getActivityStat(list);
                         if(as !=null) {
                             MyActiviySummary.getInstance(_ctx).ins(activity_file_name,as.distanceKm,as.durationInLong,as.minperKm,as.calories);
                             Log.d(TAG,"-- Activity Stat inserted successfully !!!!");
