@@ -35,6 +35,7 @@ public class StartupBatch {
             //clearRunActivitiesStartsWith(_ctx,"S");
             //renameMediaFiles(_ctx);
             //query_rank_speed(_ctx);
+            //uploadAll(_ctx);
             //downAll(_ctx);
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
@@ -49,11 +50,17 @@ public class StartupBatch {
         return;
     }
 
+    public void uploadAll(Context _ctx) {
+        CloudUtil.getInstance().UploadAll(_ctx, Config._csv);
+        CloudUtil.getInstance().UploadAll(_ctx, Config._mov);
+        CloudUtil.getInstance().UploadAll(_ctx, Config._img);
+    }
+
     public void downAll(Context _ctx) {
         CloudUtil.getInstance().DownloadAll(_ctx,Config._csv);
         CloudUtil.getInstance().DownloadAll(_ctx,Config._mov);
-        CloudUtil.getInstance().DownloadAll(_ctx,Config._mp3);
         CloudUtil.getInstance().DownloadAll(_ctx,Config._img);
+        CloudUtil.getInstance().DownloadAll(_ctx,Config._mp3);
         MyLoc.getInstance(_ctx).createNew(); // DB를 초기화
         rebuildActivitySummaries(_ctx);
         ImportTodayActivity();
