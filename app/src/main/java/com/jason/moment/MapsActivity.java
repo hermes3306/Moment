@@ -58,6 +58,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.jason.moment.service.GPSLogger;
 import com.jason.moment.service.GPSLoggerServiceConnection;
 import com.jason.moment.util.AddressUtil;
+import com.jason.moment.util.C;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CalcTime;
 import com.jason.moment.util.CloudUtil;
@@ -561,20 +562,18 @@ public class MapsActivity extends AppCompatActivity implements
 
         switch (view.getId()) {
             case R.id.imbt_wifi_on:
+                C.satellite = false;
                 googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 view.setVisibility(View.GONE);
+                imbt_wifi_on.setVisibility(View.VISIBLE);
                 imbt_wifi_off.setVisibility(View.VISIBLE);
-                imbt_prev.setVisibility(View.VISIBLE);
-                imbt_next.setVisibility(View.VISIBLE);
                 break;
             case R.id.imbt_wifi_off:
+                C.satellite= true;
                 googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                 view.setVisibility(View.GONE);
                 imbt_wifi_on.setVisibility(View.VISIBLE);
-                imbt_prev.setVisibility(View.GONE);
-                imbt_next.setVisibility(View.GONE);
                 break;
-
             case R.id.imbt_prev:
                 Log.d(TAG,"-- marker_pos:" + marker_pos + " cntofactivities:" + cntofactivities );
                 if(list.size() == 0) break;
