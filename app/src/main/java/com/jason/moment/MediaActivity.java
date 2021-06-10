@@ -322,7 +322,6 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
             e.printStackTrace(new PrintWriter(sw));
             Log.d(TAG, "-- Err:" + sw.toString());
         }
-
     }
 
 
@@ -469,6 +468,14 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.imRotate:
+                ImageView iv_pic = (ImageView) findViewById(R.id.iv_pic);
+                MediaUtil.getInstance().showImageRotated(iv_pic,_files.get(pos).getName());
+                break;
+            case R.id.save_gallery:
+                MediaUtil.getInstance().saveImageInGallery(this, _files.get(pos).getName());
+                MediaUtil.getInstance().updateGallery(_ctx, _files.get(pos).getName());
+                break;
             case R.id.pickgallery:
                 MediaUtil.getInstance().getImageFromAlbum(this);
                 break;
@@ -487,8 +494,6 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
                 if (pos > 0) pos--;
                 else pos = size - 1;
                 show_media();
-                break;
-            case R.id.imRotate:
                 break;
             case R.id.imTrash:
                 deleteMov();

@@ -91,6 +91,7 @@ public class Config {
     public static File CSV_SAVE_DIR         = null;
     public static File MNT_SAVE_DIR         = null;
     public static File PIC_SAVE_DIR         = null;
+    public static File PIC_GALLERY_DIR      = null;
     public static File MOV_SAVE_DIR         = null;
     public static File MP3_SAVE_DIR         = null;
     public static File APK_SAVE_DIR         = null;
@@ -286,6 +287,7 @@ public class Config {
         Log.d(TAG, "--external_pub_files_path1:" + external_pub_files_path1);
         Log.d(TAG, "--external_pub_files_path2:" + external_pub_files_path2);
 
+        PIC_GALLERY_DIR   = _SAVE_DIRS[7];
         CSV_SAVE_DIR   = _SAVE_DIRS[8];
         MNT_SAVE_DIR   = _SAVE_DIRS[9];
         PIC_SAVE_DIR   = _SAVE_DIRS[10];

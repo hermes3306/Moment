@@ -121,6 +121,13 @@
                 android:background="@android:color/transparent"
                 android:onClick="onClick"
                 android:src="@drawable/gallery48" />
+            <ImageButton
+                android:id="@+id/save_gallery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:onClick="onClick"
+                android:src="@drawable/save48" />
 
         </LinearLayout>
 
