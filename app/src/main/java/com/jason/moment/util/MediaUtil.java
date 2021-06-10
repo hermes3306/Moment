@@ -9,6 +9,7 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.core.app.ActivityCompat;
@@ -16,6 +17,7 @@ import androidx.core.app.ActivityCompat;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -37,8 +39,11 @@ public class MediaUtil {
     public void getImageFromAlbum(Activity activity) {
         Log.d(TAG,"-- getImageFromAlbum()");
         try {
-            Intent i = new Intent(Intent.ACTION_PICK,
-                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//            Intent i = new Intent(Intent.ACTION_PICK,
+//                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            Intent i = new Intent(Intent.ACTION_PICK);
+            i.setType("image/*");
+
             activity.startActivityForResult(i, Config.CALL_RESULT_LOAD_IMAGE);
             Log.d(TAG,"-- activity.startActivityFroResult called");
         } catch (Exception e) {
@@ -103,21 +108,37 @@ public class MediaUtil {
         iv_pic.setImageBitmap(bitmap);
     }
 
-    public void onActivityResult(Activity activity, int requestCode, Intent data, ImageView imageView) {
-        if (requestCode == Config.CALL_RESULT_LOAD_IMAGE  && null != data) {
-            Uri selectedImage = data.getData();
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+    public void savePicFromView(View view) {
+        View content = view;
+        content.setDrawingCacheEnabled(true);
+        Bitmap bitmap = content.getDrawingCache();
+        File cachePath = new File(Config.PIC_SAVE_DIR, Config.getTmpPicName());
+        try {
+            cachePath.createNewFile();
+            FileOutputStream ostream = new FileOutputStream(cachePath);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+            ostream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-            Cursor cursor = activity.getContentResolver().query(selectedImage,
-                    filePathColumn, null, null, null);
-            cursor.moveToFirst();
 
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
-
-            Log.d(TAG,"-- picturePath is " + picturePath);
-            showImage(imageView, picturePath);
+    public void onActivityResult(Activity activity, int requestCode, Intent data, ImageView image_view) {
+        Log.d(TAG,"-- onActivityResult Called in the MediaUtil! ");
+        if (requestCode == Config.CALL_RESULT_LOAD_IMAGE) {
+            final Uri imageUri = data.getData();
+            try {
+                final InputStream imageStream = activity.getContentResolver().openInputStream(imageUri);
+                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                image_view.setImageBitmap(selectedImage);
+                savePicFromView(image_view);
+                Log.d(TAG, "-- success! ");
+            }catch(Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Log.d(TAG,"-- ERR:" + sw.toString());
+            }
         }
 
     }

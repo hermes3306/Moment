@@ -314,8 +314,15 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
         File mediaFile = new File(Config.PIC_SAVE_DIR, fname);
         Bitmap bitmap = decodeFile(mediaFile);
 
-        bitmap = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(), bitmap.getHeight(),matrix,true);
-        iv_pic.setImageBitmap(bitmap);
+        try {
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            iv_pic.setImageBitmap(bitmap);
+        }catch(Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.d(TAG, "-- Err:" + sw.toString());
+        }
+
     }
 
 
@@ -405,12 +412,12 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
                 CloudUtil.getInstance().Upload(_ctx,currentFileName);
                 break;
             case Config.CALL_RESULT_LOAD_IMAGE:
-                Log.d(TAG, "-- onActivityResult CALL_RESULT_LOAD_IMAGE: ");
+                Log.d(TAG, "-- CALL_RESULT_LOAD_IMAGE: ");
                 VideoView vv_view = (VideoView) findViewById(R.id.vv_view);
                 ImageView iv_pic = (ImageView) findViewById(R.id.iv_pic);
                 vv_view.setVisibility(View.GONE);
                 iv_pic.setVisibility(View.VISIBLE);
-                MediaUtil.getInstance().onActivityResult(this,resultCode, data, iv_pic);
+                MediaUtil.getInstance().onActivityResult(this,requestCode, data, iv_pic);
                 break;
         }
     }
