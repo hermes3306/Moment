@@ -164,6 +164,7 @@ public class Config {
     public static final int CALL_FILE_ACTIVITY      = 11;
     public static final int CALL_REPORT_ACTIVITY    = 12;
     public static final int CALL_START_NEW_ACTIVITY = 13;
+    public static final int CALL_RESULT_LOAD_IMAGE = 14;
 
     public static final int perKM       = 1;
     public static final int perMile     = 2;

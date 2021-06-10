@@ -32,6 +32,7 @@ import com.jason.moment.R;
 import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
+import com.jason.moment.util.MediaUtil;
 import com.jason.moment.util.NotificationUtil;
 
 import java.io.File;
@@ -403,6 +404,14 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
                 Log.d(TAG, "-- PICK_FROM_CAMERA: ");
                 CloudUtil.getInstance().Upload(_ctx,currentFileName);
                 break;
+            case Config.CALL_RESULT_LOAD_IMAGE:
+                Log.d(TAG, "-- onActivityResult CALL_RESULT_LOAD_IMAGE: ");
+                VideoView vv_view = (VideoView) findViewById(R.id.vv_view);
+                ImageView iv_pic = (ImageView) findViewById(R.id.iv_pic);
+                vv_view.setVisibility(View.GONE);
+                iv_pic.setVisibility(View.VISIBLE);
+                MediaUtil.getInstance().onActivityResult(this,resultCode, data, iv_pic);
+                break;
         }
     }
 
@@ -453,6 +462,9 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.pickgallery:
+                MediaUtil.getInstance().getImageFromAlbum(this);
+                break;
             case R.id.imvCamera:
                 takePic();
                 break;

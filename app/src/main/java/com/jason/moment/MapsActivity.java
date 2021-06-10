@@ -18,19 +18,13 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -44,7 +38,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -64,8 +57,6 @@ import com.jason.moment.util.CalcTime;
 import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
-import com.jason.moment.util.FileUtil;
-import com.jason.moment.util.GooglemapUtil;
 import com.jason.moment.util.LocationUtil;
 import com.jason.moment.util.MP3;
 import com.jason.moment.util.MapUtil;
@@ -73,9 +64,6 @@ import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.NotificationUtil;
 import com.jason.moment.util.StartupBatch;
-import com.jason.moment.util.UI;
-import com.jason.moment.util.WebUtil;
-import com.jason.moment.util.camera.CameraUtil;
 import com.jason.moment.util.db.MyLoc;
 
 import java.io.File;
@@ -85,8 +73,6 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -96,8 +82,7 @@ import static java.lang.Integer.parseInt;
 // 2021/05/03, MapsActivity extends AppCompatActivity instead of FragmentActivity
 public class MapsActivity extends AppCompatActivity implements
         OnMapReadyCallback,
-        View.OnClickListener,
-        LocationListener {
+        View.OnClickListener {
     private GoogleMap googleMap=null;
     private Context _ctx;
 
@@ -401,7 +386,6 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     private double dist=0;
-    @Override
     public void onLocationChanged(Location location) {
         // new loc notify
         showGPS();
@@ -427,34 +411,6 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onProviderDisabled(String arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void onProviderEnabled(String arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-        // TODO Auto-generated method stub
-
-    }
-
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.d(TAG,"-- onMapReady.");
         this.googleMap = googleMap;
@@ -477,10 +433,11 @@ public class MapsActivity extends AppCompatActivity implements
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-            googleMap.setMyLocationEnabled(true);
-            googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-            googleMap.getUiSettings().setCompassEnabled(true);
-            //googleMap.getUiSettings().setZoomControlsEnabled(true);
+            googleMap.setMyLocationEnabled(C.LocationButton);
+            googleMap.getUiSettings().setMyLocationButtonEnabled(C.LocationButton);
+            googleMap.getUiSettings().setCompassEnabled(C.Compass);
+            googleMap.getUiSettings().setZoomControlsEnabled(C.ZoomControl);
+
         }
         showActivities();
 
@@ -565,7 +522,6 @@ public class MapsActivity extends AppCompatActivity implements
                 C.satellite = false;
                 googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 view.setVisibility(View.GONE);
-                imbt_wifi_on.setVisibility(View.VISIBLE);
                 imbt_wifi_off.setVisibility(View.VISIBLE);
                 break;
             case R.id.imbt_wifi_off:

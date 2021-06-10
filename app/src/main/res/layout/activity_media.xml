@@ -114,6 +114,13 @@
                 android:background="@android:color/transparent"
                 android:onClick="onClick"
                 android:src="@drawable/circlearrowup48" />
+            <ImageButton
+                android:id="@+id/pickgallery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:onClick="onClick"
+                android:src="@drawable/gallery48" />
 
         </LinearLayout>
 
