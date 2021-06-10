@@ -62,7 +62,7 @@ public class StartupBatch {
         CloudUtil.getInstance().DownloadAll(_ctx,Config._csv);
         CloudUtil.getInstance().DownloadAll(_ctx,Config._mov);
         CloudUtil.getInstance().DownloadAll(_ctx,Config._img);
-        CloudUtil.getInstance().DownloadAll(_ctx,Config._mp3);
+        CloudUtil.getInstance().DownloadMP3(_ctx);
         MyLoc.getInstance(_ctx).createNew(); // DB를 초기화
         rebuildActivitySummaries(_ctx);
         ImportTodayActivity();
