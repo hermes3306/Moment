@@ -123,7 +123,6 @@ public class MediaUtil {
         }
     }
 
-
     public void onActivityResult(Activity activity, int requestCode, Intent data, ImageView image_view) {
         Log.d(TAG,"-- onActivityResult Called in the MediaUtil! ");
         if (requestCode == Config.CALL_RESULT_LOAD_IMAGE) {
