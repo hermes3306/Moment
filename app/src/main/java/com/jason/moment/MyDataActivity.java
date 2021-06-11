@@ -5,10 +5,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.jason.moment.util.CloudUtil;
+import com.jason.moment.util.Config;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 public class MyDataActivity extends AppCompatActivity {
@@ -27,6 +35,8 @@ public class MyDataActivity extends AppCompatActivity {
                 handleSendText(intent); // Handle text being sent
             } else if (type.startsWith("image/")) {
                 handleSendImage(intent); // Handle single image being sent
+            } else if (type.startsWith("video/")) {
+                handleSendVideo(intent); // Handle single image being sent
             }
         } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
             if (type.startsWith("image/")) {
@@ -48,9 +58,57 @@ public class MyDataActivity extends AppCompatActivity {
     void handleSendImage(Intent intent) {
         Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
         if (imageUri != null) {
-            // Update UI to reflect image being shared
+
+            try {
+                // Update UI to reflect image being shared
+                InputStream is = getContentResolver().openInputStream(imageUri);
+                File save_file = new File(Config.PIC_SAVE_DIR, Config.getTmpPicName());
+                OutputStream os = new FileOutputStream(save_file);
+
+                int bytesRead = -1;
+                byte[] buffer = new byte[4096];
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+                os.close();
+                is.close();
+                Log.d("TAG", "-- Copy stream done successfully!");
+                Toast.makeText(this, "Copy stream done successfully!", Toast.LENGTH_SHORT).show();
+            }catch(Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Log.e("MyDataActivity", sw.toString());
+            }
         }
-        Toast.makeText(this, "handleSendImage", Toast.LENGTH_SHORT).show();
+
+    }
+
+    void handleSendVideo(Intent intent) {
+        Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+        if (imageUri != null) {
+
+            try {
+                // Update UI to reflect image being shared
+                InputStream is = getContentResolver().openInputStream(imageUri);
+                File save_file = new File(Config.MOV_SAVE_DIR, Config.getTmpVideoName());
+                OutputStream os = new FileOutputStream(save_file);
+
+                int bytesRead = -1;
+                byte[] buffer = new byte[4096];
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+                os.close();
+                is.close();
+                Log.d("TAG", "-- Copy stream done successfully!");
+                Toast.makeText(this, "Copy stream done successfully!", Toast.LENGTH_SHORT).show();
+            }catch(Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Log.e("MyDataActivity", sw.toString());
+            }
+        }
+
     }
 
     void handleSendMultipleImages(Intent intent) {
