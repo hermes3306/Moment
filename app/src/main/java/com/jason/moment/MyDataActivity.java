@@ -3,10 +3,13 @@ package com.jason.moment;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import com.jason.moment.util.CloudUtil;
+
+import java.util.ArrayList;
 
 public class MyDataActivity extends AppCompatActivity {
 
@@ -35,17 +38,26 @@ public class MyDataActivity extends AppCompatActivity {
     }
 
     void handleSendText(Intent intent) {
+        String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+        if (sharedText != null) {
+            // Update UI to reflect text being shared
+        }
         Toast.makeText(this, "handleSendText", Toast.LENGTH_SHORT).show();
     }
 
     void handleSendImage(Intent intent) {
-        intent.getData();
-
-        CloudUtil.getInstance().Upload(this,Config);
+        Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+        if (imageUri != null) {
+            // Update UI to reflect image being shared
+        }
         Toast.makeText(this, "handleSendImage", Toast.LENGTH_SHORT).show();
     }
 
     void handleSendMultipleImages(Intent intent) {
+        ArrayList<Uri> imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+        if (imageUris != null) {
+            // Update UI to reflect multiple images being shared
+        }
         Toast.makeText(this, "handleSendMultipleImages", Toast.LENGTH_SHORT).show();
     }
 
