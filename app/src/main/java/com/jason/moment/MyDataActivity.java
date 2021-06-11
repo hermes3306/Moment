@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.jason.moment.util.CloudUtil;
+
 public class MyDataActivity extends AppCompatActivity {
 
     @Override
@@ -37,6 +39,9 @@ public class MyDataActivity extends AppCompatActivity {
     }
 
     void handleSendImage(Intent intent) {
+        intent.getData();
+
+        CloudUtil.getInstance().Upload(this,Config);
         Toast.makeText(this, "handleSendImage", Toast.LENGTH_SHORT).show();
     }
 
