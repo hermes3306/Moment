@@ -19,7 +19,7 @@ public class ActivitySummary implements Serializable {
     }
 
     public String toString() {
-        return "" + name + "," + dist + "Km," + duration + "," + minpk + " min/km," + cal + " calories";
+        return "" + name + ": (" + dist + "Km," + duration + "," + minpk + " min/km," + cal + " calories)";
     }
 }
 

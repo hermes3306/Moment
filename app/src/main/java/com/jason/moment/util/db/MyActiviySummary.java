@@ -100,7 +100,7 @@ public class MyActiviySummary {
     }
 
     public String[] getStringRange_by_dist(double dist) {
-        String[] selectionArgs = new String[] { "0", "100000" };
+        String[] selectionArgs = new String[] { "0", "1000" };
         if(dist <= 1)               selectionArgs = new String[] { "0", "1" };
         else if(dist <=5)           selectionArgs = new String[] { "1", "5" };
         else if(dist <=10)          selectionArgs = new String[] { "5", "10" };
@@ -111,7 +111,7 @@ public class MyActiviySummary {
         else if(dist <=30)          selectionArgs = new String[] { "25", "30" };
         else if(dist < 42.195)      selectionArgs = new String[] { "30", "42.195" };
         else if(dist < 43)          selectionArgs = new String[] { "42.195", "43" };
-        else selectionArgs = new String[] { "43", "100000" };
+        else selectionArgs = new String[] { "43", "1000" };
         return selectionArgs;
     }
 

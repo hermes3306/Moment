@@ -14,12 +14,14 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Printer;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +42,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.jason.moment.util.ActivityStat;
+import com.jason.moment.util.ActivitySummary;
 import com.jason.moment.util.AddressUtil;
 import com.jason.moment.util.C;
 import com.jason.moment.util.CalDistance;
@@ -187,7 +190,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         int rank = MyActiviySummary.getInstance(_ctx).rank(activityStat.minperKm, activityStat.distanceKm);
                         tv_rank.setText("" + rank + "번째로 빠릅니다.");
                         String range[] = MyActiviySummary.getInstance(_ctx).getStringRange_by_dist(activityStat.distanceKm);
-                        tv_rank_range.setText(range[0] + "-" + range[1] + "킬로미터 운동을 비교해 보세요.");
+                        tv_rank_range.setText(range[0] + "-" + range[1] + "KM 운동을 비교해 보세요.");
                     }catch(Exception e) {
                         tv_rank.setText("-" + "번째로 빠릅니다.");
                         tv_rank_range.setText("전체 운동을 비교해 보세요.");
@@ -384,6 +387,38 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         LinearLayout ll_dashboard02 = (LinearLayout) findViewById(R.id.ll_dashboard02);
 
         switch (v.getId()) {
+            case R.id.tv_rank:
+            case R.id.tv_rank_range:
+                Log.e(TAG, "-- " + _file_list[position].getName());
+                ArrayList <MyActivity> mal = MyActivityUtil.deserialize(_file_list[position]);
+                ActivityStat as = ActivityStat.getActivityStat(mal);
+                double distanceKm = as.distanceKm;
+                ArrayList <ActivitySummary> asl = MyActiviySummary.getInstance(_ctx).query_rank_speed_by_dist(distanceKm);
+                for(int i=0;i<asl.size();i++) Log.d("TAG", "-- " + i + ":" + asl.get(i).toString());
+
+
+                AlertDialog.Builder alertadd = new AlertDialog.Builder(this);
+                LayoutInflater factory = LayoutInflater.from(this);
+                final View view = factory.inflate(R.layout.layout_scroll_linearlayout, null);
+                LinearLayout ll = view.findViewById(R.id.linearLayout);
+
+                final TextView[] tvs = new TextView[asl.size()];
+                for(int i=0;i<asl.size();i++) {
+                    final TextView tv = new TextView(this);
+                    tv.setText(asl.get(i).toString());
+                    ll.addView(tv);
+                    tvs[i] = tv;
+                }
+
+                alertadd.setView(view);
+                alertadd.setNeutralButton("??!", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dlg, int sumthin) {
+                    }
+                });
+                alertadd.show();
+
+
+                break;
             case R.id.imbt_satellite_on:
                 C.satellite = false;
                 _googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);

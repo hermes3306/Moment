@@ -62,7 +62,7 @@ public class StartupBatch {
 
     public void initDatabase(Context _ctx){
         MyLoc.getInstance(_ctx).onCreate();
-        MyActiviySummary.getInstance(_ctx).onCreate();
+        MyActiviySummary.getInstance(_ctx).createNew();
         clearShortRunActivities(_ctx);
         rebuildActivitySummaries(_ctx);
     }
@@ -109,7 +109,7 @@ public class StartupBatch {
             ActivityStat as = MyActivityUtil.getActivityStat(mal);
             //String name = as.name;
             String name = files[i].getName();
-            if(name.length() <15 ) continue;
+            //if(name.length() <15 ) continue;
 
             double dist = as.distanceKm;
             long duration = as.durationInLong;
@@ -141,10 +141,13 @@ public class StartupBatch {
     }
 
     public void  clearShortRunActivities(Context _ctx) {
+
         File[] files = Config.CSV_SAVE_DIR.listFiles();
         for(int i=0;i<files.length;i++) {
             ArrayList<MyActivity> mal = MyActivityUtil.deserialize(files[i]);
-            if(mal.size() < 10) {
+            ActivityStat as = ActivityStat.getActivityStat(mal);
+
+            if(as.distanceKm <= 0.1 || mal.size() < 10 ) {
                 files[i].delete();
                 Log.d(TAG,"-- file["+files[i].getName()+"] deleted!");
             }

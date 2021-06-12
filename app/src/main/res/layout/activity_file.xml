@@ -260,6 +260,7 @@
                     android:drawableLeft="@drawable/actlist48"
                     android:gravity="center_horizontal|left"
                     android:text="5번째로 빠릅니다."
+                    android:onClick="onClick"
                     android:textColor="@color/Cyan"
                     android:textSize="18sp" />
 
@@ -270,6 +271,7 @@
                     android:layout_marginLeft="35sp"
                     android:gravity="center_horizontal|left"
                     android:text="6-11마일 운동을 비교해 보세요."
+                    android:onClick="onClick"
                     android:textColor="@color/Gray"
                     android:textSize="16sp" />
             </LinearLayout>
