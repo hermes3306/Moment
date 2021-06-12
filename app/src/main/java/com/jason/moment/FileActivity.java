@@ -419,6 +419,10 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
 
 
                 break;
+            case R.id.tv_activity_progress:
+                Log.e(TAG, "-- " + _file_list[position].getName());
+
+                break;
             case R.id.imbt_satellite_on:
                 C.satellite = false;
                 _googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
