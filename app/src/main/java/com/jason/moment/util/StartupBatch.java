@@ -25,6 +25,7 @@ public class StartupBatch {
     public void execute() {
         try{
             Log.d(TAG,"-- Startup Batch Started...");
+            initDatabase(_ctx);
             //if(genCVSfiles()) Log.d(TAG, "-- Success");
             //if(genMNTfiles()) Log.d(TAG, "-- Success");
             //deserializeTest();
@@ -39,7 +40,7 @@ public class StartupBatch {
             //uploadAll(_ctx);
             //downAll(_ctx);
             //ImportTodayActivity();
-            //initDatabase(_ctx);
+
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             StringWriter sw = new StringWriter();
@@ -60,8 +61,10 @@ public class StartupBatch {
     }
 
     public void initDatabase(Context _ctx){
+        MyLoc.getInstance(_ctx).onCreate();
+        MyActiviySummary.getInstance(_ctx).onCreate();
+        clearShortRunActivities(_ctx);
         rebuildActivitySummaries(_ctx);
-        ImportTodayActivity();
     }
 
     public void downAll(Context _ctx) {

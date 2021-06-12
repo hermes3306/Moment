@@ -98,6 +98,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         position = intent.getExtras().getInt("pos");
         filetype = intent.getExtras().getInt("filetype");
         _file_list = MyActivityUtil.getFiles(filetype);
+
         if(_file_list == null) {
             Toast.makeText(getApplicationContext(),"No files found!", Toast.LENGTH_LONG).show();
             finish();
@@ -129,6 +130,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             final TextView tv_minperkm = (TextView) findViewById(R.id.tv_minperkm);
             final TextView tv_carolies = (TextView) findViewById(R.id.tv_carolies);
             final TextView tv_rank = (TextView) findViewById(R.id.tv_rank);
+            final TextView tv_rank_range = (TextView) findViewById(R.id.tv_rank_range);
 
             final TextView tv_white_km = (TextView) findViewById(R.id.tv_white_km);
             final TextView tv_white_avg = (TextView) findViewById(R.id.tv_white_avg);
@@ -181,10 +183,14 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     tv_white_duration.setText(activityStat.durationM);
 
                     try {
-                        int rank = MyActiviySummary.getInstance(_ctx).rank(activityStat.minperKm);
+                        //int rank = MyActiviySummary.getInstance(_ctx).rank(activityStat.minperKm);
+                        int rank = MyActiviySummary.getInstance(_ctx).rank(activityStat.minperKm, activityStat.distanceKm);
                         tv_rank.setText("" + rank + "번째로 빠릅니다.");
+                        String range[] = MyActiviySummary.getInstance(_ctx).getStringRange_by_dist(activityStat.distanceKm);
+                        tv_rank_range.setText(range[0] + "-" + range[1] + "킬로미터 운동을 비교해 보세요.");
                     }catch(Exception e) {
                         tv_rank.setText("-" + "번째로 빠릅니다.");
+                        tv_rank_range.setText("전체 운동을 비교해 보세요.");
                         StringWriter sw = new StringWriter();
                         e.printStackTrace(new PrintWriter(sw));
                         Log.e(TAG, sw.toString());

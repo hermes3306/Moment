@@ -10,7 +10,7 @@ public class MyLocDbHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "Moment.db";
     private static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + MyLocContract.LocEntry.TABLE_NAME + " (" +
+            "CREATE TABLE IF NOT EXISTS " + MyLocContract.LocEntry.TABLE_NAME + " (" +
                     MyLocContract.LocEntry._ID + " INTEGER PRIMARY KEY," +
                     MyLocContract.LocEntry.COLUMN_NAME_LATITUDE + " TEXT," +
                     MyLocContract.LocEntry.COLUMN_NAME_LONGITIDE + " TEXT," +

@@ -264,7 +264,7 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/textView15"
+                    android:id="@+id/tv_rank_range"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="35sp"
