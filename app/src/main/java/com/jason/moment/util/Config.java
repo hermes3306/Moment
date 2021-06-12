@@ -153,9 +153,10 @@ public class Config {
     public static int           _file_type_activity  = 3;
 
     public static final int PICK_FROM_CAMERA        = 1;
-    public static final int CALL_RUN_ACTIVITY       = 2;
-    public static final int CALL_SETTING_ACTIVITY   = 3;
-    public static final int CALL_START_ACTIVITY     = 4;
+    public static final int PICK_FROM_CAMERA2       = 2;
+    public static final int CALL_RUN_ACTIVITY       = 3;
+    public static final int CALL_SETTING_ACTIVITY   = 4;
+    public static final int CALL_START_ACTIVITY     = 41;
     public static final int CALL_QUOTE_ACTIVITY     = 5;
     public static final int CALL_PIC_ACTIVITY       = 6;
     public static final int CALL_PIC3_ACTIVITY      = 7;

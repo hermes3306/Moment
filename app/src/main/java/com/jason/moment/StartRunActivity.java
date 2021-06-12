@@ -173,16 +173,14 @@ public class StartRunActivity extends AppCompatActivity implements
             case Config.PICK_FROM_CAMERA:
                 Log.d(TAG, "-- PIC_FROM_CAMERA: ");
                 //showImg(currentMediaName);
-                CloudUtil cu = new CloudUtil();
-                cu.Upload(_ctx,currentMediaName);
+                CloudUtil.getInstance().Upload(currentMediaName);
                 pic_filenames.add(currentMediaName);
                 media_filenames.add(currentMediaName);
                 break;
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
                 //showVideo(currentMediaName);
-                cu = new CloudUtil();
-                cu.Upload(_ctx,currentMediaName);
+                CloudUtil.getInstance().Upload(currentMediaName);
                 mov_filenames.add(currentMediaName);
                 media_filenames.add(currentMediaName);
                 break;
@@ -216,8 +214,7 @@ public class StartRunActivity extends AppCompatActivity implements
         alertadd.setView(view);
         alertadd.setNeutralButton("Upload!", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dlg, int sumthin) {
-                CloudUtil cu = new CloudUtil();
-                cu.Upload(_ctx, currentMediaName);
+                CloudUtil.getInstance().Upload(currentMediaName);
             }
         });
         alertadd.show();

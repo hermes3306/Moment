@@ -241,7 +241,7 @@ public class PicNVideoActivity extends AppCompatActivity implements View.OnClick
         switch(requestCode) {
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
-                CloudUtil.getInstance().Upload(_ctx,currentFileName);
+                CloudUtil.getInstance().Upload(currentFileName);
                 break;
         }
     }

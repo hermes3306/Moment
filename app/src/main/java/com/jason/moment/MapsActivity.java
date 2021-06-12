@@ -753,13 +753,13 @@ public class MapsActivity extends AppCompatActivity implements
         switch(requestCode) {
             case Config.PICK_FROM_CAMERA:
                 Log.d(TAG, "-- PIC_FROM_CAMERA: ");
-                CloudUtil.getInstance().Upload(_ctx,currentFileName);
+                CloudUtil.getInstance().Upload(currentFileName);
 //                CameraUtil.showImg(_ctx, currentFileName);
                 NotificationUtil.notify_new_picture(_ctx, currentFileName);
                 break;
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
-                CloudUtil.getInstance().Upload(_ctx,currentFileName);
+                CloudUtil.getInstance().Upload(currentFileName);
 //                CameraUtil.showVideo(_ctx, currentFileName);
                 NotificationUtil.notify_new_video(_ctx, currentFileName);
                 break;

@@ -1,5 +1,6 @@
 package com.jason.moment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -19,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +45,7 @@ import com.jason.moment.util.C;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CalcTime;
 import com.jason.moment.util.CaloryUtil;
+import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.MP3;
 import com.jason.moment.util.MapUtil;
@@ -84,10 +87,6 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     File _file = null;
     MyActivity lastActivity = null;
 
-
-    private void initializeContentViews(int layout) {
-        setContentView(layout);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,6 +138,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             final ImageButton imbt_navi = (ImageButton) findViewById(R.id.imbt_navi);
             final ImageButton imbt_trash = (ImageButton) findViewById(R.id.imbt_trash);
             final ImageButton imbt_pop_menu = (ImageButton) findViewById(R.id.imbt_pop_menu);
+            final ImageButton imbt_up = (ImageButton) findViewById(R.id.imbt_up);
             final File[] flist = MyActivityUtil.getFiles(filetype);
 
             public void GO(final GoogleMap googleMap, File myfile) {
@@ -228,11 +228,16 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 builder.show();
             }
 
-
-
+            @SuppressLint("MissingPermission")
             @Override
             public void onMapReady(final GoogleMap googleMap) {
                 _googleMap = googleMap;
+
+//                googleMap.setMyLocationEnabled(C.LocationButton);
+                googleMap.getUiSettings().setMyLocationButtonEnabled(C.LocationButton);
+                googleMap.getUiSettings().setCompassEnabled(C.Compass);
+                googleMap.getUiSettings().setZoomControlsEnabled(C.ZoomControl);
+
                 GO(googleMap, _file);
 
                 imbt_prev.setOnClickListener(new View.OnClickListener(){
@@ -269,6 +274,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         imbt_marker.setVisibility(View.GONE);
                         imbt_navi.setVisibility(View.GONE);
                         imbt_trash.setVisibility(View.GONE);
+                        imbt_up.setVisibility(View.GONE);
                         imbt_pop_menu.setVisibility(View.VISIBLE);
                         C.nomarkers = !C.nomarkers;
                         int width = mMapView.getWidth();
@@ -283,6 +289,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         imbt_marker.setVisibility(View.GONE);
                         imbt_navi.setVisibility(View.GONE);
                         imbt_trash.setVisibility(View.GONE);
+                        imbt_up.setVisibility(View.GONE);
                         imbt_pop_menu.setVisibility(View.VISIBLE);
                         C.notrack = !C.notrack;
                         int width = mMapView.getWidth();
@@ -297,6 +304,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         imbt_marker.setVisibility(View.VISIBLE);
                         imbt_navi.setVisibility(View.VISIBLE);
                         imbt_trash.setVisibility(View.VISIBLE);
+                        imbt_up.setVisibility(View.VISIBLE);
                         imbt_pop_menu.setVisibility(View.GONE);
                     }
                 });
@@ -307,6 +315,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         imbt_marker.setVisibility(View.GONE);
                         imbt_navi.setVisibility(View.GONE);
                         imbt_trash.setVisibility(View.GONE);
+                        imbt_up.setVisibility(View.GONE);
                         imbt_pop_menu.setVisibility(View.VISIBLE);
 
                         File[] flist = MyActivityUtil.getFiles(filetype);
@@ -321,6 +330,18 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                             Log.e(TAG,"Err:" + sw.toString());
                         }
                         GO(googleMap, flist[position]);
+                    }
+                });
+
+                imbt_up.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        imbt_marker.setVisibility(View.GONE);
+                        imbt_navi.setVisibility(View.GONE);
+                        imbt_trash.setVisibility(View.GONE);
+                        imbt_up.setVisibility(View.GONE);
+                        imbt_pop_menu.setVisibility(View.VISIBLE);
+                        CloudUtil.getInstance().Upload(_file_list[position].getName());
                     }
                 });
 
@@ -351,6 +372,10 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         ImageButton imbt_satellite_off = (ImageButton)findViewById(R.id.imbt_satellite_off);
         ImageButton imbt_satellite_on = (ImageButton)findViewById(R.id.imbt_satellite_on);
         MapView mapView = (MapView)findViewById(R.id.mapView);
+        LinearLayout ll_stat01 = (LinearLayout) findViewById(R.id.ll_stat01);
+        LinearLayout ll_stat02 = (LinearLayout) findViewById(R.id.ll_stat02);
+        LinearLayout ll_dashboard01 = (LinearLayout) findViewById(R.id.ll_dashboard01);
+        LinearLayout ll_dashboard02 = (LinearLayout) findViewById(R.id.ll_dashboard02);
 
         switch (v.getId()) {
             case R.id.imbt_satellite_on:
@@ -359,12 +384,20 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 v.setVisibility(View.GONE);
                 imbt_satellite_off.setVisibility(View.VISIBLE);
                 imbt_satellite_off.setVisibility(View.VISIBLE);
+                ll_stat01.setVisibility(View.VISIBLE);
+                ll_stat02.setVisibility(View.VISIBLE);
+                ll_dashboard01.setVisibility(View.GONE);
+                ll_dashboard02.setVisibility(View.GONE);
                 break;
             case R.id.imbt_satellite_off:
                 C.satellite= true;
                 _googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                 v.setVisibility(View.GONE);
                 imbt_satellite_on.setVisibility(View.VISIBLE);
+                ll_stat01.setVisibility(View.GONE);
+                ll_stat02.setVisibility(View.GONE);
+                ll_dashboard01.setVisibility(View.VISIBLE);
+                ll_dashboard02.setVisibility(View.VISIBLE);
                 break;
             case R.id.imSetting:
                 Log.d(TAG, "-- Setting Activities!");

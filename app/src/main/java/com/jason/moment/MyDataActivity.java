@@ -58,7 +58,6 @@ public class MyDataActivity extends AppCompatActivity {
     void handleSendImage(Intent intent) {
         Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
         if (imageUri != null) {
-
             try {
                 // Update UI to reflect image being shared
                 InputStream is = getContentResolver().openInputStream(imageUri);
@@ -74,6 +73,7 @@ public class MyDataActivity extends AppCompatActivity {
                 is.close();
                 Log.d("TAG", "-- Copy stream done successfully!");
                 Toast.makeText(this, "Copy stream done successfully!", Toast.LENGTH_SHORT).show();
+                finish();
             }catch(Exception e) {
                 StringWriter sw = new StringWriter();
                 e.printStackTrace(new PrintWriter(sw));
@@ -102,6 +102,7 @@ public class MyDataActivity extends AppCompatActivity {
                 is.close();
                 Log.d("TAG", "-- Copy stream done successfully!");
                 Toast.makeText(this, "Copy stream done successfully!", Toast.LENGTH_SHORT).show();
+                finish();
             }catch(Exception e) {
                 StringWriter sw = new StringWriter();
                 e.printStackTrace(new PrintWriter(sw));

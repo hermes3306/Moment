@@ -141,14 +141,12 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
             case Config.PICK_FROM_CAMERA:
                 Log.d(TAG, "-- PIC_FROM_CAMERA: ");
                 //showImg(currentMediaName);
-                CloudUtil cu = new CloudUtil();
-                cu.Upload(_ctx,currentMediaName);
+                CloudUtil.getInstance().Upload(currentMediaName);
                 break;
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
                 showVideo(currentMediaName);
-                cu = new CloudUtil();
-                cu.Upload(_ctx,currentMediaName);
+                CloudUtil.getInstance().Upload(currentMediaName);
                 break;
         }
     }
@@ -180,8 +178,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         alertadd.setView(view);
         alertadd.setNeutralButton("Upload!", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dlg, int sumthin) {
-                CloudUtil cu = new CloudUtil();
-                cu.Upload(_ctx, currentMediaName);
+                CloudUtil.getInstance().Upload(currentMediaName);
             }
         });
         alertadd.show();

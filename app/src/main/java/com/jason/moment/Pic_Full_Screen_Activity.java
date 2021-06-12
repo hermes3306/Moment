@@ -479,7 +479,7 @@ public class Pic_Full_Screen_Activity extends AppCompatActivity implements View.
             case Config.PICK_FROM_CAMERA:
                 Log.d(TAG, "-- PIC_FROM_CAMERA: ");
 
-                CloudUtil.getInstance().Upload(_ctx,currentFileName);
+                CloudUtil.getInstance().Upload(currentFileName);
                 CameraUtil.showImg(_ctx, currentFileName);
 
                 NotificationUtil.notify_new_picture(_ctx, currentFileName);

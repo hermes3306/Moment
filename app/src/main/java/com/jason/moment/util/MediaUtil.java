@@ -211,7 +211,7 @@ public class MediaUtil {
 
                 String file_name = savePicFromUri(ctx, imageUri);
                 showImage(image_view, file_name);
-                CloudUtil.getInstance().Upload(ctx,file_name);
+                CloudUtil.getInstance().Upload(file_name);
 
                 //savePicFromView(image_view);
                 Log.d(TAG, "-- success! ");

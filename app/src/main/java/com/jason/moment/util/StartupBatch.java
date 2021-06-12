@@ -39,6 +39,7 @@ public class StartupBatch {
             //uploadAll(_ctx);
             //downAll(_ctx);
             //ImportTodayActivity();
+            //initDatabase(_ctx);
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             StringWriter sw = new StringWriter();
@@ -56,6 +57,11 @@ public class StartupBatch {
         CloudUtil.getInstance().UploadAll(_ctx, Config._csv);
         CloudUtil.getInstance().UploadAll(_ctx, Config._mov);
         CloudUtil.getInstance().UploadAll(_ctx, Config._img);
+    }
+
+    public void initDatabase(Context _ctx){
+        rebuildActivitySummaries(_ctx);
+        ImportTodayActivity();
     }
 
     public void downAll(Context _ctx) {
