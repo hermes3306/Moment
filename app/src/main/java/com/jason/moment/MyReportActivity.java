@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -30,6 +31,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.ActivitySummary;
+import com.jason.moment.util.AlertDialogUtil;
 import com.jason.moment.util.C;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
@@ -194,29 +196,7 @@ public class MyReportActivity extends AppCompatActivity implements
                 ArrayList <MyActivity> mal = MyActivityUtil.deserialize(activity_filename);
                 ActivityStat as = ActivityStat.getActivityStat(mal);
                 double distanceKm = as.distanceKm;
-                ArrayList <ActivitySummary> asl = MyActiviySummary.getInstance(_ctx).query_rank_speed_by_dist(distanceKm);
-                for(int i=0;i<asl.size();i++) Log.d("TAG", "-- " + i + ":" + asl.get(i).toString());
-
-
-                AlertDialog.Builder alertadd = new AlertDialog.Builder(this);
-                LayoutInflater factory = LayoutInflater.from(this);
-                final View view = factory.inflate(R.layout.layout_scroll_linearlayout, null);
-                LinearLayout ll = view.findViewById(R.id.linearLayout);
-
-                final TextView[] tvs = new TextView[asl.size()];
-                for(int i=0;i<asl.size();i++) {
-                    final TextView tv = new TextView(this);
-                    tv.setText(asl.get(i).toString());
-                    ll.addView(tv);
-                    tvs[i] = tv;
-                }
-
-                alertadd.setView(view);
-                alertadd.setNeutralButton("??!", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dlg, int sumthin) {
-                    }
-                });
-                alertadd.show();
+                AlertDialogUtil.getInstance().chooseRank(_ctx, distanceKm);
                 break;
             case R.id.tv_activity_progress:
                 Log.e(TAG, "-- " + activity_filename);

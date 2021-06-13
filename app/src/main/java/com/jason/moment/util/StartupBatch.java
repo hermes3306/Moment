@@ -111,14 +111,14 @@ public class StartupBatch {
             String name = files[i].getName();
             //if(name.length() <15 ) continue;
 
-            double dist = as.distanceKm;
-            long duration = as.durationInLong;
-            double minpk = as.minperKm;
-            int cal = as.calories;
+            double distanceKm = as.distanceKm;
+            long durationInLong = as.durationInLong;
+            double minperKm = as.minperKm;
+            int calories = as.calories;
 
-            if(minpk == 0) files[i].delete();
+            if(minperKm == 0) files[i].delete();
             else {
-                MyActiviySummary.getInstance(_ctx).ins(name, dist, duration, minpk, cal);
+                MyActiviySummary.getInstance(_ctx).ins(name, distanceKm, durationInLong, minperKm, calories);
                 Log.d(TAG, " -- new Activity summary: " + as.toString());
             }
         }

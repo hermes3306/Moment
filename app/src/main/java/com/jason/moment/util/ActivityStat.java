@@ -8,11 +8,10 @@ import java.util.Date;
 
 public class ActivityStat {
         static String TAG = "ActivityStat";
+        public String _fname;
         public String name;
         public String date_str;
 
-        public Date start;
-        public Date end;
         public double distanceKm;
         public double distanceM;
         public String duration;
@@ -28,16 +27,41 @@ public class ActivityStat {
         public int[] progress_info;
         public int[] chart_info;
 
+        public ActivityStat(String name, double distanceKm, long durationInLong, double minperKm, int calories) {
+            this._fname = name;
+            this.duration = duration;
+            this.distanceKm = distanceKm;
+            this.minperKm = minperKm;
+            this.calories = calories;
+            this.durationInLong = durationInLong;
+            this.distanceM = distanceKm * 1000;
+
+            String fnameWithoutExtension = name.substring(0,name.length()-4);
+            Date start = new Date();
+            if(fnameWithoutExtension.length() < 15) {  // Day Activity
+                start = StringUtil.StringToDate(fnameWithoutExtension, "yyyyMMdd");
+            }else { // Activity
+                start = StringUtil.StringToDate(fnameWithoutExtension, "yyyyMMdd_HHmmss");
+            }
+            genStatInformation(start);
+        }
+
+        public static ActivityStat fromActivitySummary(ActivitySummary as) {
+            return new ActivityStat(as.name, as.dist, as.duration, as.minpk, as.cal);
+        }
+
+
         public ActivityStat(Date start, Date end, String duration, double distanceM, double distanceKm, double minperKm, int calories) {
-            this.start = start;
-            this.end = end;
             this.duration = duration;
             this.distanceM = distanceM;
             this.distanceKm = distanceKm;
             this.minperKm = minperKm;
             this.calories = calories;
             this.durationInLong = end.getTime() - start.getTime();
+            genStatInformation(start);
+        }
 
+        void genStatInformation(Date start) {
             long t_dur_h = durationInLong/Config._ONE_HOUR;
             long t_dur_m = (durationInLong - (t_dur_h * Config._ONE_HOUR)) / Config._ONE_MIN;
             long t_dur_s = (durationInLong - (t_dur_h * Config._ONE_HOUR) - (t_dur_m * Config._ONE_MIN)) / Config._ONE_SEC;

@@ -44,6 +44,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.ActivitySummary;
 import com.jason.moment.util.AddressUtil;
+import com.jason.moment.util.AlertDialogUtil;
 import com.jason.moment.util.C;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CalcTime;
@@ -389,36 +390,11 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.tv_rank:
             case R.id.tv_rank_range:
-                Log.e(TAG, "-- " + _file_list[position].getName());
+                Log.e(TAG, "-- " + _file_list[position]);
                 ArrayList <MyActivity> mal = MyActivityUtil.deserialize(_file_list[position]);
                 ActivityStat as = ActivityStat.getActivityStat(mal);
                 double distanceKm = as.distanceKm;
-                ArrayList <ActivitySummary> asl = MyActiviySummary.getInstance(_ctx).query_rank_speed_by_dist(distanceKm);
-                for(int i=0;i<asl.size();i++) Log.d("TAG", "-- " + i + ":" + asl.get(i).toString());
-
-
-                AlertDialog.Builder alertadd = new AlertDialog.Builder(this);
-                LayoutInflater factory = LayoutInflater.from(this);
-                final View view = factory.inflate(R.layout.layout_scroll_linearlayout, null);
-                LinearLayout ll = view.findViewById(R.id.linearLayout);
-
-                final TextView[] tvs = new TextView[asl.size()];
-                for(int i=0;i<asl.size();i++) {
-                    final TextView tv = new TextView(this);
-                    tv.setText(asl.get(i).toString());
-                    ll.addView(tv);
-                    tvs[i] = tv;
-                }
-
-                alertadd.setView(view);
-                alertadd.setNeutralButton("??!", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dlg, int sumthin) {
-                    }
-                });
-                alertadd.show();
-
-
-                break;
+                AlertDialogUtil.getInstance().chooseRank(_ctx, distanceKm);
             case R.id.tv_activity_progress:
                 Log.e(TAG, "-- " + _file_list[position].getName());
 
