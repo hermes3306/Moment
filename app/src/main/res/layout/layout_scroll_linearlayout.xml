@@ -2,17 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/view_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textAlignment="center"
-        android:text="---"
-        android:textSize="40dp"
+        android:drawableLeft="@drawable/tasks48"
+        android:gravity="center_horizontal|left"
+        android:text="15-20KM 구간 기록"
+        android:textColor="@color/Black"
+        android:textSize="18sp"
         android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_dummy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="35sp"
+        android:gravity="center_horizontal|left"
+        android:text="활동을 선택하세요."
+        android:textColor="@color/Gray"
+        android:textSize="16sp" />
 
     <ScrollView
         android:layout_width="match_parent"

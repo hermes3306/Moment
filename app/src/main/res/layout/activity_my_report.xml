@@ -155,17 +155,19 @@
                         android:drawableLeft="@drawable/actlist48"
                         android:gravity="center_horizontal|left"
                         android:text="5번째로 빠릅니다."
+                        android:onClick="onClick"
                         android:textColor="@color/Cyan"
                         android:textSize="18sp" />
                     <TextView
-                        android:id="@+id/textView15"
+                        android:id="@+id/tv_rank_range"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:gravity="center_horizontal|left"
                         android:layout_marginLeft="35sp"
+                        android:gravity="center_horizontal|left"
+                        android:text="6-11마일 운동을 비교해 보세요."
+                        android:onClick="onClick"
                         android:textColor="@color/Gray"
-                        android:text="6-11마일 운동을 비교해 보세요." />
+                        android:textSize="16sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -176,6 +178,7 @@
                 android:drawableLeft="@drawable/time48"
                 android:gravity="center_horizontal|left"
                 android:text="Progress"
+                android:onClick="onClick"
                 android:textColor="@color/Black"
                 android:textSize="18sp" />
 
