@@ -40,7 +40,6 @@ public class StartupBatch {
             //uploadAll(_ctx);
             //downAll(_ctx);
             //ImportTodayActivity();
-
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             StringWriter sw = new StringWriter();
