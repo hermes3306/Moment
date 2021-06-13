@@ -18,10 +18,10 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/icon2"
+        android:icon="@drawable/iconbrow"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@drawable/icon2"
+        android:roundIcon="@drawable/iconbrow"
         android:supportsRtl="true"
         android:theme="@style/Theme.Moment"
         android:usesCleartextTraffic="true">

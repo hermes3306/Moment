@@ -11,6 +11,7 @@ public class ActivityStat {
         public String _fname;
         public String name;
         public String date_str;
+        public String date_str2;
 
         public double distanceKm;
         public double distanceM;
@@ -50,7 +51,6 @@ public class ActivityStat {
             return new ActivityStat(as.name, as.dist, as.duration, as.minpk, as.cal);
         }
 
-
         public ActivityStat(Date start, Date end, String duration, double distanceM, double distanceKm, double minperKm, int calories) {
             this.duration = duration;
             this.distanceM = distanceM;
@@ -83,6 +83,7 @@ public class ActivityStat {
 
             this.name = DateUtil.DateToString(start,"E요일 ") + " " + H;
             this.date_str = DateUtil.DateToString(start,"yyyy년MM월dd일 HH:mm a");
+            this.date_str2 = DateUtil.DateToString(start,"MM월dd일 HH:mm a");
         }
 
         public String toString() {
