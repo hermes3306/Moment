@@ -118,7 +118,7 @@
                     android:text="@string/dummy_button" />
 
                 <ImageButton
-                    android:id="@+id/imb_prev"
+                    android:id="@+id/imbt_prev"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -137,7 +137,7 @@
                     app:srcCompat="@drawable/camera_48" />
 
                 <ImageButton
-                    android:id="@+id/imb_next"
+                    android:id="@+id/imbt_next"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"

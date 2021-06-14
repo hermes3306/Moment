@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +37,7 @@ import com.jason.moment.util.C;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
+import com.jason.moment.util.Progress;
 import com.jason.moment.util.db.MyActiviySummary;
 import com.jason.moment.util.db.MyLoc;
 
@@ -48,11 +50,17 @@ public class MyReportActivity extends AppCompatActivity implements
         View.OnClickListener {
     String TAG = "MyReportActivity";
     String activity_filename = null;
+
+    ArrayList<MyActivity> mActivityList = null;
+    ArrayList<String> media_list = null;
+    ActivityStat activityStat = null;
+
     Context _ctx = null;
     private GoogleMap googleMap;
     boolean satellite = false;
 
     private void showActivities2() {
+        // copy from fileActivity
         ArrayList<String> media_list = MyActivityUtil.deserializeMediaInfoFromCSV(activity_filename);
         if (media_list != null) {
             for (int i = 0; i < media_list.size(); i++) Log.d(TAG, "-- " + media_list.get(i));
@@ -94,15 +102,14 @@ public class MyReportActivity extends AppCompatActivity implements
         }
         MapView mv = findViewById(R.id.mapView);
         MapUtil.DRAW(_ctx, googleMap, mv.getWidth(), mv.getHeight(), mActivityList);
-
     }
 
     private void showActivities() {
-        ArrayList<String> media_list = MyActivityUtil.deserializeMediaInfoFromCSV(activity_filename);
+        media_list = MyActivityUtil.deserializeMediaInfoFromCSV(activity_filename);
         if (media_list != null) {
             for (int i = 0; i < media_list.size(); i++) Log.d(TAG, "-- " + media_list.get(i));
         }
-        ArrayList<MyActivity> mActivityList = MyActivityUtil.deserialize(activity_filename);
+        mActivityList = MyActivityUtil.deserialize(activity_filename);
         MyActivity lastActivity = null;
         if (mActivityList == null) return;
         if (mActivityList.size() == 0) {
@@ -112,26 +119,37 @@ public class MyReportActivity extends AppCompatActivity implements
             lastActivity = mActivityList.get(mActivityList.size() - 1);
         }
 
-        TextView name = findViewById(R.id.name);
-        TextView date_str = findViewById(R.id.date_str);
-        TextView distancekm = findViewById(R.id.distancekm);
-        TextView duration = findViewById(R.id.duration);
-        TextView calories = findViewById(R.id.calories);
-        TextView minperkm = findViewById(R.id.minperkm);
-        TextView memo = findViewById(R.id.memo);
-        TextView weather = findViewById(R.id.weather);
-        TextView co_runner = findViewById(R.id.co_runner);
-        TextView tv_rank = findViewById(R.id.tv_rank);
-        TextView tv_rank_range = (TextView) findViewById(R.id.tv_rank_range);
+        final TextView tv_activity_name = (TextView)findViewById(R.id.name);
+        final TextView tv_date_str = (TextView)findViewById(R.id.date_str);
+        final TextView memo = findViewById(R.id.memo);
+        final TextView weather = findViewById(R.id.weather);
+        final TextView co_runner = findViewById(R.id.co_runner);
+        final ImageButton imbt_prev = (ImageButton) findViewById(R.id.imbt_prev);
+        final ImageButton imbt_next = (ImageButton) findViewById(R.id.imbt_next);
+        final TextView tv_distance = (TextView) findViewById(R.id.tv_distance);
+        final TextView tv_duration = (TextView) findViewById(R.id.tv_duration);
+        final TextView tv_minperkm = (TextView) findViewById(R.id.tv_minperkm);
+        final TextView tv_calories = (TextView) findViewById(R.id.tv_carolies);
+        final TextView tv_rank = (TextView) findViewById(R.id.tv_rank);
+        final TextView tv_rank_range = (TextView) findViewById(R.id.tv_rank_range);
+        final TextView tv_white_km = (TextView) findViewById(R.id.tv_white_km);
+        final TextView tv_white_avg = (TextView) findViewById(R.id.tv_white_avg);
+        final TextView tv_white_duration = (TextView) findViewById(R.id.tv_white_duration);
+        final ImageButton imbt_marker = (ImageButton) findViewById(R.id.imbt_marker);
+        final ImageButton imbt_navi = (ImageButton) findViewById(R.id.imbt_navi);
+        final ImageButton imbt_trash = (ImageButton) findViewById(R.id.imbt_trash);
+        final ImageButton imbt_pop_menu = (ImageButton) findViewById(R.id.imbt_pop_menu);
+        final ImageButton imbt_up = (ImageButton) findViewById(R.id.imbt_up);
 
-        ActivityStat activityStat = MyActivityUtil.getActivityStat(mActivityList);
+
+        activityStat = MyActivityUtil.getActivityStat(mActivityList);
         if (activityStat != null) {
-            name.setText(activityStat.name);
-            date_str.setText(activityStat.date_str);
-            distancekm.setText("" + String.format("%.1f", activityStat.distanceKm));
-            duration.setText(activityStat.duration);
-            calories.setText("" + activityStat.calories);
-            minperkm.setText("" + String.format("%.1f", activityStat.minperKm));
+            tv_activity_name.setText(activityStat.name);
+            tv_date_str.setText(activityStat.date_str);
+            tv_distance.setText("" + String.format("%.1f", activityStat.distanceKm));
+            tv_duration.setText(activityStat.duration);
+            tv_calories.setText("" + activityStat.calories);
+            tv_minperkm.setText("" + String.format("%.1f", activityStat.minperKm));
             memo.setText(activityStat.memo);
             weather.setText(activityStat.weather);
             co_runner.setText(activityStat.co_runner);
@@ -171,6 +189,8 @@ public class MyReportActivity extends AppCompatActivity implements
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
+
+            //C.setGoogleMap(googleMap);
             googleMap.setMyLocationEnabled(C.LocationButton);
             googleMap.getUiSettings().setMyLocationButtonEnabled(C.LocationButton);
             googleMap.getUiSettings().setCompassEnabled(C.Compass);
@@ -200,9 +220,39 @@ public class MyReportActivity extends AppCompatActivity implements
                 break;
             case R.id.tv_activity_progress:
                 Log.e(TAG, "-- " + activity_filename);
+                mal = MyActivityUtil.deserialize(activity_filename);
+                ArrayList<Progress> plist = MyActivityUtil.getProgress(mal);
+                for(int i=0;i<plist.size();i++) {
+                    Log.d(TAG, "-- " + plist.get(i));
+
+                }
+                break;
+            case R.id.imbt_next:
+                ArrayList<ActivitySummary> asl =
+                        MyActiviySummary.getInstance(_ctx).all_activitySummary_by_ranks(activityStat.minperKm, activityStat.distanceKm);
+                int rank = MyActiviySummary.getInstance(_ctx).rank(activityStat.minperKm, activityStat.distanceKm) -1;
+                Intent intent1 = new Intent(_ctx, MyReportActivity.class);
+                String t_file_name;
+                if(rank+1 < asl.size()) t_file_name = asl.get(rank+1).name;
+                else t_file_name = asl.get(0).name;
+                intent1.putExtra("activity_file_name", t_file_name);
+                Log.d(TAG, "-- activity_file_name: " + t_file_name);
+                _ctx.startActivity(intent1);
+                finish();
+                break;
+            case R.id.imbt_prev:
+                asl = MyActiviySummary.getInstance(_ctx).all_activitySummary_by_ranks(activityStat.minperKm, activityStat.distanceKm);
+                rank = MyActiviySummary.getInstance(_ctx).rank(activityStat.minperKm, activityStat.distanceKm)-1;
+                Intent intent2 = new Intent(_ctx, MyReportActivity.class);
+
+                if(rank > 0) t_file_name = asl.get(rank-1).name;
+                else t_file_name = asl.get(asl.size()-1).name;
+                intent2.putExtra("activity_file_name", t_file_name);
+                Log.d(TAG, "-- activity_file_name: " + t_file_name);
+                _ctx.startActivity(intent2);
+                finish();
                 break;
         }
-
     }
 
     @Override

@@ -62,16 +62,8 @@ public class ActivityStat {
         }
 
         void genStatInformation(Date start) {
-            long t_dur_h = durationInLong/Config._ONE_HOUR;
-            long t_dur_m = (durationInLong - (t_dur_h * Config._ONE_HOUR)) / Config._ONE_MIN;
-            long t_dur_s = (durationInLong - (t_dur_h * Config._ONE_HOUR) - (t_dur_m * Config._ONE_MIN)) / Config._ONE_SEC;
-            if(t_dur_h>0) this.durationM =  "" +  t_dur_h + ":" + t_dur_m + ":" + t_dur_s;
-            else  this.durationM = t_dur_m + ":" + t_dur_s;
-
-            long t_sec = (long)(minperKm * 60);
-            long t_min = t_sec / 60;
-            t_sec = (long)(minperKm * 60) - t_min * 60;
-            this.minperKms = "" + t_min + ":" + t_sec;
+            this.durationM = CalcTime.durationMinStr(durationInLong);
+            this.minperKms = CalcTime.minperKmStr(minperKm);
 
             String H = DateUtil.DateToString(start,"H");
             int t = Integer.parseInt(H);

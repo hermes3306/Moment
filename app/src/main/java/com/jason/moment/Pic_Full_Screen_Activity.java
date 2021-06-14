@@ -527,12 +527,12 @@ public class Pic_Full_Screen_Activity extends AppCompatActivity implements View.
             case R.id.imvCamera:
                 dispatchTakePictureIntent();
                 break;
-            case R.id.imb_next:
+            case R.id.imbt_next:
                 if (pos < size - 1) pos++;
                 else pos = 0;
                 show1();
                 break;
-            case R.id.imb_prev:
+            case R.id.imbt_prev:
                 if (pos > 0) pos--;
                 else pos = size - 1;
                 show1();

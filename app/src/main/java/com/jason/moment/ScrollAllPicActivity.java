@@ -417,14 +417,14 @@ public class ScrollAllPicActivity extends AppCompatActivity implements View.OnCl
             case R.id.imvCamera:
                 takePic();
                 break;
-            case R.id.imb_next:
+            case R.id.imbt_next:
                 hsv.post(new Runnable() {
                     public void run() {
                         hsv.fullScroll(View.FOCUS_DOWN);
                     }
                 });
                 break;
-            case R.id.imb_prev:
+            case R.id.imbt_prev:
                 hsv.post(new Runnable() {
                     public void run() {
                         hsv.fullScroll(View.FOCUS_UP);

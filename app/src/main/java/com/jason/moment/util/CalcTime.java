@@ -53,4 +53,22 @@ public class CalcTime {
     public String getElapsedHourStr() {
         return String.format("%.0f시간%d분", getElapsedHour(), (int)getElapsedMin() - (int)getElapsedHour() * 60 );
     }
+
+    public static String minperKmStr(double minperKm) {
+        long t_sec = (long) (minperKm * 60);
+        long t_min = t_sec / 60;
+        t_sec = (long) (minperKm * 60) - t_min * 60;
+        return "" + t_min + ":" + t_sec;
+    }
+
+    public static String durationMinStr(long durationInLong) {
+        long t_dur_h = durationInLong / Config._ONE_HOUR;
+        long t_dur_m = (durationInLong - (t_dur_h * Config._ONE_HOUR)) / Config._ONE_MIN;
+        long t_dur_s = (durationInLong - (t_dur_h * Config._ONE_HOUR) - (t_dur_m * Config._ONE_MIN)) / Config._ONE_SEC;
+        String durationMinStr;
+        if (t_dur_h > 0) durationMinStr = "" + t_dur_h + ":" + t_dur_m + ":" + t_dur_s;
+        else durationMinStr = t_dur_m + ":" + t_dur_s;
+        return durationMinStr;
+    }
+
 }

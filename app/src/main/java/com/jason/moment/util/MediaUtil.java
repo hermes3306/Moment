@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.icu.util.Output;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -221,7 +222,23 @@ public class MediaUtil {
                 Log.d(TAG,"-- ERR:" + sw.toString());
             }
         }
-
     }
+
+    // need to enhance later
+    private void startRecord() throws IllegalStateException, IOException{
+        MediaRecorder recorder = new MediaRecorder();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);  //ok so I say audio source is the microphone, is it windows/linux microphone on the emulator?
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        recorder.setOutputFile("/sdcard/Music/"+System.currentTimeMillis()+".amr");
+        recorder.prepare();
+        recorder.start();
+    }
+
+    private void stopRecord(MediaRecorder recorder){
+        recorder.stop();
+        //recorder.release();
+    }
+
 
 }

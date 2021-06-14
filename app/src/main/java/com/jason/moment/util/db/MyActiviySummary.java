@@ -194,4 +194,9 @@ public class MyActiviySummary {
         return asl.size()+1;
     }
 
+    public ArrayList<ActivitySummary> all_activitySummary_by_ranks(double minpk, double dist) {
+        ArrayList<ActivitySummary> asl = query_rank_speed_by_dist(dist);
+        return asl;
+    }
+
 }

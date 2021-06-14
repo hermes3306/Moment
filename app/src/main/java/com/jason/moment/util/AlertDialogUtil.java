@@ -29,7 +29,9 @@ public class AlertDialogUtil {
         ArrayList<ActivitySummary> asl = MyActiviySummary.getInstance(_ctx).query_rank_speed_by_dist(distanceKm);
         for(int i=0;i<asl.size();i++) Log.d("TAG", "-- " + i + ":" + asl.get(i).toString());
 
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(_ctx);
+        AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
+        AlertDialog alert = builder.create();
+
         LayoutInflater factory = LayoutInflater.from(_ctx);
         final View view = factory.inflate(R.layout.layout_scroll_linearlayout, null);
         LinearLayout ll = view.findViewById(R.id.linearLayout);
@@ -78,6 +80,7 @@ public class AlertDialogUtil {
                     Intent intent = new Intent(_ctx, MyReportActivity.class);
                     intent.putExtra("activity_file_name", activity_file_name);
                     _ctx.startActivity(intent);
+                    alert.dismiss();
                 }
             });
             ll.addView(tv1);
@@ -94,21 +97,23 @@ public class AlertDialogUtil {
                     Intent intent = new Intent(_ctx, MyReportActivity.class);
                     intent.putExtra("activity_file_name", activity_file_name);
                     _ctx.startActivity(intent);
+                    alert.dismiss();
                 }
             });
             ll.addView(tv2);
             tvs2[i] = tv2;
 
             final TextView tv3 = new TextView(_ctx);
-            tv3.setText("\t\t" + String.format("%.2f",as.distanceKm) + "\t" + as.durationM + "\t" + as.minperKms + "\t" + as.calories);
+            tv3.setText("\t" + String.format("%.1f",as.distanceKm) + "\t" + as.durationM + "\t" + as.minperKms + "\t" + as.calories);
             tv3.setTextColor(Color.GRAY);
-            tv3.setTextSize(20);
+            tv3.setTextSize(18);
             tv3.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(_ctx, MyReportActivity.class);
                     intent.putExtra("activity_file_name", activity_file_name);
                     _ctx.startActivity(intent);
+                    alert.dismiss();
                 }
             });
             ll.addView(tv3);
@@ -125,20 +130,14 @@ public class AlertDialogUtil {
                     Intent intent = new Intent(_ctx, MyReportActivity.class);
                     intent.putExtra("activity_file_name", activity_file_name);
                     _ctx.startActivity(intent);
+                    alert.dismiss();
                 }
             });
             ll.addView(tv4);
             tvs4[i] = tv4;
-
-
         }
-        alertadd.setView(view);
-//        alertadd.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//            public void onClick(DialogInterface dlg, int sumthin) {
-//            }
-//        });
-        alertadd.show();
-
+        alert.setView(view);
+        alert.show();
     }
 
 
