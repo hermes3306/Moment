@@ -34,6 +34,7 @@ import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.ActivitySummary;
 import com.jason.moment.util.AlertDialogUtil;
 import com.jason.moment.util.C;
+import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
@@ -41,6 +42,7 @@ import com.jason.moment.util.Progress;
 import com.jason.moment.util.db.MyActiviySummary;
 import com.jason.moment.util.db.MyLoc;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -56,58 +58,14 @@ public class MyReportActivity extends AppCompatActivity implements
     ActivityStat activityStat = null;
 
     Context _ctx = null;
-    private GoogleMap googleMap;
+    private GoogleMap _googleMap;
     boolean satellite = false;
 
-    private void showActivities2() {
-        // copy from fileActivity
-        ArrayList<String> media_list = MyActivityUtil.deserializeMediaInfoFromCSV(activity_filename);
-        if (media_list != null) {
-            for (int i = 0; i < media_list.size(); i++) Log.d(TAG, "-- " + media_list.get(i));
-        }
-        ArrayList<MyActivity> mActivityList = MyActivityUtil.deserialize(activity_filename);
-        MyActivity lastActivity = null;
-        if (mActivityList == null) return;
-        if (mActivityList.size() == 0) {
-            Toast.makeText(_ctx, "No activities!", Toast.LENGTH_SHORT).show();
-            finish();
-        } else {
-            lastActivity = mActivityList.get(mActivityList.size() - 1);
-        }
-
-        TextView name = findViewById(R.id.name);
-        TextView date_str = findViewById(R.id.date_str);
-        TextView distancekm = findViewById(R.id.distancekm);
-        TextView duration = findViewById(R.id.duration);
-        TextView calories = findViewById(R.id.calories);
-        TextView minperkm = findViewById(R.id.minperkm);
-        TextView memo = findViewById(R.id.memo);
-        TextView weather = findViewById(R.id.weather);
-        TextView co_runner = findViewById(R.id.co_runner);
-        TextView tv_rank = findViewById(R.id.tv_rank);
-
-        ActivityStat activityStat = MyActivityUtil.getActivityStat(mActivityList);
-        if (activityStat != null) {
-            name.setText(activityStat.name);
-            date_str.setText(activityStat.date_str);
-            distancekm.setText("" + String.format("%.1f", activityStat.distanceKm));
-            duration.setText(activityStat.duration);
-            calories.setText("" + activityStat.calories);
-            minperkm.setText("" + String.format("%.1f", activityStat.minperKm));
-            memo.setText(activityStat.memo);
-            weather.setText(activityStat.weather);
-            co_runner.setText(activityStat.co_runner);
-            int rank = MyActiviySummary.getInstance(_ctx).rank(activityStat.minperKm);
-            tv_rank.setText("" + rank + "번째로 빠릅니다.");
-        }
-        MapView mv = findViewById(R.id.mapView);
-        MapUtil.DRAW(_ctx, googleMap, mv.getWidth(), mv.getHeight(), mActivityList);
-    }
 
     private void showActivities() {
         media_list = MyActivityUtil.deserializeMediaInfoFromCSV(activity_filename);
         if (media_list != null) {
-            for (int i = 0; i < media_list.size(); i++) Log.d(TAG, "-- " + media_list.get(i));
+            for (int i = 0; i < media_list.size(); i++) Log.d(TAG, "-- MEDIA " + media_list.get(i));
         }
         mActivityList = MyActivityUtil.deserialize(activity_filename);
         MyActivity lastActivity = null;
@@ -141,6 +99,7 @@ public class MyReportActivity extends AppCompatActivity implements
         final ImageButton imbt_pop_menu = (ImageButton) findViewById(R.id.imbt_pop_menu);
         final ImageButton imbt_up = (ImageButton) findViewById(R.id.imbt_up);
 
+        final MapView mMapView = findViewById(R.id.mapView);
 
         activityStat = MyActivityUtil.getActivityStat(mActivityList);
         if (activityStat != null) {
@@ -167,8 +126,60 @@ public class MyReportActivity extends AppCompatActivity implements
                 Log.e(TAG, sw.toString());
             }
         }
-        MapView mv = findViewById(R.id.mapView);
-        MapUtil.DRAW(_ctx, googleMap, mv.getWidth(), mv.getHeight(), mActivityList);
+
+        imbt_marker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imbt_marker.setVisibility(View.GONE);
+                imbt_navi.setVisibility(View.GONE);
+                imbt_trash.setVisibility(View.GONE);
+                imbt_up.setVisibility(View.GONE);
+                imbt_pop_menu.setVisibility(View.VISIBLE);
+                C.nomarkers = !C.nomarkers;
+                int width = mMapView.getWidth();
+                int height = mMapView.getHeight();
+                MapUtil.DRAW(_ctx,_googleMap,width,height,mActivityList);
+            }
+        });
+
+        imbt_navi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imbt_marker.setVisibility(View.GONE);
+                imbt_navi.setVisibility(View.GONE);
+                imbt_trash.setVisibility(View.GONE);
+                imbt_up.setVisibility(View.GONE);
+                imbt_pop_menu.setVisibility(View.VISIBLE);
+                C.notrack = !C.notrack;
+                int width = mMapView.getWidth();
+                int height = mMapView.getHeight();
+                MapUtil.DRAW(_ctx,_googleMap,width,height,mActivityList);
+            }
+        });
+
+        imbt_pop_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imbt_marker.setVisibility(View.VISIBLE);
+                imbt_navi.setVisibility(View.VISIBLE);
+                imbt_trash.setVisibility(View.GONE);
+                imbt_up.setVisibility(View.VISIBLE);
+                imbt_pop_menu.setVisibility(View.GONE);
+            }
+        });
+
+        imbt_up.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imbt_marker.setVisibility(View.GONE);
+                imbt_navi.setVisibility(View.GONE);
+                imbt_trash.setVisibility(View.GONE);
+                imbt_up.setVisibility(View.GONE);
+                imbt_pop_menu.setVisibility(View.VISIBLE);
+                CloudUtil.getInstance().Upload(activity_filename);
+            }
+        });
+        MapUtil.DRAW(_ctx, _googleMap, mMapView.getWidth(), mMapView.getHeight(), mActivityList);
     }
 
     protected void initialize_views(Bundle savedInstanceState) {
@@ -178,7 +189,7 @@ public class MyReportActivity extends AppCompatActivity implements
         mapView.onResume();
         mapView.getMapAsync(this);
         // mMap is null, when it created
-        if (googleMap != null) {
+        if (_googleMap != null) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
@@ -191,10 +202,10 @@ public class MyReportActivity extends AppCompatActivity implements
             }
 
             //C.setGoogleMap(googleMap);
-            googleMap.setMyLocationEnabled(C.LocationButton);
-            googleMap.getUiSettings().setMyLocationButtonEnabled(C.LocationButton);
-            googleMap.getUiSettings().setCompassEnabled(C.Compass);
-            googleMap.getUiSettings().setZoomControlsEnabled(C.ZoomControl);
+            _googleMap.setMyLocationEnabled(C.LocationButton);
+            _googleMap.getUiSettings().setMyLocationButtonEnabled(C.LocationButton);
+            _googleMap.getUiSettings().setCompassEnabled(C.Compass);
+            _googleMap.getUiSettings().setZoomControlsEnabled(C.ZoomControl);
         }
     }
 
@@ -209,6 +220,16 @@ public class MyReportActivity extends AppCompatActivity implements
 
     @Override
     public void onClick(View v) {
+        ImageButton imbt_prev = (ImageButton) findViewById(R.id.imbt_prev);
+        ImageButton imbt_next = (ImageButton) findViewById(R.id.imbt_next);
+        ImageButton imbt_satellite_off = (ImageButton)findViewById(R.id.imbt_satellite_off);
+        ImageButton imbt_satellite_on = (ImageButton)findViewById(R.id.imbt_satellite_on);
+        MapView mapView = (MapView)findViewById(R.id.mapView);
+        LinearLayout ll_stat01 = (LinearLayout) findViewById(R.id.ll_stat01);
+        LinearLayout ll_stat02 = (LinearLayout) findViewById(R.id.ll_stat02);
+        LinearLayout ll_dashboard01 = (LinearLayout) findViewById(R.id.ll_dashboard01);
+        LinearLayout ll_dashboard02 = (LinearLayout) findViewById(R.id.ll_dashboard02);
+
         switch(v.getId()) {
             case R.id.tv_rank:
             case R.id.tv_rank_range:
@@ -227,6 +248,29 @@ public class MyReportActivity extends AppCompatActivity implements
                 }
                 AlertDialogUtil.getInstance().showProgress(_ctx, plist);
                 break;
+
+            case R.id.imbt_satellite_on:
+                C.satellite = false;
+                _googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                v.setVisibility(View.GONE);
+                imbt_satellite_off.setVisibility(View.VISIBLE);
+                imbt_satellite_off.setVisibility(View.VISIBLE);
+                ll_stat01.setVisibility(View.VISIBLE);
+                ll_stat02.setVisibility(View.VISIBLE);
+                ll_dashboard01.setVisibility(View.GONE);
+                ll_dashboard02.setVisibility(View.GONE);
+                break;
+            case R.id.imbt_satellite_off:
+                C.satellite= true;
+                _googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                v.setVisibility(View.GONE);
+                imbt_satellite_on.setVisibility(View.VISIBLE);
+                ll_stat01.setVisibility(View.GONE);
+                ll_stat02.setVisibility(View.GONE);
+                ll_dashboard01.setVisibility(View.VISIBLE);
+                ll_dashboard02.setVisibility(View.VISIBLE);
+                break;
+
             case R.id.imbt_next:
                 ArrayList<ActivitySummary> asl =
                         MyActiviySummary.getInstance(_ctx).all_activitySummary_by_ranks(activityStat.minperKm, activityStat.distanceKm);
@@ -257,7 +301,7 @@ public class MyReportActivity extends AppCompatActivity implements
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        this.googleMap = googleMap;
+        this._googleMap = googleMap;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions

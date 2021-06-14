@@ -396,6 +396,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 ActivityStat as = ActivityStat.getActivityStat(mal);
                 double distanceKm = as.distanceKm;
                 AlertDialogUtil.getInstance().chooseRank(_ctx, distanceKm);
+                break;
 
             case R.id.tv_activity_progress:
                 Log.e(TAG, "-- " + _file_list[position]);

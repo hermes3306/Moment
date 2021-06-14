@@ -9,9 +9,9 @@
         android:id="@+id/view_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/rank48"
+        android:drawableLeft="@drawable/time48"
         android:gravity="center_horizontal|left"
-        android:text="15-20KM 구간 기록"
+        android:text="구간 기록"
         android:textColor="@color/Gray"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -22,8 +22,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="35sp"
         android:gravity="center_horizontal|left"
-        android:text="활동을 선택하세요."
-        android:textColor="@color/CornflowerBlue"
+        android:text="구간별 활동 내역입니다."
+        android:textColor="@color/RoyalBlue"
         android:textSize="15sp" />
 
     <View

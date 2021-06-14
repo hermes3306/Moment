@@ -34,7 +34,6 @@ public class AlertDialogUtil {
         TextView view_title = view.findViewById(R.id.view_title);
 
         //String range[] = MyActiviySummary.getInstance(_ctx).getStringRange_by_dist(distanceKm);
-        view_title.setText(String.format("%s-%sKM 구간 기록", "1","5"));
         for(int i=0;i<plist.size();i++) {
             Progress p = plist.get(i);
             final TextView tv1 = new TextView(_ctx);
@@ -51,14 +50,17 @@ public class AlertDialogUtil {
                 case 9: img = R.drawable.num_9; break;
                 default :  img = R.drawable.running_new; break;
             }
-            if(i>=9) tv1.setText("  " + String.format("%d",i+1) + ". " + p.mpkStr + "\n" + "(" + p.timeStr + ")");
-            else tv1.setText("  " + p.mpkStr + "\n" + "(" + p.timeStr+ ")");
+            if(i==plist.size()-1) tv1.setText("  " + String.format("%.1f km",p.distM/1000f) + "  "  + p.timeStr);
+            else if(i>=9) tv1.setText("  " + String.format("%2d km",i+1) + "\t\t "  + p.timeStr);
+            else tv1.setText("  " + String.format("%2d km",i+1) + "\t\t "  + p.timeStr);
             tv1.setTextColor(Color.GRAY);
             Drawable img_drawable = _ctx.getResources().getDrawable(img);
             tv1.setCompoundDrawablesWithIntrinsicBounds(img_drawable, null, null, null);
             tv1.setTextSize(20);
             ll.addView(tv1);
         }
+
+        //view_title.setText(String.format("%s-%sKM 구간 기록", "1","5"));
         alert.setView(view);
         alert.show();
     }

@@ -693,15 +693,16 @@ public class MyActivityUtil {
                 CalDistance cd = new CalDistance(mal.get(i), mal.get(i+1));
                 long distInMeters = (long)cd.getDistance();
                 tot_distInMeters += distInMeters;
-                if(tot_distInMeters > km * 1000) {
+                if(tot_distInMeters >= km * 1000) {
                     beg = StringUtil.StringToDate(mal.get(lastpos)).getTime();
-                    end = StringUtil.StringToDate(mal.get(i)).getTime();
+                    end = StringUtil.StringToDate(mal.get(i-1)).getTime();
 
                     double mpk = ((double)(end-beg)/1000f) / 60f; //milliseconds to min
                     String mpkStr = CalcTime.minperKmStr(mpk);
                     String timeStr = CalcTime.durationMinStr(end-beg);
                     pal.add(new Progress(km, tot_distInMeters, mpk, mpkStr, end-beg, timeStr ));
-                    lastpos=i;
+                    if(i+1 < mal.size()) lastpos=i+1;
+                    else lastpos = i;
                     km++;
                 }
             }
@@ -712,7 +713,7 @@ public class MyActivityUtil {
         double mpk = ((double)(end-beg)/(tot_distInMeters) / 60f); //milliseconds to min
         String mpkStr = CalcTime.minperKmStr(mpk);
         String timeStr = CalcTime.durationMinStr(end-beg);
-        pal.add(new Progress(km, tot_distInMeters - ( (km-1) * 1000), mpk, mpkStr, end-beg, timeStr ));
+        pal.add(new Progress(km, tot_distInMeters, mpk, mpkStr, end-beg, timeStr ));
         return pal;
     }
 
