@@ -55,6 +55,7 @@ import com.jason.moment.util.MP3;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
+import com.jason.moment.util.Progress;
 import com.jason.moment.util.StringUtil;
 import com.jason.moment.util.db.MyActiviySummary;
 
@@ -395,10 +396,17 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 ActivityStat as = ActivityStat.getActivityStat(mal);
                 double distanceKm = as.distanceKm;
                 AlertDialogUtil.getInstance().chooseRank(_ctx, distanceKm);
-            case R.id.tv_activity_progress:
-                Log.e(TAG, "-- " + _file_list[position].getName());
 
+            case R.id.tv_activity_progress:
+                Log.e(TAG, "-- " + _file_list[position]);
+                mal = MyActivityUtil.deserialize(_file_list[position]);
+                ArrayList<Progress> plist = MyActivityUtil.getProgress(mal);
+                for(int i=0;i<plist.size();i++) {
+                    Log.d(TAG, "-- " + plist.get(i));
+                }
+                AlertDialogUtil.getInstance().showProgress(_ctx, plist);
                 break;
+
             case R.id.imbt_satellite_on:
                 C.satellite = false;
                 _googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);

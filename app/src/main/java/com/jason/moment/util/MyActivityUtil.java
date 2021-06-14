@@ -706,7 +706,13 @@ public class MyActivityUtil {
                 }
             }
         }
+        beg = StringUtil.StringToDate(mal.get(lastpos)).getTime();
+        end = StringUtil.StringToDate(mal.get(mal.size()-1)).getTime();
 
+        double mpk = ((double)(end-beg)/(tot_distInMeters) / 60f); //milliseconds to min
+        String mpkStr = CalcTime.minperKmStr(mpk);
+        String timeStr = CalcTime.durationMinStr(end-beg);
+        pal.add(new Progress(km, tot_distInMeters - ( (km-1) * 1000), mpk, mpkStr, end-beg, timeStr ));
         return pal;
     }
 

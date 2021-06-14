@@ -224,8 +224,8 @@ public class MyReportActivity extends AppCompatActivity implements
                 ArrayList<Progress> plist = MyActivityUtil.getProgress(mal);
                 for(int i=0;i<plist.size();i++) {
                     Log.d(TAG, "-- " + plist.get(i));
-
                 }
+                AlertDialogUtil.getInstance().showProgress(_ctx, plist);
                 break;
             case R.id.imbt_next:
                 ArrayList<ActivitySummary> asl =
