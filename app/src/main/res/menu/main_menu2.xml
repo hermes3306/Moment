@@ -9,6 +9,7 @@
         android:orderInCategory="100"
         android:title="Setting..."
         app:showAsAction="never" />
+
     <item
         android:id="@+id/action_update"
         android:orderInCategory="100"

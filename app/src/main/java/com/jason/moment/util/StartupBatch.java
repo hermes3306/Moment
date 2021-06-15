@@ -23,9 +23,19 @@ public class StartupBatch {
     static boolean _executed = false;
     static String TAG = "StartupBatch";
     public void execute() {
-        try{
-            Log.d(TAG,"-- Startup Batch Started...");
-            initDatabase(_ctx);
+        Log.d(TAG,"-- Startup Batch Started...");
+        try {
+            clearShortRunActivities(_ctx);
+        }catch(Exception e) {
+            Log.d(TAG,"-- Startup Batch Exception...");
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            Log.d(TAG,"-- Err: " + exceptionAsString);
+        }
+
+        try {
+            //initDatabase(_ctx);
             //if(genCVSfiles()) Log.d(TAG, "-- Success");
             //if(genMNTfiles()) Log.d(TAG, "-- Success");
             //deserializeTest();
@@ -62,7 +72,6 @@ public class StartupBatch {
     public void initDatabase(Context _ctx){
         MyLoc.getInstance(_ctx).onCreate();
         MyActiviySummary.getInstance(_ctx).createNew();
-        clearShortRunActivities(_ctx);
         rebuildActivitySummaries(_ctx);
     }
 
@@ -144,8 +153,15 @@ public class StartupBatch {
         File[] files = Config.CSV_SAVE_DIR.listFiles();
         for(int i=0;i<files.length;i++) {
             ArrayList<MyActivity> mal = MyActivityUtil.deserialize(files[i]);
+            if(mal == null) {
+                files[i].delete();
+                Log.d(TAG,"-- file["+files[i].getName()+"] deleted!");
+            }
             ActivityStat as = ActivityStat.getActivityStat(mal);
-
+            if(as == null) {
+                files[i].delete();
+                Log.d(TAG,"-- file["+files[i].getName()+"] deleted!");
+            }
             if(as.distanceKm <= 0.1 || mal.size() < 10 ) {
                 files[i].delete();
                 Log.d(TAG,"-- file["+files[i].getName()+"] deleted!");

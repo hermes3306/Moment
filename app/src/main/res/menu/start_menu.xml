@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/broadcastNewStart"
+        android:title="Broadcast a new run" />
+    <item
         android:id="@+id/mp3Player"
-        android:title="MP3 Player" />
+        android:title="MP3 Player" />9
     <item
         android:id="@+id/stopMp3"
         android:title="Stop MP3 Player" />

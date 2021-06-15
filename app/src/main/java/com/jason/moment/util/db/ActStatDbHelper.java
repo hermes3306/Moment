@@ -44,6 +44,7 @@ public class ActStatDbHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_DELETE_ALL);
     }
     public void createNew(SQLiteDatabase db) {
+        db.execSQL("drop index minperkm_inx");
         db.execSQL(SQL_DELETE_ENTRIES);
         onCreate(db);}
 }

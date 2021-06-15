@@ -133,7 +133,6 @@ public class GPSLogger extends Service implements LocationListener {
                 stopTrackingAndSave();
             } else if (Config.INTENT_CONFIG_CHANGE.equals(intent.getAction()) ) {
                 Log.e(TAG, "-- GPSLogger get message of CONFIG_CHANGE");
-
                 Config.initialize(getApplicationContext());
                 gpsLoggingInterval = intent.getLongExtra("gpsLoggingInterval",Config._loc_interval);
                 gpsLoggingMinDistance = intent.getLongExtra("gpsLoggingMinDistance", (long)Config._loc_distance);

@@ -346,6 +346,9 @@ public class StartNewActivity extends AppCompatActivity implements
                 break;
             case R.id.tv_start_km:
                 break;
+            case R.id.broadcastNewStart:
+                boardCastConfigChanged(1000,1);
+                break;
             case R.id.imb_start_list:
                 //recordVideo();
                 PopupMenu p = new PopupMenu(StartNewActivity.this, v);
@@ -521,6 +524,7 @@ public class StartNewActivity extends AppCompatActivity implements
 
         Config._loc_interval = 1000;
         Config._loc_distance = 1;
+
         Config.init_preference_values_running("1000","1"); // 1sec, 1meter
         boardCastConfigChanged(1000,1);
 
