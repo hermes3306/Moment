@@ -20,6 +20,11 @@
         android:title="Activity List"
         app:showAsAction="never" />
     <item
+        android:id="@+id/rebuild_rank"
+        android:orderInCategory="100"
+        android:title="Rebuild Rank"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/mp3Player"
         android:orderInCategory="100"
         android:title="Mp3 Player"

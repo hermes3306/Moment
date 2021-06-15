@@ -796,6 +796,10 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
                 return true;
 
+            case R.id.rebuild_rank:
+                new StartupBatch(_ctx).rebuildActivitySummaries(_ctx);
+                return true;
+
             case R.id.activityList:
                 File dir = null;
                 if(Config._default_ext == Config._csv) dir = Config.CSV_SAVE_DIR;
