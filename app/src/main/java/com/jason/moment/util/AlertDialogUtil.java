@@ -39,7 +39,7 @@ public class AlertDialogUtil {
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
-        if(media_path.size() > pos+1 ) {
+        if(pos+1 < media_path.size() ) {
             builder.setPositiveButton("Next", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dlg, int sumthin) {
                     showMedias(_ctx, media_path, pos + 1);
@@ -50,7 +50,7 @@ public class AlertDialogUtil {
         if(0 < pos) {
             builder.setNegativeButton("Prev", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dlg, int sumthin) {
-                    showMedias(_ctx, media_path, pos + 1);
+                    showMedias(_ctx, media_path, pos - 1);
                 }
             });
         }
@@ -74,11 +74,8 @@ public class AlertDialogUtil {
             MediaUtil.getInstance().showVideo(_ctx, vv, media_path.get(pos));
             alert.setView(view2);
         }
-
-
         alert.show();
     }
-
 
     public void showProgress(Context _ctx, ArrayList<Progress> plist){
         AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
