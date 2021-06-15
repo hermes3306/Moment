@@ -28,6 +28,12 @@ public class ActivityStat {
         public int[] progress_info;
         public int[] chart_info;
 
+        public void setExtra() {
+            this.memo = "메모가 없습니다.";
+            this.weather = "날씨 정보가 없습니다.";
+            this.co_runner = "함께 달린 사람이 없습니다.";
+        }
+
         public ActivityStat(String name, double distanceKm, long durationInLong, double minperKm, int calories) {
             this._fname = name;
             this.duration = duration;
@@ -36,6 +42,7 @@ public class ActivityStat {
             this.calories = calories;
             this.durationInLong = durationInLong;
             this.distanceM = distanceKm * 1000;
+            setExtra();
 
             String fnameWithoutExtension = name.substring(0,name.length()-4);
             Date start = new Date();
@@ -58,6 +65,7 @@ public class ActivityStat {
             this.minperKm = minperKm;
             this.calories = calories;
             this.durationInLong = end.getTime() - start.getTime();
+            setExtra();
             genStatInformation(start);
         }
 

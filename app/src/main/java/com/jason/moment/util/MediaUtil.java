@@ -15,9 +15,12 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -119,10 +122,39 @@ public class MediaUtil {
         iv_pic.setImageBitmap(bitmap);
     }
 
+
+
+    public void showVideo(Context _ctx, VideoView vv, String fname) {
+        MediaController m;
+        m = new MediaController(_ctx);
+
+        File mediaFile = new File(Config.MOV_SAVE_DIR, fname);
+        Uri mediaUri = FileProvider.getUriForFile(_ctx,
+                "com.jason.moment.file_provider",
+                mediaFile);
+        vv.setVideoURI(mediaUri);
+        vv.start();
+    }
+
+    public Bitmap rotate(Bitmap bitmap, int degree) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degree);
+        return Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(), bitmap.getHeight(),matrix,true);
+    }
+
     public void showImage(ImageView iv_pic, String picturePath) {
         File mediaFile = new File(Config.PIC_SAVE_DIR, picturePath);
-        Bitmap bitmap = decodeFile(mediaFile);
-        iv_pic.setImageBitmap(bitmap);
+        try {
+            Bitmap bitmap = decodeFile(mediaFile);
+            int h = bitmap.getHeight();
+            int w = bitmap.getWidth();
+            if (w > h) bitmap = rotate(bitmap, 90);
+            iv_pic.setImageBitmap(bitmap);
+        }catch(Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG, "--Err:" + sw.toString());
+        }
     }
 
     public void savePicFromView(View view) {

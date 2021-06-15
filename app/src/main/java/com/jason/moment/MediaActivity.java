@@ -307,28 +307,13 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void showImage(ImageView iv_pic, String fname) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(90);
-        mDegree = 90;
-
-        File mediaFile = new File(Config.PIC_SAVE_DIR, fname);
-        Bitmap bitmap = decodeFile(mediaFile);
-
-        try {
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            iv_pic.setImageBitmap(bitmap);
-        }catch(Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Log.d(TAG, "-- Err:" + sw.toString());
-        }
+        MediaUtil.getInstance().showImage(iv_pic, fname);
     }
 
     public void showImageBug(ImageView iv_pic, String fname) {
         File f = new File(Config.PIC_SAVE_DIR, fname);
         setPic(iv_pic,f);
     }
-
 
     public void showVideo(VideoView vv, String fname) {
         //Video Loop

@@ -9,11 +9,15 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.jason.moment.MyReportActivity;
 import com.jason.moment.R;
+import com.jason.moment.StartNewActivity;
 import com.jason.moment.util.db.MyActiviySummary;
 
 import java.util.ArrayList;
@@ -24,6 +28,57 @@ public class AlertDialogUtil {
         if(instance==null) instance = new AlertDialogUtil();
         return instance;
     }
+
+    public void showMedias(Context _ctx, ArrayList<String> media_path, int pos) {
+        if(media_path == null) {
+            Toast.makeText(_ctx,"No Medias!",Toast.LENGTH_SHORT).show();
+            return;
+        }else if(media_path.size()==0) {
+            Toast.makeText(_ctx,"No Medias!",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
+        if(media_path.size() > pos+1 ) {
+            builder.setPositiveButton("Next", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dlg, int sumthin) {
+                    showMedias(_ctx, media_path, pos + 1);
+                }
+            });
+        }
+
+        if(0 < pos) {
+            builder.setNegativeButton("Prev", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dlg, int sumthin) {
+                    showMedias(_ctx, media_path, pos + 1);
+                }
+            });
+        }
+
+        AlertDialog alert = builder.create();
+        LayoutInflater factory = LayoutInflater.from(_ctx);
+
+        if(media_path.get(pos).endsWith(Config._pic_ext)) {
+            View view1 = factory.inflate(R.layout.layout_imageview, null);
+            ImageView iv = view1.findViewById(R.id.dialog_imageview);
+            TextView tv = view1.findViewById(R.id.view_title);
+            tv.setText("" + (pos+1) + "/" + media_path.size());
+            MediaUtil.getInstance().showImage(iv, media_path.get(pos));
+            alert.setView(view1);
+        }
+        else {
+            View view2 = factory.inflate(R.layout.layout_videoview, null);
+            VideoView vv = view2.findViewById(R.id.dialog_video_view);
+            TextView tv2 = view2.findViewById(R.id.view_title);
+            tv2.setText("" + (pos+1) + "/" + media_path.size());
+            MediaUtil.getInstance().showVideo(_ctx, vv, media_path.get(pos));
+            alert.setView(view2);
+        }
+
+
+        alert.show();
+    }
+
 
     public void showProgress(Context _ctx, ArrayList<Progress> plist){
         AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);

@@ -72,6 +72,8 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     public static String TAG = "FileActivity";
     Context _ctx=null;
     GoogleMap _googleMap;
+    ArrayList<String> media_list = null;
+    public String activity_filename = null;
 
     public static int position = 0;
     public static int filetype = -1;
@@ -136,6 +138,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             final TextView tv_carolies = (TextView) findViewById(R.id.tv_carolies);
             final TextView tv_rank = (TextView) findViewById(R.id.tv_rank);
             final TextView tv_rank_range = (TextView) findViewById(R.id.tv_rank_range);
+            final TextView tv_medias = (TextView) findViewById(R.id.medias);
 
             final TextView tv_white_km = (TextView) findViewById(R.id.tv_white_km);
             final TextView tv_white_avg = (TextView) findViewById(R.id.tv_white_avg);
@@ -151,7 +154,21 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             public void GO(final GoogleMap googleMap, File myfile) {
                 googleMap.clear();
                 ActivityStat activityStat = null;
-                if(myfile != null) mActivityList = MyActivityUtil.deserialize(myfile);
+                if(myfile != null) {
+                    mActivityList = MyActivityUtil.deserialize(myfile);
+                    _file = myfile;
+                    activity_filename = myfile.getName();
+
+                    // media_list checkup
+                    media_list = MyActivityUtil.deserializeMediaInfoFromCSV(activity_filename);
+                    if (media_list == null) {
+                        media_list = null;
+                    } else if(media_list.size()==0) {
+                        media_list = null;
+                    }else {
+                        for (int i = 0; i < media_list.size(); i++) Log.d(TAG, "-- MEDIA " + media_list.get(i));
+                    }
+                }
 
                 if(mActivityList==null) {
                     Log.e(TAG, "-- " + myfile + " failed to be deserialized");
@@ -186,6 +203,11 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     tv_white_km.setText(_minDist);
                     tv_white_avg.setText(activityStat.minperKms);
                     tv_white_duration.setText(activityStat.durationM);
+                    if(media_list!=null) {
+                        tv_medias.setText("" + media_list.size() + "의 사진/동영상이 있습니다.");
+                    }else {
+                        tv_medias.setText("사진/동영상이 없습니다.");
+                    }
 
                     try {
                         //int rank = MyActiviySummary.getInstance(_ctx).rank(activityStat.minperKm);
@@ -407,7 +429,10 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 AlertDialogUtil.getInstance().showProgress(_ctx, plist);
                 break;
-
+            case R.id.media_information:
+            case R.id.medias:
+                AlertDialogUtil.getInstance().showMedias(_ctx,media_list,0);
+                break;
             case R.id.imbt_satellite_on:
                 C.satellite = false;
                 _googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);

@@ -63,10 +63,16 @@ public class MyReportActivity extends AppCompatActivity implements
 
 
     private void showActivities() {
+        // media_list checkup
         media_list = MyActivityUtil.deserializeMediaInfoFromCSV(activity_filename);
-        if (media_list != null) {
+        if (media_list == null) {
+            media_list = null;
+        } else if(media_list.size()==0) {
+            media_list = null;
+        }else {
             for (int i = 0; i < media_list.size(); i++) Log.d(TAG, "-- MEDIA " + media_list.get(i));
         }
+
         mActivityList = MyActivityUtil.deserialize(activity_filename);
         MyActivity lastActivity = null;
         if (mActivityList == null) return;
@@ -98,9 +104,15 @@ public class MyReportActivity extends AppCompatActivity implements
         final ImageButton imbt_trash = (ImageButton) findViewById(R.id.imbt_trash);
         final ImageButton imbt_pop_menu = (ImageButton) findViewById(R.id.imbt_pop_menu);
         final ImageButton imbt_up = (ImageButton) findViewById(R.id.imbt_up);
+        final TextView tv_medias = (TextView) findViewById(R.id.medias);
+
+        if(media_list!=null) {
+            tv_medias.setText("" + media_list.size() + "의 사진/동영상이 있습니다.");
+        }else {
+            tv_medias.setText("사진/동영상이 없습니다.");
+        }
 
         final MapView mMapView = findViewById(R.id.mapView);
-
         activityStat = MyActivityUtil.getActivityStat(mActivityList);
         if (activityStat != null) {
             tv_activity_name.setText(activityStat.name);
@@ -183,7 +195,7 @@ public class MyReportActivity extends AppCompatActivity implements
     }
 
     protected void initialize_views(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_my_report);
+        setContentView(R.layout.activity_file);
         MapView mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
@@ -248,7 +260,10 @@ public class MyReportActivity extends AppCompatActivity implements
                 }
                 AlertDialogUtil.getInstance().showProgress(_ctx, plist);
                 break;
-
+            case R.id.media_information:
+            case R.id.medias:
+                AlertDialogUtil.getInstance().showMedias(_ctx,media_list,0);
+                break;
             case R.id.imbt_satellite_on:
                 C.satellite = false;
                 _googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
