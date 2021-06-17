@@ -39,11 +39,13 @@ public class MyDataActivity extends AppCompatActivity {
                 handleSendVideo(intent); // Handle single image being sent
             }
         } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
-            if (type.startsWith("image/")) {
+            if (type.startsWith("image/") || type.startsWith("video/") ) {
                 handleSendMultipleImages(intent); // Handle multiple images being sent
             }
         } else {
             // Handle other intents, such as being started from the home screen
+            Log.e("MyDataActivity", "-- HERE!!!!!!!!");
+            finish();
         }
     }
 
@@ -109,15 +111,16 @@ public class MyDataActivity extends AppCompatActivity {
                 Log.e("MyDataActivity", sw.toString());
             }
         }
-
     }
 
     void handleSendMultipleImages(Intent intent) {
         ArrayList<Uri> imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
         if (imageUris != null) {
             // Update UI to reflect multiple images being shared
+            Log.d("", "--" + imageUris.toString() );
         }
         Toast.makeText(this, "handleSendMultipleImages", Toast.LENGTH_SHORT).show();
+        finish();
     }
 
 }

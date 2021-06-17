@@ -11,6 +11,12 @@ public class CalcTime {
         this.cur = cur;
     }
 
+    public static String TimeStr(long total_time_ms) {
+        long total_time_tmp = total_time_ms / 1000;
+        final String timeStr = String.format("%d:%02d:%02d", total_time_tmp / 3600, total_time_tmp % 3600 / 60, total_time_tmp % 3600 % 60);
+        return timeStr;
+    }
+
     public CalcTime(MyActivity bef, MyActivity cur) {
         String bef_added_on = bef.cr_date + " " + bef.cr_time;
         String cur_added_on = cur.cr_date + " " + cur.cr_time;
@@ -62,6 +68,15 @@ public class CalcTime {
     }
 
     public static String durationMinStr(long durationInLong) {
+        long total_time_tmp = durationInLong / 1000;
+        if( (total_time_tmp / 3600) > 0) {
+            return String.format("%d:%02d:%02d", total_time_tmp / 3600, total_time_tmp % 3600 / 60, total_time_tmp % 3600 % 60);
+        }else {
+            return String.format("%02d:%02d", total_time_tmp / 3600, total_time_tmp % 3600 / 60, total_time_tmp % 3600 % 60);
+        }
+    }
+
+    public static String durationMinStr_org(long durationInLong) {
         long t_dur_h = durationInLong / Config._ONE_HOUR;
         long t_dur_m = (durationInLong - (t_dur_h * Config._ONE_HOUR)) / Config._ONE_MIN;
         long t_dur_s = (durationInLong - (t_dur_h * Config._ONE_HOUR) - (t_dur_m * Config._ONE_MIN)) / Config._ONE_SEC;
