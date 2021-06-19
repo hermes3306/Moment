@@ -431,6 +431,16 @@
         android:orientation="horizontal">
 
         <ImageButton
+            android:id="@+id/imbt_hide_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:visibility="gone"
+            app:srcCompat="@drawable/hide_arrow2" />
+
+        <ImageButton
             android:id="@+id/imbt_marker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

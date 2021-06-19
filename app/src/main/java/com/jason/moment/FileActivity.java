@@ -148,6 +148,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             final ImageButton imbt_navi = (ImageButton) findViewById(R.id.imbt_navi);
             final ImageButton imbt_trash = (ImageButton) findViewById(R.id.imbt_trash);
             final ImageButton imbt_pop_menu = (ImageButton) findViewById(R.id.imbt_pop_menu);
+            final ImageButton imbt_hide_arrow = (ImageButton) findViewById(R.id.imbt_hide_arrow);
             final ImageButton imbt_up = (ImageButton) findViewById(R.id.imbt_up);
             final File[] flist = MyActivityUtil.getFiles(filetype);
 
@@ -308,6 +309,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         imbt_navi.setVisibility(View.GONE);
                         imbt_trash.setVisibility(View.GONE);
                         imbt_up.setVisibility(View.GONE);
+                        imbt_hide_arrow.setVisibility(View.GONE);
                         imbt_pop_menu.setVisibility(View.VISIBLE);
                         C.nomarkers = !C.nomarkers;
                         int width = mMapView.getWidth();
@@ -323,6 +325,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         imbt_navi.setVisibility(View.GONE);
                         imbt_trash.setVisibility(View.GONE);
                         imbt_up.setVisibility(View.GONE);
+                        imbt_hide_arrow.setVisibility(View.GONE);
                         imbt_pop_menu.setVisibility(View.VISIBLE);
                         C.notrack = !C.notrack;
                         int width = mMapView.getWidth();
@@ -338,6 +341,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         imbt_navi.setVisibility(View.VISIBLE);
                         imbt_trash.setVisibility(View.VISIBLE);
                         imbt_up.setVisibility(View.VISIBLE);
+                        imbt_hide_arrow.setVisibility(View.VISIBLE);
                         imbt_pop_menu.setVisibility(View.GONE);
                     }
                 });
@@ -349,6 +353,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         imbt_navi.setVisibility(View.GONE);
                         imbt_trash.setVisibility(View.GONE);
                         imbt_up.setVisibility(View.GONE);
+                        imbt_hide_arrow.setVisibility(View.GONE);
                         imbt_pop_menu.setVisibility(View.VISIBLE);
 
                         File[] flist = MyActivityUtil.getFiles(filetype);
@@ -373,16 +378,38 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         imbt_navi.setVisibility(View.GONE);
                         imbt_trash.setVisibility(View.GONE);
                         imbt_up.setVisibility(View.GONE);
+                        imbt_hide_arrow.setVisibility(View.GONE);
                         imbt_pop_menu.setVisibility(View.VISIBLE);
                         CloudUtil.getInstance().Upload(_file_list[position].getName());
                     }
                 });
 
+                imbt_hide_arrow.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        imbt_marker.setVisibility(View.GONE);
+                        imbt_navi.setVisibility(View.GONE);
+                        imbt_trash.setVisibility(View.GONE);
+                        imbt_up.setVisibility(View.GONE);
+                        imbt_hide_arrow.setVisibility(View.GONE);
+                        imbt_pop_menu.setVisibility(View.VISIBLE);
+                        hide_arrow = !hide_arrow;
+                        if(hide_arrow) {
+                            imbt_next.setVisibility(View.GONE);
+                            imbt_prev.setVisibility(View.GONE);
+                        }else{
+                            imbt_next.setVisibility(View.VISIBLE);
+                            imbt_prev.setVisibility(View.VISIBLE);
+                            imbt_prev.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
             } /* on  MapReady */
 
         });
     } /* onCreate */
 
+    static boolean hide_arrow = false;
     public static Date getStartTimeDate(ArrayList<MyActivity> list) {
         if(list == null) return null;
         if(list.size()==0) return null;

@@ -102,6 +102,7 @@ public class MapsActivity extends AppCompatActivity implements
     public ImageButton imbt_pop_menu = null;
     //public ImageButton imbt_globe = null;
     public ImageButton imbt_down = null;
+    public ImageButton imbt_hide_arrow = null;
     public ImageButton imbt_up = null;
     public ImageButton imbt_save = null;
     public ImageButton imbt_marker = null;
@@ -222,6 +223,7 @@ public class MapsActivity extends AppCompatActivity implements
         imbt_up = (ImageButton) findViewById(R.id.imbt_up);
         imbt_down = (ImageButton) findViewById(R.id.imbt_Down);
         imbt_marker = (ImageButton) findViewById(R.id.imbt_marker);
+        imbt_hide_arrow = (ImageButton) findViewById(R.id.imbt_hide_arrow);
         imbt_navi = (ImageButton) findViewById(R.id.imbt_navi);
 //        imbt_trash = (ImageButton) findViewById(R.id.imbt_trash);
 
@@ -493,20 +495,24 @@ public class MapsActivity extends AppCompatActivity implements
             imbt_up.setVisibility(View.VISIBLE);
             imbt_down.setVisibility(View.VISIBLE);
             imbt_marker.setVisibility(View.VISIBLE);
+            imbt_hide_arrow.setVisibility(View.VISIBLE);
             imbt_navi.setVisibility(View.VISIBLE);
 //            imbt_trash.setVisibility(View.VISIBLE);
             imbt_pop_menu.setVisibility(GONE);
         }else {
             imbt_pop_menu.setVisibility(View.VISIBLE);
             //imbt_globe.setVisibility(View.GONE);
-            imbt_save.setVisibility(GONE);
-            imbt_up.setVisibility(GONE);
-            imbt_down.setVisibility(GONE);
-            imbt_marker.setVisibility(GONE);
-            imbt_navi.setVisibility(GONE);
+            imbt_save.setVisibility(View.GONE);
+            imbt_up.setVisibility(View.GONE);
+            imbt_down.setVisibility(View.GONE);
+            imbt_marker.setVisibility(View.GONE);
+            imbt_hide_arrow.setVisibility(View.GONE);
+            imbt_navi.setVisibility(View.GONE);
             //imbt_trash.setVisibility(View.GONE);
         }
     }
+
+    static boolean hide_arrow = false;
 
     @Override
     public void onClick(View view) {
@@ -578,6 +584,18 @@ public class MapsActivity extends AppCompatActivity implements
                     _markers.add(marker);
                 }
                 MapUtil.DRAW(_ctx,googleMap,display,list );
+                break;
+
+            case R.id.imbt_hide_arrow:
+                hide_arrow = !hide_arrow;
+                if(hide_arrow) {
+                    imbt_prev.setVisibility(GONE);
+                    imbt_next.setVisibility(GONE);
+                }else {
+                    imbt_prev.setVisibility(View.VISIBLE);
+                    imbt_next.setVisibility(View.VISIBLE);
+                }
+                hidePopMenu(false);
                 break;
             case R.id.imbt_navi:
                 MapUtil.toggleNoTrack();
