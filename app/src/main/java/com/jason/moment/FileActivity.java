@@ -140,6 +140,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             final TextView tv_rank_range = (TextView) findViewById(R.id.tv_rank_range);
             final TextView tv_medias = (TextView) findViewById(R.id.medias);
             final TextView tv_file_name = (TextView) findViewById(R.id.tv_file_name);
+            final TextView tv_file_information = (TextView) findViewById(R.id.tv_file_information);
             final TextView tv_white_km = (TextView) findViewById(R.id.tv_white_km);
             final TextView tv_white_avg = (TextView) findViewById(R.id.tv_white_avg);
             final TextView tv_white_duration = (TextView) findViewById(R.id.tv_white_duration);
@@ -465,7 +466,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.medias:
                 AlertDialogUtil.getInstance().showMedias(_ctx,media_list,0);
                 break;
-
+            case R.id.tv_file_information:
             case R.id.tv_file_name:
                 Intent detailMaps = new Intent(FileActivity.this, DetailMapsActivity.class);
                 detailMaps.putExtra("activity_filename", activity_filename);
