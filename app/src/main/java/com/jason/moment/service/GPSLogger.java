@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat;
 import com.jason.moment.MapsActivity;
 import com.jason.moment.MyReportActivity;
 import com.jason.moment.R;
+import com.jason.moment.util.C;
 import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
@@ -312,7 +313,7 @@ public class GPSLogger extends Service implements LocationListener {
     }
 
     private void saveTodayActivities() {
-        String file_name = "Jason_" + DateUtil.today();
+        String file_name = DateUtil.today() + "_" + C.runner;
         MyActivityUtil.serialize(MyLoc.getInstance(getApplication()).getToodayActivities(), file_name);
         CloudUtil.getInstance().Upload(file_name + Config._csv_ext);
     }

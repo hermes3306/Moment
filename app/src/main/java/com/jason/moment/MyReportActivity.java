@@ -88,7 +88,9 @@ public class MyReportActivity extends AppCompatActivity implements
         final TextView tv_date_str = (TextView)findViewById(R.id.date_str);
         final TextView memo = findViewById(R.id.memo);
         final TextView weather = findViewById(R.id.weather);
-        final TextView co_runner = findViewById(R.id.co_runner);
+        final TextView tv_co_runner = findViewById(R.id.tv_co_runner);
+        final TextView tv_file_name = findViewById(R.id.tv_file_name);
+
         final ImageButton imbt_prev = (ImageButton) findViewById(R.id.imbt_prev);
         final ImageButton imbt_next = (ImageButton) findViewById(R.id.imbt_next);
         final TextView tv_distance = (TextView) findViewById(R.id.tv_distance);
@@ -125,7 +127,9 @@ public class MyReportActivity extends AppCompatActivity implements
             tv_minperkm.setText("" + String.format("%.1f", activityStat.minperKm));
             memo.setText(activityStat.memo);
             weather.setText(activityStat.weather);
-            co_runner.setText(activityStat.co_runner);
+            tv_co_runner.setText(MyActivityUtil.getRunnerInfo(activity_filename));
+            tv_file_name.setText(activity_filename);
+
             try {
                 //int rank = MyActiviySummary.getInstance(_ctx).rank(activityStat.minperKm);
                 int rank = MyActiviySummary.getInstance(_ctx).rank(activityStat.minperKm, activityStat.distanceKm);

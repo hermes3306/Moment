@@ -139,7 +139,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             final TextView tv_rank = (TextView) findViewById(R.id.tv_rank);
             final TextView tv_rank_range = (TextView) findViewById(R.id.tv_rank_range);
             final TextView tv_medias = (TextView) findViewById(R.id.medias);
-
+            final TextView tv_file_name = (TextView) findViewById(R.id.tv_file_name);
             final TextView tv_white_km = (TextView) findViewById(R.id.tv_white_km);
             final TextView tv_white_avg = (TextView) findViewById(R.id.tv_white_avg);
             final TextView tv_white_duration = (TextView) findViewById(R.id.tv_white_duration);
@@ -195,6 +195,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     String sinfo = "" + date_str;
 
                     tv_activity_name.setText(activityStat.name);
+
                     tv_date_str.setText(activityStat.date_str);
 
                     tv_distance.setText(_minDist);
@@ -203,6 +204,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     tv_carolies.setText("   " + activityStat.calories);
 
                     tv_co_runner.setText(MyActivityUtil.getRunnerInfo(activity_filename));
+                    tv_file_name.setText(activity_filename);
 
                     tv_white_km.setText(_minDist);
                     tv_white_avg.setText(activityStat.minperKms);
@@ -462,6 +464,12 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.media_information:
             case R.id.medias:
                 AlertDialogUtil.getInstance().showMedias(_ctx,media_list,0);
+                break;
+
+            case R.id.tv_file_name:
+                Intent detailMaps = new Intent(FileActivity.this, DetailMapsActivity.class);
+                detailMaps.putExtra("activity_filename", activity_filename);
+                startActivity(detailMaps);
                 break;
             case R.id.imbt_satellite_on:
                 C.satellite = false;

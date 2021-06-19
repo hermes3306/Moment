@@ -3,6 +3,8 @@ package com.jason.moment.util;
 import com.google.android.gms.maps.GoogleMap;
 
 public class C {
+
+    public static String  runner        = "Jason";
     public static boolean cloud_up      = true;
     public static boolean cloud_dn      = true;
 

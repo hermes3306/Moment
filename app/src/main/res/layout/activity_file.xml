@@ -386,7 +386,29 @@
                 android:layout_marginLeft="35sp"
                 android:gravity="center_horizontal|left"
                 android:onClick="onClick"
-                android:text="2장의 사진이 있습니다."
+                android:text="-"
+                android:textColor="@color/Gray"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_file_information"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/save48"
+                android:gravity="center_horizontal|left"
+                android:onClick="onClick"
+                android:text="File Name"
+                android:textColor="@color/Black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tv_file_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="35sp"
+                android:gravity="center_horizontal|left"
+                android:onClick="onClick"
+                android:text="-"
                 android:textColor="@color/Gray"
                 android:textSize="16sp" />
 

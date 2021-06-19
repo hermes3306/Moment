@@ -58,6 +58,15 @@ public class CloudUtil {
     private static void _download(String fileURL, File saveDir) {
         if(!C.cloud_dn) return;
         Log.e(TAG, "-- Download URL:" + fileURL);
+        String fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1);
+        File f = new File(saveDir, fileName);
+        if(f.exists()) {
+            Log.e(TAG, "-- File ("+ fileName +") exists already!");
+            if(fileName.startsWith(DateUtil.today())) {
+                Log.e(TAG, "-- File ("+ fileName +") over written!");
+            } else return;
+        }
+
         try {
             URL url = new URL(fileURL);
             HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
@@ -65,7 +74,6 @@ public class CloudUtil {
 
             // always check HTTP response code first
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                String fileName = "";
                 String disposition = httpConn.getHeaderField("Content-Disposition");
                 String contentType = httpConn.getContentType();
                 int contentLength = httpConn.getContentLength();

@@ -110,13 +110,20 @@ public class MyActivityUtil {
     }
 
     public static String getRunnerInfo(String file_name) {
+        int i = file_name.indexOf("_");
         char ch = file_name.charAt(0);
-        if( Character.isDigit(file_name.charAt(0)) ) {
-            return "Me(-)";
+        String runner;
+
+        if( Character.isDigit(file_name.charAt(i+1)) ) {
+            // activity가 달리기 인경우, 그 나머지 를 찾음
+            int j = file_name.substring(i+1).indexOf("_");
+            if(j==-1) return "Me(-)";
+            runner = file_name.substring(i+1).substring(j+1);
         } else {
-            int i = file_name.indexOf("_");
-            return "Me(" + file_name.substring(0,i) + ")";
+            runner = file_name.substring(i+1);
         }
+        runner = runner.replace(Config._csv_ext,"");
+        return "Me(" + runner + ")";
     }
 
     public static ArrayList<String> deserializeMediaInfoFromCSV(String file_name) {
