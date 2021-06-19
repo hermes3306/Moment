@@ -430,15 +430,7 @@
         android:gravity="center|right"
         android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/imbt_hide_arrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="270dp"
-            android:background="@android:color/transparent"
-            android:onClick="onClick"
-            android:visibility="gone"
-            app:srcCompat="@drawable/hide_arrow2" />
+
 
         <ImageButton
             android:id="@+id/imbt_marker"
@@ -474,6 +466,17 @@
             android:visibility="gone"
             android:background="@android:color/transparent"
             app:srcCompat="@drawable/circlearrowup32" />
+
+        <ImageButton
+            android:id="@+id/imbt_hide_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:visibility="gone"
+            app:srcCompat="@drawable/arrow_32_hide" />
+
         <ImageButton
             android:id="@+id/imbt_pop_menu"
             android:layout_width="wrap_content"

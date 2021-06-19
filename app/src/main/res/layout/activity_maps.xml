@@ -186,14 +186,7 @@
         android:orientation="horizontal"
         android:layout_marginRight="10dp">
 
-        <ImageButton
-            android:id="@+id/imbt_hide_arrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:onClick="onClick"
-            android:visibility="gone"
-            app:srcCompat="@drawable/hide_arrow2" />
+
 
         <ImageButton
             android:id="@+id/imbt_marker"
@@ -247,6 +240,15 @@
             android:background="@android:color/transparent"
             android:onClick="onClick"
             app:srcCompat="@drawable/circlearrowup32" />
+
+        <ImageButton
+            android:id="@+id/imbt_hide_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:visibility="gone"
+            app:srcCompat="@drawable/arrow_32_hide" />
 
         <ImageButton
             android:id="@+id/imbt_pop_menu"

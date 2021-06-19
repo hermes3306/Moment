@@ -106,7 +106,7 @@ public class MapsActivity extends AppCompatActivity implements
     public ImageButton imbt_up = null;
     public ImageButton imbt_save = null;
     public ImageButton imbt_marker = null;
-//    public ImageButton imbt_trash = null;
+    //    public ImageButton imbt_trash = null;
     public ImageButton imbt_navi = null;
 
     public void alertQuitDialog() {
@@ -512,7 +512,7 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-    static boolean hide_arrow = false;
+    static boolean hide_arrow = true;
 
     @Override
     public void onClick(View view) {
@@ -625,7 +625,7 @@ public class MapsActivity extends AppCompatActivity implements
                 cu.UploadAll(_ctx, Config._default_ext);
                 hidePopMenu(false);
                 break;
-                //this is used for temporary
+            //this is used for temporary
             case R.id.imbt_Down:
                 new CloudUtil().DownloadAll(_ctx, Config._default_ext);
                 NotificationUtil.notify_download_activity(_ctx);
@@ -648,8 +648,8 @@ public class MapsActivity extends AppCompatActivity implements
                 break;
             case R.id.imvStart:
                 Log.d(TAG,"-- StartNewActivity start.");
-                    Intent runIntent = new Intent(MapsActivity.this, StartNewActivity.class);
-                    startActivityForResult(runIntent, Config.CALL_START_NEW_ACTIVITY);
+                Intent runIntent = new Intent(MapsActivity.this, StartNewActivity.class);
+                startActivityForResult(runIntent, Config.CALL_START_NEW_ACTIVITY);
                 break;
 
             case R.id.imGallary:
@@ -926,7 +926,7 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivity(picIntent);
                 return true;
             default:
-            return super.onOptionsItemSelected(item);
+                return super.onOptionsItemSelected(item);
         }
     }
 

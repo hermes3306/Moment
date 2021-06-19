@@ -178,11 +178,11 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     Log.e(TAG, "-- " + myfile + " serialized successfully but the size is 0");
                     return;
                 } else {
-                        Log.d(TAG, "-- " + myfile + " is deserialized successfully! with # of " + mActivityList.size());
+                    Log.d(TAG, "-- " + myfile + " is deserialized successfully! with # of " + mActivityList.size());
                 }
 
                 if(mActivityList.size()>1) {
-                        marker_pos = mActivityList.size()-1;
+                    marker_pos = mActivityList.size()-1;
                 }
 
                 MyActivity ta = mActivityList.get(0);
