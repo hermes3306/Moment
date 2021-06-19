@@ -635,9 +635,9 @@ public class StartNewActivity extends AppCompatActivity implements
                             MyActiviySummary.getInstance(_ctx).ins(activity_file_name,as.distanceKm,as.durationInLong,as.minperKm,as.calories);
                             Log.d(TAG,"-- Activity Stat inserted successfully !!!!");
                             if(Config._default_ext==Config._csv)
-                                CloudUtil.getInstance().Upload(_ctx,activity_file_name + Config._csv_ext);
+                                CloudUtil.getInstance().Upload(activity_file_name + Config._csv_ext);
                             else
-                                CloudUtil.getInstance().Upload(_ctx,activity_file_name + Config._mnt_ext);
+                                CloudUtil.getInstance().Upload(activity_file_name + Config._mnt_ext);
                         }
 
                         if(as != null) {

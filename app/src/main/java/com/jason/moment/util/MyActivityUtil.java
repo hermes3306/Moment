@@ -109,6 +109,16 @@ public class MyActivityUtil {
         return as;
     }
 
+    public static String getRunnerInfo(String file_name) {
+        char ch = file_name.charAt(0);
+        if( Character.isDigit(file_name.charAt(0)) ) {
+            return "Me(-)";
+        } else {
+            int i = file_name.indexOf("_");
+            return "Me(" + file_name.substring(0,i) + ")";
+        }
+    }
+
     public static ArrayList<String> deserializeMediaInfoFromCSV(String file_name) {
         if(!file_name.endsWith(".csv")) file_name = file_name + ".csv";
         File file = new File(CSV_SAVE_DIR, file_name);

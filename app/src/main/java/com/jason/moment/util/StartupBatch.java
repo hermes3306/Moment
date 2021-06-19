@@ -35,7 +35,7 @@ public class StartupBatch {
         }
 
         try {
-            initDatabase(_ctx);
+            //initDatabase(_ctx);
             //if(genCVSfiles()) Log.d(TAG, "-- Success");
             //if(genMNTfiles()) Log.d(TAG, "-- Success");
             //deserializeTest();

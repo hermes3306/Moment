@@ -143,6 +143,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             final TextView tv_white_km = (TextView) findViewById(R.id.tv_white_km);
             final TextView tv_white_avg = (TextView) findViewById(R.id.tv_white_avg);
             final TextView tv_white_duration = (TextView) findViewById(R.id.tv_white_duration);
+            final TextView tv_co_runner = (TextView) findViewById(R.id.tv_co_runner);
 
             final ImageButton imbt_marker = (ImageButton) findViewById(R.id.imbt_marker);
             final ImageButton imbt_navi = (ImageButton) findViewById(R.id.imbt_navi);
@@ -200,6 +201,8 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     tv_duration.setText(activityStat.durationM);
                     tv_minperkm.setText(activityStat.minperKms);
                     tv_carolies.setText("   " + activityStat.calories);
+
+                    tv_co_runner.setText(MyActivityUtil.getRunnerInfo(activity_filename));
 
                     tv_white_km.setText(_minDist);
                     tv_white_avg.setText(activityStat.minperKms);

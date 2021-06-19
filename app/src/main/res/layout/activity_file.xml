@@ -359,12 +359,12 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/co_runner"
+                android:id="@+id/tv_co_runner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="35sp"
                 android:gravity="center_horizontal|left"
-                android:text="Jason"
+                android:text="-"
                 android:textColor="@color/Gray"
                 android:textSize="16sp" />
 
