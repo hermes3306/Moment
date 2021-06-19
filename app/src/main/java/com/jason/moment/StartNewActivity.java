@@ -50,6 +50,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jason.moment.util.ActivityStat;
+import com.jason.moment.util.AlertDialogUtil;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CaloryUtil;
 import com.jason.moment.util.CloudUtil;
@@ -57,6 +58,7 @@ import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.MP3;
 import com.jason.moment.util.MapUtil;
+import com.jason.moment.util.MediaUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StringUtil;
@@ -181,16 +183,14 @@ public class StartNewActivity extends AppCompatActivity implements
             case Config.PICK_FROM_CAMERA:
                 Log.d(TAG, "-- PIC_FROM_CAMERA: ");
                 //showImg(currentMediaName);
-                CloudUtil cu = new CloudUtil();
-                cu.Upload(_ctx,currentMediaName);
+                CloudUtil.getInstance().Upload(currentMediaName);
                 pic_filenames.add(currentMediaName);
                 media_filenames.add(currentMediaName);
                 break;
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
                 //showVideo(currentMediaName);
-                cu = new CloudUtil();
-                cu.Upload(_ctx,currentMediaName);
+                CloudUtil.getInstance().Upload(currentMediaName);
                 mov_filenames.add(currentMediaName);
                 media_filenames.add(currentMediaName);
                 break;
@@ -224,8 +224,7 @@ public class StartNewActivity extends AppCompatActivity implements
         alertadd.setView(view);
         alertadd.setNeutralButton("Upload!", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dlg, int sumthin) {
-                CloudUtil cu = new CloudUtil();
-                cu.Upload(_ctx, currentMediaName);
+                CloudUtil.getInstance().Upload(currentMediaName);
             }
         });
         alertadd.show();
@@ -273,37 +272,10 @@ public class StartNewActivity extends AppCompatActivity implements
             });
         }
         alertadd.show();
-
     }
 
     private void showImages(final int pos) {
-        if(pic_filenames.size()<pos+1) {
-            Toast.makeText(_ctx,"No Pics!",Toast.LENGTH_SHORT).show();
-            return;
-        }
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartNewActivity.this);
-        LayoutInflater factory = LayoutInflater.from(StartNewActivity.this);
-
-        /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
-        final View view = factory.inflate(R.layout.layout_imageview, null);
-        ImageView iv = view.findViewById(R.id.dialog_imageview);
-        showImg(iv, pic_filenames.get(pos));
-        alertadd.setView(view);
-        alertadd.setPositiveButton("Next", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dlg, int sumthin) {
-                if(pic_filenames.size() >(pos+1)) {
-                    showImages(pos+1);
-                }
-            }
-        });
-        alertadd.setNegativeButton("Prev", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dlg, int sumthin) {
-                if(0 < pos) {
-                    showImages(pos-1);
-                }
-            }
-        });
-        alertadd.show();
+        AlertDialogUtil.getInstance().showMedias(_ctx, pic_filenames, pos);
     }
 
     public void showVideo(VideoView vv, String fname) {
@@ -319,36 +291,7 @@ public class StartNewActivity extends AppCompatActivity implements
     }
 
     private void showVideos(int pos) {
-        if(mov_filenames.size()<pos+1) {
-            Toast.makeText(_ctx,"No Movies!",Toast.LENGTH_SHORT).show();
-            return;
-        }
-        Log.d(TAG,"-- pos:" + pos);
-        for(int i=0;i<mov_filenames.size();i++) Log.d(TAG,"-- " + mov_filenames.get(i));
-
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartNewActivity.this);
-        LayoutInflater factory = LayoutInflater.from(StartNewActivity.this);
-
-        /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
-        final View view = factory.inflate(R.layout.layout_videoview, null);
-        VideoView vv = view.findViewById(R.id.dialog_video_view);
-        showVideo(vv, mov_filenames.get(pos));
-        alertadd.setView(view);
-        alertadd.setPositiveButton("Next", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dlg, int sumthin) {
-                if(mov_filenames.size() >(pos+1)) {
-                    showVideos(pos+1);
-                }
-            }
-        });
-        alertadd.setNegativeButton("Prev", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dlg, int sumthin) {
-                if(0 < pos) {
-                    showVideos(pos-1);
-                }
-            }
-        });
-        alertadd.show();
+        AlertDialogUtil.getInstance().showMedias(_ctx, mov_filenames, pos);
     }
 
     private void showVideo(String fname) {
@@ -402,6 +345,9 @@ public class StartNewActivity extends AppCompatActivity implements
                 recordVideo();
                 break;
             case R.id.tv_start_km:
+                break;
+            case R.id.broadcastNewStart:
+                boardCastConfigChanged(1000,1);
                 break;
             case R.id.imb_start_list:
                 //recordVideo();
@@ -578,6 +524,7 @@ public class StartNewActivity extends AppCompatActivity implements
 
         Config._loc_interval = 1000;
         Config._loc_distance = 1;
+
         Config.init_preference_values_running("1000","1"); // 1sec, 1meter
         boardCastConfigChanged(1000,1);
 
@@ -682,6 +629,7 @@ public class StartNewActivity extends AppCompatActivity implements
                         Log.d(TAG,"-- sent Broadcast message: INTENT_STOP_TRACKING...");
 
                         MyActivityUtil.serialize(list, media_filenames, activity_file_name );
+                        CloudUtil.getInstance().Upload(activity_file_name + Config._csv_ext);
                         ActivityStat as = ActivityStat.getActivityStat(list);
                         if(as !=null) {
                             MyActiviySummary.getInstance(_ctx).ins(activity_file_name,as.distanceKm,as.durationInLong,as.minperKm,as.calories);

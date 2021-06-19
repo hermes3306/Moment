@@ -18,19 +18,13 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -44,7 +38,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -64,8 +57,6 @@ import com.jason.moment.util.CalcTime;
 import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
-import com.jason.moment.util.FileUtil;
-import com.jason.moment.util.GooglemapUtil;
 import com.jason.moment.util.LocationUtil;
 import com.jason.moment.util.MP3;
 import com.jason.moment.util.MapUtil;
@@ -73,9 +64,6 @@ import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.NotificationUtil;
 import com.jason.moment.util.StartupBatch;
-import com.jason.moment.util.UI;
-import com.jason.moment.util.WebUtil;
-import com.jason.moment.util.camera.CameraUtil;
 import com.jason.moment.util.db.MyLoc;
 
 import java.io.File;
@@ -85,8 +73,6 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -96,8 +82,7 @@ import static java.lang.Integer.parseInt;
 // 2021/05/03, MapsActivity extends AppCompatActivity instead of FragmentActivity
 public class MapsActivity extends AppCompatActivity implements
         OnMapReadyCallback,
-        View.OnClickListener,
-        LocationListener {
+        View.OnClickListener {
     private GoogleMap googleMap=null;
     private Context _ctx;
 
@@ -117,6 +102,7 @@ public class MapsActivity extends AppCompatActivity implements
     public ImageButton imbt_pop_menu = null;
     //public ImageButton imbt_globe = null;
     public ImageButton imbt_down = null;
+    public ImageButton imbt_hide_arrow = null;
     public ImageButton imbt_up = null;
     public ImageButton imbt_save = null;
     public ImageButton imbt_marker = null;
@@ -237,6 +223,7 @@ public class MapsActivity extends AppCompatActivity implements
         imbt_up = (ImageButton) findViewById(R.id.imbt_up);
         imbt_down = (ImageButton) findViewById(R.id.imbt_Down);
         imbt_marker = (ImageButton) findViewById(R.id.imbt_marker);
+        imbt_hide_arrow = (ImageButton) findViewById(R.id.imbt_hide_arrow);
         imbt_navi = (ImageButton) findViewById(R.id.imbt_navi);
 //        imbt_trash = (ImageButton) findViewById(R.id.imbt_trash);
 
@@ -401,7 +388,6 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     private double dist=0;
-    @Override
     public void onLocationChanged(Location location) {
         // new loc notify
         showGPS();
@@ -427,34 +413,6 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onProviderDisabled(String arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void onProviderEnabled(String arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-        // TODO Auto-generated method stub
-
-    }
-
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.d(TAG,"-- onMapReady.");
         this.googleMap = googleMap;
@@ -477,10 +435,11 @@ public class MapsActivity extends AppCompatActivity implements
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-            googleMap.setMyLocationEnabled(true);
-            googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-            googleMap.getUiSettings().setCompassEnabled(true);
-            //googleMap.getUiSettings().setZoomControlsEnabled(true);
+            googleMap.setMyLocationEnabled(C.LocationButton);
+            googleMap.getUiSettings().setMyLocationButtonEnabled(C.LocationButton);
+            googleMap.getUiSettings().setCompassEnabled(C.Compass);
+            googleMap.getUiSettings().setZoomControlsEnabled(C.ZoomControl);
+
         }
         showActivities();
 
@@ -536,20 +495,24 @@ public class MapsActivity extends AppCompatActivity implements
             imbt_up.setVisibility(View.VISIBLE);
             imbt_down.setVisibility(View.VISIBLE);
             imbt_marker.setVisibility(View.VISIBLE);
+            imbt_hide_arrow.setVisibility(View.VISIBLE);
             imbt_navi.setVisibility(View.VISIBLE);
 //            imbt_trash.setVisibility(View.VISIBLE);
             imbt_pop_menu.setVisibility(GONE);
         }else {
             imbt_pop_menu.setVisibility(View.VISIBLE);
             //imbt_globe.setVisibility(View.GONE);
-            imbt_save.setVisibility(GONE);
-            imbt_up.setVisibility(GONE);
-            imbt_down.setVisibility(GONE);
-            imbt_marker.setVisibility(GONE);
-            imbt_navi.setVisibility(GONE);
+            imbt_save.setVisibility(View.GONE);
+            imbt_up.setVisibility(View.GONE);
+            imbt_down.setVisibility(View.GONE);
+            imbt_marker.setVisibility(View.GONE);
+            imbt_hide_arrow.setVisibility(View.GONE);
+            imbt_navi.setVisibility(View.GONE);
             //imbt_trash.setVisibility(View.GONE);
         }
     }
+
+    static boolean hide_arrow = false;
 
     @Override
     public void onClick(View view) {
@@ -565,7 +528,6 @@ public class MapsActivity extends AppCompatActivity implements
                 C.satellite = false;
                 googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 view.setVisibility(View.GONE);
-                imbt_wifi_on.setVisibility(View.VISIBLE);
                 imbt_wifi_off.setVisibility(View.VISIBLE);
                 break;
             case R.id.imbt_wifi_off:
@@ -622,6 +584,18 @@ public class MapsActivity extends AppCompatActivity implements
                     _markers.add(marker);
                 }
                 MapUtil.DRAW(_ctx,googleMap,display,list );
+                break;
+
+            case R.id.imbt_hide_arrow:
+                hide_arrow = !hide_arrow;
+                if(hide_arrow) {
+                    imbt_prev.setVisibility(GONE);
+                    imbt_next.setVisibility(GONE);
+                }else {
+                    imbt_prev.setVisibility(View.VISIBLE);
+                    imbt_next.setVisibility(View.VISIBLE);
+                }
+                hidePopMenu(false);
                 break;
             case R.id.imbt_navi:
                 MapUtil.toggleNoTrack();
@@ -797,13 +771,13 @@ public class MapsActivity extends AppCompatActivity implements
         switch(requestCode) {
             case Config.PICK_FROM_CAMERA:
                 Log.d(TAG, "-- PIC_FROM_CAMERA: ");
-                CloudUtil.getInstance().Upload(_ctx,currentFileName);
+                CloudUtil.getInstance().Upload(currentFileName);
 //                CameraUtil.showImg(_ctx, currentFileName);
                 NotificationUtil.notify_new_picture(_ctx, currentFileName);
                 break;
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
-                CloudUtil.getInstance().Upload(_ctx,currentFileName);
+                CloudUtil.getInstance().Upload(currentFileName);
 //                CameraUtil.showVideo(_ctx, currentFileName);
                 NotificationUtil.notify_new_video(_ctx, currentFileName);
                 break;
@@ -838,6 +812,10 @@ public class MapsActivity extends AppCompatActivity implements
                 Intent configIntent = new Intent(MapsActivity.this, ConfigActivity.class);
                 configIntent.putExtra("1", 1);
                 startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
+                return true;
+
+            case R.id.rebuild_rank:
+                new StartupBatch(_ctx).rebuildActivitySummaries(_ctx);
                 return true;
 
             case R.id.activityList:

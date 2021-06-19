@@ -86,14 +86,17 @@ public class Config {
     static File external_pub_files_path_mov = null;    /* 11. 외부 공유저장소 (MOV) */
     static File external_pub_files_path_mp3 = null;    /* 12. 외부 공유저장소 (MP3) */
     static File external_pub_files_path_apk = null;    /* 13. 외부 공유저장소 (APK) */
+    static File external_pub_files_path_jsn = null;    /* 14. 외부 공유저장소 (JSN) */
 
     static File[] _SAVE_DIRS = null;
     public static File CSV_SAVE_DIR         = null;
     public static File MNT_SAVE_DIR         = null;
     public static File PIC_SAVE_DIR         = null;
+    public static File PIC_GALLERY_DIR      = null;
     public static File MOV_SAVE_DIR         = null;
     public static File MP3_SAVE_DIR         = null;
     public static File APK_SAVE_DIR         = null;
+    public static File JSN_SAVE_DIR         = null;
 
 
     public static String        _serverURL      = "http://ezehub.club/moment";        //Z
@@ -152,9 +155,10 @@ public class Config {
     public static int           _file_type_activity  = 3;
 
     public static final int PICK_FROM_CAMERA        = 1;
-    public static final int CALL_RUN_ACTIVITY       = 2;
-    public static final int CALL_SETTING_ACTIVITY   = 3;
-    public static final int CALL_START_ACTIVITY     = 4;
+    public static final int PICK_FROM_CAMERA2       = 2;
+    public static final int CALL_RUN_ACTIVITY       = 3;
+    public static final int CALL_SETTING_ACTIVITY   = 4;
+    public static final int CALL_START_ACTIVITY     = 41;
     public static final int CALL_QUOTE_ACTIVITY     = 5;
     public static final int CALL_PIC_ACTIVITY       = 6;
     public static final int CALL_PIC3_ACTIVITY      = 7;
@@ -164,6 +168,7 @@ public class Config {
     public static final int CALL_FILE_ACTIVITY      = 11;
     public static final int CALL_REPORT_ACTIVITY    = 12;
     public static final int CALL_START_NEW_ACTIVITY = 13;
+    public static final int CALL_RESULT_LOAD_IMAGE = 14;
 
     public static final int perKM       = 1;
     public static final int perMile     = 2;
@@ -258,6 +263,7 @@ public class Config {
         external_pub_files_path_mov = new File(external_pub_files_path1, mov_folder_name);   /* 11. 외부 공유저장소 (MOV) */
         external_pub_files_path_mp3 = new File(external_pub_files_path1, mp3_folder_name);   /* 12. 외부 공유저장소 (MP3) */
         external_pub_files_path_apk = new File(external_pub_files_path1, apk_folder_name);   /* 13. 외부 공유저장소 (APK) */
+        external_pub_files_path_jsn = new File(external_pub_files_path1, jsn_folder_name);   /* 13. 외부 공유저장소 (APK) */
 
         _SAVE_DIRS = new File[] {
             cache_path,                     /* 0. 내부 저장소 */
@@ -273,7 +279,8 @@ public class Config {
             external_pub_files_path_pic,    /* 10. 외부 공유 저장소 (PIC)) */
             external_pub_files_path_mov,    /* 11. 외부 공유 저장소 (MOV)) */
             external_pub_files_path_mp3,    /* 12. 외부 공유 저장소 (MP3)) */
-            external_pub_files_path_apk     /* 12. 외부 공유 저장소 (MP3)) */
+            external_pub_files_path_apk,     /* 13. 외부 공유 저장소 (APK)) */
+            external_pub_files_path_jsn     /* 14. 외부 공유 저장소 (JSN)) */
         };
 
         Log.d(TAG, "--cache_path:" + cache_path);
@@ -285,12 +292,14 @@ public class Config {
         Log.d(TAG, "--external_pub_files_path1:" + external_pub_files_path1);
         Log.d(TAG, "--external_pub_files_path2:" + external_pub_files_path2);
 
+        PIC_GALLERY_DIR   = _SAVE_DIRS[7];
         CSV_SAVE_DIR   = _SAVE_DIRS[8];
         MNT_SAVE_DIR   = _SAVE_DIRS[9];
         PIC_SAVE_DIR   = _SAVE_DIRS[10];
         MOV_SAVE_DIR   = _SAVE_DIRS[11];
         MP3_SAVE_DIR   = _SAVE_DIRS[12];
         APK_SAVE_DIR   = _SAVE_DIRS[13];
+        JSN_SAVE_DIR   = _SAVE_DIRS[14];
 
         if(!CSV_SAVE_DIR.exists()) CSV_SAVE_DIR.mkdirs();
         if(!MNT_SAVE_DIR.exists()) MNT_SAVE_DIR.mkdirs();
@@ -298,6 +307,7 @@ public class Config {
         if(!MOV_SAVE_DIR.exists()) MOV_SAVE_DIR.mkdirs();
         if(!MP3_SAVE_DIR.exists()) MP3_SAVE_DIR.mkdirs();
         if(!APK_SAVE_DIR.exists()) APK_SAVE_DIR.mkdirs();
+        if(!JSN_SAVE_DIR.exists()) JSN_SAVE_DIR.mkdirs();
 
         initialized_file_provider = true;
     }

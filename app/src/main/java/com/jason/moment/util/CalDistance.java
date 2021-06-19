@@ -19,6 +19,15 @@ public class CalDistance {
         this.cur_long = cur_long;
     }
 
+    public CalDistance(MyActivity a, MyActivity b) {
+        this.theta = 0;
+        this.dist = 0;
+        this.bef_lat = a.latitude;
+        this.bef_long = a.longitude;
+        this.cur_lat = b.latitude;
+        this.cur_long = b.longitude;
+    }
+
     public CalDistance(LatLng prevpos, LatLng nextpos) {
         this.theta = 0;
         this.dist = 0;
@@ -57,10 +66,10 @@ public class CalDistance {
     }
 
     public String getDistanceKmStr() {
-        return String.format("%.1fkm",getDistance() / 1000.0);
+        return String.format("%.2fkm",getDistance() / 1000.0);
     }
     public  String getDistanceMStr() {
-        return String.format("%.0fm",getDistance());
+        return String.format("%.2fm",getDistance());
     }
 
 }

@@ -182,13 +182,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center|right"
-        android:orientation="horizontal">
+        android:layout_marginTop="220dp"
+        android:orientation="horizontal"
+        android:layout_marginRight="10dp">
+
+        <ImageButton
+            android:id="@+id/imbt_hide_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:visibility="gone"
+            app:srcCompat="@drawable/hide_arrow2" />
 
         <ImageButton
             android:id="@+id/imbt_marker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="230dp"
             android:background="@android:color/transparent"
             android:onClick="onClick"
             android:visibility="gone"
@@ -198,7 +208,6 @@
             android:id="@+id/imbt_navi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="230dp"
             android:background="@android:color/transparent"
             android:onClick="onClick"
             android:visibility="gone"
@@ -208,7 +217,6 @@
             android:id="@+id/imbt_Globe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="230dp"
             android:visibility="gone"
             android:background="@android:color/transparent"
             android:onClick="onClick"
@@ -218,7 +226,6 @@
             android:id="@+id/imbt_Save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="230dp"
             android:visibility="gone"
             android:background="@android:color/transparent"
             android:onClick="onClick"
@@ -227,7 +234,6 @@
             android:id="@+id/imbt_Down"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="230dp"
             android:visibility="gone"
             android:background="@android:color/transparent"
             android:onClick="onClick"
@@ -237,7 +243,6 @@
             android:id="@+id/imbt_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="230dp"
             android:visibility="gone"
             android:background="@android:color/transparent"
             android:onClick="onClick"
@@ -247,7 +252,6 @@
             android:id="@+id/imbt_pop_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="230dp"
             android:visibility="visible"
             android:onClick="onClick"
             android:background="@android:color/transparent"

@@ -50,15 +50,15 @@
                     android:layout_height="250sp" />
 
                 <LinearLayout
-                    android:layout_above="@+id/ll_dashboard"
+                    android:id="@+id/ll_dashboard02"
+                    android:layout_above="@+id/ll_dashboard01"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:orientation="horizontal">
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text=" "/>
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"/>
                     <TextView
                         android:id="@+id/tv_white_km"
                         android:layout_width="match_parent"
@@ -87,25 +87,29 @@
                         android:layout_weight="1"
                         android:text="8:20"/>
                     <TextView
+                        android:id="@+id/tv_white_calories"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
                         android:textColor="@color/white"
-                        android:text=" "/>
+                        android:layout_weight="1"
+                        android:text="120"/>
+                    <TextView
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"/>
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/ll_dashboard"
+                    android:id="@+id/ll_dashboard01"
                     android:layout_alignParentBottom="true"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
+                    android:visibility="gone"
                     android:orientation="horizontal">
                     <TextView
-
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text=" "/>
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"/>
                     <TextView
                         android:layout_below="@+id/tv_km"
                         android:layout_width="match_parent"
@@ -134,15 +138,21 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:textStyle="bold"
+                        android:textSize="10sp"
                         android:textColor="@color/white"
-                        android:text=" "/>
+                        android:layout_weight="1"
+                        android:text="CALORY"/>
+                    <TextView
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"/>
                 </LinearLayout>
 
             </RelativeLayout>
 
 
             <LinearLayout
+                android:id="@+id/ll_stat01"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/White"
@@ -191,6 +201,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ll_stat02"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/White"
@@ -249,27 +260,30 @@
                     android:drawableLeft="@drawable/actlist48"
                     android:gravity="center_horizontal|left"
                     android:text="5번째로 빠릅니다."
+                    android:onClick="onClick"
                     android:textColor="@color/Cyan"
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/textView15"
+                    android:id="@+id/tv_rank_range"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="35sp"
                     android:gravity="center_horizontal|left"
                     android:text="6-11마일 운동을 비교해 보세요."
+                    android:onClick="onClick"
                     android:textColor="@color/Gray"
                     android:textSize="16sp" />
             </LinearLayout>
 
             <TextView
-                android:id="@+id/textView8"
+                android:id="@+id/tv_activity_progress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/time48"
                 android:gravity="center_horizontal|left"
                 android:text="Progress"
+                android:onClick="onClick"
                 android:textColor="@color/Black"
                 android:textSize="18sp" />
 
@@ -354,6 +368,28 @@
                 android:textColor="@color/Gray"
                 android:textSize="16sp" />
 
+            <TextView
+                android:id="@+id/media_information"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/gallery48"
+                android:gravity="center_horizontal|left"
+                android:onClick="onClick"
+                android:text="Pictures and videos"
+                android:textColor="@color/Black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/medias"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="35sp"
+                android:gravity="center_horizontal|left"
+                android:onClick="onClick"
+                android:text="2장의 사진이 있습니다."
+                android:textColor="@color/Gray"
+                android:textSize="16sp" />
+
         </LinearLayout>
     </ScrollView>
 
@@ -395,6 +431,16 @@
         android:orientation="horizontal">
 
         <ImageButton
+            android:id="@+id/imbt_hide_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:visibility="gone"
+            app:srcCompat="@drawable/hide_arrow2" />
+
+        <ImageButton
             android:id="@+id/imbt_marker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -420,6 +466,14 @@
             android:visibility="gone"
             android:background="@android:color/transparent"
             app:srcCompat="@drawable/trash32" />
+        <ImageButton
+            android:id="@+id/imbt_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:visibility="gone"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/circlearrowup32" />
         <ImageButton
             android:id="@+id/imbt_pop_menu"
             android:layout_width="wrap_content"

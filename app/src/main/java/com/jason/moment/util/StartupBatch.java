@@ -23,8 +23,19 @@ public class StartupBatch {
     static boolean _executed = false;
     static String TAG = "StartupBatch";
     public void execute() {
-        try{
-            Log.d(TAG,"-- Startup Batch Started...");
+        Log.d(TAG,"-- Startup Batch Started...");
+        try {
+            clearShortRunActivities(_ctx);
+        }catch(Exception e) {
+            Log.d(TAG,"-- Startup Batch Exception...");
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            Log.d(TAG,"-- Err: " + exceptionAsString);
+        }
+
+        try {
+            //initDatabase(_ctx);
             //if(genCVSfiles()) Log.d(TAG, "-- Success");
             //if(genMNTfiles()) Log.d(TAG, "-- Success");
             //deserializeTest();
@@ -56,6 +67,12 @@ public class StartupBatch {
         CloudUtil.getInstance().UploadAll(_ctx, Config._csv);
         CloudUtil.getInstance().UploadAll(_ctx, Config._mov);
         CloudUtil.getInstance().UploadAll(_ctx, Config._img);
+    }
+
+    public void initDatabase(Context _ctx){
+        MyLoc.getInstance(_ctx).onCreate();
+        MyActiviySummary.getInstance(_ctx).createNew();
+        rebuildActivitySummaries(_ctx);
     }
 
     public void downAll(Context _ctx) {
@@ -100,16 +117,16 @@ public class StartupBatch {
             ActivityStat as = MyActivityUtil.getActivityStat(mal);
             //String name = as.name;
             String name = files[i].getName();
-            if(name.length() <15 ) continue;
+            //if(name.length() <15 ) continue;
 
-            double dist = as.distanceKm;
-            long duration = as.durationInLong;
-            double minpk = as.minperKm;
-            int cal = as.calories;
+            double distanceKm = as.distanceKm;
+            long durationInLong = as.durationInLong;
+            double minperKm = as.minperKm;
+            int calories = as.calories;
 
-            if(minpk == 0) files[i].delete();
+            if(minperKm == 0) files[i].delete();
             else {
-                MyActiviySummary.getInstance(_ctx).ins(name, dist, duration, minpk, cal);
+                MyActiviySummary.getInstance(_ctx).ins(name, distanceKm, durationInLong, minperKm, calories);
                 Log.d(TAG, " -- new Activity summary: " + as.toString());
             }
         }
@@ -132,10 +149,20 @@ public class StartupBatch {
     }
 
     public void  clearShortRunActivities(Context _ctx) {
+
         File[] files = Config.CSV_SAVE_DIR.listFiles();
         for(int i=0;i<files.length;i++) {
             ArrayList<MyActivity> mal = MyActivityUtil.deserialize(files[i]);
-            if(mal.size() < 10) {
+            if(mal == null) {
+                files[i].delete();
+                Log.d(TAG,"-- file["+files[i].getName()+"] deleted!");
+            }
+            ActivityStat as = ActivityStat.getActivityStat(mal);
+            if(as == null) {
+                files[i].delete();
+                Log.d(TAG,"-- file["+files[i].getName()+"] deleted!");
+            }
+            if(as.distanceKm <= 0.1 || mal.size() < 10 ) {
                 files[i].delete();
                 Log.d(TAG,"-- file["+files[i].getName()+"] deleted!");
             }

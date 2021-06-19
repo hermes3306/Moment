@@ -4,17 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/White"
     tools:context=".MyReportActivity">
 
+
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:background="@color/White"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/name"
@@ -37,30 +39,137 @@
                 android:textColor="@color/Gray"
                 android:textSize="16sp" />
 
-            <com.google.android.gms.maps.MapView
-                android:id="@+id/mapView"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="300sp"
-                android:layout_weight="1"
-                android:gravity="center_horizontal|left" />
+                android:layout_height="250sp"
+                android:layout_weight="1">
+
+                <com.google.android.gms.maps.MapView
+                    android:id="@+id/mapView"
+                    android:layout_width="match_parent"
+                    android:layout_height="250sp" />
+
+                <LinearLayout
+                    android:id="@+id/ll_dashboard02"
+                    android:layout_above="@+id/ll_dashboard01"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/tv_white_km"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="17sp"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:text="12.56"/>
+                    <TextView
+                        android:id="@+id/tv_white_avg"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:text="59:47"/>
+                    <TextView
+                        android:id="@+id/tv_white_duration"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:text="8:20"/>
+                    <TextView
+                        android:id="@+id/tv_white_calories"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:text="120"/>
+                    <TextView
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_dashboard01"
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:visibility="gone"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:layout_below="@+id/tv_km"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="10sp"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:text="DISTNACE"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="10sp"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:text="AVG PACE"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="10sp"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:text="DURATION"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="10sp"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:text="CALORY"/>
+                    <TextView
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+            </RelativeLayout>
+
 
             <LinearLayout
+                android:id="@+id/ll_stat01"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/White"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/distancekm"
+                    android:id="@+id/tv_distance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textColor="@color/Black"
-                    android:text="0.00"
                     android:gravity="center_horizontal"
+                    android:text="0.00"
+                    android:textColor="@color/Black"
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/duration"
+                    android:id="@+id/tv_duration"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -70,17 +179,17 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/minperkm"
+                    android:id="@+id/tv_minperkm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textColor="@color/Black"
-                    android:text="0:00"
                     android:gravity="center_horizontal"
+                    android:text="0:00"
+                    android:textColor="@color/Black"
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/calories"
+                    android:id="@+id/tv_carolies"
                     android:layout_width="93dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -92,8 +201,10 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ll_stat02"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/White"
                 android:orientation="horizontal">
 
                 <TextView
@@ -135,47 +246,44 @@
                     android:text="Calories"
                     android:textColor="@color/Gray"
                     android:textSize="16sp" />
-
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tv_rank"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/actlist48"
+                    android:gravity="center_horizontal|left"
+                    android:text="5번째로 빠릅니다."
+                    android:onClick="onClick"
+                    android:textColor="@color/Cyan"
+                    android:textSize="18sp" />
 
-                    <TextView
-                        android:id="@+id/tv_rank"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawableLeft="@drawable/actlist48"
-                        android:gravity="center_horizontal|left"
-                        android:text="5번째로 빠릅니다."
-                        android:textColor="@color/Cyan"
-                        android:textSize="18sp" />
-                    <TextView
-                        android:id="@+id/textView15"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:gravity="center_horizontal|left"
-                        android:layout_marginLeft="35sp"
-                        android:textColor="@color/Gray"
-                        android:text="6-11마일 운동을 비교해 보세요." />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/tv_rank_range"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="35sp"
+                    android:gravity="center_horizontal|left"
+                    android:text="6-11마일 운동을 비교해 보세요."
+                    android:onClick="onClick"
+                    android:textColor="@color/Gray"
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <TextView
-                android:id="@+id/textView8"
+                android:id="@+id/tv_activity_progress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/time48"
                 android:gravity="center_horizontal|left"
                 android:text="Progress"
+                android:onClick="onClick"
                 android:textColor="@color/Black"
                 android:textSize="18sp" />
 
@@ -188,16 +296,16 @@
                 android:text="Chart"
                 android:textColor="@color/Black"
                 android:textSize="18sp" />
+
             <TextView
                 android:id="@+id/chart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="페이스, 경사도"
                 android:layout_marginLeft="35sp"
-                android:textColor="@color/Gray"
                 android:gravity="center_horizontal|left"
-                android:textSize="16sp"
-                 />
+                android:text="페이스, 경사도"
+                android:textColor="@color/Gray"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/textView238"
@@ -208,16 +316,16 @@
                 android:text="Memo"
                 android:textColor="@color/Black"
                 android:textSize="18sp" />
+
             <TextView
                 android:id="@+id/memo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="본 활동에는 메모가 없습니다."
                 android:layout_marginLeft="35sp"
                 android:gravity="center_horizontal|left"
+                android:text="본 활동에는 메모가 없습니다."
                 android:textColor="@color/Gray"
-                android:textSize="16sp"
-                 />
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/textView22238"
@@ -233,9 +341,9 @@
                 android:id="@+id/weather"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="35sp"
                 android:gravity="center_horizontal|left"
                 android:text="날씨를 확인하여 모든 활동을 준비하세요."
-                android:layout_marginLeft="35sp"
                 android:textColor="@color/Gray"
                 android:textSize="16sp" />
 
@@ -260,8 +368,117 @@
                 android:textColor="@color/Gray"
                 android:textSize="16sp" />
 
-
         </LinearLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/imbt_prev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:alpha="0.6"
+            android:background="@android:color/transparent"
+            android:contentDescription=""
+            android:onClick="onClick"
+            app:srcCompat="@drawable/arrow_left128" />
+        <TextView
+            android:layout_width="100sp"
+            android:layout_height="wrap_content"
+            android:text=""/>
+        <ImageButton
+            android:id="@+id/imbt_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:alpha="0.6"
+            android:background="@android:color/transparent"
+            android:contentDescription="TODO"
+            android:onClick="onClick"
+            app:srcCompat="@drawable/arrow_right128" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center|right"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/imbt_marker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:background="@android:color/transparent"
+            android:visibility="gone"
+            app:srcCompat="@drawable/drawmarker32" />
+
+        <ImageButton
+            android:id="@+id/imbt_navi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:background="@android:color/transparent"
+            android:visibility="gone"
+            app:srcCompat="@drawable/arrow1" />
+
+        <ImageButton
+            android:id="@+id/imbt_trash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:visibility="gone"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/trash32" />
+        <ImageButton
+            android:id="@+id/imbt_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:visibility="gone"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/circlearrowup32" />
+        <ImageButton
+            android:id="@+id/imbt_pop_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:visibility="visible"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/pop03" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top|right"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/imbt_satellite_on"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:visibility="gone"
+            app:srcCompat="@drawable/wifi_on" />
+
+        <ImageButton
+            android:id="@+id/imbt_satellite_off"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:visibility="visible"
+            app:srcCompat="@drawable/wifi_gray" />
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -38,6 +38,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 
@@ -675,6 +677,44 @@ public class MyActivityUtil {
             //Log.e(TAG, "" + dist_2 + " sum: " + dist_meter);
         }
         return dist_meter;
+    }
+
+
+    public static ArrayList<Progress> getProgress(ArrayList<MyActivity> mal) {
+        ArrayList pal = new ArrayList<Progress>();
+
+        int km = 1;
+        long beg=-1, end=-1;
+        int lastpos=0;
+        long tot_distInMeters = 0;
+
+        for(int i=0;i<mal.size();i++) {
+            if(i+1 < mal.size()) {
+                CalDistance cd = new CalDistance(mal.get(i), mal.get(i+1));
+                long distInMeters = (long)cd.getDistance();
+                tot_distInMeters += distInMeters;
+                if(tot_distInMeters >= km * 1000) {
+                    beg = StringUtil.StringToDate(mal.get(lastpos)).getTime();
+                    end = StringUtil.StringToDate(mal.get(i-1)).getTime();
+
+                    double mpk = ((double)(end-beg)/1000f) / 60f; //milliseconds to min
+                    String mpkStr = CalcTime.minperKmStr(mpk);
+                    String timeStr = CalcTime.durationMinStr(end-beg);
+                    pal.add(new Progress(km, tot_distInMeters, mpk, mpkStr, end-beg, timeStr ));
+                    if(i+1 < mal.size()) lastpos=i+1;
+                    else lastpos = i;
+                    km++;
+                }
+            }
+        }
+        beg = StringUtil.StringToDate(mal.get(lastpos)).getTime();
+        end = StringUtil.StringToDate(mal.get(mal.size()-1)).getTime();
+
+        double mpk = ((double)(end-beg)/(tot_distInMeters) / 60f); //milliseconds to min
+        String mpkStr = CalcTime.minperKmStr(mpk);
+        String timeStr = CalcTime.durationMinStr(end-beg);
+        pal.add(new Progress(km, tot_distInMeters, mpk, mpkStr, end-beg, timeStr ));
+        return pal;
     }
 
 }

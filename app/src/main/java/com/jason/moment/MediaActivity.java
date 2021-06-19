@@ -32,6 +32,7 @@ import com.jason.moment.R;
 import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
+import com.jason.moment.util.MediaUtil;
 import com.jason.moment.util.NotificationUtil;
 
 import java.io.File;
@@ -306,17 +307,13 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void showImage(ImageView iv_pic, String fname) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(90);
-        mDegree = 90;
-
-        File mediaFile = new File(Config.PIC_SAVE_DIR, fname);
-        Bitmap bitmap = decodeFile(mediaFile);
-
-        bitmap = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(), bitmap.getHeight(),matrix,true);
-        iv_pic.setImageBitmap(bitmap);
+        MediaUtil.getInstance().showImage(iv_pic, fname);
     }
 
+    public void showImageBug(ImageView iv_pic, String fname) {
+        File f = new File(Config.PIC_SAVE_DIR, fname);
+        setPic(iv_pic,f);
+    }
 
     public void showVideo(VideoView vv, String fname) {
         //Video Loop
@@ -395,13 +392,32 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK) return;
         switch(requestCode) {
+            case Config.PICK_FROM_CAMERA2:
+                Log.d(TAG, "-- REQUEST_IMAGE_CAPTURE: ");
+                VideoView vv_view = (VideoView) findViewById(R.id.vv_view);
+                ImageView iv_pic = (ImageView) findViewById(R.id.iv_pic);
+                vv_view.setVisibility(View.GONE);
+                iv_pic.setVisibility(View.VISIBLE);
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                iv_pic.setImageBitmap(imageBitmap);
+                MediaUtil.getInstance().onActivityResult(this,requestCode, data, iv_pic);
+                break;
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
-                CloudUtil.getInstance().Upload(_ctx,currentFileName);
+                CloudUtil.getInstance().Upload(currentFileName);
                 break;
             case Config.PICK_FROM_CAMERA:
                 Log.d(TAG, "-- PICK_FROM_CAMERA: ");
-                CloudUtil.getInstance().Upload(_ctx,currentFileName);
+                CloudUtil.getInstance().Upload(currentFileName);
+                break;
+            case Config.CALL_RESULT_LOAD_IMAGE:
+                Log.d(TAG, "-- CALL_RESULT_LOAD_IMAGE: ");
+                vv_view = (VideoView) findViewById(R.id.vv_view);
+                iv_pic = (ImageView) findViewById(R.id.iv_pic);
+                vv_view.setVisibility(View.GONE);
+                iv_pic.setVisibility(View.VISIBLE);
+                MediaUtil.getInstance().onActivityResult(this,requestCode, data, iv_pic);
                 break;
         }
     }
@@ -450,26 +466,61 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
         startActivityForResult(intent, Config.PICK_FROM_CAMERA);
     }
 
+    private void takePic2() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, Config.PICK_FROM_CAMERA2);
+        }
+    }
+
+    private void setPic(ImageView imageView, File f ) {
+        setPic(imageView, f.getAbsolutePath());
+    }
+
+    private void setPic(ImageView imageView, String absolutePath ) {
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = 1;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(absolutePath, bmOptions);
+        imageView.setImageBitmap(bitmap);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.imv_camera2:
+                takePic2();
+                break;
+            case R.id.imRotate:
+                ImageView iv_pic = (ImageView) findViewById(R.id.iv_pic);
+                MediaUtil.getInstance().showImageRotated(iv_pic,_files.get(pos).getName());
+                break;
+            case R.id.save_gallery:
+                MediaUtil.getInstance().saveImageInGallery(this, _files.get(pos).getName());
+                MediaUtil.getInstance().updateGallery(_ctx, _files.get(pos).getName());
+                break;
+            case R.id.pickgallery:
+                MediaUtil.getInstance().getImageFromAlbum(this);
+                break;
             case R.id.imvCamera:
                 takePic();
                 break;
             case R.id.imvVideo:
                 recordVideo();
                 break;
-            case R.id.imb_next:
+            case R.id.imbt_next:
                 if (pos < size - 1) pos++;
                 else pos = 0;
                 show_media();
                 break;
-            case R.id.imb_prev:
+            case R.id.imbt_prev:
                 if (pos > 0) pos--;
                 else pos = size - 1;
                 show_media();
-                break;
-            case R.id.imRotate:
                 break;
             case R.id.imTrash:
                 deleteMov();

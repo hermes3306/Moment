@@ -44,6 +44,10 @@ public class MyLoc {
         if(dbr == null) dbr = dbHelper.getReadableDatabase();
     }
 
+    public void onCreate() {
+        dbHelper.onCreate(db);
+    }
+
     public void createNew() {
         // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         // Gets the data repository in write mode

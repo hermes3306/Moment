@@ -55,8 +55,7 @@ public class CameraUtil {
         alertadd.setView(view);
         alertadd.setPositiveButton("Upload!", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dlg, int sumthin) {
-                CloudUtil cu = new CloudUtil();
-                cu.Upload(parentContext,fname);
+                CloudUtil.getInstance().Upload(fname);
             }
         });
         alertadd.show();
@@ -85,8 +84,7 @@ public class CameraUtil {
         alertadd.setView(view);
         alertadd.setPositiveButton("Upload!", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dlg, int sumthin) {
-                CloudUtil cu = new CloudUtil();
-                cu.Upload(parentContext,fname);
+                CloudUtil.getInstance().Upload(fname);
             }
         });
         alertadd.show();

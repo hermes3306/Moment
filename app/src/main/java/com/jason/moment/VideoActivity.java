@@ -171,7 +171,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
         switch(requestCode) {
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
-                CloudUtil.getInstance().Upload(_ctx,currentFileName);
+                CloudUtil.getInstance().Upload(currentFileName);
                 break;
         }
     }
@@ -214,12 +214,12 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
             case R.id.imvCamera:
                 recordVideo();
                 break;
-            case R.id.imb_next:
+            case R.id.imbt_next:
                 if (pos < size - 1) pos++;
                 else pos = 0;
                 show();
                 break;
-            case R.id.imb_prev:
+            case R.id.imbt_prev:
                 if (pos > 0) pos--;
                 else pos = size - 1;
                 show();

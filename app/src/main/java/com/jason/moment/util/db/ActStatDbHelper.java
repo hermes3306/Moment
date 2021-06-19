@@ -9,7 +9,7 @@ public class ActStatDbHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "Moment.db";
     private static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + ActStatContract.LocEntry.TABLE_NAME + " (" +
+            "CREATE TABLE IF NOT EXISTS " + ActStatContract.LocEntry.TABLE_NAME + " (" +
                     ActStatContract.LocEntry._ID + " INTEGER PRIMARY KEY," +
                     ActStatContract.LocEntry.COLUMN_NAME_NAME + " TEXT," +
                     ActStatContract.LocEntry.COLUMN_NAME_DIST + " REAL," +
@@ -44,6 +44,7 @@ public class ActStatDbHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_DELETE_ALL);
     }
     public void createNew(SQLiteDatabase db) {
+        db.execSQL("drop index minperkm_inx");
         db.execSQL(SQL_DELETE_ENTRIES);
         onCreate(db);}
 }

@@ -398,7 +398,7 @@ public class SelfInstallActivity extends AppCompatActivity {
     {
         try {
             Log.d(TAG,"-- before download APK");
-            CloudUtil.getInstance().DownloadAsync(this, Config.APK_SAVE_DIR, Config._apkurl);
+            CloudUtil.getInstance().Download(Config.APK_SAVE_DIR, Config._apkurl);
             Log.d(TAG,"-- after download APK");
         }catch(Exception e) {
             StringWriter sw = new StringWriter();

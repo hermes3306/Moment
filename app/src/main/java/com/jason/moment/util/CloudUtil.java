@@ -55,7 +55,8 @@ public class CloudUtil {
         return sb.toString();
     }
 
-    public static void download(String fileURL, File saveDir) {
+    private static void _download(String fileURL, File saveDir) {
+        if(!C.cloud_dn) return;
         Log.e(TAG, "-- Download URL:" + fileURL);
         try {
             URL url = new URL(fileURL);
@@ -115,6 +116,7 @@ public class CloudUtil {
     }
 
     public void DownloadMP3(final Context context) {
+        if(!C.cloud_dn) return;
         new AsyncTask<Void,Void,Void>() {
             String listUrl = null;
             String listOfFiles = null;
@@ -149,7 +151,7 @@ public class CloudUtil {
 
                     asyncDialog.setMax(fileURL.length);
                     for(int i=0;i<fileURL.length;i++) {
-                        download(fileURL[i], saveDir);
+                        _download(fileURL[i], saveDir);
                         asyncDialog.setProgress(i);
                     }
                 }catch(Exception e) {
@@ -179,6 +181,7 @@ public class CloudUtil {
 
 
     public void DownloadAll(final Context context, final int ftype) {
+        if(!C.cloud_dn) return;
         new AsyncTask<Void,Void,Void>() {
             String listUrl = null;
             String listOfFiles = null;
@@ -225,7 +228,7 @@ public class CloudUtil {
 
                     asyncDialog.setMax(fileURL.length);
                     for(int i=0;i<fileURL.length;i++) {
-                        download(fileURL[i], saveDir);
+                        _download(fileURL[i], saveDir);
                         asyncDialog.setProgress(i);
                     }
                 }catch(Exception e) {
@@ -253,19 +256,17 @@ public class CloudUtil {
         }.execute();
     }
 
-    public void DownloadAsync(final Context context, final File saveDir, final String fileURL) {
+    public void Download(final File saveDir, final String fileURL) {
+        if(!C.cloud_dn) return;
         Log.d(TAG,"-- DownloadAync!!");
         new AsyncTask<Void,Void,Void>() {
             String listOfFiles = null;
             String[] linesOfFiles = null;
-            final ProgressDialog asyncDialog = new ProgressDialog(context);
             @Override
             protected Void doInBackground(Void... voids) {
                 Log.d(TAG,"-- doInBackground/DownloadAync!!");
                 try {
-                    asyncDialog.setMax(1);
-                    download(fileURL, saveDir);
-                    asyncDialog.setProgress(1);
+                    _download(fileURL, saveDir);
                 }catch(Exception e) {
                     StringWriter sw = new StringWriter();
                     e.printStackTrace(new PrintWriter(sw));
@@ -276,22 +277,18 @@ public class CloudUtil {
 
             @Override
             protected void onPreExecute() {
-                asyncDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                asyncDialog.setMessage("Downloading...");
-                asyncDialog.show();
                 super.onPreExecute();
             }
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                asyncDialog.dismiss();
                 super.onPostExecute(aVoid);
-                Toast.makeText(context, "Download success", Toast.LENGTH_LONG).show();
             }
         }.execute();
     }
 
     public void UploadAll(final Context context, int ftype) {
+        if(!C.cloud_up) return;
         final String _serverUrl = Config._uploadURL;
         // Pop Up a Dialog
         new AsyncTask<Void,Void,Void>() {
@@ -415,11 +412,11 @@ public class CloudUtil {
         }.execute();
     }
 
-    public void Upload(final Context context, String filename) {
+    public void Upload(String filepath) {
+        if(!C.cloud_up) return;
         final String _serverUrl = Config._uploadURL;
         // Pop Up a Dialog
         new AsyncTask<Void,Void,Void>() {
-            final ProgressDialog asyncDialog = new ProgressDialog(context);
             HttpURLConnection urlConnection = null;
             final String attachmentName = null;
             final String attachmentFileName = null;
@@ -429,15 +426,14 @@ public class CloudUtil {
 
             @Override
             protected Void doInBackground(Void... voids) {
-                asyncDialog.setMax(100);
                 File file;
                 File folder = null;
-                if(filename.endsWith(Config._csv_ext)) folder = Config.CSV_SAVE_DIR;
-                if(filename.endsWith(Config._mnt_ext)) folder = Config.MNT_SAVE_DIR;
-                if(filename.endsWith(Config._pic_ext)) folder = Config.PIC_SAVE_DIR;
-                if(filename.endsWith(Config._mov_ext)) folder = Config.MOV_SAVE_DIR;
-                file = new File(folder, filename);
-                Log.d(TAG, "Upload File name:" + filename);
+                if(filepath.endsWith(Config._csv_ext)) folder = Config.CSV_SAVE_DIR;
+                if(filepath.endsWith(Config._mnt_ext)) folder = Config.MNT_SAVE_DIR;
+                if(filepath.endsWith(Config._pic_ext)) folder = Config.PIC_SAVE_DIR;
+                if(filepath.endsWith(Config._mov_ext)) folder = Config.MOV_SAVE_DIR;
+                file = new File(folder, filepath);
+                Log.d(TAG, "Upload File name:" + filepath);
 
                 try {
                     URL serverUrl = new URL(_serverUrl);
@@ -473,8 +469,6 @@ public class CloudUtil {
                     OutputStream out = httpUrlConnection.getOutputStream();
                     FileInputStream fis = new FileInputStream(file);
 
-                    //asyncDialog.setMax( (int) (file.length() / 1024));
-                    asyncDialog.setMax( (int)file.length() );
                     byte[] buffer = new byte[1024];
                     int readcount = 0;
                     int i=1;int readcountSum=0;
@@ -483,7 +477,6 @@ public class CloudUtil {
                         readcountSum += readcount;
                         out.write(buffer, 0, readcount);
                         float progress = (readcount / file.length()) * 100;
-                        asyncDialog.setProgress(readcountSum);
                         Log.d(TAG,"-- file.length(): " + file.length());
                         Log.d(TAG,"-- progress(i): " + progress);
                         Log.d(TAG,"-- progress(i): " + (int)progress);
@@ -519,17 +512,12 @@ public class CloudUtil {
 
             @Override
             protected void onPreExecute() {
-                asyncDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                asyncDialog.setMessage("Uploading...");
-                asyncDialog.show();
                 super.onPreExecute();
             }
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                asyncDialog.dismiss();
                 super.onPostExecute(aVoid);
-                Toast.makeText(context, "Uploading success", Toast.LENGTH_LONG).show();
             }
         }.execute();
     }

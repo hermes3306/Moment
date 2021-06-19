@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat;
 import com.jason.moment.MapsActivity;
 import com.jason.moment.MyReportActivity;
 import com.jason.moment.R;
+import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.LocationUtil;
@@ -132,7 +133,6 @@ public class GPSLogger extends Service implements LocationListener {
                 stopTrackingAndSave();
             } else if (Config.INTENT_CONFIG_CHANGE.equals(intent.getAction()) ) {
                 Log.e(TAG, "-- GPSLogger get message of CONFIG_CHANGE");
-
                 Config.initialize(getApplicationContext());
                 gpsLoggingInterval = intent.getLongExtra("gpsLoggingInterval",Config._loc_interval);
                 gpsLoggingMinDistance = intent.getLongExtra("gpsLoggingMinDistance", (long)Config._loc_distance);
@@ -312,7 +312,9 @@ public class GPSLogger extends Service implements LocationListener {
     }
 
     private void saveTodayActivities() {
-        MyActivityUtil.serialize(MyLoc.getInstance(getApplication()).getToodayActivities(), DateUtil.today());
+        String file_name = DateUtil.today();
+        MyActivityUtil.serialize(MyLoc.getInstance(getApplication()).getToodayActivities(), file_name);
+        CloudUtil.getInstance().Upload(file_name + Config._csv_ext);
     }
 
     /**

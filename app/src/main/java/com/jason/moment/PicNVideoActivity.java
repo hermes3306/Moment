@@ -28,6 +28,7 @@ import com.jason.moment.R;
 import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
+import com.jason.moment.util.MediaUtil;
 import com.jason.moment.util.NotificationUtil;
 
 import java.io.File;
@@ -151,15 +152,7 @@ public class PicNVideoActivity extends AppCompatActivity implements View.OnClick
     }
 
     public void showImage(ImageView iv_pic, String fname) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(90);
-        mDegree = 90;
-
-        File mediaFile = new File(Config.PIC_SAVE_DIR, fname);
-        Bitmap bitmap = decodeFile(mediaFile);
-
-        bitmap = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(), bitmap.getHeight(),matrix,true);
-        iv_pic.setImageBitmap(bitmap);
+        MediaUtil.getInstance().showImage(iv_pic, fname);
     }
 
 
@@ -241,7 +234,7 @@ public class PicNVideoActivity extends AppCompatActivity implements View.OnClick
         switch(requestCode) {
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
-                CloudUtil.getInstance().Upload(_ctx,currentFileName);
+                CloudUtil.getInstance().Upload(currentFileName);
                 break;
         }
     }
@@ -284,12 +277,12 @@ public class PicNVideoActivity extends AppCompatActivity implements View.OnClick
             case R.id.imvCamera:
                 recordVideo();
                 break;
-            case R.id.imb_next:
+            case R.id.imbt_next:
                 if (pos < size - 1) pos++;
                 else pos = 0;
                 show();
                 break;
-            case R.id.imb_prev:
+            case R.id.imbt_prev:
                 if (pos > 0) pos--;
                 else pos = size - 1;
                 show();

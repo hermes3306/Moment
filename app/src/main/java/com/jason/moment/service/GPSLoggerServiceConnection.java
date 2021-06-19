@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.jason.moment.MapsActivity;
 import com.jason.moment.util.Config;
@@ -20,6 +21,7 @@ public class GPSLoggerServiceConnection implements ServiceConnection {
      * Reference to TrackLogger activity
      */
     private final MapsActivity activity;
+    private String TAG = "GPSLoggerServiceConnection";
 
     public GPSLoggerServiceConnection(MapsActivity tl) {
         activity = tl;
@@ -44,6 +46,16 @@ public class GPSLoggerServiceConnection implements ServiceConnection {
             intent.putExtra("activity_file_name", activity.getCurrentTrackId());
             activity.sendBroadcast(intent);
         }
+    }
+
+    public void boardCastConfigChanged(long gpsLoggingInterval, long gpsLoggingMinDistance ) {
+        Intent intent = new Intent(Config.INTENT_CONFIG_CHANGE);
+        intent.putExtra("gpsLoggingInterval", gpsLoggingInterval);
+        intent.putExtra("gpsLoggingMinDistance", gpsLoggingMinDistance);
+        activity.sendBroadcast(intent);
+        Log.e(TAG, "--INTENT_CONFIG_CHANGED message sent :");
+        Log.e(TAG, "--gpsLoggingInterval:" + gpsLoggingInterval);
+        Log.e(TAG, "--gpsLoggingMinDistance:" +  gpsLoggingMinDistance);
     }
 
 }

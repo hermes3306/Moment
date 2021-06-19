@@ -8,11 +8,11 @@ import java.util.Date;
 
 public class ActivityStat {
         static String TAG = "ActivityStat";
+        public String _fname;
         public String name;
         public String date_str;
+        public String date_str2;
 
-        public Date start;
-        public Date end;
         public double distanceKm;
         public double distanceM;
         public String duration;
@@ -28,26 +28,50 @@ public class ActivityStat {
         public int[] progress_info;
         public int[] chart_info;
 
+        public void setExtra() {
+            this.memo = "메모가 없습니다.";
+            this.weather = "날씨 정보가 없습니다.";
+            this.co_runner = "함께 달린 사람이 없습니다.";
+        }
+
+        public ActivityStat(String name, double distanceKm, long durationInLong, double minperKm, int calories) {
+            this._fname = name;
+            this.duration = duration;
+            this.distanceKm = distanceKm;
+            this.minperKm = minperKm;
+            this.calories = calories;
+            this.durationInLong = durationInLong;
+            this.distanceM = distanceKm * 1000;
+            setExtra();
+
+            String fnameWithoutExtension = name.substring(0,name.length()-4);
+            Date start = new Date();
+            if(fnameWithoutExtension.length() < 15) {  // Day Activity
+                start = StringUtil.StringToDate(fnameWithoutExtension, "yyyyMMdd");
+            }else { // Activity
+                start = StringUtil.StringToDate(fnameWithoutExtension, "yyyyMMdd_HHmmss");
+            }
+            genStatInformation(start);
+        }
+
+        public static ActivityStat fromActivitySummary(ActivitySummary as) {
+            return new ActivityStat(as.name, as.dist, as.duration, as.minpk, as.cal);
+        }
+
         public ActivityStat(Date start, Date end, String duration, double distanceM, double distanceKm, double minperKm, int calories) {
-            this.start = start;
-            this.end = end;
             this.duration = duration;
             this.distanceM = distanceM;
             this.distanceKm = distanceKm;
             this.minperKm = minperKm;
             this.calories = calories;
             this.durationInLong = end.getTime() - start.getTime();
+            setExtra();
+            genStatInformation(start);
+        }
 
-            long t_dur_h = durationInLong/Config._ONE_HOUR;
-            long t_dur_m = (durationInLong - (t_dur_h * Config._ONE_HOUR)) / Config._ONE_MIN;
-            long t_dur_s = (durationInLong - (t_dur_h * Config._ONE_HOUR) - (t_dur_m * Config._ONE_MIN)) / Config._ONE_SEC;
-            if(t_dur_h>0) this.durationM =  "" +  t_dur_h + ":" + t_dur_m + ":" + t_dur_s;
-            else  this.durationM = t_dur_m + ":" + t_dur_s;
-
-            long t_sec = (long)(minperKm * 60);
-            long t_min = t_sec / 60;
-            t_sec = (long)(minperKm * 60) - t_min * 60;
-            this.minperKms = "" + t_min + ":" + t_sec;
+        void genStatInformation(Date start) {
+            this.durationM = CalcTime.durationMinStr(durationInLong);
+            this.minperKms = CalcTime.minperKmStr(minperKm);
 
             String H = DateUtil.DateToString(start,"H");
             int t = Integer.parseInt(H);
@@ -59,6 +83,7 @@ public class ActivityStat {
 
             this.name = DateUtil.DateToString(start,"E요일 ") + " " + H;
             this.date_str = DateUtil.DateToString(start,"yyyy년MM월dd일 HH:mm a");
+            this.date_str2 = DateUtil.DateToString(start,"MM월dd일 HH:mm a");
         }
 
         public String toString() {
