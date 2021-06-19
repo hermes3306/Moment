@@ -167,6 +167,8 @@ public class MyActivityUtil {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
             Log.e(TAG,"Err:" + sw.toString());
+            file.delete();
+            return null;
         }
         return mal;
     }

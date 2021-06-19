@@ -60,6 +60,7 @@ public class MyReportActivity extends AppCompatActivity implements
     Context _ctx = null;
     private GoogleMap _googleMap;
     boolean satellite = false;
+    boolean hide_arrow = true;
 
 
     private void showActivities() {
@@ -99,6 +100,7 @@ public class MyReportActivity extends AppCompatActivity implements
         final TextView tv_white_km = (TextView) findViewById(R.id.tv_white_km);
         final TextView tv_white_avg = (TextView) findViewById(R.id.tv_white_avg);
         final TextView tv_white_duration = (TextView) findViewById(R.id.tv_white_duration);
+        final ImageButton imbt_hide_arrow = (ImageButton) findViewById(R.id.imbt_hide_arrow);
         final ImageButton imbt_marker = (ImageButton) findViewById(R.id.imbt_marker);
         final ImageButton imbt_navi = (ImageButton) findViewById(R.id.imbt_navi);
         final ImageButton imbt_trash = (ImageButton) findViewById(R.id.imbt_trash);
@@ -146,11 +148,33 @@ public class MyReportActivity extends AppCompatActivity implements
                 imbt_navi.setVisibility(View.GONE);
                 imbt_trash.setVisibility(View.GONE);
                 imbt_up.setVisibility(View.GONE);
+                imbt_hide_arrow.setVisibility(View.GONE);
                 imbt_pop_menu.setVisibility(View.VISIBLE);
                 C.nomarkers = !C.nomarkers;
                 int width = mMapView.getWidth();
                 int height = mMapView.getHeight();
                 MapUtil.DRAW(_ctx,_googleMap,width,height,mActivityList);
+            }
+        });
+
+        imbt_hide_arrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imbt_marker.setVisibility(View.GONE);
+                imbt_navi.setVisibility(View.GONE);
+                imbt_trash.setVisibility(View.GONE);
+                imbt_up.setVisibility(View.GONE);
+                imbt_hide_arrow.setVisibility(View.GONE);
+                imbt_pop_menu.setVisibility(View.VISIBLE);
+                hide_arrow = !hide_arrow;
+                if(hide_arrow) {
+                    imbt_next.setVisibility(View.GONE);
+                    imbt_prev.setVisibility(View.GONE);
+                }else{
+                    imbt_next.setVisibility(View.VISIBLE);
+                    imbt_prev.setVisibility(View.VISIBLE);
+                    imbt_prev.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -161,6 +185,7 @@ public class MyReportActivity extends AppCompatActivity implements
                 imbt_navi.setVisibility(View.GONE);
                 imbt_trash.setVisibility(View.GONE);
                 imbt_up.setVisibility(View.GONE);
+                imbt_hide_arrow.setVisibility(View.GONE);
                 imbt_pop_menu.setVisibility(View.VISIBLE);
                 C.notrack = !C.notrack;
                 int width = mMapView.getWidth();
@@ -176,7 +201,8 @@ public class MyReportActivity extends AppCompatActivity implements
                 imbt_navi.setVisibility(View.VISIBLE);
                 imbt_trash.setVisibility(View.GONE);
                 imbt_up.setVisibility(View.VISIBLE);
-                imbt_pop_menu.setVisibility(View.GONE);
+                imbt_pop_menu.setVisibility(View.VISIBLE);
+                imbt_hide_arrow.setVisibility(View.VISIBLE);
             }
         });
 
@@ -187,6 +213,7 @@ public class MyReportActivity extends AppCompatActivity implements
                 imbt_navi.setVisibility(View.GONE);
                 imbt_trash.setVisibility(View.GONE);
                 imbt_up.setVisibility(View.GONE);
+                imbt_hide_arrow.setVisibility(View.GONE);
                 imbt_pop_menu.setVisibility(View.VISIBLE);
                 CloudUtil.getInstance().Upload(activity_filename);
             }

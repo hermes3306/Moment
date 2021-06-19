@@ -35,7 +35,7 @@ public class StartupBatch {
         }
 
         try {
-            //initDatabase(_ctx);
+            initDatabase(_ctx);
             //if(genCVSfiles()) Log.d(TAG, "-- Success");
             //if(genMNTfiles()) Log.d(TAG, "-- Success");
             //deserializeTest();
@@ -114,6 +114,8 @@ public class StartupBatch {
         File[] files = Config.CSV_SAVE_DIR.listFiles();
         for(int i=0;i<files.length;i++) {
             ArrayList<MyActivity> mal = MyActivityUtil.deserialize(files[i]);
+            if(mal==null) continue;
+            if(mal.size()==0) continue;
             ActivityStat as = MyActivityUtil.getActivityStat(mal);
             //String name = as.name;
             String name = files[i].getName();

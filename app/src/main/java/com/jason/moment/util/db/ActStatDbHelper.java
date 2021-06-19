@@ -3,6 +3,10 @@ package com.jason.moment.util.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class ActStatDbHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
@@ -44,7 +48,30 @@ public class ActStatDbHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_DELETE_ALL);
     }
     public void createNew(SQLiteDatabase db) {
-        db.execSQL("drop index minperkm_inx");
-        db.execSQL(SQL_DELETE_ENTRIES);
-        onCreate(db);}
+
+        try {
+            db.execSQL("drop index minperkm_inx");
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e("ActStatDbHelper", "-- ERR:" + sw.toString());
+        }
+
+        try {
+            db.execSQL(SQL_DELETE_ENTRIES);
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e("ActStatDbHelper", "-- ERR:" + sw.toString());
+        }
+
+        try {
+            onCreate(db);
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e("ActStatDbHelper", "-- ERR:" + sw.toString());
+        }
+    }
+
 }
