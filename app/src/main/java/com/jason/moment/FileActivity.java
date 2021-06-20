@@ -158,6 +158,14 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             final ImageButton imbt_up = (ImageButton) findViewById(R.id.imbt_up);
             final ImageButton imbt_picture_view = (ImageButton) findViewById(R.id.imbt_picture_view);
             final ImageView iv_main_picture = (ImageView) findViewById(R.id.iv_main_picture);
+            ImageButton imbt_satellite_off = (ImageButton)findViewById(R.id.imbt_satellite_off);
+            ImageButton imbt_satellite_on = (ImageButton)findViewById(R.id.imbt_satellite_on);
+            MapView mapView = (MapView)findViewById(R.id.mapView);
+            LinearLayout ll_stat01 = (LinearLayout) findViewById(R.id.ll_stat01);
+            LinearLayout ll_stat02 = (LinearLayout) findViewById(R.id.ll_stat02);
+            LinearLayout ll_dashboard01 = (LinearLayout) findViewById(R.id.ll_dashboard01);
+            LinearLayout ll_dashboard02 = (LinearLayout) findViewById(R.id.ll_dashboard02);
+
             final File[] flist = MyActivityUtil.getFiles(filetype);
 
             public void GO(final GoogleMap googleMap, File myfile) {
@@ -255,10 +263,20 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                         return;
                     }
                 }
-
+                mMapView.setVisibility(View.VISIBLE);
+                iv_main_picture.setVisibility(View.GONE);
                 int width = mMapView.getWidth();
                 int height = mMapView.getHeight();
                 MapUtil.DRAW(_ctx,googleMap,width,height,mActivityList);
+                if(C.satellite = true) {
+                    _googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                    imbt_satellite_on.setVisibility(View.GONE);
+                    imbt_satellite_off.setVisibility(View.VISIBLE);
+                    ll_stat01.setVisibility(View.VISIBLE);
+                    ll_stat02.setVisibility(View.VISIBLE);
+                    ll_dashboard01.setVisibility(View.GONE);
+                    ll_dashboard02.setVisibility(View.GONE);
+                }
             }
 
             public void alertDeleteDialog(File file) {
@@ -474,6 +492,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 ll_stat02.setVisibility(View.GONE);
                 ll_dashboard01.setVisibility(View.VISIBLE);
                 ll_dashboard02.setVisibility(View.VISIBLE);
+                if(pic_list.size() <= pic_pos) pic_pos = 0;
                 MediaUtil.getInstance().showImage(iv_main_picture, pic_list.get(pic_pos));
                 if(pic_pos+1 < pic_list.size()) pic_pos++;
                 else pic_pos=0;
@@ -508,9 +527,10 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.imbt_satellite_on:
                 C.satellite = false;
+                mMapView.setVisibility(View.VISIBLE);
+                iv_main_picture.setVisibility(View.GONE);
                 _googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 v.setVisibility(View.GONE);
-                imbt_satellite_off.setVisibility(View.VISIBLE);
                 imbt_satellite_off.setVisibility(View.VISIBLE);
                 ll_stat01.setVisibility(View.VISIBLE);
                 ll_stat02.setVisibility(View.VISIBLE);
@@ -519,6 +539,8 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.imbt_satellite_off:
                 C.satellite= true;
+                mMapView.setVisibility(View.VISIBLE);
+                iv_main_picture.setVisibility(View.GONE);
                 _googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                 v.setVisibility(View.GONE);
                 imbt_satellite_on.setVisibility(View.VISIBLE);
