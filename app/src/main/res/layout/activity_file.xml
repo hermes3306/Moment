@@ -49,6 +49,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="250sp" />
 
+                <ImageView
+                    android:id="@+id/iv_main_picture"
+                    android:layout_width="match_parent"
+                    android:onClick="onClick"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    android:layout_height="250sp" />
+
                 <LinearLayout
                     android:id="@+id/ll_dashboard02"
                     android:layout_above="@+id/ll_dashboard01"
@@ -535,6 +543,18 @@
             android:onClick="onClick"
             android:visibility="visible"
             app:srcCompat="@drawable/wifi_gray" />
+
+        <ImageButton
+            android:id="@+id/imbt_picture_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:visibility="gone"
+            app:srcCompat="@drawable/imbt_pic_view32" />
+
+
     </LinearLayout>
 
 

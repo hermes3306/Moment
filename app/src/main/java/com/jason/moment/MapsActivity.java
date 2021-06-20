@@ -117,7 +117,10 @@ public class MapsActivity extends AppCompatActivity implements
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         SerializeTodayActivity();
-                        Toast.makeText(getApplicationContext(), "JASON's 활동이 저장되었습니다!" , Toast.LENGTH_SHORT).show();
+                        if(gpsLoggerConnection != null)  unbindService(gpsLoggerConnection);
+                        if(gpsLoggerServiceIntent != null) stopService(gpsLoggerServiceIntent);
+                        gpsLoggerConnection = null;
+                        gpsLoggerServiceIntent = null;
                         finish();
                     }
                 });
@@ -154,6 +157,10 @@ public class MapsActivity extends AppCompatActivity implements
     public void onDestroy() {
         // Unregister broadcast receiver
         unregisterReceiver(receiver);
+        if(gpsLoggerConnection != null)  unbindService(gpsLoggerConnection);
+        if(gpsLoggerServiceIntent != null) stopService(gpsLoggerServiceIntent);
+        gpsLoggerConnection = null;
+        gpsLoggerServiceIntent = null;
         super.onDestroy();
     }
 
@@ -242,6 +249,7 @@ public class MapsActivity extends AppCompatActivity implements
             gpsLoggerConnection = new GPSLoggerServiceConnection(this); // 서비스 바인딩
             bindService(gpsLoggerServiceIntent,gpsLoggerConnection, 0);
         }
+
         if (Config._start_timer) {
             startMyTimer(); // Timer 시작(onPause()에서도 10초마다 실행됨
         }
@@ -331,6 +339,7 @@ public class MapsActivity extends AppCompatActivity implements
         Log.d(TAG,"-- onBackPressed.");
         alertQuitDialog();
     }
+
 
     @Override
     protected void onPause() {

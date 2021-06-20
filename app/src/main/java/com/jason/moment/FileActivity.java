@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Address;
 import android.location.Geocoder;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -53,6 +54,7 @@ import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.MP3;
 import com.jason.moment.util.MapUtil;
+import com.jason.moment.util.MediaUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.Progress;
@@ -73,6 +75,8 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     Context _ctx=null;
     GoogleMap _googleMap;
     ArrayList<String> media_list = null;
+    ArrayList<String> pic_list = null;
+
     public String activity_filename = null;
 
     public static int position = 0;
@@ -152,6 +156,8 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             final ImageButton imbt_pop_menu = (ImageButton) findViewById(R.id.imbt_pop_menu);
             final ImageButton imbt_hide_arrow = (ImageButton) findViewById(R.id.imbt_hide_arrow);
             final ImageButton imbt_up = (ImageButton) findViewById(R.id.imbt_up);
+            final ImageButton imbt_picture_view = (ImageButton) findViewById(R.id.imbt_picture_view);
+            final ImageView iv_main_picture = (ImageView) findViewById(R.id.iv_main_picture);
             final File[] flist = MyActivityUtil.getFiles(filetype);
 
             public void GO(final GoogleMap googleMap, File myfile) {
@@ -164,12 +170,18 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
 
                     // media_list checkup
                     media_list = MyActivityUtil.deserializeMediaInfoFromCSV(activity_filename);
+                    pic_list = new ArrayList<>();
                     if (media_list == null) {
                         media_list = null;
+                        pic_list = null;
                     } else if(media_list.size()==0) {
                         media_list = null;
+                        pic_list = null;
                     }else {
-                        for (int i = 0; i < media_list.size(); i++) Log.d(TAG, "-- MEDIA " + media_list.get(i));
+                        for(int i=0;i<media_list.size();i++) {
+                            if(media_list.get(i).endsWith(Config._pic_ext))  pic_list.add(media_list.get(i));
+                        }
+                        if(pic_list.size()==0) pic_list=null;
                     }
                 }
 
@@ -195,8 +207,15 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                     String _minDist = String.format("%.1f", activityStat.distanceKm);
                     String sinfo = "" + date_str;
 
-                    tv_activity_name.setText(activityStat.name);
+                    if(pic_list!=null) {
+                        imbt_picture_view.setVisibility(View.VISIBLE);
+                    }else {
+                        imbt_picture_view.setVisibility(View.GONE);
+                        iv_main_picture.setVisibility(View.GONE);
+                        mMapView.setVisibility(View.VISIBLE);
+                    }
 
+                    tv_activity_name.setText(activityStat.name);
                     tv_date_str.setText(activityStat.date_str);
 
                     tv_distance.setText(_minDist);
@@ -430,6 +449,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         return date;
     }
 
+    static int pic_pos=0;
     static int mapViewHeight;
     @Override
     public void onClick(View v) {
@@ -442,8 +462,22 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         LinearLayout ll_stat02 = (LinearLayout) findViewById(R.id.ll_stat02);
         LinearLayout ll_dashboard01 = (LinearLayout) findViewById(R.id.ll_dashboard01);
         LinearLayout ll_dashboard02 = (LinearLayout) findViewById(R.id.ll_dashboard02);
+        final MapView mMapView = (MapView) findViewById(R.id.mapView);
+        final ImageView iv_main_picture = (ImageView) findViewById(R.id.iv_main_picture);
 
         switch (v.getId()) {
+            case R.id.iv_main_picture:
+            case R.id.imbt_picture_view:
+                mMapView.setVisibility(View.GONE);
+                iv_main_picture.setVisibility(View.VISIBLE);
+                ll_stat01.setVisibility(View.GONE);
+                ll_stat02.setVisibility(View.GONE);
+                ll_dashboard01.setVisibility(View.VISIBLE);
+                ll_dashboard02.setVisibility(View.VISIBLE);
+                MediaUtil.getInstance().showImage(iv_main_picture, pic_list.get(pic_pos));
+                if(pic_pos+1 < pic_list.size()) pic_pos++;
+                else pic_pos=0;
+                break;
             case R.id.tv_rank:
             case R.id.tv_rank_range:
                 Log.e(TAG, "-- " + _file_list[position]);
