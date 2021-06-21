@@ -30,6 +30,7 @@ public class C {
         googleMap.getUiSettings().setTiltGesturesEnabled(true);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.getUiSettings().setZoomGesturesEnabled(true);
+        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
 
 

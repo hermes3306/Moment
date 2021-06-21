@@ -169,7 +169,6 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             final File[] flist = MyActivityUtil.getFiles(filetype);
 
             public void GO(final GoogleMap googleMap, File myfile) {
-                googleMap.clear();
                 ActivityStat activityStat = null;
                 if(myfile != null) {
                     mActivityList = MyActivityUtil.deserialize(myfile);
@@ -268,15 +267,20 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 int width = mMapView.getWidth();
                 int height = mMapView.getHeight();
                 MapUtil.DRAW(_ctx,googleMap,width,height,mActivityList);
-                if(C.satellite = true) {
-                    _googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                    imbt_satellite_on.setVisibility(View.GONE);
-                    imbt_satellite_off.setVisibility(View.VISIBLE);
+
+                iv_main_picture.setVisibility(View.GONE);
+                if(C.satellite = false) {
+                    ll_stat01.setVisibility(View.GONE);
+                    ll_stat02.setVisibility(View.GONE);
+                    ll_dashboard01.setVisibility(View.VISIBLE);
+                    ll_dashboard02.setVisibility(View.VISIBLE);
+                } else {
                     ll_stat01.setVisibility(View.VISIBLE);
                     ll_stat02.setVisibility(View.VISIBLE);
                     ll_dashboard01.setVisibility(View.GONE);
                     ll_dashboard02.setVisibility(View.GONE);
                 }
+
             }
 
             public void alertDeleteDialog(File file) {

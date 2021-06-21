@@ -45,5 +45,4 @@ public class GPSLoggerServiceConnection implements ServiceConnection {
             activity.sendBroadcast(intent);
         }
     }
-
 }

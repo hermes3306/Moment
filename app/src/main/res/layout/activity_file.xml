@@ -70,7 +70,6 @@
                     app:srcCompat="@drawable/gallery48" />
 
 
-
                 <LinearLayout
                     android:id="@+id/ll_dashboard02"
                     android:layout_above="@+id/ll_dashboard01"
@@ -78,9 +77,7 @@
                     android:layout_height="wrap_content"
                     android:visibility="gone"
                     android:orientation="horizontal">
-                    <TextView
-                        android:layout_width="10dp"
-                        android:layout_height="wrap_content"/>
+
                     <TextView
                         android:id="@+id/tv_white_km"
                         android:layout_width="match_parent"
@@ -117,9 +114,7 @@
                         android:textColor="@color/white"
                         android:layout_weight="1"
                         android:text="120"/>
-                    <TextView
-                        android:layout_width="10dp"
-                        android:layout_height="wrap_content"/>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -129,9 +124,6 @@
                     android:layout_height="50dp"
                     android:visibility="gone"
                     android:orientation="horizontal">
-                    <TextView
-                        android:layout_width="30dp"
-                        android:layout_height="wrap_content"/>
                     <TextView
                         android:layout_below="@+id/tv_km"
                         android:layout_width="match_parent"
@@ -165,9 +157,7 @@
                         android:textColor="@color/white"
                         android:layout_weight="1"
                         android:text="CALORY"/>
-                    <TextView
-                        android:layout_width="30dp"
-                        android:layout_height="wrap_content"/>
+
                 </LinearLayout>
 
             </RelativeLayout>

@@ -314,9 +314,11 @@ public class Config {
     }
 
     public static void init_preference_values_running(String interval, String distance) {
+        Log.d(TAG, "-- Config, init_preference_values_running");
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("interval",interval);
         editor.putString("distance",distance);
+        editor.commit();
         _sharedPreferenceChanged = true;
     }
 
@@ -335,7 +337,7 @@ public class Config {
         }
 
         Config._enable_network_provider = sharedPreferences.getBoolean("NetworkProvider", Config._enable_network_provider);
-        String _loc_interval = sharedPreferences.getString("interval", "10000");
+        String _loc_interval = sharedPreferences.getString("interval", "1000");
         String _loc_distance = sharedPreferences.getString("distance", "1");
         int[] colors = {
                 Color.RED, Color.CYAN, Color.BLUE, Color.WHITE, Color.BLACK, Color.YELLOW, Color.DKGRAY, Color.GREEN, Color.LTGRAY

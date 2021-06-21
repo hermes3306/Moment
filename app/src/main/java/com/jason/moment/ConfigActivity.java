@@ -58,7 +58,7 @@ public class ConfigActivity extends AppCompatActivity {
 
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
                                               String key) {
-            Log.d(TAG,"-- SharedPreferenceChanged:" + key);
+            Log.d(TAG,"-- ConfigActivity, SharedPreferenceChanged:" + key);
             Config._sharedPreferenceChanged = true;
         }
     }

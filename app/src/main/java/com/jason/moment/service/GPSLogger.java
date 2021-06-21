@@ -38,9 +38,7 @@ import com.jason.moment.util.db.MyLoc;
 
 import java.util.Date;
 
-
 public class GPSLogger extends Service implements LocationListener {
-
     private static final String TAG = GPSLogger.class.getSimpleName();
     LocationListener _myLocationListener = null;
     Context _ctx = null;
@@ -168,7 +166,6 @@ public class GPSLogger extends Service implements LocationListener {
             Log.v(TAG, "Service self-stopping");
             stopSelf();
         }
-
         // We don't want onRebind() to be called, so return false.
         return false;
     }
@@ -177,7 +174,6 @@ public class GPSLogger extends Service implements LocationListener {
      * Bind interface for service interaction
      */
     public class GPSLoggerBinder extends Binder {
-
         /**
          * Called by the activity when binding.
          * Returns itself.
@@ -391,5 +387,4 @@ public class GPSLogger extends Service implements LocationListener {
     public boolean isTracking() {
         return isTracking;
     }
-
 }
