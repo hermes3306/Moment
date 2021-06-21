@@ -49,7 +49,8 @@ public class StartupBatch {
             //rebuildActivitySummaries(_ctx);
             //uploadAll(_ctx);
             //ImportTodayActivity();
-            downAll(_ctx);
+//            initDatabase(_ctx);
+//            ImportTodayActivity("Jason");
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             StringWriter sw = new StringWriter();
