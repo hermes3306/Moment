@@ -28,7 +28,7 @@ import static java.lang.Integer.parseInt;
 public class Config {
 
     static String TAG                       = "Config";
-    static String _ver                      = "7";
+    static String _ver                      = "1.0";
 
     public static long  _ONE_SEC            = 1000;
     public static long  _ONE_MIN            = _ONE_SEC * 60;
@@ -175,13 +175,14 @@ public class Config {
     public static final int per1KM      = 3;
     public static final int per1Mile    = 4;
 
-    static String mnt_folder_name       = "Moment_MNT" + _ver;
-    static String csv_folder_name       = "Moment_CSV" + _ver;
-    static String pic_folder_name       = "Moment_PIC" + _ver;
-    static String mov_folder_name       = "Moment_MOV" + _ver;
-    static String jsn_folder_name       = "Moment_JSN" + _ver;
-    static String mp3_folder_name       = "Moment_MP3" + _ver;
-    static String apk_folder_name       = "Moment_APK" + _ver;
+    static String root_folder_name      = "Moment";
+    static String mnt_folder_name       = root_folder_name + _ver + "_MNT";
+    static String csv_folder_name       = root_folder_name + _ver + "_CSV";
+    static String pic_folder_name       = root_folder_name + _ver + "_PIC";
+    static String mov_folder_name       = root_folder_name + _ver + "_MOV";
+    static String jsn_folder_name       = root_folder_name + _ver + "_JSN";
+    static String mp3_folder_name       = root_folder_name + _ver + "_MP3";
+    static String apk_folder_name       = root_folder_name + _ver + "_APK";
 
     private static SharedPreferences sharedPreferences = null;
     private static Context _ctx4SharedPreferences = null;

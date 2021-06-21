@@ -295,6 +295,12 @@ public class MyReportActivity extends AppCompatActivity implements
             case R.id.medias:
                 AlertDialogUtil.getInstance().showMedias(_ctx,media_list,0);
                 break;
+            case R.id.tv_file_information:
+            case R.id.tv_file_name:
+                Intent detailMaps = new Intent(MyReportActivity.this, DetailMapsActivity.class);
+                detailMaps.putExtra("activity_filename", activity_filename);
+                startActivity(detailMaps);
+                break;
             case R.id.imbt_satellite_on:
                 C.satellite = false;
                 _googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);

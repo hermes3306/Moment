@@ -163,6 +163,7 @@ public class MyActivityUtil {
     }
 
     public static ArrayList<MyActivity> deserializeFromCSV(File file) {
+        if(!file.exists()) return null;
         ArrayList<MyActivity> mal = new ArrayList<MyActivity>();
         try(BufferedReader in = new BufferedReader(new FileReader(file))) {
             String str;

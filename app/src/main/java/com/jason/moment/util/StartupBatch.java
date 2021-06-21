@@ -48,8 +48,8 @@ public class StartupBatch {
             //query_rank_speed(_ctx);
             //rebuildActivitySummaries(_ctx);
             //uploadAll(_ctx);
-            //downAll(_ctx);
             //ImportTodayActivity();
+            downAll(_ctx);
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             StringWriter sw = new StringWriter();
@@ -79,10 +79,9 @@ public class StartupBatch {
         CloudUtil.getInstance().DownloadAll(_ctx,Config._csv);
         CloudUtil.getInstance().DownloadAll(_ctx,Config._mov);
         CloudUtil.getInstance().DownloadAll(_ctx,Config._img);
-        CloudUtil.getInstance().DownloadMP3(_ctx);
-        MyLoc.getInstance(_ctx).createNew(); // DB를 초기화
-        rebuildActivitySummaries(_ctx);
-        ImportTodayActivity();
+        CloudUtil.getInstance().DownloadAll(_ctx,Config._mp3);
+        initDatabase(_ctx);
+        ImportTodayActivity("Jason");
     }
 
     public void query_rank_speed(Context _ctx) {
@@ -91,9 +90,9 @@ public class StartupBatch {
         for(int i=0;i<mas.size();i++) Log.d(TAG, "--" + mas.get(i).toString() );
     }
 
-    public void ImportTodayActivity() {
+    public void ImportTodayActivity(String runner_name) {
         String today = DateUtil.today();
-        File f = new File(Config.CSV_SAVE_DIR, today + Config._csv_ext);
+        File f = new File(Config.CSV_SAVE_DIR, today + "_" + runner_name + Config._csv_ext);
         ArrayList<MyActivity> mal=null;
         if(f.exists()) {
             mal = MyActivityUtil.deserializeFromCSV(today + Config._csv_ext);

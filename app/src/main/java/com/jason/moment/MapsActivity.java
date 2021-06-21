@@ -852,7 +852,8 @@ public class MapsActivity extends AppCompatActivity implements
 
             case R.id.download_mp3:
                 CloudUtil cu = new CloudUtil();
-                cu.DownloadMP3(_ctx);
+                cu.DownloadAll(_ctx, Config._mp3);
+//                cu.DownloadMP3(_ctx);
                 return true;
 
             case R.id.mp3Player:

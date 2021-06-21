@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ import com.jason.moment.R;
 import com.jason.moment.StartNewActivity;
 import com.jason.moment.util.db.MyActiviySummary;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class AlertDialogUtil {
@@ -230,6 +232,28 @@ public class AlertDialogUtil {
         }
         alert.setView(view);
         alert.show();
+    }
+
+    public String Rename(Context _ctx, File file) {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(_ctx);
+        alertDialog.setTitle("Rename");
+
+        final EditText et = new EditText(_ctx);
+        final String[] file_name = {file.getName()};
+        et.setText(file_name[0]);
+        alertDialog.setView(et);
+
+        alertDialog.setPositiveButton("Rename", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                File dest = new File(file.getParentFile(), et.getText().toString());
+                file.renameTo(   dest    );
+                file_name[0] = file.getAbsolutePath();
+            }
+        });
+        AlertDialog alert = alertDialog.create();
+        alert.show();
+        return file_name[0];
     }
 
 
