@@ -148,7 +148,7 @@ public class MediaUtil {
             Bitmap bitmap = decodeFile(mediaFile);
             int h = bitmap.getHeight();
             int w = bitmap.getWidth();
-            if (w > h) bitmap = rotate(bitmap, 90);
+            if (w >= h) bitmap = rotate(bitmap, 90);
             iv_pic.setImageBitmap(bitmap);
         }catch(Exception e) {
             StringWriter sw = new StringWriter();
