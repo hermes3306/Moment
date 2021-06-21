@@ -35,9 +35,7 @@ public class GPSLoggerServiceConnection implements ServiceConnection {
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-
         activity.setGpsLogger( ((GPSLogger.GPSLoggerBinder) service).getService());
-
         // If not already tracking, start tracking
         if (!activity.getGpsLogger().isTracking()) {
             //activity.setEnabledActionButtons(false);
@@ -46,16 +44,6 @@ public class GPSLoggerServiceConnection implements ServiceConnection {
             intent.putExtra("activity_file_name", activity.getCurrentTrackId());
             activity.sendBroadcast(intent);
         }
-    }
-
-    public void boardCastConfigChanged(long gpsLoggingInterval, long gpsLoggingMinDistance ) {
-        Intent intent = new Intent(Config.INTENT_CONFIG_CHANGE);
-        intent.putExtra("gpsLoggingInterval", gpsLoggingInterval);
-        intent.putExtra("gpsLoggingMinDistance", gpsLoggingMinDistance);
-        activity.sendBroadcast(intent);
-        Log.e(TAG, "--INTENT_CONFIG_CHANGED message sent :");
-        Log.e(TAG, "--gpsLoggingInterval:" + gpsLoggingInterval);
-        Log.e(TAG, "--gpsLoggingMinDistance:" +  gpsLoggingMinDistance);
     }
 
 }

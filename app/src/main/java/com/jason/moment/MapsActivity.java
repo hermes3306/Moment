@@ -235,7 +235,6 @@ public class MapsActivity extends AppCompatActivity implements
 //        imbt_trash = (ImageButton) findViewById(R.id.imbt_trash);
 
         if (Config._start_service) {
-            //startService(new Intent(MapsActivity.this, LocService2.class)); // 서비스 시작
             gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
             String activity_file_name = DateUtil.today();
             gpsLoggerServiceIntent.putExtra("activity_file_name", activity_file_name );
@@ -268,6 +267,16 @@ public class MapsActivity extends AppCompatActivity implements
     }
     public GPSLogger getGpsLogger() {
         return gpsLogger;
+    }
+
+    public void boardCastConfigChanged(long gpsLoggingInterval, long gpsLoggingMinDistance ) {
+        Intent intent = new Intent(Config.INTENT_CONFIG_CHANGE);
+        intent.putExtra("gpsLoggingInterval", gpsLoggingInterval);
+        intent.putExtra("gpsLoggingMinDistance", gpsLoggingMinDistance);
+        sendBroadcast(intent);
+        Log.e(TAG, "--INTENT_CONFIG_CHANGED message sent :");
+        Log.e(TAG, "--gpsLoggingInterval:" + gpsLoggingInterval);
+        Log.e(TAG, "--gpsLoggingMinDistance:" +  gpsLoggingMinDistance);
     }
 
     private void startMyTimer() {
@@ -469,26 +478,6 @@ public class MapsActivity extends AppCompatActivity implements
         googleMap.getUiSettings().setMyLocationButtonEnabled(false);
         drawMarker(defaultLocation);
     }
-
-    private LocService2 mService;
-    private boolean isBind=false;
-
-    ServiceConnection sconn = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            LocService2.MyBinder myBinder = (LocService2.MyBinder) service;
-            mService = myBinder.getService();
-            isBind = true;
-            Log.d(TAG, "-- onServiceConnected()");
-        }
-
-        @Override //서비스가 종료될 때 호출
-        public void onServiceDisconnected(ComponentName name) {
-            mService = null;
-            isBind = false;
-            Log.d(TAG, "-- onServiceDisconnected()");
-        }
-    };
 
     //ArrayList<MyActivity> mActivityList=null;
     int cntofactivities=0;
