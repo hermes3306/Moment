@@ -4,9 +4,9 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.jason.moment.MapsActivity;
+import com.jason.moment.StartRunActivity;
 import com.jason.moment.util.Config;
 
 /**
@@ -15,15 +15,15 @@ import com.jason.moment.util.Config;
  * @author Nicolas Guillaumin
  *
  */
-public class GPSLoggerServiceConnection implements ServiceConnection {
+public class GPSLoggerSvcCon4StartRun implements ServiceConnection {
 
     /**
      * Reference to TrackLogger activity
      */
-    private final MapsActivity activity;
+    private final StartRunActivity activity;
     private String TAG = "GPSLoggerServiceConnection";
 
-    public GPSLoggerServiceConnection(MapsActivity tl) {
+    public GPSLoggerSvcCon4StartRun(StartRunActivity tl) {
         activity = tl;
     }
 

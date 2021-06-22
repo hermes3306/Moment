@@ -645,22 +645,8 @@ public class MapsActivity extends AppCompatActivity implements
                 break;
             case R.id.imvStart:
                 Log.d(TAG,"-- StartNewActivity start.");
-                // GPSLogger 서비스로 1초/1미리 환경 Broad Casting 필요함.
-                gpsLoggingInterval = Config._loc_interval;
-                gpsLoggingMinDistance = (long)Config._loc_distance;
-                Config._loc_interval = 1000;
-                Config._loc_distance = 1;
-                Config.init_preference_values_running(_ctx,"1000","1"); // 1sec, 1meter
-                boardCastConfigChanged(1000,1);
-
                 Intent runIntent = new Intent(MapsActivity.this, StartNewActivity.class);
                 startActivityForResult(runIntent, Config.CALL_START_NEW_ACTIVITY);
-
-                boardCastConfigChanged(gpsLoggingInterval, gpsLoggingMinDistance);
-                Config._loc_distance = gpsLoggingMinDistance;
-                Config._loc_interval = (int)gpsLoggingInterval;
-                Config.init_preference_values_running(_ctx, String.format("%d",gpsLoggingInterval),String.format("%d",gpsLoggingMinDistance));
-                Config._sharedPreferenceChanged = true;
                 break;
 
             case R.id.imGallary:

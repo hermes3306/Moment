@@ -164,7 +164,7 @@ public class StartupBatch {
                 files[i].delete();
                 Log.d(TAG,"-- file["+files[i].getName()+"] deleted!");
             }
-            if(as.distanceKm <= 0.1 || mal.size() < 10 ) {
+            else if(as.distanceKm <= 0.1 || mal.size() < 10 ) {
                 files[i].delete();
                 Log.d(TAG,"-- file["+files[i].getName()+"] deleted!");
             }

@@ -186,7 +186,7 @@ public class GPSLogger extends Service implements LocationListener {
 
     @Override
     public void onCreate() {
-        Log.v(TAG, "-- Service onCreate()");
+        Log.d(TAG, "-- GpsLogger Service onCreate()");
         _ctx = getApplicationContext();
         _myLocationListener = this;
         //dataHelper = new DataHelper(this);
@@ -195,46 +195,59 @@ public class GPSLogger extends Service implements LocationListener {
         gpsLoggingInterval = Config._loc_interval;
         gpsLoggingMinDistance = (long)Config._loc_distance;
 
+        Log.d(TAG, "-- Config information read done!");
+        Log.d(TAG, "-- gpsLoggingInterval: " + gpsLoggingInterval);
+        Log.d(TAG, "-- gpsLoggingMinDistance: " + gpsLoggingMinDistance);
+
         // Register our broadcast receiver
         IntentFilter filter = new IntentFilter();
         filter.addAction(Config.INTENT_START_TRACKING);
         filter.addAction(Config.INTENT_STOP_TRACKING);
         filter.addAction(Config.INTENT_CONFIG_CHANGE);
         registerReceiver(receiver, filter);
+        Log.d(TAG, "-- registerReceiver done!");
 
         // Register ourselves for location updates
         lmgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Log.d(TAG, "-- LocationManager!");
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             lmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, gpsLoggingInterval, gpsLoggingMinDistance, this);
         }
+        Log.d(TAG, "-- lmgr.requestLocationUpdates called with interval and distance!");
         super.onCreate();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.v(TAG, "-- Service onStartCommand(-,"+flags+","+startId+")");
+        // 다른 Activity가 Pause하여 UnBind후 다시 StartService하면 실행됨.
+        Log.d(TAG, "-- GpsLogger Service onStartCommand(-,"+flags+","+startId+")");
         createNotificationChannel();
+        Log.d(TAG, "-- createNotificationChannel!");
         startForeground(NOTIFICATION_ID, getNotification());
         return Service.START_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        Log.v(TAG, "Service onDestroy()");
+        Log.e(TAG, "-- GpsLogger Service onDestroy()");
         if (isTracking) {
             // If we're currently tracking, save user data.
             stopTrackingAndSave();
+            Log.e(TAG, "-- stopTrackingAndSave called!");
         }
 
         // Unregister listener
         lmgr.removeUpdates(this);
+        Log.e(TAG, "-- lmgr.removeUpdates!");
 
         // Unregister broadcast receiver
         unregisterReceiver(receiver);
+        Log.e(TAG, "-- receiver removed!");
 
         // Cancel any existing notification
         stopNotifyBackgroundService();
+        Log.e(TAG, "-- stopNotifyBackgroundService!");
         super.onDestroy();
     }
 
@@ -278,7 +291,7 @@ public class GPSLogger extends Service implements LocationListener {
         }
 
         // on background run this will write data to database
-        Log.d("GPSLogger", "--- New Loc:" + location);
+        Log.d(TAG, "-- New Loc:" + location);
         // We're receiving location, so GPS is enabled
         isGpsEnabled = true;
 
@@ -288,7 +301,7 @@ public class GPSLogger extends Service implements LocationListener {
             lastLocation = location;
             if (isTracking) {
                 LocationUtil.getInstance().onLocationChanged(getApplicationContext(),location);
-                Log.d(TAG, "-- Location Changed Intent Broadcasting to MapActivity...");
+                Log.d(TAG, "-- Location Changed Intent Broadcasting to All Activities...");
                 Intent intent = new Intent(Config.INTENT_LOCATION_CHANGED);
                 intent.putExtra("location", location);
                 sendBroadcast(intent);

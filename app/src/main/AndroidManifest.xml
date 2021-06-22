@@ -163,15 +163,6 @@
                 <action android:name="com.jason.moment.service.GPSLogger" />
             </intent-filter>
         </service>
-        <service
-            android:name=".service.LocService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="location">
-            <intent-filter>
-                <action android:name="com.jason.moment.service.LocService" />
-            </intent-filter>
-        </service>
     </application>
 
 </manifest>
