@@ -395,8 +395,7 @@ public class StartNewActivity extends AppCompatActivity implements
             case R.id.imSetting:
                 Log.d(TAG,"-- Setting Activities!");
                 Intent configIntent = new Intent(StartNewActivity.this, ConfigActivity.class);
-                configIntent.putExtra("1", 1);
-                startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
+                startActivity(configIntent);
                 break;
             case R.id.action_map:
                 int i=0;

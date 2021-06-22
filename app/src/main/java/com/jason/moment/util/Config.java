@@ -313,8 +313,11 @@ public class Config {
         initialized_file_provider = true;
     }
 
-    public static void init_preference_values_running(String interval, String distance) {
+    public static void init_preference_values_running(Context _ctx, String interval, String distance) {
         Log.d(TAG, "-- Config, init_preference_values_running");
+        if(sharedPreferences==null ) sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(_ctx /* Activity context */);
+
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("interval",interval);
         editor.putString("distance",distance);
@@ -322,8 +325,8 @@ public class Config {
         _sharedPreferenceChanged = true;
     }
 
-    public static void init_preference_value_running_default() {
-        init_preference_values_running("1000","1"); // 1sec, 1meter
+    public static void init_preference_value_running_default(Context _ctx) {
+        init_preference_values_running(_ctx, "1000","1"); // 1sec, 1meter
     }
 
     public static void init_preference_values(Context _ctx) {

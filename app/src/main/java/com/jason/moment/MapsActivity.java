@@ -650,7 +650,7 @@ public class MapsActivity extends AppCompatActivity implements
                 gpsLoggingMinDistance = (long)Config._loc_distance;
                 Config._loc_interval = 1000;
                 Config._loc_distance = 1;
-                Config.init_preference_values_running("1000","1"); // 1sec, 1meter
+                Config.init_preference_values_running(_ctx,"1000","1"); // 1sec, 1meter
                 boardCastConfigChanged(1000,1);
 
                 Intent runIntent = new Intent(MapsActivity.this, StartNewActivity.class);
@@ -659,7 +659,7 @@ public class MapsActivity extends AppCompatActivity implements
                 boardCastConfigChanged(gpsLoggingInterval, gpsLoggingMinDistance);
                 Config._loc_distance = gpsLoggingMinDistance;
                 Config._loc_interval = (int)gpsLoggingInterval;
-                Config.init_preference_values_running(String.format("%d",gpsLoggingInterval),String.format("%d",gpsLoggingMinDistance));
+                Config.init_preference_values_running(_ctx, String.format("%d",gpsLoggingInterval),String.format("%d",gpsLoggingMinDistance));
                 Config._sharedPreferenceChanged = true;
                 break;
 
@@ -821,8 +821,7 @@ public class MapsActivity extends AppCompatActivity implements
             case R.id.action_settings:
                 Log.d(TAG,"-- Setting Activities!");
                 Intent configIntent = new Intent(MapsActivity.this, ConfigActivity.class);
-                configIntent.putExtra("1", 1);
-                startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
+                startActivity(configIntent);
                 return true;
 
             case R.id.rebuild_rank:
