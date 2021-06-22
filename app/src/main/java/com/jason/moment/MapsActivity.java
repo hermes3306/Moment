@@ -644,9 +644,9 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivity(intent);
                 break;
             case R.id.imvStart:
-                Log.d(TAG,"-- StartNewActivity start.");
-                Intent runIntent = new Intent(MapsActivity.this, StartNewActivity.class);
-                startActivityForResult(runIntent, Config.CALL_START_NEW_ACTIVITY);
+                Log.d(TAG,"-- Start Run Activity!");
+                Intent _StartActivity = new Intent(MapsActivity.this, StartRunActivity.class);
+                startActivity(_StartActivity);
                 break;
 
             case R.id.imGallary:
@@ -852,10 +852,9 @@ public class MapsActivity extends AppCompatActivity implements
                 return true;
 
             case R.id.run_activity:
-                Log.d(TAG,"-- Run Activity!");
-                Intent runIntent = new Intent(MapsActivity.this, RunActivity.class);
-                runIntent.putExtra("1", 1);
-                startActivityForResult(runIntent, Config.CALL_RUN_ACTIVITY);
+                Log.d(TAG,"-- StartNewActivity start.");
+                Intent runIntent = new Intent(MapsActivity.this, StartNewActivity.class);
+                startActivityForResult(runIntent, Config.CALL_START_NEW_ACTIVITY);
                 return true;
 
             case R.id.ReportActivity:
@@ -868,7 +867,7 @@ public class MapsActivity extends AppCompatActivity implements
             case R.id.StartRunActivity:
                 Log.d(TAG,"-- Start Run Activity!");
                 Intent _StartActivity = new Intent(MapsActivity.this, StartRunActivity.class);
-                startActivityForResult(_StartActivity, Config.CALL_START_ACTIVITY);
+                startActivity(_StartActivity);
                 return true;
 
 //            case R.id.quote_activity:
