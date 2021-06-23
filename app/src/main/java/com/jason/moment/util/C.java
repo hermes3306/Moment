@@ -41,7 +41,7 @@ public class C {
 
     public static String getRunnerName(Context _ctx) {
         if(sPref==null ) sPref = PreferenceManager.getDefaultSharedPreferences(_ctx);
-        return sPref.getString("runner_name", "Runner");
+        return sPref.getString("your_name", "Runner");
     }
 
 

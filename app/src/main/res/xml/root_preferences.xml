@@ -53,7 +53,7 @@
     <PreferenceCategory app:title="Runner">
         <EditTextPreference
             app:defaultValue="JasonPark"
-            app:key="runner_name"
+            app:key="your_name"
             app:title="Your Name"
             app:useSimpleSummaryProvider="true" />
         <SwitchPreferenceCompat
