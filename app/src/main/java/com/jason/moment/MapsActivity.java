@@ -342,7 +342,8 @@ public class MapsActivity extends AppCompatActivity implements
         ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).getToodayActivities();
         String activity_file_name = DateUtil.today();
         if(myal.size()>0) {
-            MyActivityUtil.serialize(myal, DateUtil.today());
+            String file_name = DateUtil.today() + "_" + C.getRunnerName(getApplicationContext());
+            MyActivityUtil.serialize(myal, file_name);
         }
     }
 
