@@ -517,7 +517,7 @@ public class StartNewActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         this._ctx = this;
         // 달리기 모드일 경우, 1초, 1미터로 셋팅함
-        Config.initialize(_ctx);
+        Config.initialize(getApplicationContext());
 
         // Register our broadcast receiver
         IntentFilter filter = new IntentFilter();

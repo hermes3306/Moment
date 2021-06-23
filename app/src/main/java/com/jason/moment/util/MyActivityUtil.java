@@ -203,21 +203,11 @@ public class MyActivityUtil {
         return ma.toDate();
     }
 
-    public static void serializeIntoCSV(ArrayList<MyActivity> list, ArrayList<String> media_list, String fileName) {
-        if(list == null) {
-            Log.d(TAG,"-- No serialization information, ArrayList<MyActivity> is null ");
-            return;
-        }
-        if(list.size()==0) {
-            Log.d(TAG,"-- No serialization information, ArrayList<MyActivity> size 0 ");
-            return;
-        }
-
+    public static void serializeIntoCSV(ArrayList<MyActivity> list, ArrayList<String> media_list, File f) {
         try {
-            File f = new File(CSV_SAVE_DIR, fileName);
             FileWriter file = new FileWriter(f);
             BufferedWriter output = new BufferedWriter(file);
-            Log.e(TAG, "-- **** CSV Activity file: " + fileName + " has been serialized!");
+            Log.e(TAG, "-- **** CSV Activity file: " + f.getName() + " has been serialized!");
 
             // for media files 2021/06/02
             if(media_list!=null) {
@@ -252,6 +242,21 @@ public class MyActivityUtil {
             e.printStackTrace(new PrintWriter(sw));
             Log.e(TAG,"Err:" + sw.toString());
         }
+
+    }
+
+    public static void serializeIntoCSV(ArrayList<MyActivity> list, ArrayList<String> media_list, String fileName) {
+        if(list == null) {
+            Log.d(TAG,"-- No serialization information, ArrayList<MyActivity> is null ");
+            return;
+        }
+        if(list.size()==0) {
+            Log.d(TAG,"-- No serialization information, ArrayList<MyActivity> size 0 ");
+            return;
+        }
+
+        File f = new File(CSV_SAVE_DIR, fileName);
+        serializeIntoCSV(list, media_list, f);
     }
 
 

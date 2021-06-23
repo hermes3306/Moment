@@ -87,7 +87,7 @@ public class StartRunActivity extends AppCompatActivity implements
 
 
     // Loc Service binding
-    Location last_location=null;
+    MyActivity last_activity = null;
     Location new_location=null;
 
     public ArrayList<String> pic_filenames = new ArrayList<>();
@@ -537,7 +537,19 @@ public class StartRunActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         this._ctx = this;
         // 달리기 모드일 경우, 1초, 1미터로 셋팅함
-        Config.initialize(_ctx);
+        Config.initialize(getApplicationContext());
+
+        File lastRun = new File(Config.CSV_SAVE_DIR, "OOPS" + Config._csv_ext);
+        if(lastRun.exists()) {
+            Log.e(TAG, "-- Restarting Running with last data....");
+            Toast.makeText(_ctx,"OOPS not finished run!!!", Toast.LENGTH_SHORT).show();
+            list = MyActivityUtil.deserializeFromCSV(lastRun);
+            lastRun.delete();
+            if(list.size()>0) last_activity = (MyActivity)list.get(list.size()-1);
+            Toast.makeText(_ctx,"OOPS converted into current running!!!", Toast.LENGTH_SHORT).show();
+        } else {
+            Log.e(TAG, "-- Normal Running....");
+        }
 
         // Register our broadcast receiver
         IntentFilter filter = new IntentFilter();
@@ -546,10 +558,12 @@ public class StartRunActivity extends AppCompatActivity implements
         Log.d(TAG, "-- INTENT LOCATION CHANGED registerReceiver()");
 
         if (Config._start_service) {
-            currentTrackId = activity_file_name;
+            // Running default value
+            Config.init_preference_value_running_default(getApplicationContext());
             gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
-            String activity_file_name = DateUtil.today();
-            gpsLoggerServiceIntent.putExtra("activity_file_name", activity_file_name );
+            String today = DateUtil.today();
+            currentTrackId = today;
+            gpsLoggerServiceIntent.putExtra("activity_file_name", today );
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(new Intent(this, GPSLogger.class)); // 서비스 시작
             } else {
@@ -559,7 +573,6 @@ public class StartRunActivity extends AppCompatActivity implements
             bindService(gpsLoggerServiceIntent,gpsLoggerConnection, 0);
         }
 
-
         if(list==null) list = new ArrayList<>();
 
         super.onCreate(savedInstanceState);
@@ -567,6 +580,8 @@ public class StartRunActivity extends AppCompatActivity implements
         activity_file_name = StringUtil.DateToString(new Date(),"yyyyMMdd_HHmmss");
         start_time = new Date();
         startMyTimer();
+
+
     }
 
     @Override
@@ -626,6 +641,14 @@ public class StartRunActivity extends AppCompatActivity implements
         unregisterReceiver(receiver);
         Log.d(TAG, "-- sent Broadcast message: INTENT_STOP_TRACKING...");
         if(gpsLoggerConnection != null)  unbindService(gpsLoggerConnection);
+
+        if(!activity_quit_normally) {
+            File lastRun = new File(Config.CSV_SAVE_DIR, "OOPS" + Config._csv_ext);
+            MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun );
+            Config.restore_preference_values_after_running(getApplicationContext());
+            Toast.makeText(_ctx,"Running activity saved into OOPS!!", Toast.LENGTH_SHORT).show();
+        }
+
         super.onDestroy();
     }
 
@@ -678,6 +701,7 @@ public class StartRunActivity extends AppCompatActivity implements
         notificationManager.notify(_id, b.build());
     }
 
+    boolean activity_quit_normally = false;
     public void alertQuitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("활동을 중지하시겠습니까?");
@@ -685,6 +709,8 @@ public class StartRunActivity extends AppCompatActivity implements
         builder.setPositiveButton("중지",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        activity_quit_normally = true;
+                        Config.restore_preference_values_after_running(getApplicationContext());
                         Intent intent = new Intent(Config.INTENT_STOP_TRACKING);
                         sendBroadcast(intent);
                         Log.d(TAG,"-- sent Broadcast message: INTENT_STOP_TRACKING...");
@@ -753,21 +779,20 @@ public class StartRunActivity extends AppCompatActivity implements
                     Location location = new_location;
                     if(location == null) return;
 
-                    if(last_location==null) {
+                    if(last_activity==null) {
                         dist = 0;
                         last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
                         list.add(last);
-                        last_location = location;
+                        last_activity = last;
                     }else {
-                        dist = CalDistance.dist(last_location.getLatitude(), last_location.getLongitude(), location.getLatitude(), location.getLongitude());
+                        dist = CalDistance.dist(last_activity.getLatitude(), last_activity.getLongitude(), location.getLatitude(), location.getLongitude());
                         if(dist > Config._loc_distance) {
                             last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
                             list.add(last);
-                            last_location = location;
+                            last_activity = last;
                             if(googleMap != null) showActivities();
                         }
                     }
-
 
                     long t1 = System.currentTimeMillis();
                     dist = MyActivityUtil.getTotalDistanceInDouble(list);

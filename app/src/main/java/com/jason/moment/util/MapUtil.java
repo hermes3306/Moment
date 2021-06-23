@@ -193,7 +193,7 @@ public class    MapUtil {
         }
 
         MapUtil.drawAllMarkers(googleMap,mActivityList);
-        MapUtil.drawTrack(_ctx,googleMap,mActivityList);
+        MapUtil.drawTrack(_ctx.getApplicationContext(), googleMap,mActivityList);
         if(!C.satellite) googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         else googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         if(C.nomarkers) {

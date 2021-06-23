@@ -200,7 +200,7 @@ public class Config {
         }catch(Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
-            Log.e(TAG,"Err:" + sw.toString());
+            Log.e(TAG,"-- Err:" + sw.toString());
         }
         return _preference_val;
     }
@@ -313,11 +313,28 @@ public class Config {
         initialized_file_provider = true;
     }
 
-    public static void init_preference_values_running(Context _ctx, String interval, String distance) {
-        Log.d(TAG, "-- Config, init_preference_values_running");
+    static String last_interval=null;
+    static String last_distance=null;
+    public static void restore_preference_values_after_running(Context _ctx) {
+        if(last_interval==null || last_distance==null) return;
         if(sharedPreferences==null ) sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(_ctx /* Activity context */);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("interval",last_interval);
+        editor.putString("distance",last_distance);
+        editor.commit();
+        last_interval = last_distance = null;
+        _sharedPreferenceChanged = true;
+    }
 
+    public static void init_preference_values_running(Context _ctx, String interval, String distance) {
+        Log.d(TAG, "-- Config, init_preference_values_running");
+
+        last_interval = Config.getPreference(_ctx,"interval");
+        last_distance = Config.getPreference(_ctx,"distance");
+
+        if(sharedPreferences==null ) sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(_ctx /* Activity context */);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("interval",interval);
         editor.putString("distance",distance);

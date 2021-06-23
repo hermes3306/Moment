@@ -403,12 +403,12 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         _ctx = this;
-        Config.initialize(_ctx);
+        Config.initialize(getApplicationContext());
 
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_start);
 
-        int inx = Config.getIntPreference(this,"start_screen");
+        int inx = Config.getIntPreference(getApplicationContext(),"start_screen");
         //setContentView();
         initializeContentViews(start_layout[inx]);
 

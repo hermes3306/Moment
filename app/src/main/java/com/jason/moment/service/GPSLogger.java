@@ -191,10 +191,6 @@ public class GPSLogger extends Service implements LocationListener {
         _myLocationListener = this;
         //dataHelper = new DataHelper(this);
 
-        Config.initialize(getApplicationContext());
-        gpsLoggingInterval = Config._loc_interval;
-        gpsLoggingMinDistance = (long)Config._loc_distance;
-
         Log.d(TAG, "-- Config information read done!");
         Log.d(TAG, "-- gpsLoggingInterval: " + gpsLoggingInterval);
         Log.d(TAG, "-- gpsLoggingMinDistance: " + gpsLoggingMinDistance);
@@ -207,14 +203,6 @@ public class GPSLogger extends Service implements LocationListener {
         registerReceiver(receiver, filter);
         Log.d(TAG, "-- registerReceiver done!");
 
-        // Register ourselves for location updates
-        lmgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Log.d(TAG, "-- LocationManager!");
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            lmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, gpsLoggingInterval, gpsLoggingMinDistance, this);
-        }
-        Log.d(TAG, "-- lmgr.requestLocationUpdates called with interval and distance!");
         super.onCreate();
     }
 
@@ -225,6 +213,21 @@ public class GPSLogger extends Service implements LocationListener {
         createNotificationChannel();
         Log.d(TAG, "-- createNotificationChannel!");
         startForeground(NOTIFICATION_ID, getNotification());
+
+
+        // Register ourselves for location updates
+        Config.initialize(getApplicationContext());
+        gpsLoggingInterval = Config._loc_interval;
+        gpsLoggingMinDistance = (long)Config._loc_distance;
+
+        lmgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Log.d(TAG, "-- LocationManager!");
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            lmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, gpsLoggingInterval, gpsLoggingMinDistance, this);
+        }
+        Log.d(TAG, "-- lmgr.requestLocationUpdates called with interval and distance!");
+
         return Service.START_STICKY;
     }
 

@@ -35,6 +35,10 @@ public class MyActivity implements Serializable {
         this.cr_time = StringUtil.DateToString(d,"HH:mm:ss");
     }
 
+    public double getLatitude() { return this.latitude;}
+    public double getLongitude() {return this.longitude;}
+
+
     public MyActivity(double l1, double l2, Date d) {
         this.latitude = l1;
         this.longitude = l2;

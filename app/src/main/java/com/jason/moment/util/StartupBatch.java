@@ -23,17 +23,6 @@ public class StartupBatch {
     static boolean _executed = false;
     static String TAG = "StartupBatch";
     public void execute() {
-        Log.d(TAG,"-- Startup Batch Started...");
-        try {
-            clearShortRunActivities(_ctx);
-        }catch(Exception e) {
-            Log.d(TAG,"-- Startup Batch Exception...");
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String exceptionAsString = sw.toString();
-            Log.d(TAG,"-- Err: " + exceptionAsString);
-        }
-
         try {
             //initDatabase(_ctx);
             //if(genCVSfiles()) Log.d(TAG, "-- Success");

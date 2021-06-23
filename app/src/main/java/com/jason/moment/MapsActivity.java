@@ -51,6 +51,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.jason.moment.service.GPSLogger;
 import com.jason.moment.service.GPSLoggerServiceConnection;
 import com.jason.moment.util.AddressUtil;
+import com.jason.moment.util.AlertDialogUtil;
 import com.jason.moment.util.C;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CalcTime;
@@ -168,7 +169,7 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this._ctx = this;
-        Config.initialize(_ctx);
+        Config.initialize(getApplicationContext());
 
         StartupBatch sb = new StartupBatch(_ctx);
         sb.execute();
@@ -251,6 +252,9 @@ public class MapsActivity extends AppCompatActivity implements
         if (Config._start_timer) {
             startMyTimer(); // Timer 시작(onPause()에서도 10초마다 실행됨
         }
+
+        // check last activity not saving...
+        AlertDialogUtil.getInstance().checkActiveRunning(_ctx);
     }
 
     // GPS Logger 관련 함수 들
@@ -545,7 +549,7 @@ public class MapsActivity extends AppCompatActivity implements
                 LatLng ll1 = list.get(marker_pos).toLatLng();
                 float myzoom = googleMap.getCameraPosition().zoom;
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll1, myzoom));
-                MapUtil.drawTrack(_ctx,googleMap,list);
+                MapUtil.drawTrack(getApplicationContext(),googleMap,list);
                 showNavigate();
                 break;
             case R.id.imbt_next:
@@ -564,7 +568,7 @@ public class MapsActivity extends AppCompatActivity implements
                 LatLng ll2 = list.get(marker_pos).toLatLng();
                 float myzoom2 = googleMap.getCameraPosition().zoom;
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll2, myzoom2));
-                MapUtil.drawTrack(_ctx,googleMap,list);
+                MapUtil.drawTrack(getApplicationContext(),googleMap,list);
                 showNavigate();
                 break;
 
@@ -709,7 +713,7 @@ public class MapsActivity extends AppCompatActivity implements
 
         marker.showInfoWindow();
 
-        MapUtil.drawTrackInRange(_ctx,googleMap,list,marker_pos_prev,marker_pos);
+        MapUtil.drawTrackInRange(getApplicationContext(),googleMap,list,marker_pos_prev,marker_pos);
 
         String addinfo = AddressUtil.getAddress(_ctx, list.get(marker_pos));
         addinfo += " (" + (marker_pos+1) + "/" + cntofactivities +")";

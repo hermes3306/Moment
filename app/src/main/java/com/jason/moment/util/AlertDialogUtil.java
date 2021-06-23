@@ -16,9 +16,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.jason.moment.MapsActivity;
 import com.jason.moment.MyReportActivity;
 import com.jason.moment.R;
 import com.jason.moment.StartNewActivity;
+import com.jason.moment.StartRunActivity;
 import com.jason.moment.util.db.MyActiviySummary;
 
 import java.io.File;
@@ -29,6 +31,34 @@ public class AlertDialogUtil {
     public static AlertDialogUtil getInstance() {
         if(instance==null) instance = new AlertDialogUtil();
         return instance;
+    }
+
+    public void checkActiveRunning(Context _ctx) {
+        File lastRun = new File(Config.CSV_SAVE_DIR, "OOPS" + Config._csv_ext);
+
+        if (lastRun.exists()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
+            builder.setTitle("Do you want to run with last activity records?");
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Log.e("--","-- Start Run Activity!");
+                    Intent _StartActivity = new Intent(_ctx, StartRunActivity.class);
+                    _ctx.startActivity(_StartActivity);
+                }
+            });
+
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    lastRun.delete();
+                }
+            });
+
+
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
     }
 
     public void showMedias(Context _ctx, ArrayList<String> media_path, int pos) {
