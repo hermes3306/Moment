@@ -325,7 +325,7 @@ public class GPSLogger extends Service implements LocationListener {
     }
 
     private void saveTodayActivities() {
-        String file_name = DateUtil.today() + "_" + C.runner;
+        String file_name = DateUtil.today() + "_" + C.getRunnerName(getApplicationContext());
         MyActivityUtil.serialize(MyLoc.getInstance(getApplication()).getToodayActivities(), file_name);
         CloudUtil.getInstance().Upload(file_name + Config._csv_ext);
     }

@@ -1,8 +1,14 @@
 package com.jason.moment.util;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import androidx.preference.PreferenceManager;
+
 import com.google.android.gms.maps.GoogleMap;
 
 public class C {
+    public static SharedPreferences sPref = null;
 
     public static String  runner        = "Jason";
     public static boolean cloud_up      = true;
@@ -31,6 +37,11 @@ public class C {
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.getUiSettings().setZoomGesturesEnabled(true);
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+    }
+
+    public static String getRunnerName(Context _ctx) {
+        if(sPref==null ) sPref = PreferenceManager.getDefaultSharedPreferences(_ctx);
+        return sPref.getString("runner_name", "Runner");
     }
 
 

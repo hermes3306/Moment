@@ -216,6 +216,7 @@ public class Config {
         String name  = "" + timeStamp + _mov_ext;
         return name;
     }
+
     public static String get_today_filename() {
         return StringUtil.DateToString(new Date(), _filename_fmt) + ((_default_ext==_csv)? ".csv" : ".mnt");
     }
@@ -245,7 +246,6 @@ public class Config {
     public static File mediaStorageDir4jsn  = new File(mediaStorage, jsn_folder_name);
     public static File mediaStorageDir4mp3  = new File(mediaStorage, mp3_folder_name);
     public static File mediaStorageDir4apk  = new File(mediaStorage, apk_folder_name);
-
 
     static boolean initialized_file_provider = false;
     public static void initialize_file_provider(Context _ctx) {
@@ -389,6 +389,5 @@ public class Config {
         if(!mediaStorageDir4mp3.exists()) mediaStorageDir4mp3.mkdirs();
         if(!mediaStorageDir4apk.exists()) mediaStorageDir4apk.mkdirs();
     }
-
 
 }
