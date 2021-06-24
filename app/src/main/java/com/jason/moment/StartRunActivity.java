@@ -565,21 +565,18 @@ public class StartRunActivity extends AppCompatActivity implements
         registerReceiver(receiver, filter);
         Log.d(TAG, "-- INTENT LOCATION CHANGED registerReceiver()");
 
-        if (Config._start_service) {
-            // Running default value
-            Config.init_preference_value_running_default(getApplicationContext());
-            gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
-            String today = DateUtil.today();
-            currentTrackId = today;
-            gpsLoggerServiceIntent.putExtra("activity_file_name", today);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(new Intent(this, GPSLogger.class)); // 서비스 시작
-            } else {
-                startService(new Intent(this, GPSLogger.class)); // 서비스 시작
-            }
-            gpsLoggerConnection = new GPSLoggerSvcCon4StartRun(this); // 서비스 바인딩
-            bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
+        Config.init_preference_value_running_default(getApplicationContext());
+        gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
+        String today = DateUtil.today();
+        currentTrackId = today;
+        gpsLoggerServiceIntent.putExtra("activity_file_name", today);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(new Intent(this, GPSLogger.class)); // 서비스 시작
+        } else {
+            startService(new Intent(this, GPSLogger.class)); // 서비스 시작
         }
+        gpsLoggerConnection = new GPSLoggerSvcCon4StartRun(this); // 서비스 바인딩
+        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
 
         if (list == null) list = new ArrayList<>();
 
@@ -596,54 +593,29 @@ public class StartRunActivity extends AppCompatActivity implements
     public void onPause() {
         paused = true;
         Log.d(TAG, "-- onPause.");
-        if(Config._start_service) {
-            // 정리 필요
-            if (gpsLogger != null) {
-                if (!gpsLogger.isTracking()) {
-                    Log.d(TAG, "-- Service is not tracking, trying to stopService()");
-                    if(gpsLoggerConnection != null)  {
-                        unbindService(gpsLoggerConnection);
-                        gpsLoggerConnection = null;
-                    }
-                    if(gpsLoggerServiceIntent!=null) {
-                        stopService(gpsLoggerServiceIntent);
-                        gpsLoggerServiceIntent=null;
-                    }
-                } else {
-                    if(gpsLoggerConnection != null)  {
-//                        unbindService(gpsLoggerConnection);
-//                        gpsLoggerConnection = null;
-                    }
-                    Log.d(TAG, "-- unbindService of gpsLogger");
-                }
+
+        if (gpsLogger != null) {
+            if (!gpsLogger.isTracking()) {
+                Log.d(TAG, "Service is not tracking, trying to stopService()");
+                unbindService(gpsLoggerConnection);
+                stopService(gpsLoggerServiceIntent);
+            } else {
+                unbindService(gpsLoggerConnection);
             }
         }
+
         super.onPause();
     }
+
+    boolean resume = false;
 
     @Override
     public void onResume() {
         paused = false;
+        resume = true;
         Log.d(TAG, "-- onResume.");
-        // Start GPS Logger service
-        if(Config._start_service) {
-            if(gpsLoggerServiceIntent==null) {
-                gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
-                String activity_file_name = DateUtil.today();
-                gpsLoggerServiceIntent.putExtra("activity_file_name", activity_file_name );
-            }
-            startService(gpsLoggerServiceIntent);
-            Log.d(TAG, "-- gpsLogger startService called!");
-            // Bind to GPS service.
-            // We can't use BIND_AUTO_CREATE here, because when we'll ubound
-            // later, we want to keep the service alive in background
-            if(gpsLoggerConnection==null) {
-                gpsLoggerConnection = new GPSLoggerSvcCon4StartRun(this); // 서비스 바인딩 = new GPSLoggerSvcCon4StartRun(this); // 서비스 바인딩
-                bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
-                Log.d(TAG, "-- gpsLogger bound again!!");
-            }
-
-        }
+        startService(gpsLoggerServiceIntent);
+        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
         super.onResume();
     }
 
@@ -790,7 +762,10 @@ public class StartRunActivity extends AppCompatActivity implements
                     Location location = new_location;
                     if(location == null) return;
 
-                    if(last_activity==null) {
+                    if(resume) {
+                        showActivities();
+                        resume = false;
+                    } else if(last_activity==null) {
                         dist = 0;
                         last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
                         list.add(last);

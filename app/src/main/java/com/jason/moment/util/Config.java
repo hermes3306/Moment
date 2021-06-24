@@ -144,9 +144,6 @@ public class Config {
     public static int           _loc_interval   = 1000;     // 1 sec
     public static float         _loc_distance   = 1f;       // 1 meter
 
-    public static boolean       _start_service  = true; // start location service
-    public static boolean       _start_timer    = false; // start timer background scheduler
-
     public static String        _filename_fmt   ="yyyyMMdd";
     public static boolean       _save_onPause = true;
 

@@ -230,18 +230,18 @@ public class MapsActivity extends AppCompatActivity implements
         imbt_navi = (ImageButton) findViewById(R.id.imbt_navi);
 //        imbt_trash = (ImageButton) findViewById(R.id.imbt_trash);
 
-        if (Config._start_service) {
-            gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
-            String activity_file_name = DateUtil.today();
-            gpsLoggerServiceIntent.putExtra("activity_file_name", activity_file_name );
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(new Intent(MapsActivity.this, GPSLogger.class)); // 서비스 시작
-            } else {
-                startService(new Intent(MapsActivity.this, GPSLogger.class)); // 서비스 시작
-            }
-            gpsLoggerConnection = new GPSLoggerServiceConnection(this); // 서비스 바인딩
-            bindService(gpsLoggerServiceIntent,gpsLoggerConnection, 0);
+
+        gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
+        String activity_file_name = DateUtil.today();
+        gpsLoggerServiceIntent.putExtra("activity_file_name", activity_file_name );
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(new Intent(MapsActivity.this, GPSLogger.class)); // 서비스 시작
+        } else {
+            startService(new Intent(MapsActivity.this, GPSLogger.class)); // 서비스 시작
         }
+        gpsLoggerConnection = new GPSLoggerServiceConnection(this); // 서비스 바인딩
+        bindService(gpsLoggerServiceIntent,gpsLoggerConnection, 0);
+
 
         // check last activity not saving...
         AlertDialogUtil.getInstance().checkActiveRunning(_ctx);
@@ -291,17 +291,8 @@ public class MapsActivity extends AppCompatActivity implements
         paused = false;
         Log.d(TAG,"-- onResume.");
 
-        // have to get all the activities from MyLoc DB;
-        //list = MyLoc.getInstance(_ctx).getToodayActivities();
-
-        // Start GPS Logger service
-        if(Config._start_service) {
-            startService(gpsLoggerServiceIntent);
-            // Bind to GPS service.
-            // We can't use BIND_AUTO_CREATE here, because when we'll ubound
-            // later, we want to keep the service alive in background
-            bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
-        }
+        startService(gpsLoggerServiceIntent);
+        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
 
         initializeMap();
         super.onResume();
@@ -336,23 +327,19 @@ public class MapsActivity extends AppCompatActivity implements
         alertQuitDialog();
     }
 
-
     @Override
     protected void onPause() {
         Log.d(TAG,"-- onPause().");
         //SerializeTodayActivity();
         paused = true;
 
-        if(Config._start_service) {
-            // 정리 필요
-            if (gpsLogger != null) {
-                if (!gpsLogger.isTracking()) {
-                    Log.d(TAG, "Service is not tracking, trying to stopService()");
-                    unbindService(gpsLoggerConnection);
-                    stopService(gpsLoggerServiceIntent);
-                } else {
-                    //unbindService(gpsLoggerConnection);
-                }
+        if (gpsLogger != null) {
+            if (!gpsLogger.isTracking()) {
+                Log.d(TAG, "Service is not tracking, trying to stopService()");
+                unbindService(gpsLoggerConnection);
+                stopService(gpsLoggerServiceIntent);
+            } else {
+                unbindService(gpsLoggerConnection);
             }
         }
         super.onPause();
