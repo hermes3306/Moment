@@ -313,11 +313,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onMapReady(final GoogleMap googleMap) {
                 _googleMap = googleMap;
-
-//                googleMap.setMyLocationEnabled(C.LocationButton);
-                googleMap.getUiSettings().setMyLocationButtonEnabled(C.LocationButton);
-                googleMap.getUiSettings().setCompassEnabled(C.Compass);
-                googleMap.getUiSettings().setZoomControlsEnabled(C.ZoomControl);
+                C.getInstance().setGoogleMap(_ctx, googleMap);
 
                 GO(googleMap, _file);
 

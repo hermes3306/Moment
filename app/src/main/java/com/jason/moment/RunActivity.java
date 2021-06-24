@@ -28,6 +28,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jason.moment.util.AddressUtil;
+import com.jason.moment.util.C;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.MyActivity;
@@ -155,6 +156,7 @@ public class RunActivity extends AppCompatActivity {
         mMapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
+                C.getInstance().setGoogleMap(_ctx, googleMap);
                 getLastActivity(googleMap);
             }
             public void getLastActivity(GoogleMap googleMap) {

@@ -207,13 +207,6 @@ public class MapsActivity extends AppCompatActivity implements
             }, 50);
         }
 
-        // googleMap is null, when it created
-        if (googleMap != null) {
-            googleMap.setMyLocationEnabled(true);
-            googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-            googleMap.getUiSettings().setCompassEnabled(true);
-        }
-
         // ----------------------------------------------------------------------
         // Configuration here
         // _start_service : run location service
@@ -323,7 +316,6 @@ public class MapsActivity extends AppCompatActivity implements
             e.printStackTrace(new PrintWriter(sw));
             Log.e(TAG,"Err:" + sw.toString());
         }
-
         MyActivityUtil.initialize();
         initializeMap();
     }
@@ -431,6 +423,7 @@ public class MapsActivity extends AppCompatActivity implements
     public void onMapReady(GoogleMap googleMap) {
         Log.d(TAG,"-- onMapReady.");
         this.googleMap = googleMap;
+        C.getInstance().setGoogleMap(_ctx, googleMap);
 
         // Add a marker in Sydney and move the camera
         // Original example

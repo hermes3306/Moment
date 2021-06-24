@@ -54,6 +54,7 @@ import com.jason.moment.service.GPSLogger;
 import com.jason.moment.service.GPSLoggerServiceConnection;
 import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.AlertDialogUtil;
+import com.jason.moment.util.C;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CaloryUtil;
 import com.jason.moment.util.CloudUtil;
@@ -444,6 +445,7 @@ public class StartNewActivity extends AppCompatActivity implements
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+        C.getInstance().setGoogleMap(_ctx, googleMap);
         showActivities();
         initialize_views();
     }

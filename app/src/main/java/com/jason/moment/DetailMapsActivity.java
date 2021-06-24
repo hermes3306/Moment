@@ -2,6 +2,7 @@ package com.jason.moment;
 
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Display;
@@ -25,9 +26,11 @@ public class DetailMapsActivity extends FragmentActivity implements OnMapReadyCa
     private GoogleMap mMap;
     private ActivityDetailMapsBinding binding;
     private String activity_filename = null;
+    Context _ctx = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        _ctx = this;
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
@@ -54,6 +57,7 @@ public class DetailMapsActivity extends FragmentActivity implements OnMapReadyCa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        C.getInstance().setGoogleMap(_ctx, mMap);
 
         // Add a marker in Sydney and move the camera
 //        LatLng sydney = new LatLng(-34, 151);
@@ -63,7 +67,7 @@ public class DetailMapsActivity extends FragmentActivity implements OnMapReadyCa
         ArrayList<MyActivity> mal = MyActivityUtil.deserialize(activity_filename);
         Display display = getWindowManager().getDefaultDisplay();
 
-        C.setGoogleMap(mMap);
+
         MapUtil.DRAW(this, mMap, display, mal);
     }
 }

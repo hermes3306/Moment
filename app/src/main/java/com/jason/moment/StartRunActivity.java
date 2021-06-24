@@ -55,6 +55,7 @@ import com.jason.moment.service.GPSLoggerServiceConnection;
 import com.jason.moment.service.GPSLoggerSvcCon4StartRun;
 import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.AlertDialogUtil;
+import com.jason.moment.util.C;
 import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CaloryUtil;
 import com.jason.moment.util.CloudUtil;
@@ -78,7 +79,7 @@ import static java.lang.Integer.parseInt;
 
 public class StartRunActivity extends AppCompatActivity implements
         OnMapReadyCallback,
-        View.OnClickListener{
+        View.OnClickListener {
 
     long gpsLoggingInterval;
     long gpsLoggingMinDistance;
@@ -88,29 +89,30 @@ public class StartRunActivity extends AppCompatActivity implements
 
     // Loc Service binding
     MyActivity last_activity = null;
-    Location new_location=null;
+    Location new_location = null;
 
     public ArrayList<String> pic_filenames = new ArrayList<>();
     public ArrayList<String> mov_filenames = new ArrayList<>();
     public ArrayList<String> media_filenames = new ArrayList<>();
-    String activity_file_name=null;
+    String activity_file_name = null;
     ImageButton imb_wifi_off;
     ImageButton imb_wifi_on;
 
     String TAG = "StartRunActivity";
     Context _ctx = null;
     int _default_layout = R.layout.activity_start_new;
-    private GoogleMap googleMap=null;
+    private GoogleMap googleMap = null;
 
     static Timer timer = new Timer();
+
     private void showGPS() {
-        if(timer != null) {
+        if (timer != null) {
             timer.cancel();
             timer.purge();
             timer = new Timer();
         }
-        ImageButton imb_wifi_off = (ImageButton)findViewById(R.id.imbt_wifi_off);
-        ImageButton imb_wifi_on = (ImageButton)findViewById(R.id.imbt_wifi_on);
+        ImageButton imb_wifi_off = (ImageButton) findViewById(R.id.imbt_wifi_off);
+        ImageButton imb_wifi_on = (ImageButton) findViewById(R.id.imbt_wifi_on);
         imb_wifi_on.setVisibility(View.VISIBLE);
         imb_wifi_off.setVisibility(View.GONE);
         timer.schedule(new TimerTask() {
@@ -124,7 +126,7 @@ public class StartRunActivity extends AppCompatActivity implements
                     }
                 });
             }
-        },1000);
+        }, 1000);
     }
 
     int[] start_layout = {
@@ -141,13 +143,16 @@ public class StartRunActivity extends AppCompatActivity implements
     private TextView tv_start_calory;
 
     private Date start_time;
-    private double dist=0;
-    private boolean quit=false;
+    private double dist = 0;
+    private boolean quit = false;
 
     private ArrayList list = null;
     private final MyActivity first = null;
     private MyActivity last = null;
-    public String getActivity_file_name() {return activity_file_name;}
+
+    public String getActivity_file_name() {
+        return activity_file_name;
+    }
 
     // 사진 촬영 기능
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -182,14 +187,14 @@ public class StartRunActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "-- onActivityResult called!");
-        if(resultCode != RESULT_OK) {
+        if (resultCode != RESULT_OK) {
             Log.d(TAG, "-- RESULT_OK FALSE......!");
             return;
         }
-        if(data==null) Log.d(TAG, "-- Intent data is null");
+        if (data == null) Log.d(TAG, "-- Intent data is null");
         //Bundle extras = data.getExtras();
 
-        switch(requestCode) {
+        switch (requestCode) {
             case Config.PICK_FROM_CAMERA:
                 Log.d(TAG, "-- PIC_FROM_CAMERA: ");
                 //showImg(currentMediaName);
@@ -208,18 +213,18 @@ public class StartRunActivity extends AppCompatActivity implements
     }
 
     public void showImg(ImageView iv_pic, String fname) {
-        File folder= Config.PIC_SAVE_DIR;
-        File file = new File(folder,fname);
+        File folder = Config.PIC_SAVE_DIR;
+        File file = new File(folder, fname);
         String filepath = file.getAbsolutePath();
 
-        Log.d(TAG,"--show:"+filepath);
+        Log.d(TAG, "--show:" + filepath);
         Log.d(TAG, "--filepath to show:" + filepath);
         Bitmap bitmap = BitmapFactory.decodeFile(filepath);
 
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
         int mDegree = 90;
-        bitmap = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(), bitmap.getHeight(),matrix,true);
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
         iv_pic.setImageBitmap(bitmap);
     }
 
@@ -241,32 +246,31 @@ public class StartRunActivity extends AppCompatActivity implements
     }
 
     private void showMedias(final int pos) {
-        if(media_filenames.size()<pos+1) {
-            Toast.makeText(_ctx,"No Medias!",Toast.LENGTH_SHORT).show();
+        if (media_filenames.size() < pos + 1) {
+            Toast.makeText(_ctx, "No Medias!", Toast.LENGTH_SHORT).show();
             return;
         }
         AlertDialog.Builder alertadd = new AlertDialog.Builder(StartRunActivity.this);
         LayoutInflater factory = LayoutInflater.from(StartRunActivity.this);
 
         /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
-        if(media_filenames.get(pos).endsWith(Config._pic_ext)) {
+        if (media_filenames.get(pos).endsWith(Config._pic_ext)) {
             View view1 = factory.inflate(R.layout.layout_imageview, null);
             ImageView iv = view1.findViewById(R.id.dialog_imageview);
             TextView tv = view1.findViewById(R.id.view_title);
-            tv.setText("" + (pos+1) + "/" + media_filenames.size());
+            tv.setText("" + (pos + 1) + "/" + media_filenames.size());
             showImg(iv, media_filenames.get(pos));
             alertadd.setView(view1);
-        }
-        else {
+        } else {
             View view2 = factory.inflate(R.layout.layout_videoview, null);
             VideoView vv = view2.findViewById(R.id.dialog_video_view);
             TextView tv2 = view2.findViewById(R.id.view_title);
-            tv2.setText("" + (pos+1) + "/" + media_filenames.size());
+            tv2.setText("" + (pos + 1) + "/" + media_filenames.size());
             showVideo(vv, media_filenames.get(pos));
             alertadd.setView(view2);
         }
 
-        if(media_filenames.size() > pos+1 ) {
+        if (media_filenames.size() > pos + 1) {
             alertadd.setPositiveButton("Next", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dlg, int sumthin) {
                     showMedias(pos + 1);
@@ -274,7 +278,7 @@ public class StartRunActivity extends AppCompatActivity implements
             });
         }
 
-        if(0 < pos) {
+        if (0 < pos) {
             alertadd.setNegativeButton("Prev", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dlg, int sumthin) {
                     showMedias(pos - 1);
@@ -332,11 +336,10 @@ public class StartRunActivity extends AppCompatActivity implements
             case R.id.start_dash_ll_05:
                 LinearLayout startActionBar = findViewById(R.id.startActionBar);
                 LinearLayout action_menu_bar = findViewById(R.id.action_menu_bar);
-                if(viewStartActionBar) {
+                if (viewStartActionBar) {
                     startActionBar.setVisibility(View.VISIBLE);
                     action_menu_bar.setVisibility(View.VISIBLE);
-                }
-                else {
+                } else {
                     startActionBar.setVisibility(View.GONE);
                     action_menu_bar.setVisibility(View.GONE);
                 }
@@ -357,7 +360,7 @@ public class StartRunActivity extends AppCompatActivity implements
             case R.id.tv_start_km:
                 break;
             case R.id.broadcastNewStart:
-                boardCastConfigChanged(1000,1);
+                boardCastConfigChanged(1000, 1);
                 break;
             case R.id.imb_start_list:
                 //recordVideo();
@@ -381,7 +384,7 @@ public class StartRunActivity extends AppCompatActivity implements
         String[] screen_layout_value = r.getStringArray(R.array.start_screen);
 
         int id = item.getItemId();
-        switch(id) {
+        switch (id) {
             case R.id.mp3Player:
                 MP3.showPlayer(_ctx);
                 return true;
@@ -389,7 +392,7 @@ public class StartRunActivity extends AppCompatActivity implements
                 MP3.stop(_ctx);
                 return true;
             case R.id.start_layout_select:
-                AlertDialog.Builder builder = new AlertDialog.Builder(StartRunActivity.this )
+                AlertDialog.Builder builder = new AlertDialog.Builder(StartRunActivity.this)
                         .setItems(screen_layout, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -400,12 +403,12 @@ public class StartRunActivity extends AppCompatActivity implements
                 mSportSelectDialog.show();
                 break;
             case R.id.imSetting:
-                Log.d(TAG,"-- Setting Activities!");
+                Log.d(TAG, "-- Setting Activities!");
                 Intent configIntent = new Intent(StartRunActivity.this, ConfigActivity.class);
                 startActivity(configIntent);
                 break;
             case R.id.action_map:
-                int i=0;
+                int i = 0;
                 break;
             case R.id.record_video:
                 recordVideo();
@@ -432,27 +435,29 @@ public class StartRunActivity extends AppCompatActivity implements
         setHeadMessages();
         ArrayList<MyActivity> mal = list;
         MyActivity lastActivity = null;
-        if(mal==null) return;
-        if(mal.size()==0) return;
+        if (mal == null) return;
+        if (mal.size() == 0) return;
         ArrayList<Marker> _markers = new ArrayList<>();
         Display display = getWindowManager().getDefaultDisplay();
-        MapUtil.DRAW(_ctx,googleMap,display,list );
+        MapUtil.DRAW(_ctx, googleMap, display, list);
     }
 
     private void initialize_views() {
-        tv_start_km = (TextView)findViewById(R.id.tv_start_km);
-        tv_start_km_str = (TextView)findViewById(R.id.tv_start_km_str);
-        tv_start_time = (TextView)findViewById(R.id.tv_start_time);
-        tv_start_avg = (TextView)findViewById(R.id.tv_start_avg);
-        tv_start_cur = (TextView)findViewById(R.id.tv_start_cur);
-        tv_start_calory = (TextView)findViewById(R.id.tv_start_calory);
+        tv_start_km = (TextView) findViewById(R.id.tv_start_km);
+        tv_start_km_str = (TextView) findViewById(R.id.tv_start_km_str);
+        tv_start_time = (TextView) findViewById(R.id.tv_start_time);
+        tv_start_avg = (TextView) findViewById(R.id.tv_start_avg);
+        tv_start_cur = (TextView) findViewById(R.id.tv_start_cur);
+        tv_start_calory = (TextView) findViewById(R.id.tv_start_calory);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+        C.getInstance().setGoogleMap(_ctx, googleMap);
         showActivities();
         initialize_views();
+
     }
 
     protected void initialize_Mapview(Bundle savedInstanceState) {
@@ -494,40 +499,43 @@ public class StartRunActivity extends AppCompatActivity implements
                 Bundle extras = intent.getExtras();
                 if (extras != null) {
                     Log.d(TAG, "-- got broad casting message of INTENT_LOCATION_CHANGED ");
-                    Location location = (Location)extras.get("location");
-                    Log.d(TAG,"-- Broad casting Location received:" + location);
+                    Location location = (Location) extras.get("location");
+                    Log.d(TAG, "-- Broad casting Location received:" + location);
                     onLocationChanged(location);
                 }
             }
         }
     };
 
-    private void onLocationChanged(Location location){
+    private void onLocationChanged(Location location) {
         Log.d(TAG, "-- onLocationChanged from BroadcastReceiver: " + location);
         new_location = location;
         showGPS();
     }
 
-    void boardCastConfigChanged(long gpsLoggingInterval, long gpsLoggingMinDistance ) {
+    void boardCastConfigChanged(long gpsLoggingInterval, long gpsLoggingMinDistance) {
         Intent intent = new Intent(Config.INTENT_CONFIG_CHANGE);
         intent.putExtra("gpsLoggingInterval", gpsLoggingInterval);
         intent.putExtra("gpsLoggingMinDistance", gpsLoggingMinDistance);
         sendBroadcast(intent);
         Log.e(TAG, "--INTENT_CONFIG_CHANGED message sent :");
         Log.e(TAG, "--gpsLoggingInterval:" + gpsLoggingInterval);
-        Log.e(TAG, "--gpsLoggingMinDistance:" +  gpsLoggingMinDistance);
+        Log.e(TAG, "--gpsLoggingMinDistance:" + gpsLoggingMinDistance);
     }
 
     // GPS Logger 관련 함수 들
     // 정리 필요함
     private String currentTrackId;
     GPSLogger gpsLogger = null;
+
     public String getCurrentTrackId() {
         return this.currentTrackId;
     }
+
     public void setGpsLogger(GPSLogger l) {
         this.gpsLogger = l;
     }
+
     public GPSLogger getGpsLogger() {
         return gpsLogger;
     }
@@ -540,13 +548,13 @@ public class StartRunActivity extends AppCompatActivity implements
         Config.initialize(getApplicationContext());
 
         File lastRun = new File(Config.CSV_SAVE_DIR, "OOPS" + Config._csv_ext);
-        if(lastRun.exists()) {
+        if (lastRun.exists()) {
             Log.e(TAG, "-- Restarting Running with last data....");
-            Toast.makeText(_ctx,"OOPS not finished run!!!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(_ctx, "OOPS not finished run!!!", Toast.LENGTH_SHORT).show();
             list = MyActivityUtil.deserializeFromCSV(lastRun);
             lastRun.delete();
-            if(list.size()>0) last_activity = (MyActivity)list.get(list.size()-1);
-            Toast.makeText(_ctx,"OOPS converted into current running!!!", Toast.LENGTH_SHORT).show();
+            if (list.size() > 0) last_activity = (MyActivity) list.get(list.size() - 1);
+            Toast.makeText(_ctx, "OOPS converted into current running!!!", Toast.LENGTH_SHORT).show();
         } else {
             Log.e(TAG, "-- Normal Running....");
         }
@@ -563,25 +571,23 @@ public class StartRunActivity extends AppCompatActivity implements
             gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
             String today = DateUtil.today();
             currentTrackId = today;
-            gpsLoggerServiceIntent.putExtra("activity_file_name", today );
+            gpsLoggerServiceIntent.putExtra("activity_file_name", today);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(new Intent(this, GPSLogger.class)); // 서비스 시작
             } else {
                 startService(new Intent(this, GPSLogger.class)); // 서비스 시작
             }
             gpsLoggerConnection = new GPSLoggerSvcCon4StartRun(this); // 서비스 바인딩
-            bindService(gpsLoggerServiceIntent,gpsLoggerConnection, 0);
+            bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
         }
 
-        if(list==null) list = new ArrayList<>();
+        if (list == null) list = new ArrayList<>();
 
         super.onCreate(savedInstanceState);
         initialize_Mapview(savedInstanceState);
-        activity_file_name = StringUtil.DateToString(new Date(),"yyyyMMdd_HHmmss");
+        activity_file_name = StringUtil.DateToString(new Date(), "yyyyMMdd_HHmmss");
         start_time = new Date();
         startMyTimer();
-
-
     }
 
     static boolean paused = false;
