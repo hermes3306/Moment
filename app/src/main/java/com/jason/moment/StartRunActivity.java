@@ -584,8 +584,11 @@ public class StartRunActivity extends AppCompatActivity implements
 
     }
 
+    static boolean paused = false;
+
     @Override
     public void onPause() {
+        paused = true;
         Log.d(TAG, "-- onPause.");
         if(Config._start_service) {
             // 정리 필요
@@ -602,19 +605,19 @@ public class StartRunActivity extends AppCompatActivity implements
                     }
                 } else {
                     if(gpsLoggerConnection != null)  {
-                        unbindService(gpsLoggerConnection);
-                        gpsLoggerConnection = null;
+//                        unbindService(gpsLoggerConnection);
+//                        gpsLoggerConnection = null;
                     }
                     Log.d(TAG, "-- unbindService of gpsLogger");
                 }
             }
         }
-
         super.onPause();
     }
 
     @Override
     public void onResume() {
+        paused = false;
         Log.d(TAG, "-- onResume.");
         // Start GPS Logger service
         if(Config._start_service) {
@@ -628,9 +631,12 @@ public class StartRunActivity extends AppCompatActivity implements
             // Bind to GPS service.
             // We can't use BIND_AUTO_CREATE here, because when we'll ubound
             // later, we want to keep the service alive in background
-            if(gpsLoggerConnection==null) gpsLoggerConnection = new GPSLoggerSvcCon4StartRun(this); // 서비스 바인딩 = new GPSLoggerSvcCon4StartRun(this); // 서비스 바인딩
-            bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
-            Log.d(TAG, "-- gpsLogger bouned!");
+            if(gpsLoggerConnection==null) {
+                gpsLoggerConnection = new GPSLoggerSvcCon4StartRun(this); // 서비스 바인딩 = new GPSLoggerSvcCon4StartRun(this); // 서비스 바인딩
+                bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
+                Log.d(TAG, "-- gpsLogger bound again!!");
+            }
+
         }
         super.onResume();
     }
@@ -648,7 +654,6 @@ public class StartRunActivity extends AppCompatActivity implements
             Config.restore_preference_values_after_running(getApplicationContext());
             Toast.makeText(_ctx,"Running activity saved into OOPS!!", Toast.LENGTH_SHORT).show();
         }
-
         super.onDestroy();
     }
 
@@ -790,41 +795,39 @@ public class StartRunActivity extends AppCompatActivity implements
                             last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
                             list.add(last);
                             last_activity = last;
-                            if(googleMap != null) showActivities();
+                            if(googleMap != null && ! paused) showActivities();
                         }
                     }
 
-                    long t1 = System.currentTimeMillis();
-                    dist = MyActivityUtil.getTotalDistanceInDouble(list);
-                    long t2 = System.currentTimeMillis();
-                    if(dist<1000) { /* 1KM 이하 */
-                        String s1 = String.format("%.0f", dist);
-                        tv_start_km.setText(s1);
-                        tv_start_km_str.setText("Meters");
-                    } else if(dist>1000) { /* 1KM 이상 */
-                        String s1 = String.format("%.2f", dist/1000.0);
-                        tv_start_km.setText(s1);
-                        tv_start_km_str.setText("Kilometers");
-                    } else if(dist >10000){ /* 10KM 이상*/
-                        String s1 = String.format("%.3f", dist/1000.0);
-                        tv_start_km.setText(s1);
-                        tv_start_km_str.setText("Kilometers");
+                    if(!paused) {
+                        long t1 = System.currentTimeMillis();
+                        dist = MyActivityUtil.getTotalDistanceInDouble(list);
+                        long t2 = System.currentTimeMillis();
+                        if(dist<1000) { /* 1KM 이하 */
+                            String s1 = String.format("%.0f", dist);
+                            tv_start_km.setText(s1);
+                            tv_start_km_str.setText("Meters");
+                        } else if(dist>1000) { /* 1KM 이상 */
+                            String s1 = String.format("%.2f", dist/1000.0);
+                            tv_start_km.setText(s1);
+                            tv_start_km_str.setText("Kilometers");
+                        } else if(dist >10000){ /* 10KM 이상*/
+                            String s1 = String.format("%.3f", dist/1000.0);
+                            tv_start_km.setText(s1);
+                            tv_start_km_str.setText("Kilometers");
+                        }
+                        double  minpkm = MyActivityUtil.getMinPerKm(list);
+                        String tt1 = StringUtil.elapsedStr2((long) (minpkm*1000*60.0));
+                        tv_start_avg.setText("" + tt1);
+                        double  minp1km = MyActivityUtil.MinPer1Km(list);
+                        String tt2 = StringUtil.elapsedStr2((long) (minp1km*1000*60.0));
+                        tv_start_cur.setText("" + tt2);
+                        float burntkCal;
+                        int durationInSeconds = MyActivityUtil.durationInSeconds(list);
+                        int stepsTaken = (int) (dist / Config._strideLengthInMeters);
+                        burntkCal = CaloryUtil.calculateEnergyExpenditure((float)dist / 1000f, durationInSeconds);
+                        tv_start_calory.setText("" + String.format("%.1f", burntkCal));
                     }
-
-                    double  minpkm = MyActivityUtil.getMinPerKm(list);
-                    String tt1 = StringUtil.elapsedStr2((long) (minpkm*1000*60.0));
-                    tv_start_avg.setText("" + tt1);
-
-                    double  minp1km = MyActivityUtil.MinPer1Km(list);
-                    String tt2 = StringUtil.elapsedStr2((long) (minp1km*1000*60.0));
-                    tv_start_cur.setText("" + tt2);
-
-                    float burntkCal;
-                    int durationInSeconds = MyActivityUtil.durationInSeconds(list);
-                    int stepsTaken = (int) (dist / Config._strideLengthInMeters);
-
-                    burntkCal = CaloryUtil.calculateEnergyExpenditure((float)dist / 1000f, durationInSeconds);
-                    tv_start_calory.setText("" + String.format("%.1f", burntkCal));
                 }
             });
         } /* end of run() */
