@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,15 +23,89 @@ import com.jason.moment.R;
 import com.jason.moment.StartNewActivity;
 import com.jason.moment.StartRunActivity;
 import com.jason.moment.util.db.MyActiviySummary;
+import com.jason.moment.util.db.MyMedia;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class AlertDialogUtil {
     static AlertDialogUtil instance;
+    static String TAG = "AlertDialogUtil";
+    long key = -1;
     public static AlertDialogUtil getInstance() {
         if(instance==null) instance = new AlertDialogUtil();
         return instance;
+    }
+
+    public void media_information(Context _ctx, File file) {
+        MyMediaInfo mm_info = null;
+        try {
+            mm_info = MyMedia.getInstance(_ctx).qry(file.getName());
+        }catch(Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.d(TAG, sw.toString());
+        }
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(_ctx);
+        alertDialog.setTitle("Media Information");
+
+        LayoutInflater factory = LayoutInflater.from(_ctx);
+        final View view = factory.inflate(R.layout.layout_media_info, null);
+
+        EditText ed_media_memo = view.findViewById(R.id.ed_media_memo);
+        TextView tv_media_name = view.findViewById(R.id.tv_media_name);
+        TextView tv_media_type = view.findViewById(R.id.tv_media_type);
+        TextView tv_media_latitude = view.findViewById(R.id.tv_media_latitude);
+        TextView tv_media_longitude = view.findViewById(R.id.tv_media_longitude);
+        TextView tv_media_cr_datetime = view.findViewById(R.id.tv_media_cr_datetime);
+        TextView tv_media_mo_datetime = view.findViewById(R.id.tv_media_mo_datetime);
+
+        if(mm_info != null) {
+            key = mm_info.getKey();
+            ed_media_memo.setText(mm_info.getMemo());
+            tv_media_name.setText(mm_info.getName());
+            tv_media_latitude.setText(String.format("%f", mm_info.getLatitude()));
+            tv_media_longitude.setText(String.format("%f", mm_info.getLongitude()));
+            tv_media_cr_datetime.setText(mm_info.getCr_datetime());
+            tv_media_mo_datetime.setText(mm_info.getMo_datetime());
+        } else {
+            Date d = new Date(file.lastModified());
+            String cr = StringUtil.DateToString(d,"yyyy-MM-dd HH:mm:ss");
+            d = new Date();
+            String mo = StringUtil.DateToString(d,"yyyy-MM-dd HH:mm:ss");
+            tv_media_cr_datetime.setText(cr);
+            tv_media_mo_datetime.setText(mo);
+
+            Location ll = LocationUtil.getInstance().getLast_location();
+            if(ll!=null) {
+                tv_media_latitude.setText(String.format("%f", ll.getLatitude()));
+                tv_media_longitude.setText(String.format("%f", ll.getLongitude()));
+            }
+        }
+
+        alertDialog.setView(view);
+        alertDialog.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                MyMediaInfo mm_info = new MyMediaInfo();
+
+                mm_info.setName((String)tv_media_name.getText().toString());
+                mm_info.setMemo((String)ed_media_memo.getText().toString());
+                mm_info.setLatitude(Double.parseDouble(tv_media_latitude.getText().toString()));
+                mm_info.setLongitude(Double.parseDouble(tv_media_longitude.getText().toString()));
+                mm_info.setCr_datetime(tv_media_cr_datetime.getText().toString());
+                mm_info.setMo_datetime(tv_media_mo_datetime.getText().toString());
+
+                mm_info.setKey(key);
+                MyMedia.getInstance(_ctx).ins(mm_info);
+            }
+        });
+        AlertDialog alert = alertDialog.create();
+        alert.show();
     }
 
     public void checkActiveRunning(Context _ctx) {
@@ -210,7 +285,6 @@ public class AlertDialogUtil {
             ll.addView(tv1);
             tvs1[i] = tv1;
 
-
             final TextView tv2 = new TextView(_ctx);
             tv2.setText("-");
             tv2.setTextColor(Color.GRAY);
@@ -267,18 +341,16 @@ public class AlertDialogUtil {
     public String Rename(Context _ctx, File file) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(_ctx);
         alertDialog.setTitle("Rename");
-
         final EditText et = new EditText(_ctx);
         final String[] file_name = {file.getName()};
         et.setText(file_name[0]);
         alertDialog.setView(et);
-
         alertDialog.setPositiveButton("Rename", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 File dest = new File(file.getParentFile(), et.getText().toString());
                 file.renameTo(   dest    );
-                file_name[0] = file.getAbsolutePath();
+                file_name[0] = file.getName();
             }
         });
         AlertDialog alert = alertDialog.create();

@@ -18,6 +18,10 @@ public class LocationUtil {
         return locationUtil;
     }
 
+    public Location getLast_location() {
+        return last_location;
+    }
+
     public void onLocationChanged(Context context, Location location) {
         double dist;
         LatLng ll = new LatLng(location.getLatitude(), location.getLongitude());

@@ -135,6 +135,13 @@
                 android:background="@android:color/transparent"
                 android:onClick="onClick"
                 android:src="@drawable/camera_48" />
+            <ImageButton
+                android:id="@+id/imv_media_information"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:onClick="onClick"
+                android:src="@drawable/actlist48" />
 
         </LinearLayout>
 

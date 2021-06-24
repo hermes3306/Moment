@@ -50,19 +50,16 @@ public class C {
         googleMap.setMyLocationEnabled(true);
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
         googleMap.getUiSettings().setCompassEnabled(true);
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
+        googleMap.getUiSettings().setZoomGesturesEnabled(true);
+        googleMap.getUiSettings().setMapToolbarEnabled(true);
 
 //        googleMap.getUiSettings().setAllGesturesEnabled(true);
-//        googleMap.getUiSettings().setCompassEnabled(true);
 //        googleMap.getUiSettings().setIndoorLevelPickerEnabled(true);
-//        googleMap.getUiSettings().setMapToolbarEnabled(true);
-//        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
 //        googleMap.getUiSettings().setRotateGesturesEnabled(true);
 //        googleMap.getUiSettings().setScrollGesturesEnabled(true);
 //        googleMap.getUiSettings().setScrollGesturesEnabledDuringRotateOrZoom(true);
 //        googleMap.getUiSettings().setTiltGesturesEnabled(true);
-//        googleMap.getUiSettings().setZoomControlsEnabled(true);
-//        googleMap.getUiSettings().setZoomGesturesEnabled(true);
-//        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
 
     public static String getRunnerName(Context _ctx) {

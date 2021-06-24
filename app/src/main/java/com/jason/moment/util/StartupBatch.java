@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.jason.moment.util.db.MyActiviySummary;
 import com.jason.moment.util.db.MyLoc;
+import com.jason.moment.util.db.MyMedia;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,6 +41,7 @@ public class StartupBatch {
             //ImportTodayActivity();
 //            initDatabase(_ctx);
 //            ImportTodayActivity("Jason");
+            MyMedia.getInstance(_ctx).createNew();
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             StringWriter sw = new StringWriter();
@@ -62,6 +64,7 @@ public class StartupBatch {
     public void initDatabase(Context _ctx){
         MyLoc.getInstance(_ctx).onCreate();
         MyActiviySummary.getInstance(_ctx).createNew();
+        MyMedia.getInstance(_ctx).createNew();
         rebuildActivitySummaries(_ctx);
     }
 

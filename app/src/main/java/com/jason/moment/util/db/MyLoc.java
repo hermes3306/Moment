@@ -26,7 +26,6 @@ import static java.security.AccessController.getContext;
 public class MyLoc {
     private static final String TAG = "MyLoc";
     private final Context ctx;
-
     private static MyLoc instance=null;
     public static MyLoc getInstance(Context ctx) {
         if(instance==null) instance = new MyLoc(ctx);
@@ -76,7 +75,7 @@ public class MyLoc {
 
         ContentValues values = new ContentValues();
         values.put(MyLocContract.LocEntry.COLUMN_NAME_LATITUDE, lat);
-        values.put(MyLocContract.LocEntry.COLUMN_NAME_LONGITIDE, lng);
+        values.put(MyLocContract.LocEntry.COLUMN_NAME_LONGITUDE, lng);
         values.put(MyLocContract.LocEntry.COLUMN_NAME_CRDATE, dt);
         values.put(MyLocContract.LocEntry.COLUMN_NAME_CRTIME, ti);
 
@@ -92,7 +91,7 @@ public class MyLoc {
 
         ContentValues values = new ContentValues();
         values.put(MyLocContract.LocEntry.COLUMN_NAME_LATITUDE, lat);
-        values.put(MyLocContract.LocEntry.COLUMN_NAME_LONGITIDE, lng);
+        values.put(MyLocContract.LocEntry.COLUMN_NAME_LONGITUDE, lng);
         values.put(MyLocContract.LocEntry.COLUMN_NAME_CRDATE, dt);
         values.put(MyLocContract.LocEntry.COLUMN_NAME_CRTIME, ti);
 
@@ -123,7 +122,7 @@ public class MyLoc {
             double lat = cursor.getDouble(
                     cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_LATITUDE));
             double lng = cursor.getDouble(
-                    cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_LONGITIDE));
+                    cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_LONGITUDE));
             String dt = cursor.getString(
                     cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_CRDATE));
             String ti = cursor.getString(
@@ -162,7 +161,7 @@ public class MyLoc {
             double lat = cursor.getDouble(
                     cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_LATITUDE));
             double lng = cursor.getDouble(
-                    cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_LONGITIDE));
+                    cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_LONGITUDE));
             String dt = cursor.getString(
                     cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_CRDATE));
             String ti = cursor.getString(
@@ -202,7 +201,7 @@ public class MyLoc {
             double lat = cursor.getDouble(
                     cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_LATITUDE));
             double lng = cursor.getDouble(
-                    cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_LONGITIDE));
+                    cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_LONGITUDE));
             String dt = cursor.getString(
                     cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_CRDATE));
             String ti = cursor.getString(

@@ -3,27 +3,28 @@ package com.jason.moment.util.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import com.jason.moment.util.db.*;
 
-public class MyLocDbHelper extends SQLiteOpenHelper {
+public class MyMediaDBHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "Moment.db";
     private static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE IF NOT EXISTS " + MyLocContract.LocEntry.TABLE_NAME + " (" +
-                    MyLocContract.LocEntry._ID + " INTEGER PRIMARY KEY," +
-                    MyLocContract.LocEntry.COLUMN_NAME_LATITUDE + " TEXT," +
-                    MyLocContract.LocEntry.COLUMN_NAME_LONGITUDE + " TEXT," +
-                    MyLocContract.LocEntry.COLUMN_NAME_CRDATE + " TEXT," +
-                    MyLocContract.LocEntry.COLUMN_NAME_CRTIME + " TEXT)";
+            "CREATE TABLE IF NOT EXISTS " + MyMediaContract.MediaEntry.TABLE_NAME + " (" +
+                    MyMediaContract.MediaEntry._ID + " INTEGER PRIMARY KEY," +
+                    MyMediaContract.MediaEntry.COLUMN_NAME_NAME + " TEXT," +
+                    MyMediaContract.MediaEntry.COLUMN_NAME_MEMO + " TEXT," +
+                    MyMediaContract.MediaEntry.COLUMN_NAME_LATITUDE + " TEXT," +
+                    MyMediaContract.MediaEntry.COLUMN_NAME_LONGITUDE + " TEXT," +
+                    MyMediaContract.MediaEntry.COLUMN_NAME_CR_DATETIME + " TEXT," +
+                    MyMediaContract.MediaEntry.COLUMN_NAME_MO_DATETIME + " TEXT)";
 
     private static final String SQL_DELETE_ALL =
-            "DELETE FROM " + MyLocContract.LocEntry.TABLE_NAME;
+            "DELETE FROM " + MyMediaContract.MediaEntry.TABLE_NAME;
 
     private static final String SQL_DELETE_ENTRIES =
-            "DROP TABLE IF EXISTS " + MyLocContract.LocEntry.TABLE_NAME;
+            "DROP TABLE IF EXISTS " + MyMediaContract.MediaEntry.TABLE_NAME;
 
-    public MyLocDbHelper(Context context) {
+    public MyMediaDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
     public void onCreate(SQLiteDatabase db) {

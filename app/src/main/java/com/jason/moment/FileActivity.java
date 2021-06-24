@@ -486,6 +486,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.iv_main_picture:
             case R.id.imbt_picture_view:
+                v.setVisibility(View.GONE);
                 mMapView.setVisibility(View.GONE);
                 iv_main_picture.setVisibility(View.VISIBLE);
                 ll_stat01.setVisibility(View.GONE);
@@ -520,6 +521,12 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 AlertDialogUtil.getInstance().showMedias(_ctx,media_list,0);
                 break;
             case R.id.tv_file_information:
+                File f = new File(Config.CSV_SAVE_DIR, activity_filename);
+                String f_name = AlertDialogUtil.getInstance().Rename(_ctx,f);
+                final TextView tv_file_name = (TextView) findViewById(R.id.tv_file_name);
+                activity_filename = f_name;
+                tv_file_name.setText(f_name);
+                break;
             case R.id.tv_file_name:
                 Intent detailMaps = new Intent(FileActivity.this, DetailMapsActivity.class);
                 detailMaps.putExtra("activity_filename", activity_filename);

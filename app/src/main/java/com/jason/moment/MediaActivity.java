@@ -29,6 +29,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import com.jason.moment.R;
+import com.jason.moment.util.AlertDialogUtil;
 import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
@@ -492,6 +493,9 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.imv_media_information:
+                AlertDialogUtil.getInstance().media_information(_ctx, _files.get(pos));
+                break;
             case R.id.imv_camera2:
                 takePic2();
                 break;
