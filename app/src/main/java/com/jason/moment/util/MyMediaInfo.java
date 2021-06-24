@@ -1,5 +1,7 @@
 package com.jason.moment.util;
 
+import android.util.Log;
+
 public class MyMediaInfo {
     public String getName() {
         return name;
@@ -65,6 +67,18 @@ public class MyMediaInfo {
     public void setMo_datetime(String mo_datetime) {
         this.mo_datetime = mo_datetime;
     }
+
+    public void print() {
+        Log.d(TAG, "Key:" + getKey());
+        Log.d(TAG, "Name:" + getName());
+        Log.d(TAG, "Memo:" + getMemo());
+        Log.d(TAG, "Latitude:" + getLatitude());
+        Log.d(TAG, "Longitude:" + getLongitude());
+        Log.d(TAG, "Created:" + getCr_datetime());
+        Log.d(TAG, "Modified:" + getMo_datetime());
+    }
+
+    String TAG = "MyMediaInfo";
 
 
 }

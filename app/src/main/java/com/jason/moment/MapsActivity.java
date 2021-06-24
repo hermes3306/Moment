@@ -66,6 +66,7 @@ import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.NotificationUtil;
 import com.jason.moment.util.StartupBatch;
 import com.jason.moment.util.db.MyLoc;
+import com.jason.moment.util.db.MyMedia;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -762,12 +763,14 @@ public class MapsActivity extends AppCompatActivity implements
                 CloudUtil.getInstance().Upload(currentFileName);
 //                CameraUtil.showImg(_ctx, currentFileName);
                 NotificationUtil.notify_new_picture(_ctx, currentFileName);
+                MyMedia.getInstance(_ctx).ins(new File(Config.PIC_SAVE_DIR, currentFileName), last_location);
                 break;
             case Config.PICK_FROM_VIDEO:
                 Log.d(TAG, "-- PICK_FROM_VIDEO: ");
                 CloudUtil.getInstance().Upload(currentFileName);
 //                CameraUtil.showVideo(_ctx, currentFileName);
                 NotificationUtil.notify_new_video(_ctx, currentFileName);
+                MyMedia.getInstance(_ctx).ins(new File(Config.MOV_SAVE_DIR, currentFileName), last_location);
                 break;
         }
     }

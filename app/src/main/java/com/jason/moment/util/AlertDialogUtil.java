@@ -40,10 +40,12 @@ public class AlertDialogUtil {
         return instance;
     }
 
+    private static String last_memo = null;
     public void media_information(Context _ctx, File file) {
         MyMediaInfo mm_info = null;
         try {
             mm_info = MyMedia.getInstance(_ctx).qry(file.getName());
+            mm_info.print();
         }catch(Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
@@ -58,7 +60,6 @@ public class AlertDialogUtil {
 
         EditText ed_media_memo = view.findViewById(R.id.ed_media_memo);
         TextView tv_media_name = view.findViewById(R.id.tv_media_name);
-        TextView tv_media_type = view.findViewById(R.id.tv_media_type);
         TextView tv_media_latitude = view.findViewById(R.id.tv_media_latitude);
         TextView tv_media_longitude = view.findViewById(R.id.tv_media_longitude);
         TextView tv_media_cr_datetime = view.findViewById(R.id.tv_media_cr_datetime);
@@ -77,6 +78,8 @@ public class AlertDialogUtil {
             String cr = StringUtil.DateToString(d,"yyyy-MM-dd HH:mm:ss");
             d = new Date();
             String mo = StringUtil.DateToString(d,"yyyy-MM-dd HH:mm:ss");
+            ed_media_memo.setText(last_memo);
+            tv_media_name.setText(file.getName());
             tv_media_cr_datetime.setText(cr);
             tv_media_mo_datetime.setText(mo);
 
@@ -84,6 +87,13 @@ public class AlertDialogUtil {
             if(ll!=null) {
                 tv_media_latitude.setText(String.format("%f", ll.getLatitude()));
                 tv_media_longitude.setText(String.format("%f", ll.getLongitude()));
+                if(last_memo==null) {
+                    String memo = AddressUtil.getAddressDong(_ctx,ll.getLatitude(), ll.getLongitude());
+                    ed_media_memo.setText(memo);
+                }
+            }else {
+                tv_media_latitude.setText(String.format("%s",SampleLoc.home.latitude));
+                tv_media_longitude.setText(String.format("%s",SampleLoc.home.longitude));
             }
         }
 
@@ -99,8 +109,9 @@ public class AlertDialogUtil {
                 mm_info.setLongitude(Double.parseDouble(tv_media_longitude.getText().toString()));
                 mm_info.setCr_datetime(tv_media_cr_datetime.getText().toString());
                 mm_info.setMo_datetime(tv_media_mo_datetime.getText().toString());
-
                 mm_info.setKey(key);
+                mm_info.print();
+                last_memo = mm_info.getMemo();
                 MyMedia.getInstance(_ctx).ins(mm_info);
             }
         });

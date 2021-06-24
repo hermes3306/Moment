@@ -41,7 +41,7 @@ public class StartupBatch {
             //ImportTodayActivity();
 //            initDatabase(_ctx);
 //            ImportTodayActivity("Jason");
-            MyMedia.getInstance(_ctx).createNew();
+            //MyMedia.getInstance(_ctx).createNew();
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             StringWriter sw = new StringWriter();

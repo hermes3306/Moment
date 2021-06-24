@@ -47,11 +47,11 @@ public class AddressUtil {
         return getAddress(_ctx, ll);
     }
 
-    public static String getAddressDong(final Context _ctx, MyActivity ma) {
+    public static String getAddressDong(final Context _ctx, double latitude, double longitude) {
         Geocoder geocoder = new Geocoder(_ctx, Locale.getDefault());
         List<Address> addresses = null;
         try {
-            addresses = geocoder.getFromLocation(ma.latitude, ma.longitude,1);
+            addresses = geocoder.getFromLocation(latitude, longitude,1);
         }catch(Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
@@ -70,6 +70,10 @@ public class AddressUtil {
             addinfoDong = addresses.get(0).getAddressLine(0);
         }
         return addinfoDong;
+    }
+
+    public static String getAddressDong(final Context _ctx, MyActivity ma) {
+        return getAddressDong(_ctx, ma.latitude, ma.longitude);
     }
 
     public static ArrayList<String> getAllAddresses(final Context _ctx, MyActivity ma) {

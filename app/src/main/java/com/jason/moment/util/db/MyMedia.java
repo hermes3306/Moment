@@ -4,11 +4,15 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
 
+import com.jason.moment.util.AddressUtil;
 import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.MyMediaInfo;
+import com.jason.moment.util.SampleLoc;
 import com.jason.moment.util.StringUtil;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,8 +21,9 @@ import java.util.List;
 public class MyMedia {
     private static final String TAG = "MyLoc";
     private static MyMedia instance=null;
-    Context ctx = null;
+    private static Context _ctx = null;
     public static MyMedia getInstance(Context ctx) {
+        _ctx = ctx;
         if(instance==null) instance = new MyMedia(ctx);
         return instance;
     }
@@ -27,8 +32,9 @@ public class MyMedia {
     private static SQLiteDatabase db = null;
     private static SQLiteDatabase dbr = null;
 
+
     public MyMedia(Context ctx) {
-        this.ctx = ctx;
+        _ctx = ctx;
         if(dbHelper == null) dbHelper = new MyMediaDBHelper(ctx);
         if(db == null) db = dbHelper.getWritableDatabase();
         if(dbr == null) dbr = dbHelper.getReadableDatabase();
@@ -54,6 +60,27 @@ public class MyMedia {
                 " WHERE " + MyMediaContract.MediaEntry._ID + " = "  + key);
     }
 
+    public void ins(File file, Location location) {
+        MyMediaInfo mm_info = new MyMediaInfo();
+        mm_info.setName(file.getName());
+
+        if(location==null) {
+            mm_info.setLatitude(SampleLoc.home.latitude);
+            mm_info.setLongitude(SampleLoc.home.longitude);
+        }else {
+            mm_info.setLatitude(location.getLatitude());
+            mm_info.setLongitude(location.getLongitude());
+            String memo = AddressUtil.getAddressDong(_ctx,location.getLatitude(), location.getLongitude());
+            mm_info.setMemo(memo);
+        }
+        Date d = new Date(file.lastModified());
+        String cr = StringUtil.DateToString(d,"yyyy-MM-dd HH:mm:ss");
+        mm_info.setCr_datetime(cr);
+        mm_info.setMo_datetime(cr);
+        mm_info.setKey(-1);
+        ins(mm_info);
+    }
+
     public void ins(long key, String name, String memo, double lat, double lng, String cr ) {
         Date today = new Date();
         String mo = StringUtil.DateToString(new Date(),"yyyy-MM-dd HH:mm:ss");
@@ -61,6 +88,7 @@ public class MyMedia {
 
         ContentValues values = new ContentValues();
         values.put(MyMediaContract.MediaEntry.COLUMN_NAME_NAME, name);
+        values.put(MyMediaContract.MediaEntry.COLUMN_NAME_MEMO, memo);
         values.put(MyMediaContract.MediaEntry.COLUMN_NAME_LATITUDE, lat);
         values.put(MyMediaContract.MediaEntry.COLUMN_NAME_LONGITUDE, lng);
         values.put(MyMediaContract.MediaEntry.COLUMN_NAME_CR_DATETIME, cr);
@@ -93,7 +121,7 @@ public class MyMedia {
             String _name = cursor.getString(
                     cursor.getColumnIndexOrThrow(MyMediaContract.MediaEntry.COLUMN_NAME_NAME));
             String _memo = cursor.getString(
-                    cursor.getColumnIndexOrThrow(MyMediaContract.MediaEntry.COLUMN_NAME_NAME));
+                    cursor.getColumnIndexOrThrow(MyMediaContract.MediaEntry.COLUMN_NAME_MEMO));
             double lat = cursor.getDouble(
                     cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_LATITUDE));
             double lng = cursor.getDouble(
