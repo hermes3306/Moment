@@ -43,63 +43,22 @@ public class GPSLogger extends Service implements LocationListener {
     LocationListener _myLocationListener = null;
     Context _ctx = null;
 
-    /**
-     * Data helper.
-     */
-    //private DataHelper dataHelper;
-
-    /**
-     * Are we currently tracking ?
-     */
     private boolean isTracking = false;
-
-    /**
-     * Is GPS enabled ?
-     */
     private boolean isGpsEnabled = false;
-
-    /**
-     * Use barometer yes/no ?
-     */
     private final boolean use_barometer = false;
-
-    /**
-     * System notification id.
-     */
     private static final int NOTIFICATION_ID = 1;
     private static final String CHANNEL_ID = "Moment_Channel";
 
-    /**
-     * Last known location
-     */
     private Location lastLocation;
-
-    /**
-     * LocationManager
-     */
     private LocationManager lmgr;
-
-    /**
-     * Current Track ID
-     */
     private String activity_file_name = "-1";
 
-    /**
-     * the timestamp of the last GPS fix we used
-     */
     private long lastGPSTimestamp = 0;
-
     private long lastSAVETimestamp = 0;
 
-    /**
-     * the interval (in ms) to log GPS fixes defined in the preferences
-     */
     private long gpsLoggingInterval;
     private long gpsLoggingMinDistance;
 
-    /**
-     * Receives Intent for way point tracking, and stop/start logging.
-     */
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
 
         @Override
@@ -146,9 +105,6 @@ public class GPSLogger extends Service implements LocationListener {
         }
     };
 
-    /**
-     * Binder for service interaction
-     */
     private final IBinder binder = new GPSLoggerBinder();
 
     @Override
@@ -170,15 +126,7 @@ public class GPSLogger extends Service implements LocationListener {
         return false;
     }
 
-    /**
-     * Bind interface for service interaction
-     */
     public class GPSLoggerBinder extends Binder {
-        /**
-         * Called by the activity when binding.
-         * Returns itself.
-         * @return the GPS Logger service
-         */
         public GPSLogger getService() {
             return GPSLogger.this;
         }

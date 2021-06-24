@@ -9,17 +9,8 @@ import com.jason.moment.MapsActivity;
 import com.jason.moment.StartRunActivity;
 import com.jason.moment.util.Config;
 
-/**
- * Handles the bind to the GPS Logger service
- *
- * @author Nicolas Guillaumin
- *
- */
-public class GPSLoggerSvcCon4StartRun implements ServiceConnection {
 
-    /**
-     * Reference to TrackLogger activity
-     */
+public class GPSLoggerSvcCon4StartRun implements ServiceConnection {
     private final StartRunActivity activity;
     private String TAG = "GPSLoggerServiceConnection";
 

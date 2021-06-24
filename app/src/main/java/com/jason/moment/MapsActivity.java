@@ -404,7 +404,6 @@ public class MapsActivity extends AppCompatActivity implements
             showGPS();
             if(googleMap != null) showActivities();
         }
-
     }
 
     @Override

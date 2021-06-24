@@ -9,17 +9,8 @@ import android.util.Log;
 import com.jason.moment.MapsActivity;
 import com.jason.moment.util.Config;
 
-/**
- * Handles the bind to the GPS Logger service
- *
- * @author Nicolas Guillaumin
- *
- */
 public class GPSLoggerServiceConnection implements ServiceConnection {
 
-    /**
-     * Reference to TrackLogger activity
-     */
     private final MapsActivity activity;
     private String TAG = "GPSLoggerServiceConnection";
 
