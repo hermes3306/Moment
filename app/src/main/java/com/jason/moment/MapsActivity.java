@@ -358,7 +358,7 @@ public class MapsActivity extends AppCompatActivity implements
                     unbindService(gpsLoggerConnection);
                     stopService(gpsLoggerServiceIntent);
                 } else {
-                    unbindService(gpsLoggerConnection);
+                    //unbindService(gpsLoggerConnection);
                 }
             }
         }
