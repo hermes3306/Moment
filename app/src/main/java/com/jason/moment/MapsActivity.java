@@ -249,10 +249,6 @@ public class MapsActivity extends AppCompatActivity implements
             bindService(gpsLoggerServiceIntent,gpsLoggerConnection, 0);
         }
 
-        if (Config._start_timer) {
-            startMyTimer(); // Timer 시작(onPause()에서도 10초마다 실행됨
-        }
-
         // check last activity not saving...
         AlertDialogUtil.getInstance().checkActiveRunning(_ctx);
     }
@@ -282,12 +278,6 @@ public class MapsActivity extends AppCompatActivity implements
         Log.e(TAG, "--gpsLoggingMinDistance:" +  gpsLoggingMinDistance);
     }
 
-    private void startMyTimer() {
-        TimerTask mTask = new MapsActivity.MyTimerTask();
-        Timer mTimer = new Timer();
-        mTimer.schedule(mTask, Config._timer_delay, Config._timer_period);
-    }
-
     private void initializeMap() {
         // check if map is created
         if (googleMap == null) {
@@ -304,6 +294,7 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     protected void onResume() {
+        paused = false;
         Log.d(TAG,"-- onResume.");
 
         // have to get all the activities from MyLoc DB;
@@ -319,7 +310,6 @@ public class MapsActivity extends AppCompatActivity implements
         }
 
         initializeMap();
-        paused = false;
         super.onResume();
 
         SharedPreferences sharedPreferences =
@@ -411,9 +401,6 @@ public class MapsActivity extends AppCompatActivity implements
 
     private double dist=0;
     public void onLocationChanged(Location location) {
-        // new loc notify
-        showGPS();
-
         // insert into MyLoc 
         LocationUtil.getInstance().onLocationChanged(_ctx,location);
         Date d = new Date();
@@ -428,10 +415,16 @@ public class MapsActivity extends AppCompatActivity implements
                 last_activity = new MyActivity(location.getLatitude(), location.getLongitude(),d);
                 list.add(last_activity);
                 last_location = location;
-                if(googleMap != null) showActivities();
             }
         }
-        showActivities();
+
+        // onPaused, don't display for battery saving
+        if(!paused) {
+            // new loc notify
+            showGPS();
+            if(googleMap != null) showActivities();
+        }
+
     }
 
     @Override
@@ -1131,50 +1124,5 @@ public class MapsActivity extends AppCompatActivity implements
         String date_to_string = dateformatyyyyMMdd.format(date);
         return date_to_string;
     }
-
-    // MyTimerTask can run even though the app run in background
-    public class MyTimerTask extends java.util.TimerTask{
-        public void run() {
-            long start = System.currentTimeMillis();
-            MapsActivity.this.runOnUiThread(new Runnable() {
-                public void run() {
-                    Log.d(TAG,"-- MyTimerTask!");
-                    if(!paused) {
-                        Log.d(TAG,"-- MapApp does not paused!");
-                        return;
-                    }
-
-                    Location location = getLocation();
-                    if(location==null) {
-                        Log.d(TAG,"-- cannot get Location!");
-                        Toast.makeText(getApplicationContext(),
-                                "-- -- cannot get Location!", Toast.LENGTH_SHORT)
-                                .show();
-                        return;
-                    }
-
-                    double dist;
-                    if(last_location==null) {
-                        dist = 0;
-                    }else {
-                        dist = CalDistance.dist(last_location.getLatitude(), last_location.getLongitude(), location.getLatitude(), location.getLongitude());
-                    }
-                    last_location = location;
-
-                    if(dist > Config._loc_distance) { // 5meter
-                        MyLoc myloc = new MyLoc(getApplicationContext());
-                        myloc.ins(location.getLatitude(), location.getLongitude());
-                        Log.d(TAG,"-- new Location"+location.getLatitude()+","+location.getLongitude()+")");
-                        Toast.makeText(getApplicationContext(),
-                                "-- Timer add new Location", Toast.LENGTH_SHORT)
-                                .show();
-                    } else {
-                        Log.d(TAG,"-- same Location by MyTimerTask!");
-                    }
-                }
-            });
-        } /* end of run() */
-    } /* end of MyTimerTask */
-
 
 }
