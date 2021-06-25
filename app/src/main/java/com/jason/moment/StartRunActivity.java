@@ -600,7 +600,7 @@ public class StartRunActivity extends AppCompatActivity implements
                 unbindService(gpsLoggerConnection);
                 stopService(gpsLoggerServiceIntent);
             } else {
-                unbindService(gpsLoggerConnection);
+                if(gpsLoggerConnection !=null) unbindService(gpsLoggerConnection);
             }
         }
 
@@ -624,13 +624,14 @@ public class StartRunActivity extends AppCompatActivity implements
         // Unregister broadcast receiver
         unregisterReceiver(receiver);
         Log.d(TAG, "-- sent Broadcast message: INTENT_STOP_TRACKING...");
-        if(gpsLoggerConnection != null)  unbindService(gpsLoggerConnection);
 
         if(!activity_quit_normally) {
             File lastRun = new File(Config.CSV_SAVE_DIR, "OOPS" + Config._csv_ext);
             MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun );
             Config.restore_preference_values_after_running(getApplicationContext());
             Toast.makeText(_ctx,"Running activity saved into OOPS!!", Toast.LENGTH_SHORT).show();
+        } else {
+            if (gpsLoggerConnection != null) unbindService(gpsLoggerConnection);
         }
         super.onDestroy();
     }
@@ -694,8 +695,10 @@ public class StartRunActivity extends AppCompatActivity implements
                     public void onClick(DialogInterface dialog, int which) {
                         activity_quit_normally = true;
                         Config.restore_preference_values_after_running(getApplicationContext());
-                        Intent intent = new Intent(Config.INTENT_STOP_TRACKING);
-                        sendBroadcast(intent);
+
+                        //Intent intent = new Intent(Config.INTENT_STOP_TRACKING);
+                        //sendBroadcast(intent);
+
                         Log.d(TAG,"-- sent Broadcast message: INTENT_STOP_TRACKING...");
                         if(gpsLoggerConnection != null)  {
                             unbindService(gpsLoggerConnection);

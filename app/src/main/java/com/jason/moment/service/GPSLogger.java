@@ -43,7 +43,7 @@ public class GPSLogger extends Service implements LocationListener {
     LocationListener _myLocationListener = null;
     Context _ctx = null;
 
-    private boolean isTracking = false;
+    private boolean isTracking = true;
     private boolean isGpsEnabled = false;
     private final boolean use_barometer = false;
     private static final int NOTIFICATION_ID = 1;
