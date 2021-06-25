@@ -112,6 +112,7 @@ public class MapsActivity extends AppCompatActivity implements
     //    public ImageButton imbt_trash = null;
     public ImageButton imbt_navi = null;
 
+    static boolean already_quit = false;
     public void alertQuitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("활동을 중지하시겠습니까?");
@@ -119,6 +120,7 @@ public class MapsActivity extends AppCompatActivity implements
         builder.setPositiveButton("중지",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        already_quit = true;
                         SerializeTodayActivity();
                         if(gpsLoggerConnection != null)  unbindService(gpsLoggerConnection);
                         if(gpsLoggerServiceIntent != null) stopService(gpsLoggerServiceIntent);
@@ -292,6 +294,8 @@ public class MapsActivity extends AppCompatActivity implements
         Log.d(TAG,"-- onResume.");
 
         startService(gpsLoggerServiceIntent);
+        if(gpsLoggerConnection==null)
+            gpsLoggerConnection = new GPSLoggerServiceConnection(this);
         bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
 
         initializeMap();
@@ -329,22 +333,17 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     protected void onPause() {
-        Log.d(TAG,"-- onPause().");
-        //SerializeTodayActivity();
-        paused = true;
-
-        if (gpsLogger != null) {
-            if (!gpsLogger.isTracking()) {
-                Log.d(TAG, "Service is not tracking, trying to stopService()");
-                unbindService(gpsLoggerConnection);
-                gpsLoggerConnection=null;
-                //stopService(gpsLoggerServiceIntent);
-            } else {
-                unbindService(gpsLoggerConnection);
-                gpsLoggerConnection=null;
+        if(already_quit) {
+            super.onPause();
+            return;
+        } else {
+            paused = true;
+            if (gpsLogger != null) {
+                    if(gpsLoggerConnection!=null) unbindService(gpsLoggerConnection);
+                    gpsLoggerConnection=null;
             }
+            super.onPause();
         }
-        super.onPause();
     }
 
     private Location last_location = null;
@@ -364,8 +363,6 @@ public class MapsActivity extends AppCompatActivity implements
         ImageButton imb_wifi_on = (ImageButton)findViewById(R.id.imbt_wifi_on);
         imb_wifi_on.setVisibility(View.VISIBLE);
         imb_wifi_off.setVisibility(View.GONE);
-
-        // Tempory timer to show GPS signaal
 
         timer.schedule(new TimerTask() {
             @Override
