@@ -48,6 +48,22 @@ public class AddressUtil {
         return getAddress(_ctx, ll);
     }
 
+    public static LatLng getLatLangFromAddress(Context _ctx, String strAddress){
+        Geocoder coder = new Geocoder(_ctx, Locale.getDefault());
+        List<Address> address;
+        try {
+            address = coder.getFromLocationName(strAddress,5);
+            if (address == null) {
+                return new LatLng(-10000, -10000);
+            }
+            Address location = address.get(0);
+            return new LatLng(location.getLatitude(), location.getLongitude());
+        } catch (Exception e) {
+            return new LatLng(-10000, -10000);
+        }
+    }
+
+
     public static String getAddress(final Context _ctx, double latitude, double longitude) {
         LatLng ll = new LatLng(latitude, longitude);
         return getAddress(_ctx, ll);

@@ -4,8 +4,13 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaCodecInfo;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -14,17 +19,20 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jason.moment.databinding.ActivityDetailMapsBinding;
+import com.jason.moment.util.AddressUtil;
 import com.jason.moment.util.C;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.MyMediaInfo;
 import com.jason.moment.util.StringUtil;
+import com.jason.moment.util.db.MyMedia;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-public class DetailMapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class DetailMapsActivity extends FragmentActivity implements OnMapReadyCallback,
+        View.OnClickListener{
 
     private GoogleMap mMap;
     private ActivityDetailMapsBinding binding;
@@ -80,6 +88,39 @@ public class DetailMapsActivity extends FragmentActivity implements OnMapReadyCa
 
             MapUtil.drawMarker(mMap, mm);
             MapUtil.moveCamera(mMap ,mm ,18f);
+
+            TextView tv_media_memo = findViewById(R.id.tv_media_memo);
+            tv_media_memo.setText(mm.getMemo());
+            TextView tv_media_cr_datetime = findViewById(R.id.tv_media_cr_datetime);
+            tv_media_cr_datetime.setText(mm.getCr_datetime());
+
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.bt_search_address:
+                if(mm != null) {
+
+
+                    EditText et = findViewById(R.id.ed_address);
+                    String address = et.getText().toString();
+                    LatLng ll = AddressUtil.getLatLangFromAddress(_ctx, address);
+                    if(ll.latitude != -10000) {
+                        mm.setLatitude(ll.latitude);
+                        mm.setLongitude(ll.longitude);
+                        address = AddressUtil.getAddress(_ctx, ll);
+                        mm.setAddress(address);
+                        et.setText(address);
+                        MapUtil.drawMarker(mMap, mm);
+                        MapUtil.moveCamera(mMap, mm, 18f);
+                        MyMedia.getInstance(_ctx).ins(mm);
+                    }else {
+                        Toast.makeText(_ctx,"Wrong address!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                break;
         }
     }
 }

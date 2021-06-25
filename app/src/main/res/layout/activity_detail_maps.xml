@@ -28,7 +28,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tv_date_str"
+                android:id="@+id/tv_media_cr_datetime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="35sp"
@@ -47,16 +47,12 @@
             android:background="@color/white"
             android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="ADDRESS: "
-                android:textColor="@color/Gray"
-                android:layout_height="wrap_content">
-            </TextView>
             <EditText
                 android:id="@+id/ed_address"
                 android:layout_width="match_parent"
                 android:textColor="@color/Green"
+                android:hint="Input an address."
+                android:textColorHint="@color/DarkGray"
                 android:layout_height="wrap_content" android:layout_weight="1"/>
             <Button
                 android:id="@+id/bt_search_address"
