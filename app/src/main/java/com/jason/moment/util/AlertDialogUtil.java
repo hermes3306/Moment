@@ -10,6 +10,7 @@ import android.location.Location;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -73,9 +74,9 @@ public class AlertDialogUtil {
             key = mm_info.getKey();
             ed_media_memo.setText(mm_info.getMemo());
             tv_media_name.setText(mm_info.getName());
-//            sp_media_grade
-//                    sp_media_place
-//
+            sp_media_place.setSelection(((ArrayAdapter<String>)sp_media_place.getAdapter()).getPosition(mm_info.getPlace()));
+            sp_media_grade.setSelection(((ArrayAdapter<String>)sp_media_grade.getAdapter()).getPosition(mm_info.getGrade()));
+
             tv_media_address.setText(mm_info.getAddress());
             tv_media_latitude.setText(String.format("%f", mm_info.getLatitude()));
             tv_media_longitude.setText(String.format("%f", mm_info.getLongitude()));
