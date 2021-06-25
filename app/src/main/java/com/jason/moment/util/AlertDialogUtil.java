@@ -19,6 +19,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.jason.moment.DetailMapsActivity;
+import com.jason.moment.FileActivity;
 import com.jason.moment.MapsActivity;
 import com.jason.moment.MyReportActivity;
 import com.jason.moment.R;
@@ -92,12 +95,12 @@ public class AlertDialogUtil {
             tv_media_cr_datetime.setText(cr);
             tv_media_mo_datetime.setText(mo);
 
-            Location ll = LocationUtil.getInstance().getLast_location();
+            LatLng ll = LocationUtil.getInstance().getLast_location(_ctx);
             if(ll!=null) {
-                tv_media_latitude.setText(String.format("%f", ll.getLatitude()));
-                tv_media_longitude.setText(String.format("%f", ll.getLongitude()));
+                tv_media_latitude.setText(String.format("%f", ll.latitude));
+                tv_media_longitude.setText(String.format("%f", ll.longitude));
                 if(last_memo==null) {
-                    String memo = AddressUtil.getAddressDong(_ctx,ll.getLatitude(), ll.getLongitude());
+                    String memo = AddressUtil.getAddressDong(_ctx,ll.latitude, ll.longitude);
                     ed_media_memo.setText(memo);
                 }
                 String address = AddressUtil.getAddress(_ctx, ll);
@@ -153,9 +156,9 @@ public class AlertDialogUtil {
                 mm_info.print();
                 last_memo = mm_info.getMemo();
 
-                // call an intent to show the place
-
-
+                Intent detailMaps = new Intent(_ctx, DetailMapsActivity.class);
+                detailMaps.putExtra("my_media_info", mm_info);
+                _ctx.startActivity(detailMaps);
             }
         });
         AlertDialog alert = alertDialog.create();

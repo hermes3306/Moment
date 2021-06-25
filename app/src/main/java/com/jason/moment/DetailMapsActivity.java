@@ -18,14 +18,18 @@ import com.jason.moment.util.C;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
+import com.jason.moment.util.MyMediaInfo;
+import com.jason.moment.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class DetailMapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private ActivityDetailMapsBinding binding;
     private String activity_filename = null;
+    private MyMediaInfo mm = null;
     Context _ctx = null;
 
     @Override
@@ -35,6 +39,7 @@ public class DetailMapsActivity extends FragmentActivity implements OnMapReadyCa
 
         Intent intent = getIntent();
         activity_filename = intent.getExtras().getString("activity_filename");
+        mm = (MyMediaInfo)intent.getSerializableExtra("my_media_info");
 
         binding = ActivityDetailMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -64,10 +69,17 @@ public class DetailMapsActivity extends FragmentActivity implements OnMapReadyCa
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
-        ArrayList<MyActivity> mal = MyActivityUtil.deserialize(activity_filename);
-        Display display = getWindowManager().getDefaultDisplay();
+        if(activity_filename != null ) {
+            ArrayList<MyActivity> mal = MyActivityUtil.deserialize(activity_filename);
+            Display display = getWindowManager().getDefaultDisplay();
+            MapUtil.DRAW(this, mMap, display, mal);
+        } else if(mm != null) {
+            LatLng ll = new LatLng(mm.getLatitude(), mm.getLongitude());
+            Date date = StringUtil.StringToDate(mm.getCr_datetime(),"yyyy-MM-dd HH:mm:ss");
+            MyActivity ma = new MyActivity(ll.latitude, ll.longitude, date);
 
-
-        MapUtil.DRAW(this, mMap, display, mal);
+            MapUtil.drawMarker(mMap, mm);
+            MapUtil.moveCamera(mMap ,mm ,18f);
+        }
     }
 }

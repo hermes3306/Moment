@@ -2,7 +2,11 @@ package com.jason.moment.util;
 
 import android.util.Log;
 
-public class MyMediaInfo {
+import com.google.android.gms.maps.model.LatLng;
+
+import java.io.Serializable;
+
+public class MyMediaInfo implements Serializable {
     public String getName() {
         return name;
     }
@@ -47,6 +51,10 @@ public class MyMediaInfo {
     double longitude;
     String cr_datetime;
     String mo_datetime;
+
+    public LatLng toLatLng() {
+        return new LatLng(latitude, longitude);
+    }
 
     public String getPlace() {
         return place;

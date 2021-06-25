@@ -50,11 +50,29 @@ public class    MapUtil {
     public static void initialize() {
         markers = new ArrayList<Marker>();
     }
+
+    public static void moveCamera(GoogleMap googleMap, MyMediaInfo mm, float _zoom) {
+        LatLng _loc = mm.toLatLng();
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(_loc).zoom(_zoom).build();
+        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
     public static void moveCamera(GoogleMap googleMap, MyActivity myactivity, float _zoom) {
         LatLng _loc = myactivity.toLatLng();
         CameraPosition cameraPosition = new CameraPosition.Builder().target(_loc).zoom(_zoom).build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         //googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    public static void drawMarker(GoogleMap gmap, MyMediaInfo mm) {
+        LatLng ll = new LatLng(mm.latitude, mm.longitude);
+        float color =  Config._marker_start_color;
+        Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title(mm.memo)
+                .icon(BitmapDescriptorFactory.defaultMarker(color))
+                .draggable(true)
+                .visible(true)
+                .snippet(mm.cr_datetime));
+        markers.add(marker);
     }
 
     public static void drawStartMarker(GoogleMap gmap, @NotNull ArrayList<MyActivity> list) {

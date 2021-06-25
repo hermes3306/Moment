@@ -337,7 +337,7 @@ public class MapsActivity extends AppCompatActivity implements
             if (!gpsLogger.isTracking()) {
                 Log.d(TAG, "Service is not tracking, trying to stopService()");
                 unbindService(gpsLoggerConnection);
-                stopService(gpsLoggerServiceIntent);
+                //stopService(gpsLoggerServiceIntent);
             } else {
                 unbindService(gpsLoggerConnection);
             }

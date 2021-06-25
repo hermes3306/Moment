@@ -18,8 +18,13 @@ public class LocationUtil {
         return locationUtil;
     }
 
-    public Location getLast_location() {
-        return last_location;
+    public LatLng getLast_location(Context _ctx) {
+        if(last_location != null) return new LatLng(last_location.getLatitude(), last_location.getLongitude());
+        else {
+            MyActivity last = MyLoc.getInstance(_ctx).lastActivity();
+            if(last !=null) return new LatLng(last.latitude, last.longitude);
+            else return null;
+        }
     }
 
     public void onLocationChanged(Context context, Location location) {
