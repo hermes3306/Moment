@@ -50,6 +50,9 @@ public class MyMedia {
         ins(mm_info.getKey(),
                 mm_info.getName(),
                 mm_info.getMemo(),
+                mm_info.getPlace(),
+                mm_info.getGrade(),
+                mm_info.getAddress(),
                 mm_info.getLatitude(),
                 mm_info.getLongitude(),
                 mm_info.getCr_datetime());
@@ -81,7 +84,7 @@ public class MyMedia {
         ins(mm_info);
     }
 
-    public void ins(long key, String name, String memo, double lat, double lng, String cr ) {
+    public void ins(long key, String name, String memo, String place, String grade, String address, double lat, double lng, String cr ) {
         Date today = new Date();
         String mo = StringUtil.DateToString(new Date(),"yyyy-MM-dd HH:mm:ss");
         if(cr == null) cr = mo;
@@ -89,6 +92,9 @@ public class MyMedia {
         ContentValues values = new ContentValues();
         values.put(MyMediaContract.MediaEntry.COLUMN_NAME_NAME, name);
         values.put(MyMediaContract.MediaEntry.COLUMN_NAME_MEMO, memo);
+        values.put(MyMediaContract.MediaEntry.COLUMN_NAME_PLACE, place);
+        values.put(MyMediaContract.MediaEntry.COLUMN_NAME_GRADE, grade);
+        values.put(MyMediaContract.MediaEntry.COLUMN_NAME_ADDRESS, address);
         values.put(MyMediaContract.MediaEntry.COLUMN_NAME_LATITUDE, lat);
         values.put(MyMediaContract.MediaEntry.COLUMN_NAME_LONGITUDE, lng);
         values.put(MyMediaContract.MediaEntry.COLUMN_NAME_CR_DATETIME, cr);
@@ -122,6 +128,12 @@ public class MyMedia {
                     cursor.getColumnIndexOrThrow(MyMediaContract.MediaEntry.COLUMN_NAME_NAME));
             String _memo = cursor.getString(
                     cursor.getColumnIndexOrThrow(MyMediaContract.MediaEntry.COLUMN_NAME_MEMO));
+            String _place = cursor.getString(
+                    cursor.getColumnIndexOrThrow(MyMediaContract.MediaEntry.COLUMN_NAME_PLACE));
+            String _address = cursor.getString(
+                    cursor.getColumnIndexOrThrow(MyMediaContract.MediaEntry.COLUMN_NAME_ADDRESS));
+            String _grade = cursor.getString(
+                    cursor.getColumnIndexOrThrow(MyMediaContract.MediaEntry.COLUMN_NAME_GRADE));
             double lat = cursor.getDouble(
                     cursor.getColumnIndexOrThrow(MyLocContract.LocEntry.COLUMN_NAME_LATITUDE));
             double lng = cursor.getDouble(
@@ -134,6 +146,9 @@ public class MyMedia {
             mmf.setKey(itemId);
             mmf.setName(_name);
             mmf.setMemo(_memo);
+            mmf.setPlace(_place);
+            mmf.setGrade(_grade);
+            mmf.setAddress(_address);
             mmf.setLatitude(lat);
             mmf.setLongitude(lng);
             mmf.setCr_datetime(_cr);

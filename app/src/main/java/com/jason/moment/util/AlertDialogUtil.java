@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -59,6 +60,9 @@ public class AlertDialogUtil {
         final View view = factory.inflate(R.layout.layout_media_info, null);
 
         EditText ed_media_memo = view.findViewById(R.id.ed_media_memo);
+        Spinner sp_media_place = view.findViewById(R.id.sp_media_place);
+        Spinner sp_media_grade = view.findViewById(R.id.sp_media_grade);
+        TextView tv_media_address = view.findViewById(R.id.tv_media_address);
         TextView tv_media_name = view.findViewById(R.id.tv_media_name);
         TextView tv_media_latitude = view.findViewById(R.id.tv_media_latitude);
         TextView tv_media_longitude = view.findViewById(R.id.tv_media_longitude);
@@ -69,6 +73,10 @@ public class AlertDialogUtil {
             key = mm_info.getKey();
             ed_media_memo.setText(mm_info.getMemo());
             tv_media_name.setText(mm_info.getName());
+//            sp_media_grade
+//                    sp_media_place
+//
+            tv_media_address.setText(mm_info.getAddress());
             tv_media_latitude.setText(String.format("%f", mm_info.getLatitude()));
             tv_media_longitude.setText(String.format("%f", mm_info.getLongitude()));
             tv_media_cr_datetime.setText(mm_info.getCr_datetime());
@@ -91,9 +99,13 @@ public class AlertDialogUtil {
                     String memo = AddressUtil.getAddressDong(_ctx,ll.getLatitude(), ll.getLongitude());
                     ed_media_memo.setText(memo);
                 }
+                String address = AddressUtil.getAddress(_ctx, ll);
+                tv_media_address.setText(address);
             }else {
                 tv_media_latitude.setText(String.format("%s",SampleLoc.home.latitude));
                 tv_media_longitude.setText(String.format("%s",SampleLoc.home.longitude));
+                String address = AddressUtil.getAddress(_ctx, SampleLoc.home);
+                tv_media_address.setText(address);
             }
         }
 
@@ -105,6 +117,11 @@ public class AlertDialogUtil {
 
                 mm_info.setName((String)tv_media_name.getText().toString());
                 mm_info.setMemo((String)ed_media_memo.getText().toString());
+
+                mm_info.setAddress((String)tv_media_address.getText().toString());
+                mm_info.setPlace((String)sp_media_place.getItemAtPosition(sp_media_place.getSelectedItemPosition()).toString());
+                mm_info.setGrade((String)sp_media_grade.getItemAtPosition(sp_media_grade.getSelectedItemPosition()).toString());
+
                 mm_info.setLatitude(Double.parseDouble(tv_media_latitude.getText().toString()));
                 mm_info.setLongitude(Double.parseDouble(tv_media_longitude.getText().toString()));
                 mm_info.setCr_datetime(tv_media_cr_datetime.getText().toString());
@@ -113,6 +130,31 @@ public class AlertDialogUtil {
                 mm_info.print();
                 last_memo = mm_info.getMemo();
                 MyMedia.getInstance(_ctx).ins(mm_info);
+            }
+        });
+
+        alertDialog.setNegativeButton("Map", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                MyMediaInfo mm_info = new MyMediaInfo();
+                mm_info.setName((String)tv_media_name.getText().toString());
+                mm_info.setMemo((String)ed_media_memo.getText().toString());
+
+                mm_info.setAddress((String)tv_media_address.getText().toString());
+                mm_info.setPlace((String)sp_media_place.getItemAtPosition(sp_media_place.getSelectedItemPosition()).toString());
+                mm_info.setGrade((String)sp_media_grade.getItemAtPosition(sp_media_grade.getSelectedItemPosition()).toString());
+
+                mm_info.setLatitude(Double.parseDouble(tv_media_latitude.getText().toString()));
+                mm_info.setLongitude(Double.parseDouble(tv_media_longitude.getText().toString()));
+                mm_info.setCr_datetime(tv_media_cr_datetime.getText().toString());
+                mm_info.setMo_datetime(tv_media_mo_datetime.getText().toString());
+                mm_info.setKey(key);
+                mm_info.print();
+                last_memo = mm_info.getMemo();
+
+                // call an intent to show the place
+
+
             }
         });
         AlertDialog alert = alertDialog.create();

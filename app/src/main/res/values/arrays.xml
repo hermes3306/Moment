@@ -1,5 +1,23 @@
 <resources>
     <!-- Track color -->
+    <string-array name="place">
+        <item>Restaurant</item>
+        <item>Cafe</item>
+        <item>Street</item>
+        <item>Running place</item>
+        <item>Office</item>
+        <item>Other city</item>
+    </string-array>
+
+    <string-array name="grade">
+        <item>☆</item>
+        <item>☆☆</item>
+        <item>☆☆☆</item>
+        <item>☆☆☆☆</item>
+        <item>☆☆☆☆☆</item>
+    </string-array>
+
+    <!-- Track color -->
     <string-array name="track_color">
         <item>Red</item>
         <item>Cyan</item>

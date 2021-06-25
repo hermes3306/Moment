@@ -3,6 +3,7 @@ package com.jason.moment.util;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -40,6 +41,16 @@ public class AddressUtil {
 //            Log.d(TAG, "--getPremises = " + addresses.get(0).getPremises());
         }
         return addinfo;
+    }
+
+    public static String getAddress(final Context _ctx, Location loc) {
+        LatLng ll = new LatLng(loc.getLatitude(), loc.getLongitude());
+        return getAddress(_ctx, ll);
+    }
+
+    public static String getAddress(final Context _ctx, double latitude, double longitude) {
+        LatLng ll = new LatLng(latitude, longitude);
+        return getAddress(_ctx, ll);
     }
 
     public static String getAddress(final Context _ctx, MyActivity ma) {

@@ -13,6 +13,9 @@ public class MyMediaDBHelper extends SQLiteOpenHelper {
                     MyMediaContract.MediaEntry._ID + " INTEGER PRIMARY KEY," +
                     MyMediaContract.MediaEntry.COLUMN_NAME_NAME + " TEXT," +
                     MyMediaContract.MediaEntry.COLUMN_NAME_MEMO + " TEXT," +
+                    MyMediaContract.MediaEntry.COLUMN_NAME_PLACE + " TEXT," +
+                    MyMediaContract.MediaEntry.COLUMN_NAME_GRADE + " TEXT," +
+                    MyMediaContract.MediaEntry.COLUMN_NAME_ADDRESS + " TEXT," +
                     MyMediaContract.MediaEntry.COLUMN_NAME_LATITUDE + " TEXT," +
                     MyMediaContract.MediaEntry.COLUMN_NAME_LONGITUDE + " TEXT," +
                     MyMediaContract.MediaEntry.COLUMN_NAME_CR_DATETIME + " TEXT," +

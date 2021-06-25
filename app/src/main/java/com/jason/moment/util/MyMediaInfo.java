@@ -48,6 +48,34 @@ public class MyMediaInfo {
     String cr_datetime;
     String mo_datetime;
 
+    public String getPlace() {
+        return place;
+    }
+
+    public void setPlace(String place) {
+        this.place = place;
+    }
+
+    public String getGrade() {
+        return grade;
+    }
+
+    public void setGrade(String grade) {
+        this.grade = grade;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    String place;
+    String grade;
+    String address;
+
     public void setName(String name) {
         this.name = name;
     }
@@ -72,6 +100,9 @@ public class MyMediaInfo {
         Log.d(TAG, "Key:" + getKey());
         Log.d(TAG, "Name:" + getName());
         Log.d(TAG, "Memo:" + getMemo());
+        Log.d(TAG, "Address:" + getAddress());
+        Log.d(TAG, "Place:" + getPlace());
+        Log.d(TAG, "Grade:" + getGrade());
         Log.d(TAG, "Latitude:" + getLatitude());
         Log.d(TAG, "Longitude:" + getLongitude());
         Log.d(TAG, "Created:" + getCr_datetime());
