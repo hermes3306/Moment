@@ -637,6 +637,7 @@ public class StartRunActivity extends AppCompatActivity implements
     public void onDestroy() {
         // Unregister broadcast receiver
         unregisterReceiver(receiver);
+        stopMyTimer();
         if(!activity_quit_normally) {
             File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
             MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun );
@@ -758,10 +759,21 @@ public class StartRunActivity extends AppCompatActivity implements
         builder.show();
     }
 
+    static TimerTask mTask = null;
+    Timer mTimer = null;
     private void startMyTimer() {
-        TimerTask mTask = new StartRunActivity.MyTimerTask();
-        Timer mTimer = new Timer();
+        mTask = new StartRunActivity.MyTimerTask();
+        mTimer = new Timer();
         mTimer.schedule(mTask, 0, 1000);
+    }
+
+    private void stopMyTimer() {
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer.purge();
+            mTimer = null;
+            mTask = null;
+        }
     }
 
     // MyTimerTask can run even though the app run in background
