@@ -358,6 +358,7 @@ public class CloudUtil {
 
     public void Upload(String filepath) {
         if(!C.cloud_up) return;
+
         final String _serverUrl = Config._uploadURL;
         // Pop Up a Dialog
         new AsyncTask<Void,Void,Void>() {
@@ -377,6 +378,10 @@ public class CloudUtil {
                 if(filepath.endsWith(Config._pic_ext)) folder = Config.PIC_SAVE_DIR;
                 if(filepath.endsWith(Config._mov_ext)) folder = Config.MOV_SAVE_DIR;
                 file = new File(folder, filepath);
+                if(!file.exists()) {
+                    Log.e(TAG, "Upload File " + filepath + " not found!");
+                    return null;
+                }
                 Log.d(TAG, "Upload File name:" + filepath);
 
                 try {

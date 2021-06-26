@@ -4,7 +4,10 @@
         <item>Restaurant</item>
         <item>Cafe</item>
         <item>Street</item>
-        <item>Running place</item>
+        <item>Mountain</item>
+        <item>River</item>
+        <item>Lake</item>
+        <item>Running</item>
         <item>Office</item>
         <item>Other city</item>
     </string-array>

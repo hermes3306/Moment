@@ -19,12 +19,12 @@ public class LocationUtil {
     }
 
     public LatLng getLast_location(Context _ctx) {
-        if(last_location != null) return new LatLng(last_location.getLatitude(), last_location.getLongitude());
-        else {
+        if(first_called) {
             MyActivity last = MyLoc.getInstance(_ctx).lastActivity();
             if(last !=null) return new LatLng(last.latitude, last.longitude);
             else return null;
-        }
+        } else if(last_location != null) return new LatLng(last_location.getLatitude(), last_location.getLongitude());
+        else return null;
     }
 
     public void onLocationChanged(Context context, Location location) {

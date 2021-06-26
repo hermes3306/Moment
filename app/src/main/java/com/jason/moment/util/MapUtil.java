@@ -64,6 +64,16 @@ public class    MapUtil {
         //googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
+    public static void drawMarker(GoogleMap gmap, String title, String snippet, LatLng ll) {
+        float color =  Config._marker_start_color;
+        Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title(title)
+                .icon(BitmapDescriptorFactory.defaultMarker(color))
+                .draggable(true)
+                .visible(true)
+                .snippet(snippet));
+        markers.add(marker);
+    }
+
     public static void drawMarker(GoogleMap gmap, MyMediaInfo mm) {
         LatLng ll = new LatLng(mm.latitude, mm.longitude);
         float color =  Config._marker_start_color;

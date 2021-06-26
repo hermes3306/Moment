@@ -48,6 +48,7 @@ import androidx.preference.PreferenceManager;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jason.moment.service.GPSLogger;
@@ -61,6 +62,7 @@ import com.jason.moment.util.CaloryUtil;
 import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
+import com.jason.moment.util.LocationUtil;
 import com.jason.moment.util.MP3;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MediaUtil;
@@ -457,7 +459,6 @@ public class StartRunActivity extends AppCompatActivity implements
         C.getInstance().setGoogleMap(_ctx, googleMap);
         showActivities();
         initialize_views();
-
     }
 
     protected void initialize_Mapview(Bundle savedInstanceState) {
@@ -701,7 +702,7 @@ public class StartRunActivity extends AppCompatActivity implements
         if(f.exists()) f.delete();
     }
 
-    boolean activity_quit_normally = false;
+    static boolean activity_quit_normally = false;
     public void alertQuitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("활동을 중지하시겠습니까?");

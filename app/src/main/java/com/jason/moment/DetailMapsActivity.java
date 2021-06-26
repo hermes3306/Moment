@@ -123,6 +123,7 @@ public class DetailMapsActivity extends FragmentActivity implements OnMapReadyCa
                             mm2.setName(address);
                             MapUtil.drawMarker(mMap, mm);
                             MapUtil.moveCamera(mMap, mm, 18f);
+                            MapUtil.moveCamera(mMap, mm, 18f);
                         }else {
                             mm.setLatitude(ll.latitude);
                             mm.setLongitude(ll.longitude);
