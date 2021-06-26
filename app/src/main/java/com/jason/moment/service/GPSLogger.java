@@ -261,7 +261,6 @@ public class GPSLogger extends Service implements LocationListener {
         // 한시간 마다 한번씩 DBMS 내용을 파일로 저장함
         Date d = new Date();
         if(lastSAVETimestamp==0) {
-            saveTodayActivities();
             lastSAVETimestamp = d.getTime();
         } else {
             if( (d.getTime() - lastSAVETimestamp) > Config._ONE_HOUR) {

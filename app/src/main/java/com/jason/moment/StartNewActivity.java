@@ -552,7 +552,6 @@ public class StartNewActivity extends AppCompatActivity implements
     public void onDestroy() {
         // Unregister broadcast receiver
         unregisterReceiver(receiver);
-        Log.d(TAG, "-- sent Broadcast message: INTENT_STOP_TRACKING...");
         super.onDestroy();
     }
 
@@ -612,10 +611,6 @@ public class StartNewActivity extends AppCompatActivity implements
         builder.setPositiveButton("중지",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(Config.INTENT_STOP_TRACKING);
-                        sendBroadcast(intent);
-                        Log.d(TAG,"-- sent Broadcast message: INTENT_STOP_TRACKING...");
-
                         MyActivityUtil.serialize(list, media_filenames, activity_file_name );
                         CloudUtil.getInstance().Upload(activity_file_name + Config._csv_ext);
                         ActivityStat as = ActivityStat.getActivityStat(list);

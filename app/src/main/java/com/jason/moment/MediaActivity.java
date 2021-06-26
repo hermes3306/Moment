@@ -536,6 +536,8 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
                 upload();
                 break;
             case R.id.imDown:
+                new CloudUtil().DownloadAll(_ctx, Config._img);
+                NotificationUtil.notify_new_picture(_ctx, "서버로 부터 동영상을 다운로드 하였습니다.");
                 new CloudUtil().DownloadAll(_ctx, Config._mov);
                 NotificationUtil.notify_new_picture(_ctx, "서버로 부터 동영상을 다운로드 하였습니다.");
                 break;

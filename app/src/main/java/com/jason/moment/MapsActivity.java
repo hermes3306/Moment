@@ -295,7 +295,7 @@ public class MapsActivity extends AppCompatActivity implements
 
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
-        String _filetype = sharedPreferences.getString("filetype", "");
+        String _filetype = sharedPreferences.getString("filetype", "0");
 
         try {
             Config._default_ext = parseInt(_filetype);

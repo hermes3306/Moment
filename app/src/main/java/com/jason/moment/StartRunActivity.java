@@ -108,6 +108,8 @@ public class StartRunActivity extends AppCompatActivity implements
     static Timer timer = new Timer();
 
     private void showGPS() {
+        if(paused) return;
+
         if (timer != null) {
             timer.cancel();
             timer.purge();
@@ -607,8 +609,8 @@ public class StartRunActivity extends AppCompatActivity implements
 
         if (gpsLogger != null) {
             if (!gpsLogger.isTracking()) {
-                Log.d(TAG, "Service is not tracking, trying to stopService()");
-                unbindService(gpsLoggerConnection);
+                //Log.d(TAG, "Service is not tracking, trying to stopService()");
+                //unbindService(gpsLoggerConnection);
                 //stopService(gpsLoggerServiceIntent);
             } else {
                 //if(gpsLoggerConnection !=null) unbindService(gpsLoggerConnection);
@@ -635,8 +637,6 @@ public class StartRunActivity extends AppCompatActivity implements
     public void onDestroy() {
         // Unregister broadcast receiver
         unregisterReceiver(receiver);
-        Log.d(TAG, "-- sent Broadcast message: INTENT_STOP_TRACKING...");
-
         if(!activity_quit_normally) {
             File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
             MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun );
@@ -713,10 +713,6 @@ public class StartRunActivity extends AppCompatActivity implements
                         activity_quit_normally = true;
                         Config.restore_preference_values_after_running(getApplicationContext());
                         deleteIfExistsUnsaved();
-                        //Intent intent = new Intent(Config.INTENT_STOP_TRACKING);
-                        //sendBroadcast(intent);
-
-                        Log.d(TAG,"-- sent Broadcast message: INTENT_STOP_TRACKING...");
                         if(gpsLoggerConnection != null)  {
                             unbindService(gpsLoggerConnection);
                             gpsLoggerConnection = null;
@@ -799,6 +795,8 @@ public class StartRunActivity extends AppCompatActivity implements
                             if(googleMap != null && ! paused) showActivities();
                         }
                     }
+
+                    Log.e(TAG, "-- Timer!");
 
                     if(!paused) {
                         long t1 = System.currentTimeMillis();

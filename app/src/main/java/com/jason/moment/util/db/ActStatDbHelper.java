@@ -50,7 +50,7 @@ public class ActStatDbHelper extends SQLiteOpenHelper {
     public void createNew(SQLiteDatabase db) {
 
         try {
-            db.execSQL("drop index minperkm_inx");
+            db.execSQL("drop index if exists minperkm_inx");
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));

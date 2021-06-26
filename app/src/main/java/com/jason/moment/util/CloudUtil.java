@@ -200,6 +200,76 @@ public class CloudUtil {
         }.execute();
     }
 
+    public void DownloadAllSilent(final Context context, final int ftype) {
+        if(!C.cloud_dn) return;
+        new AsyncTask<Void,Void,Void>() {
+            String listUrl = null;
+            String listOfFiles = null;
+            String[] linesOfFiles = null;
+            String[] fileURL = null;
+            File saveDir = null;
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                try {
+                    if(ftype==Config._csv) {
+                        listUrl = Config._listCSVFiles;
+                    } else if(ftype==Config._ser) {
+                        listUrl = Config._listSerFiles;
+                    }else if(ftype==Config._img) {
+                        listUrl = Config._listImageFiles;
+                    }else if(ftype==Config._mov) {
+                        listUrl = Config._listMovFiles;
+                    }else if(ftype==Config._mp3) {
+                        listUrl = Config._listMP3Files;
+                    }
+                    Log.d(TAG,"-- list url:" + listUrl);
+
+                    try {
+                        listOfFiles = getUrlContent(listUrl);
+                    }catch(Exception e) {
+                        StringWriter sw = new StringWriter();
+                        e.printStackTrace(new PrintWriter(sw));
+                        Log.e(TAG,"Err:" + sw.toString());
+                    }
+                    Log.d(TAG,"-- listOfFiles:" + listOfFiles);
+
+                    linesOfFiles = listOfFiles.split("<br>");
+                    fileURL = new String[linesOfFiles.length] ;
+                    for(int i=0;i< linesOfFiles.length;i++) {
+                        fileURL[i] = Config._serverURL + Config._serverFolder + "/" + linesOfFiles[i];
+                        Log.d(TAG, "-- fileUrl:" + fileURL[i]);
+                    }
+
+                    if(ftype==Config._img) saveDir = Config.mediaStorageDir4pic;
+                    else if(ftype==Config._mov) saveDir = Config.mediaStorageDir4mov;
+                    else if(ftype==Config._mp3) saveDir = Config.mediaStorageDir4mp3;
+                    else saveDir = (Config._default_ext==Config._csv)? Config.mediaStorageDir4csv : Config.mediaStorageDir4mnt;
+
+                    for(int i=0;i<fileURL.length;i++) {
+                        _download(fileURL[i], saveDir);
+                    }
+                }catch(Exception e) {
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    Log.e(TAG,"Err:" + sw.toString());
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                Toast.makeText(context, "Download success", Toast.LENGTH_LONG).show();
+            }
+        }.execute();
+    }
+
     public void Download(final File saveDir, final String fileURL) {
         if(!C.cloud_dn) return;
         Log.d(TAG,"-- DownloadAync!!");
