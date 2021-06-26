@@ -64,6 +64,7 @@ import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.NotificationUtil;
+import com.jason.moment.util.PermissionUtil;
 import com.jason.moment.util.StartupBatch;
 import com.jason.moment.util.db.MyLoc;
 import com.jason.moment.util.db.MyMedia;
@@ -169,8 +170,16 @@ public class MapsActivity extends AppCompatActivity implements
         super.onDestroy();
     }
 
+    public void registerLocationChangedReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Config.INTENT_LOCATION_CHANGED);
+        registerReceiver(receiver, filter);
+        Log.d(TAG, "-- INTENT LOCATION CHANGED registerReceiver()");
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        PermissionUtil.getInstance().setPermission(this);
         this._ctx = this;
         Config.initialize(getApplicationContext());
 
@@ -178,10 +187,7 @@ public class MapsActivity extends AppCompatActivity implements
         sb.execute();
 
         // Register our broadcast receiver
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Config.INTENT_LOCATION_CHANGED);
-        registerReceiver(receiver, filter);
-        Log.d(TAG, "-- INTENT LOCATION CHANGED registerReceiver()");
+        registerLocationChangedReceiver();
 
         // list와 mActivityList 정리 필요함.
         // list = mActivityList = MyLoc.getInstance(_ctx).todayActivity();
@@ -194,21 +200,6 @@ public class MapsActivity extends AppCompatActivity implements
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        // Set permissions of resources
-        if ((ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
-                (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
-                (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) ||
-                (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) ||
-                (ContextCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)) {
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.CAMERA
-            }, 50);
-        }
 
         // ----------------------------------------------------------------------
         // Configuration here
@@ -297,6 +288,7 @@ public class MapsActivity extends AppCompatActivity implements
         if(gpsLoggerConnection==null)
             gpsLoggerConnection = new GPSLoggerServiceConnection(this);
         bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
+        registerLocationChangedReceiver();
 
         initializeMap();
         super.onResume();
@@ -338,9 +330,15 @@ public class MapsActivity extends AppCompatActivity implements
             return;
         } else {
             paused = true;
-            if (gpsLogger != null) {
-                    if(gpsLoggerConnection!=null) unbindService(gpsLoggerConnection);
-                    gpsLoggerConnection=null;
+            try {
+                if (gpsLogger != null) {
+                    if (gpsLoggerConnection != null) unbindService(gpsLoggerConnection);
+                    gpsLoggerConnection = null;
+                }
+            }catch(Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Log.e(TAG, sw.toString());
             }
             super.onPause();
         }

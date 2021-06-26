@@ -34,6 +34,8 @@ public class Config {
     public static long  _ONE_MIN            = _ONE_SEC * 60;
     public static long  _ONE_HOUR           = _ONE_MIN * 60;
 
+    public static String Unsaved_File_name  =   "UNSAVED.csv";
+
     public static boolean _sharedPreferenceChanged                = false;
 
     // 정리 필요함

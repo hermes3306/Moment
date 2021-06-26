@@ -19,12 +19,15 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.jason.moment.databinding.ActivityDetailMapsBinding;
+import com.jason.moment.util.ActivityStat;
+import com.jason.moment.util.ActivitySummary;
 import com.jason.moment.util.AddressUtil;
 import com.jason.moment.util.C;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.MyMediaInfo;
+import com.jason.moment.util.PermissionUtil;
 import com.jason.moment.util.StringUtil;
 import com.jason.moment.util.db.MyMedia;
 
@@ -42,6 +45,7 @@ public class DetailMapsActivity extends FragmentActivity implements OnMapReadyCa
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        PermissionUtil.getInstance().setPermission(this);
         _ctx = this;
         super.onCreate(savedInstanceState);
 
@@ -79,6 +83,11 @@ public class DetailMapsActivity extends FragmentActivity implements OnMapReadyCa
 
         if(activity_filename != null ) {
             ArrayList<MyActivity> mal = MyActivityUtil.deserialize(activity_filename);
+            ActivityStat as = ActivityStat.getInstance().stat(mal);
+            TextView tv_media_memo = findViewById(R.id.tv_media_memo);
+            tv_media_memo.setText(as.name);
+            TextView tv_media_cr_datetime = findViewById(R.id.tv_media_cr_datetime);
+            tv_media_cr_datetime.setText(as.date_str);
             Display display = getWindowManager().getDefaultDisplay();
             MapUtil.DRAW(this, mMap, display, mal);
         } else if(mm != null) {
@@ -101,25 +110,32 @@ public class DetailMapsActivity extends FragmentActivity implements OnMapReadyCa
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bt_search_address:
-                if(mm != null) {
-
-
-                    EditText et = findViewById(R.id.ed_address);
-                    String address = et.getText().toString();
-                    LatLng ll = AddressUtil.getLatLangFromAddress(_ctx, address);
+                EditText et = findViewById(R.id.ed_address);
+                String address = et.getText().toString();
+                LatLng ll = AddressUtil.getLatLangFromAddress(_ctx, address);
+                if(ll != null) {
                     if(ll.latitude != -10000) {
-                        mm.setLatitude(ll.latitude);
-                        mm.setLongitude(ll.longitude);
-                        address = AddressUtil.getAddress(_ctx, ll);
-                        mm.setAddress(address);
-                        et.setText(address);
-                        MapUtil.drawMarker(mMap, mm);
-                        MapUtil.moveCamera(mMap, mm, 18f);
-                        MyMedia.getInstance(_ctx).ins(mm);
-                    }else {
-                        Toast.makeText(_ctx,"Wrong address!", Toast.LENGTH_SHORT).show();
+                        if(mm==null) {
+                            MyMediaInfo mm2 = new MyMediaInfo();
+                            mm2.setLatitude(ll.latitude);;
+                            mm2.setLongitude(ll.longitude);
+                            mm2.setMemo(address);
+                            mm2.setName(address);
+                            MapUtil.drawMarker(mMap, mm);
+                            MapUtil.moveCamera(mMap, mm, 18f);
+                        }else {
+                            mm.setLatitude(ll.latitude);
+                            mm.setLongitude(ll.longitude);
+                            mm.setMemo(et.getText().toString());
+                            address = AddressUtil.getAddress(_ctx, ll);
+                            mm.setAddress(address);
+                            MyMedia.getInstance(_ctx).ins(mm);
+                            Toast.makeText(_ctx,"The address of ("+ address +") for this media saved!", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
+                break;
+            case 1:
                 break;
         }
     }

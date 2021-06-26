@@ -162,7 +162,6 @@ public class GPSLogger extends Service implements LocationListener {
         Log.d(TAG, "-- createNotificationChannel!");
         startForeground(NOTIFICATION_ID, getNotification());
 
-
         // Register ourselves for location updates
         Config.initialize(getApplicationContext());
         gpsLoggingInterval = Config._loc_interval;
@@ -272,8 +271,13 @@ public class GPSLogger extends Service implements LocationListener {
         }
     }
 
-    private void saveTodayActivities() {
+    private String getActivity_file_name () {
         String file_name = DateUtil.today() + "_" + C.getRunnerName(getApplicationContext());
+        return file_name;
+    }
+
+    private void saveTodayActivities() {
+        String file_name = getActivity_file_name();
         MyActivityUtil.serialize(MyLoc.getInstance(getApplication()).getToodayActivities(), file_name);
         CloudUtil.getInstance().Upload(file_name + Config._csv_ext);
     }
@@ -282,13 +286,14 @@ public class GPSLogger extends Service implements LocationListener {
      * Builds the notification to display when tracking in background.
      */
     private Notification getNotification() {
+        if(activity_file_name.endsWith("-1")) activity_file_name = getActivity_file_name();
         Intent myReportIntent = new Intent(this, MyReportActivity.class);
         myReportIntent.putExtra("activity_file_name", activity_file_name);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, myReportIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications_black_24dp)
                 .setContentTitle("Moment")
-                .setContentText("New Activity("+activity_file_name+")")
+                .setContentText("New Activity("+DateUtil.getActivityName(new Date())+")")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(contentIntent)
                 .setAutoCancel(true);
@@ -296,12 +301,11 @@ public class GPSLogger extends Service implements LocationListener {
     }
 
     private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
+        if(activity_file_name.endsWith("-1")) activity_file_name = getActivity_file_name();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // FIXME: following two strings must be obtained from 'R.string' to support translations
             CharSequence name = "Moment";
-            String description = "New Activity("+activity_file_name+")";
+            String description = "New Activity("+DateUtil.getActivityName(new Date())+")";
             int importance = NotificationManager.IMPORTANCE_LOW;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
@@ -311,7 +315,6 @@ public class GPSLogger extends Service implements LocationListener {
             notificationManager.createNotificationChannel(channel);
         }
     }
-
 
     /**
      * Stops notifying the user that we're tracking in the background

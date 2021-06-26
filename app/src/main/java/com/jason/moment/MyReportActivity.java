@@ -38,6 +38,7 @@ import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
+import com.jason.moment.util.PermissionUtil;
 import com.jason.moment.util.Progress;
 import com.jason.moment.util.db.MyActiviySummary;
 import com.jason.moment.util.db.MyLoc;
@@ -254,6 +255,7 @@ public class MyReportActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        PermissionUtil.getInstance().setPermission(this);
         _ctx = this;
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();

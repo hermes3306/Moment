@@ -34,6 +34,14 @@ public class ActivityStat {
             this.co_runner = "함께 달린 사람이 없습니다.";
         }
 
+        static ActivityStat instance = null;
+        public static ActivityStat getInstance() {
+            if(instance==null) instance = new ActivityStat();
+            return instance;
+        }
+
+        public ActivityStat() {}
+
         public ActivityStat(String name, double distanceKm, long durationInLong, double minperKm, int calories) {
             this._fname = name;
             this.duration = duration;
@@ -88,6 +96,10 @@ public class ActivityStat {
 
         public String toString() {
             return "" + name + "," + distanceKm + "Km," + duration + "," + minperKm + "," + calories;
+        }
+
+        public ActivityStat stat(ArrayList<MyActivity> list) {
+            return getActivityStat(list);
         }
 
         public static ActivityStat getActivityStat(ArrayList<MyActivity> list) {

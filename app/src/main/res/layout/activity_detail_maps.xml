@@ -52,8 +52,10 @@
                 android:layout_width="match_parent"
                 android:textColor="@color/Green"
                 android:hint="Input an address."
+                android:textAlignment="viewEnd"
                 android:textColorHint="@color/DarkGray"
-                android:layout_height="wrap_content" android:layout_weight="1"/>
+                android:layout_height="wrap_content" android:layout_weight="1"
+                android:gravity="end" />
             <Button
                 android:id="@+id/bt_search_address"
                 android:layout_width="wrap_content"
@@ -74,13 +76,10 @@
 
     </LinearLayout>
 
-
-
-
     <ImageView android:id="@+id/iv_pic"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:visibility="visible"/>
+        android:visibility="gone"/>
 
     <VideoView android:id="@+id/vv_mov"
         android:layout_width="0dp"

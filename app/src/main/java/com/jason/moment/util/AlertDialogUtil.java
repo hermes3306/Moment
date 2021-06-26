@@ -166,7 +166,7 @@ public class AlertDialogUtil {
     }
 
     public void checkActiveRunning(Context _ctx) {
-        File lastRun = new File(Config.CSV_SAVE_DIR, "OOPS" + Config._csv_ext);
+        File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
 
         if (lastRun.exists()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);

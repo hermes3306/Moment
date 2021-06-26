@@ -540,6 +540,13 @@ public class StartRunActivity extends AppCompatActivity implements
         return gpsLogger;
     }
 
+    public void registerLocationChangedReceiver() {
+        // Register our broadcast receiver
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Config.INTENT_LOCATION_CHANGED);
+        registerReceiver(receiver, filter);
+        Log.d(TAG, "-- INTENT LOCATION CHANGED registerReceiver()");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -547,23 +554,19 @@ public class StartRunActivity extends AppCompatActivity implements
         // 달리기 모드일 경우, 1초, 1미터로 셋팅함
         Config.initialize(getApplicationContext());
 
-        File lastRun = new File(Config.CSV_SAVE_DIR, "OOPS" + Config._csv_ext);
+        File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
         if (lastRun.exists()) {
             Log.e(TAG, "-- Restarting Running with last data....");
-            Toast.makeText(_ctx, "OOPS not finished run!!!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(_ctx, "Unsaved run!!!", Toast.LENGTH_SHORT).show();
             list = MyActivityUtil.deserializeFromCSV(lastRun);
             lastRun.delete();
             if (list.size() > 0) last_activity = (MyActivity) list.get(list.size() - 1);
-            Toast.makeText(_ctx, "OOPS converted into current running!!!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(_ctx, Config.Unsaved_File_name + " converted into current running!!!", Toast.LENGTH_SHORT).show();
         } else {
             Log.e(TAG, "-- Normal Running....");
         }
 
-        // Register our broadcast receiver
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Config.INTENT_LOCATION_CHANGED);
-        registerReceiver(receiver, filter);
-        Log.d(TAG, "-- INTENT LOCATION CHANGED registerReceiver()");
+        registerLocationChangedReceiver();
 
         Config.init_preference_value_running_default(getApplicationContext());
         gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
@@ -594,13 +597,20 @@ public class StartRunActivity extends AppCompatActivity implements
         paused = true;
         Log.d(TAG, "-- onPause.");
 
+        // onPause에서 임시로 파일을 저장함
+        // reSume할때 삭제 필요함
+        if(!activity_quit_normally) {
+            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
+            MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun);
+        }
+
         if (gpsLogger != null) {
             if (!gpsLogger.isTracking()) {
                 Log.d(TAG, "Service is not tracking, trying to stopService()");
                 unbindService(gpsLoggerConnection);
-                stopService(gpsLoggerServiceIntent);
+                //stopService(gpsLoggerServiceIntent);
             } else {
-                if(gpsLoggerConnection !=null) unbindService(gpsLoggerConnection);
+                //if(gpsLoggerConnection !=null) unbindService(gpsLoggerConnection);
             }
         }
 
@@ -616,6 +626,7 @@ public class StartRunActivity extends AppCompatActivity implements
         Log.d(TAG, "-- onResume.");
         startService(gpsLoggerServiceIntent);
         bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
+        registerLocationChangedReceiver();
         super.onResume();
     }
 
@@ -626,7 +637,7 @@ public class StartRunActivity extends AppCompatActivity implements
         Log.d(TAG, "-- sent Broadcast message: INTENT_STOP_TRACKING...");
 
         if(!activity_quit_normally) {
-            File lastRun = new File(Config.CSV_SAVE_DIR, "OOPS" + Config._csv_ext);
+            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
             MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun );
             Config.restore_preference_values_after_running(getApplicationContext());
             Toast.makeText(_ctx,"Running activity saved into OOPS!!", Toast.LENGTH_SHORT).show();
@@ -684,6 +695,11 @@ public class StartRunActivity extends AppCompatActivity implements
         }
         notificationManager.notify(_id, b.build());
     }
+    
+    void deleteIfExistsUnsaved() {
+        File f = new File(Config.JSN_SAVE_DIR, Config.Unsaved_File_name);
+        if(f.exists()) f.delete();
+    }
 
     boolean activity_quit_normally = false;
     public void alertQuitDialog() {
@@ -695,7 +711,7 @@ public class StartRunActivity extends AppCompatActivity implements
                     public void onClick(DialogInterface dialog, int which) {
                         activity_quit_normally = true;
                         Config.restore_preference_values_after_running(getApplicationContext());
-
+                        deleteIfExistsUnsaved();
                         //Intent intent = new Intent(Config.INTENT_STOP_TRACKING);
                         //sendBroadcast(intent);
 

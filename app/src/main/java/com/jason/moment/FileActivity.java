@@ -57,6 +57,7 @@ import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MediaUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
+import com.jason.moment.util.PermissionUtil;
 import com.jason.moment.util.Progress;
 import com.jason.moment.util.StringUtil;
 import com.jason.moment.util.db.MyActiviySummary;
@@ -101,6 +102,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        PermissionUtil.getInstance().setPermission(this);
         super.onCreate(savedInstanceState);
         _ctx = this;
         setContentView(R.layout.activity_file);
