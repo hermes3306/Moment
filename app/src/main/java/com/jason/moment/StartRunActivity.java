@@ -641,7 +641,7 @@ public class StartRunActivity extends AppCompatActivity implements
             File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
             MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun );
             Config.restore_preference_values_after_running(getApplicationContext());
-            Toast.makeText(_ctx,"Running activity saved into OOPS!!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(_ctx,"Running activity saved into " + Config.Unsaved_File_name + " !!", Toast.LENGTH_SHORT).show();
         } else {
             if (gpsLoggerConnection != null) unbindService(gpsLoggerConnection);
         }
