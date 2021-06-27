@@ -1,4 +1,4 @@
-package com.jason.moment;
+package com.jason.moment.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -37,7 +37,6 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -47,8 +46,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.Marker;
+import com.jason.moment.ConfigActivity;
+import com.jason.moment.MyReportActivity;
+import com.jason.moment.R;
 import com.jason.moment.service.GPSLogger;
-import com.jason.moment.service.GPSLoggerSvcCon4StartRun;
+import com.jason.moment.service.GPSLoggerConnection;
 import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.AlertDialogUtil;
 import com.jason.moment.util.C;
@@ -57,12 +59,14 @@ import com.jason.moment.util.CaloryUtil;
 import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
+import com.jason.moment.util.LocationUtil;
 import com.jason.moment.util.MP3;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StringUtil;
 import com.jason.moment.util.db.MyActiviySummary;
+import com.jason.moment.util.db.MyLoc;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -70,9 +74,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static java.lang.Integer.parseInt;
-
-public class StartRunActivity extends AppCompatActivity implements
+public class Run3 extends Run implements
         OnMapReadyCallback,
         View.OnClickListener {
 
@@ -80,7 +82,6 @@ public class StartRunActivity extends AppCompatActivity implements
     long gpsLoggingMinDistance;
     private Intent gpsLoggerServiceIntent = null;
     private ServiceConnection gpsLoggerConnection = null;
-
 
     // Loc Service binding
     MyActivity last_activity = null;
@@ -93,38 +94,10 @@ public class StartRunActivity extends AppCompatActivity implements
     ImageButton imb_wifi_off;
     ImageButton imb_wifi_on;
 
-    String TAG = "StartRunActivity";
+    String TAG = "Run3";
     Context _ctx = null;
     int _default_layout = R.layout.activity_run_common;
     private GoogleMap googleMap = null;
-
-    static Timer timer = new Timer();
-
-    private void showGPS() {
-        if(paused) return;
-
-        if (timer != null) {
-            timer.cancel();
-            timer.purge();
-            timer = new Timer();
-        }
-        ImageButton imb_wifi_off = (ImageButton) findViewById(R.id.imbt_wifi_off);
-        ImageButton imb_wifi_on = (ImageButton) findViewById(R.id.imbt_wifi_on);
-        imb_wifi_on.setVisibility(View.VISIBLE);
-        imb_wifi_off.setVisibility(View.GONE);
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                long start = System.currentTimeMillis();
-                StartRunActivity.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        imb_wifi_on.setVisibility(View.GONE);
-                        imb_wifi_off.setVisibility(View.VISIBLE);
-                    }
-                });
-            }
-        }, 1000);
-    }
 
     private TextView tv_start_km;
     private TextView tv_start_km_str;
@@ -220,8 +193,8 @@ public class StartRunActivity extends AppCompatActivity implements
     }
 
     private void showImg(String fname) {
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartRunActivity.this);
-        LayoutInflater factory = LayoutInflater.from(StartRunActivity.this);
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(Run3.this);
+        LayoutInflater factory = LayoutInflater.from(Run3.this);
 
         /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
         final View view = factory.inflate(R.layout.layout_imageview, null);
@@ -241,8 +214,8 @@ public class StartRunActivity extends AppCompatActivity implements
             Toast.makeText(_ctx, "No Medias!", Toast.LENGTH_SHORT).show();
             return;
         }
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartRunActivity.this);
-        LayoutInflater factory = LayoutInflater.from(StartRunActivity.this);
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(Run3.this);
+        LayoutInflater factory = LayoutInflater.from(Run3.this);
 
         /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
         if (media_filenames.get(pos).endsWith(Config._pic_ext)) {
@@ -300,8 +273,8 @@ public class StartRunActivity extends AppCompatActivity implements
     }
 
     private void showVideo(String fname) {
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartRunActivity.this);
-        LayoutInflater factory = LayoutInflater.from(StartRunActivity.this);
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(Run3.this);
+        LayoutInflater factory = LayoutInflater.from(Run3.this);
 
         /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
         final View view = factory.inflate(R.layout.layout_videoview, null);
@@ -355,7 +328,7 @@ public class StartRunActivity extends AppCompatActivity implements
                 break;
             case R.id.imb_start_list:
                 //recordVideo();
-                PopupMenu p = new PopupMenu(StartRunActivity.this, v);
+                PopupMenu p = new PopupMenu(Run3.this, v);
                 getMenuInflater().inflate(R.menu.start_menu, p.getMenu());
                 p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -383,7 +356,7 @@ public class StartRunActivity extends AppCompatActivity implements
                 MP3.stop(_ctx);
                 return true;
             case R.id.start_layout_select:
-                AlertDialog.Builder builder = new AlertDialog.Builder(StartRunActivity.this)
+                AlertDialog.Builder builder = new AlertDialog.Builder(Run3.this)
                         .setItems(screen_layout, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -395,7 +368,7 @@ public class StartRunActivity extends AppCompatActivity implements
                 break;
             case R.id.imSetting:
                 Log.d(TAG, "-- Setting Activities!");
-                Intent configIntent = new Intent(StartRunActivity.this, ConfigActivity.class);
+                Intent configIntent = new Intent(Run3.this, ConfigActivity.class);
                 startActivity(configIntent);
                 break;
             case R.id.action_map:
@@ -476,31 +449,6 @@ public class StartRunActivity extends AppCompatActivity implements
         }
     }
 
-    /**
-     * Receives Intent for new Location from GPS services
-     */
-    private final BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            //Log.d(TAG, "-- Received intent " + intent.getAction());
-            if (Config.INTENT_LOCATION_CHANGED.equals(intent.getAction())) {
-                Bundle extras = intent.getExtras();
-                if (extras != null) {
-                    Location location = (Location) extras.get("location");
-                    Log.d(TAG, "-- New location received! ("+location.getLatitude() + "," + location.getLongitude()+")");
-                    onLocationChanged(location);
-                }
-            }
-        }
-    };
-
-    private void onLocationChanged(Location location) {
-        new_location = location;
-
-
-        showGPS();
-    }
-
     void boardCastConfigChanged(long gpsLoggingInterval, long gpsLoggingMinDistance) {
         Intent intent = new Intent(Config.INTENT_CONFIG_CHANGE);
         intent.putExtra("gpsLoggingInterval", gpsLoggingInterval);
@@ -516,7 +464,6 @@ public class StartRunActivity extends AppCompatActivity implements
     private String currentTrackId;
     GPSLogger gpsLogger = null;
 
-
     public String getCurrentTrackId() {
         return this.currentTrackId;
     }
@@ -529,17 +476,11 @@ public class StartRunActivity extends AppCompatActivity implements
         return gpsLogger;
     }
 
-    public void registerLocationChangedReceiver() {
-        // Register our broadcast receiver
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Config.INTENT_LOCATION_CHANGED);
-        registerReceiver(receiver, filter);
-        Log.d(TAG, "-- INTENT LOCATION CHANGED registerReceiver()");
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this._ctx = this;
+        set_use_db(true);
+
         // 달리기 모드일 경우, 1초, 1미터로 셋팅함
         Config.initialize(getApplicationContext());
 
@@ -555,8 +496,6 @@ public class StartRunActivity extends AppCompatActivity implements
             Log.e(TAG, "-- Normal Running....");
         }
 
-        registerLocationChangedReceiver();
-
         Config.init_preference_value_running_default(getApplicationContext());
         gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
         String today = DateUtil.today();
@@ -567,7 +506,7 @@ public class StartRunActivity extends AppCompatActivity implements
         } else {
             startService(new Intent(this, GPSLogger.class)); // 서비스 시작
         }
-        gpsLoggerConnection = new GPSLoggerSvcCon4StartRun(this); // 서비스 바인딩
+        gpsLoggerConnection = new GPSLoggerConnection(this); // 서비스 바인딩
         bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
 
         if (list == null) list = new ArrayList<>();
@@ -580,11 +519,14 @@ public class StartRunActivity extends AppCompatActivity implements
     }
 
     static boolean paused = false;
+    static long last_pk = -1;
+    static long start_pk = -1;
 
     @Override
     public void onPause() {
         paused = true;
         Log.d(TAG, "-- onPause.");
+        last_pk = LocationUtil.getInstance().get_last_pk();
 
         // onPause에서 임시로 파일을 저장함
         // reSume할때 삭제 필요함
@@ -599,7 +541,7 @@ public class StartRunActivity extends AppCompatActivity implements
                 //unbindService(gpsLoggerConnection);
                 //stopService(gpsLoggerServiceIntent);
             } else {
-                //if(gpsLoggerConnection !=null) unbindService(gpsLoggerConnection);
+                if(gpsLoggerConnection !=null) unbindService(gpsLoggerConnection);
             }
         }
 
@@ -615,21 +557,33 @@ public class StartRunActivity extends AppCompatActivity implements
         Log.d(TAG, "-- onResume.");
         startService(gpsLoggerServiceIntent);
         bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
-        registerLocationChangedReceiver();
+
+        if(last_pk < LocationUtil.getInstance().get_last_pk()) {
+            Log.e(TAG, "----- HERE ----------");
+            Log.e(TAG, "----- HAVE TO PROCESS from last_pk ----------");
+            Log.e(TAG, "----- paused_last_pk : " + last_pk );
+            Log.e(TAG, "----- current_last_pk : " + LocationUtil.getInstance().get_last_pk() );
+
+            ArrayList<MyActivity> t = MyLoc.getInstance(_ctx).getActivitiesFrom(last_pk);
+            for(int i=0;i<t.size();i++) {
+                Log.e(TAG,"----- " + t.get(i).toString());
+                list.add(t.get(i));
+            }
+        }
         super.onResume();
     }
 
     @Override
     public void onDestroy() {
-        // Unregister broadcast receiver
-        unregisterReceiver(receiver);
         stopMyTimer();
+
         if(!activity_quit_normally) {
             File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
             MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun );
             Config.restore_preference_values_after_running(getApplicationContext());
             Toast.makeText(_ctx,"Running activity saved into " + Config.Unsaved_File_name + " !!", Toast.LENGTH_SHORT).show();
         } else {
+            set_use_db(false);
             if (gpsLoggerConnection != null) unbindService(gpsLoggerConnection);
         }
         super.onDestroy();
@@ -683,7 +637,7 @@ public class StartRunActivity extends AppCompatActivity implements
         }
         notificationManager.notify(_id, b.build());
     }
-    
+
     void deleteIfExistsUnsaved() {
         File f = new File(Config.JSN_SAVE_DIR, Config.Unsaved_File_name);
         if(f.exists()) f.delete();
@@ -701,6 +655,7 @@ public class StartRunActivity extends AppCompatActivity implements
                         Config.restore_preference_values_after_running(getApplicationContext());
                         deleteIfExistsUnsaved();
                         if(gpsLoggerConnection != null)  {
+                            set_use_db(false);
                             unbindService(gpsLoggerConnection);
                             gpsLoggerConnection = null;
                         }
@@ -727,19 +682,19 @@ public class StartRunActivity extends AppCompatActivity implements
                             notificationQuit(Config._notify_id, Config._notify_ticker,
                                     "활동이 저장되었습니다.", detail);
 
-                            Intent myReportIntent = new Intent(StartRunActivity.this, MyReportActivity.class);
+                            Intent myReportIntent = new Intent(Run3.this, MyReportActivity.class);
                             myReportIntent.putExtra("activity_file_name", activity_file_name);
                             startActivity(myReportIntent);
                         }
 
-                        StartRunActivity.this.quit = true;
-                        StartRunActivity.this.finish();
+                        Run3.this.quit = true;
+                        Run3.this.finish();
                     }
                 });
         builder.setNegativeButton("취소",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        StartRunActivity.this.quit = false;
+                        Run3.this.quit = false;
                     }
                 });
         builder.show();
@@ -748,7 +703,7 @@ public class StartRunActivity extends AppCompatActivity implements
     static TimerTask mTask = null;
     Timer mTimer = null;
     private void startMyTimer() {
-        mTask = new StartRunActivity.MyTimerTask();
+        mTask = new Run3.MyTimerTask();
         mTimer = new Timer();
         mTimer.schedule(mTask, 0, 1000);
     }
@@ -766,13 +721,16 @@ public class StartRunActivity extends AppCompatActivity implements
     public class MyTimerTask extends TimerTask{
         public void run() {
             long start = System.currentTimeMillis();
-            StartRunActivity.this.runOnUiThread(new Runnable() {
+            Run3.this.runOnUiThread(new Runnable() {
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 public void run() {
+                    if(paused) return;
+
                     Date d = new Date();
                     String elapsed = StringUtil.elapsedStr(start_time,d);
                     tv_start_time.setText(elapsed);
 
+                    new_location = LocationUtil.getInstance().last_location();
                     Location location = new_location;
                     if(location == null) return;
 

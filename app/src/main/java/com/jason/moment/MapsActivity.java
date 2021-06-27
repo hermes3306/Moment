@@ -378,8 +378,6 @@ public class MapsActivity extends AppCompatActivity implements
 
     private double dist=0;
     public void onLocationChanged(Location location) {
-        // insert into MyLoc 
-        LocationUtil.getInstance().onLocationChanged(_ctx,location);
         Date d = new Date();
         if(last_location==null) {
             dist = 0;
@@ -827,12 +825,6 @@ public class MapsActivity extends AppCompatActivity implements
                 MP3.stop(_ctx);
                 return true;
 
-            case R.id.run_activity:
-                Log.d(TAG,"-- StartNewActivity start.");
-                Intent runIntent = new Intent(MapsActivity.this, StartNewActivity.class);
-                startActivityForResult(runIntent, Config.CALL_START_NEW_ACTIVITY);
-                return true;
-
             case R.id.ReportActivity:
                 Log.d(TAG,"-- Report Activity!");
                 Intent reportActivity = new Intent(MapsActivity.this, MyReportActivity.class);
@@ -864,11 +856,6 @@ public class MapsActivity extends AppCompatActivity implements
                 Log.d(TAG,"-- Scroll Pic Activity!");
                 Intent scrollAllPicIntent = new Intent(MapsActivity.this, ScrollAllPicActivity.class);
                 startActivityForResult(scrollAllPicIntent, Config.CALL_SCROLL_ALL_PIC_ACTIVITY);
-                return true;
-
-            case R.id.media_activity:
-                Intent mediaIntent = new Intent(MapsActivity.this, PicNVideoActivity.class);
-                startActivity(mediaIntent);
                 return true;
 
             case R.id.pic_activity:

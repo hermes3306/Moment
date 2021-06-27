@@ -45,6 +45,8 @@ public class GPSLogger extends Service implements LocationListener {
 
     private boolean isTracking = true;
     private boolean isGpsEnabled = false;
+    private boolean use_db = false;
+
     private final boolean use_barometer = false;
     private static final int NOTIFICATION_ID = 1;
     private static final String CHANNEL_ID = "Moment_Channel";
@@ -58,6 +60,10 @@ public class GPSLogger extends Service implements LocationListener {
 
     private long gpsLoggingInterval;
     private long gpsLoggingMinDistance;
+
+    public void set_use_db(boolean b) {
+        use_db = b;
+    }
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
 
@@ -249,12 +255,16 @@ public class GPSLogger extends Service implements LocationListener {
         if((lastGPSTimestamp + gpsLoggingInterval) < System.currentTimeMillis()){
             lastGPSTimestamp = System.currentTimeMillis(); // save the time of this fix
             lastLocation = location;
-            if (isTracking) {
+            //if (isTracking) {
+            if(true) {
                 LocationUtil.getInstance().onLocationChanged(getApplicationContext(),location);
                 Log.d(TAG, "-- Location Changed Intent Broadcasting to All Activities...");
                 Intent intent = new Intent(Config.INTENT_LOCATION_CHANGED);
                 intent.putExtra("location", location);
                 sendBroadcast(intent);
+            }
+
+            if(use_db) {
             }
         }
 

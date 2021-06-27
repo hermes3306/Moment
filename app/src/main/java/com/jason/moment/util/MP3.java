@@ -17,7 +17,6 @@ import android.widget.VideoView;
 import androidx.core.content.FileProvider;
 
 import com.jason.moment.R;
-import com.jason.moment.StartNewActivity;
 
 import java.io.File;
 import java.io.PrintWriter;

@@ -61,7 +61,7 @@ public class MyLoc {
         dbHelper.deleteAll(db);
     }
 
-    public void ins(double lat, double lng) {
+    public long ins(double lat, double lng) {
         // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         // Gets the data repository in write mode
         // SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -81,10 +81,11 @@ public class MyLoc {
 
 // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(MyLocContract.LocEntry.TABLE_NAME, null, values);
+        return newRowId;
         //Log.d(TAG, "-- db.insert");
     }
 
-    public void ins(double lat, double lng, String dt, String ti) {
+    public long ins(double lat, double lng, String dt, String ti) {
         // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         // Gets the data repository in write mode
         // SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -97,6 +98,7 @@ public class MyLoc {
 
 // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(MyLocContract.LocEntry.TABLE_NAME, null, values);
+        return newRowId;
         //Log.d(TAG, "-- db.insert rowid(" + newRowId +")");
     }
 
@@ -236,6 +238,13 @@ public class MyLoc {
         String today = DateUtil.DateToString(new Date(), "yyyy/MM/dd");
         //Log.d(TAG, "-- Today is " + today);
         String[] selectionArgs = { today };
+        return Path2Activity(selection, selectionArgs, order_by);
+    }
+
+    public ArrayList<MyActivity> getActivitiesFrom(long last_pk) {
+        String selection = MyLocContract.LocEntry._ID  + " > ? ";
+        String order_by = MyLocContract.LocEntry._ID + " ASC";
+        String[] selectionArgs = { "" + last_pk };
         return Path2Activity(selection, selectionArgs, order_by);
     }
 

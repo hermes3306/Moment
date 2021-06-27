@@ -47,30 +47,22 @@
             android:theme="@style/Theme.AppCompat">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:mimeType="image/*" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:mimeType="video/*" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:mimeType="text/plain" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
@@ -79,9 +71,6 @@
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".SelfInstallActivity"
-            android:theme="@style/Theme.AppCompat" />
-        <activity
-            android:name=".PicNVideoActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".ScrollPicActivity"
@@ -97,20 +86,20 @@
             android:name=".QuoteActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity
-            android:name=".StartActivity"
-            android:theme="@style/Theme.AppCompat" />
-        <activity
             android:name=".StartRunActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity
-            android:name=".StartNewActivity"
+            android:name=".activity.Run1"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name=".activity.Run2"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name=".activity.Run3"
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".ConfigActivity"
             android:label="@string/title_activity_config"
-            android:theme="@style/Theme.AppCompat" />
-        <activity
-            android:name=".RunActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".PicActivity"

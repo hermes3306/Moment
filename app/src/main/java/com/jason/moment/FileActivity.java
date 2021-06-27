@@ -592,13 +592,6 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
                 return true;
 
-            case R.id.run_activity:
-                Log.d(TAG,"-- Run Activity!");
-                Intent runIntent = new Intent(this, RunActivity.class);
-                runIntent.putExtra("1", 1);
-                startActivityForResult(runIntent, Config.CALL_RUN_ACTIVITY);
-                return true;
-
             case R.id.ReportActivity:
                 Log.d(TAG,"-- Report Activity!");
                 Intent reportActivity = new Intent(this, MyReportActivity.class);

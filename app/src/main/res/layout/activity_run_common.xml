@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".StartNewActivity">
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -96,7 +95,6 @@
                 android:autoSizeStepGranularity="2sp"
                 android:autoSizeTextType="uniform"
                 android:text="0"
-                android:textAlignment="center"
                 android:textColor="@color/DimGray"
                 android:textSize="30sp"
                 android:textStyle="bold" />
@@ -126,7 +124,6 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:text="Calories"
-                android:textAlignment="center"
                 android:textColor="@color/Gray"
                 android:textSize="20dp"
                 android:textStyle="bold" />

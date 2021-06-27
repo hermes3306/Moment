@@ -1,4 +1,4 @@
-package com.jason.moment;
+package com.jason.moment.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -37,7 +37,6 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -47,8 +46,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.Marker;
+import com.jason.moment.ConfigActivity;
+import com.jason.moment.MyReportActivity;
+import com.jason.moment.R;
 import com.jason.moment.service.GPSLogger;
-import com.jason.moment.service.GPSLoggerSvcCon4StartRun;
+import com.jason.moment.service.GPSLoggerConnection;
 import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.AlertDialogUtil;
 import com.jason.moment.util.C;
@@ -70,9 +72,13 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static java.lang.Integer.parseInt;
 
-public class StartRunActivity extends AppCompatActivity implements
+/*
+    Timer off
+    GPSLogger 서비스를 받으면 리스트에 추가하는 단순 구조
+ */
+
+public class Run2 extends Run implements
         OnMapReadyCallback,
         View.OnClickListener {
 
@@ -93,38 +99,10 @@ public class StartRunActivity extends AppCompatActivity implements
     ImageButton imb_wifi_off;
     ImageButton imb_wifi_on;
 
-    String TAG = "StartRunActivity";
+    String TAG = "Run2";
     Context _ctx = null;
     int _default_layout = R.layout.activity_run_common;
     private GoogleMap googleMap = null;
-
-    static Timer timer = new Timer();
-
-    private void showGPS() {
-        if(paused) return;
-
-        if (timer != null) {
-            timer.cancel();
-            timer.purge();
-            timer = new Timer();
-        }
-        ImageButton imb_wifi_off = (ImageButton) findViewById(R.id.imbt_wifi_off);
-        ImageButton imb_wifi_on = (ImageButton) findViewById(R.id.imbt_wifi_on);
-        imb_wifi_on.setVisibility(View.VISIBLE);
-        imb_wifi_off.setVisibility(View.GONE);
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                long start = System.currentTimeMillis();
-                StartRunActivity.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        imb_wifi_on.setVisibility(View.GONE);
-                        imb_wifi_off.setVisibility(View.VISIBLE);
-                    }
-                });
-            }
-        }, 1000);
-    }
 
     private TextView tv_start_km;
     private TextView tv_start_km_str;
@@ -220,8 +198,8 @@ public class StartRunActivity extends AppCompatActivity implements
     }
 
     private void showImg(String fname) {
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartRunActivity.this);
-        LayoutInflater factory = LayoutInflater.from(StartRunActivity.this);
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(Run2.this);
+        LayoutInflater factory = LayoutInflater.from(Run2.this);
 
         /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
         final View view = factory.inflate(R.layout.layout_imageview, null);
@@ -241,8 +219,8 @@ public class StartRunActivity extends AppCompatActivity implements
             Toast.makeText(_ctx, "No Medias!", Toast.LENGTH_SHORT).show();
             return;
         }
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartRunActivity.this);
-        LayoutInflater factory = LayoutInflater.from(StartRunActivity.this);
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(Run2.this);
+        LayoutInflater factory = LayoutInflater.from(Run2.this);
 
         /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
         if (media_filenames.get(pos).endsWith(Config._pic_ext)) {
@@ -300,8 +278,8 @@ public class StartRunActivity extends AppCompatActivity implements
     }
 
     private void showVideo(String fname) {
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartRunActivity.this);
-        LayoutInflater factory = LayoutInflater.from(StartRunActivity.this);
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(Run2.this);
+        LayoutInflater factory = LayoutInflater.from(Run2.this);
 
         /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
         final View view = factory.inflate(R.layout.layout_videoview, null);
@@ -355,7 +333,7 @@ public class StartRunActivity extends AppCompatActivity implements
                 break;
             case R.id.imb_start_list:
                 //recordVideo();
-                PopupMenu p = new PopupMenu(StartRunActivity.this, v);
+                PopupMenu p = new PopupMenu(Run2.this, v);
                 getMenuInflater().inflate(R.menu.start_menu, p.getMenu());
                 p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -383,7 +361,7 @@ public class StartRunActivity extends AppCompatActivity implements
                 MP3.stop(_ctx);
                 return true;
             case R.id.start_layout_select:
-                AlertDialog.Builder builder = new AlertDialog.Builder(StartRunActivity.this)
+                AlertDialog.Builder builder = new AlertDialog.Builder(Run2.this)
                         .setItems(screen_layout, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -395,7 +373,7 @@ public class StartRunActivity extends AppCompatActivity implements
                 break;
             case R.id.imSetting:
                 Log.d(TAG, "-- Setting Activities!");
-                Intent configIntent = new Intent(StartRunActivity.this, ConfigActivity.class);
+                Intent configIntent = new Intent(Run2.this, ConfigActivity.class);
                 startActivity(configIntent);
                 break;
             case R.id.action_map:
@@ -496,9 +474,70 @@ public class StartRunActivity extends AppCompatActivity implements
 
     private void onLocationChanged(Location location) {
         new_location = location;
+        if(!paused) showGPS();
+        process_new_location();
+    }
 
+    private void process_new_location() {
 
-        showGPS();
+        Date d = new Date();
+        String elapsed = StringUtil.elapsedStr(start_time,d);
+        tv_start_time.setText(elapsed);
+
+        Location location = new_location;
+        if(location == null) return;
+
+        if(resume) {
+            showActivities();
+            resume = false;
+        }
+
+        if(last_activity==null) {
+            dist = 0;
+            last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
+            list.add(last);
+            last_activity = last;
+        }else {
+            dist = CalDistance.dist(last_activity.getLatitude(), last_activity.getLongitude(), location.getLatitude(), location.getLongitude());
+            if(dist > Config._loc_distance) {
+                last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
+                list.add(last);
+                last_activity = last;
+                if(googleMap != null && ! paused) showActivities();
+            }
+        }
+
+        //Log.e(TAG, "-- Timer!");
+
+        if(!paused) {
+            long t1 = System.currentTimeMillis();
+            dist = MyActivityUtil.getTotalDistanceInDouble(list);
+            long t2 = System.currentTimeMillis();
+            if(dist<1000) { /* 1KM 이하 */
+                String s1 = String.format("%.0f", dist);
+                tv_start_km.setText(s1);
+                tv_start_km_str.setText("Meters");
+            } else if(dist>1000) { /* 1KM 이상 */
+                String s1 = String.format("%.2f", dist/1000.0);
+                tv_start_km.setText(s1);
+                tv_start_km_str.setText("Kilometers");
+            } else if(dist >10000){ /* 10KM 이상*/
+                String s1 = String.format("%.3f", dist/1000.0);
+                tv_start_km.setText(s1);
+                tv_start_km_str.setText("Kilometers");
+            }
+            double  minpkm = MyActivityUtil.getMinPerKm(list);
+            String tt1 = StringUtil.elapsedStr2((long) (minpkm*1000*60.0));
+            tv_start_avg.setText("" + tt1);
+            double  minp1km = MyActivityUtil.MinPer1Km(list);
+            String tt2 = StringUtil.elapsedStr2((long) (minp1km*1000*60.0));
+            tv_start_cur.setText("" + tt2);
+            float burntkCal;
+            int durationInSeconds = MyActivityUtil.durationInSeconds(list);
+            int stepsTaken = (int) (dist / Config._strideLengthInMeters);
+            burntkCal = CaloryUtil.calculateEnergyExpenditure((float)dist / 1000f, durationInSeconds);
+            tv_start_calory.setText("" + String.format("%.1f", burntkCal));
+        }
     }
 
     void boardCastConfigChanged(long gpsLoggingInterval, long gpsLoggingMinDistance) {
@@ -515,7 +554,6 @@ public class StartRunActivity extends AppCompatActivity implements
     // 정리 필요함
     private String currentTrackId;
     GPSLogger gpsLogger = null;
-
 
     public String getCurrentTrackId() {
         return this.currentTrackId;
@@ -540,6 +578,7 @@ public class StartRunActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this._ctx = this;
+        set_use_db(false);
         // 달리기 모드일 경우, 1초, 1미터로 셋팅함
         Config.initialize(getApplicationContext());
 
@@ -567,7 +606,7 @@ public class StartRunActivity extends AppCompatActivity implements
         } else {
             startService(new Intent(this, GPSLogger.class)); // 서비스 시작
         }
-        gpsLoggerConnection = new GPSLoggerSvcCon4StartRun(this); // 서비스 바인딩
+        gpsLoggerConnection = new GPSLoggerConnection(this); // 서비스 바인딩
         bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
 
         if (list == null) list = new ArrayList<>();
@@ -576,7 +615,7 @@ public class StartRunActivity extends AppCompatActivity implements
         initialize_Mapview(savedInstanceState);
         activity_file_name = StringUtil.DateToString(new Date(), "yyyyMMdd_HHmmss");
         start_time = new Date();
-        startMyTimer();
+        //startMyTimer();
     }
 
     static boolean paused = false;
@@ -683,7 +722,7 @@ public class StartRunActivity extends AppCompatActivity implements
         }
         notificationManager.notify(_id, b.build());
     }
-    
+
     void deleteIfExistsUnsaved() {
         File f = new File(Config.JSN_SAVE_DIR, Config.Unsaved_File_name);
         if(f.exists()) f.delete();
@@ -727,19 +766,19 @@ public class StartRunActivity extends AppCompatActivity implements
                             notificationQuit(Config._notify_id, Config._notify_ticker,
                                     "활동이 저장되었습니다.", detail);
 
-                            Intent myReportIntent = new Intent(StartRunActivity.this, MyReportActivity.class);
+                            Intent myReportIntent = new Intent(Run2.this, MyReportActivity.class);
                             myReportIntent.putExtra("activity_file_name", activity_file_name);
                             startActivity(myReportIntent);
                         }
 
-                        StartRunActivity.this.quit = true;
-                        StartRunActivity.this.finish();
+                        Run2.this.quit = true;
+                        Run2.this.finish();
                     }
                 });
         builder.setNegativeButton("취소",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        StartRunActivity.this.quit = false;
+                        Run2.this.quit = false;
                     }
                 });
         builder.show();
@@ -748,7 +787,7 @@ public class StartRunActivity extends AppCompatActivity implements
     static TimerTask mTask = null;
     Timer mTimer = null;
     private void startMyTimer() {
-        mTask = new StartRunActivity.MyTimerTask();
+        mTask = new Run2.MyTimerTask();
         mTimer = new Timer();
         mTimer.schedule(mTask, 0, 1000);
     }
@@ -766,67 +805,10 @@ public class StartRunActivity extends AppCompatActivity implements
     public class MyTimerTask extends TimerTask{
         public void run() {
             long start = System.currentTimeMillis();
-            StartRunActivity.this.runOnUiThread(new Runnable() {
+            Run2.this.runOnUiThread(new Runnable() {
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 public void run() {
-                    Date d = new Date();
-                    String elapsed = StringUtil.elapsedStr(start_time,d);
-                    tv_start_time.setText(elapsed);
-
-                    Location location = new_location;
-                    if(location == null) return;
-
-                    if(resume) {
-                        showActivities();
-                        resume = false;
-                    }
-
-                    if(last_activity==null) {
-                        dist = 0;
-                        last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
-                        list.add(last);
-                        last_activity = last;
-                    }else {
-                        dist = CalDistance.dist(last_activity.getLatitude(), last_activity.getLongitude(), location.getLatitude(), location.getLongitude());
-                        if(dist > Config._loc_distance) {
-                            last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
-                            list.add(last);
-                            last_activity = last;
-                            if(googleMap != null && ! paused) showActivities();
-                        }
-                    }
-
-                    //Log.e(TAG, "-- Timer!");
-
-                    if(!paused) {
-                        long t1 = System.currentTimeMillis();
-                        dist = MyActivityUtil.getTotalDistanceInDouble(list);
-                        long t2 = System.currentTimeMillis();
-                        if(dist<1000) { /* 1KM 이하 */
-                            String s1 = String.format("%.0f", dist);
-                            tv_start_km.setText(s1);
-                            tv_start_km_str.setText("Meters");
-                        } else if(dist>1000) { /* 1KM 이상 */
-                            String s1 = String.format("%.2f", dist/1000.0);
-                            tv_start_km.setText(s1);
-                            tv_start_km_str.setText("Kilometers");
-                        } else if(dist >10000){ /* 10KM 이상*/
-                            String s1 = String.format("%.3f", dist/1000.0);
-                            tv_start_km.setText(s1);
-                            tv_start_km_str.setText("Kilometers");
-                        }
-                        double  minpkm = MyActivityUtil.getMinPerKm(list);
-                        String tt1 = StringUtil.elapsedStr2((long) (minpkm*1000*60.0));
-                        tv_start_avg.setText("" + tt1);
-                        double  minp1km = MyActivityUtil.MinPer1Km(list);
-                        String tt2 = StringUtil.elapsedStr2((long) (minp1km*1000*60.0));
-                        tv_start_cur.setText("" + tt2);
-                        float burntkCal;
-                        int durationInSeconds = MyActivityUtil.durationInSeconds(list);
-                        int stepsTaken = (int) (dist / Config._strideLengthInMeters);
-                        burntkCal = CaloryUtil.calculateEnergyExpenditure((float)dist / 1000f, durationInSeconds);
-                        tv_start_calory.setText("" + String.format("%.1f", burntkCal));
-                    }
+                    process_new_location();
                 }
             });
         } /* end of run() */

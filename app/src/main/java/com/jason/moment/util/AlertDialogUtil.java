@@ -1,12 +1,12 @@
 package com.jason.moment.util;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,13 +21,12 @@ import android.widget.VideoView;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.jason.moment.DetailMapsActivity;
-import com.jason.moment.FileActivity;
-import com.jason.moment.MapsActivity;
 import com.jason.moment.MyReportActivity;
 import com.jason.moment.R;
-import com.jason.moment.RunActivity;
-import com.jason.moment.StartNewActivity;
 import com.jason.moment.StartRunActivity;
+import com.jason.moment.activity.Run1;
+import com.jason.moment.activity.Run2;
+import com.jason.moment.activity.Run3;
 import com.jason.moment.util.db.MyActiviySummary;
 import com.jason.moment.util.db.MyMedia;
 
@@ -66,8 +65,12 @@ public class AlertDialogUtil {
         iv_run_type1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(_ctx, StartRunActivity.class);
-                _ctx.startActivity(intent);
+                if(new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name).exists()) {
+                    AlertDialogUtil.getInstance().checkActiveRunning(_ctx, Run1.class);
+                } else {
+                    Intent intent = new Intent(_ctx, Run1.class);
+                    _ctx.startActivity(intent);
+                }
                 alert.dismiss();
             }
         });
@@ -75,8 +78,12 @@ public class AlertDialogUtil {
         iv_run_type2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(_ctx, StartNewActivity.class);
-                _ctx.startActivity(intent);
+                if(new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name).exists()) {
+                    AlertDialogUtil.getInstance().checkActiveRunning(_ctx, Run2.class);
+                } else {
+                    Intent intent = new Intent(_ctx, Run2.class);
+                    _ctx.startActivity(intent);
+                }
                 alert.dismiss();
             }
         });
@@ -84,8 +91,12 @@ public class AlertDialogUtil {
         iv_run_type3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(_ctx, RunActivity.class);
-                _ctx.startActivity(intent);
+                if(new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name).exists()) {
+                    AlertDialogUtil.getInstance().checkActiveRunning(_ctx, Run3.class);
+                } else {
+                    Intent intent = new Intent(_ctx, Run3.class);
+                    _ctx.startActivity(intent);
+                }
                 alert.dismiss();
             }
         });
@@ -211,6 +222,33 @@ public class AlertDialogUtil {
         alert.show();
     }
 
+    public void checkActiveRunning(Context _ctx, Class activity) {
+        File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
+
+        if (lastRun.exists()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
+            builder.setTitle("Do you want to run with last activity records?");
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Log.e("--","-- Start Run Activity!");
+                    Intent _StartActivity = new Intent(_ctx, activity);
+                    _ctx.startActivity(_StartActivity);
+                }
+            });
+
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    lastRun.delete();
+                }
+            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+    }
+
     public void checkActiveRunning(Context _ctx) {
         File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
 
@@ -232,7 +270,6 @@ public class AlertDialogUtil {
                     lastRun.delete();
                 }
             });
-
 
             AlertDialog alert = builder.create();
             alert.show();

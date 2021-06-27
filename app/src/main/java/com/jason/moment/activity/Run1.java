@@ -1,4 +1,4 @@
-package com.jason.moment;
+package com.jason.moment.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -12,7 +12,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -38,20 +37,20 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.FileProvider;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.jason.moment.ConfigActivity;
+import com.jason.moment.MyReportActivity;
+import com.jason.moment.R;
 import com.jason.moment.service.GPSLogger;
-import com.jason.moment.service.GPSLoggerServiceConnection;
+import com.jason.moment.service.GPSLoggerConnection;
 import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.AlertDialogUtil;
 import com.jason.moment.util.C;
@@ -62,7 +61,6 @@ import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.MP3;
 import com.jason.moment.util.MapUtil;
-import com.jason.moment.util.MediaUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.StringUtil;
@@ -74,58 +72,32 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static java.lang.Integer.parseInt;
-
-public class StartNewActivity extends AppCompatActivity implements
+public class Run1 extends Run implements
         OnMapReadyCallback,
-        View.OnClickListener{
+        View.OnClickListener {
+
+    long gpsLoggingInterval;
+    long gpsLoggingMinDistance;
+    private Intent gpsLoggerServiceIntent = null;
+    private ServiceConnection gpsLoggerConnection = null;
+
 
     // Loc Service binding
-    Location last_location=null;
-    Location new_location=null;
+    MyActivity last_activity = null;
+    Location new_location = null;
 
     public ArrayList<String> pic_filenames = new ArrayList<>();
     public ArrayList<String> mov_filenames = new ArrayList<>();
     public ArrayList<String> media_filenames = new ArrayList<>();
-    String activity_file_name=null;
+    String activity_file_name = null;
     ImageButton imb_wifi_off;
     ImageButton imb_wifi_on;
 
-    String TAG = "StartNewActivity";
+    String TAG = "Run1";
     Context _ctx = null;
-    int _default_layout = R.layout.activity_start_new;
-    private GoogleMap googleMap=null;
+    int _default_layout = R.layout.activity_run_common;
+    private GoogleMap googleMap = null;
 
-    static Timer timer = new Timer();
-    private void showGPS() {
-        if(timer != null) {
-            timer.cancel();
-            timer.purge();
-            timer = new Timer();
-        }
-        ImageButton imb_wifi_off = (ImageButton)findViewById(R.id.imbt_wifi_off);
-        ImageButton imb_wifi_on = (ImageButton)findViewById(R.id.imbt_wifi_on);
-        imb_wifi_on.setVisibility(View.VISIBLE);
-        imb_wifi_off.setVisibility(View.GONE);
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                long start = System.currentTimeMillis();
-                StartNewActivity.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        imb_wifi_on.setVisibility(View.GONE);
-                        imb_wifi_off.setVisibility(View.VISIBLE);
-                    }
-                });
-            }
-        },1000);
-    }
-
-    int[] start_layout = {
-            R.layout.activity_start_style3,
-            R.layout.activity_start_style1,
-            R.layout.activity_start_style2
-    };
 
     private TextView tv_start_km;
     private TextView tv_start_km_str;
@@ -135,13 +107,16 @@ public class StartNewActivity extends AppCompatActivity implements
     private TextView tv_start_calory;
 
     private Date start_time;
-    private double dist=0;
-    private boolean quit=false;
+    private double dist = 0;
+    private boolean quit = false;
 
     private ArrayList list = null;
     private final MyActivity first = null;
     private MyActivity last = null;
-    public String getActivity_file_name() {return activity_file_name;}
+
+    public String getActivity_file_name() {
+        return activity_file_name;
+    }
 
     // 사진 촬영 기능
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -176,14 +151,14 @@ public class StartNewActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "-- onActivityResult called!");
-        if(resultCode != RESULT_OK) {
+        if (resultCode != RESULT_OK) {
             Log.d(TAG, "-- RESULT_OK FALSE......!");
             return;
         }
-        if(data==null) Log.d(TAG, "-- Intent data is null");
+        if (data == null) Log.d(TAG, "-- Intent data is null");
         //Bundle extras = data.getExtras();
 
-        switch(requestCode) {
+        switch (requestCode) {
             case Config.PICK_FROM_CAMERA:
                 Log.d(TAG, "-- PIC_FROM_CAMERA: ");
                 //showImg(currentMediaName);
@@ -202,24 +177,24 @@ public class StartNewActivity extends AppCompatActivity implements
     }
 
     public void showImg(ImageView iv_pic, String fname) {
-        File folder= Config.PIC_SAVE_DIR;
-        File file = new File(folder,fname);
+        File folder = Config.PIC_SAVE_DIR;
+        File file = new File(folder, fname);
         String filepath = file.getAbsolutePath();
 
-        Log.d(TAG,"--show:"+filepath);
+        Log.d(TAG, "--show:" + filepath);
         Log.d(TAG, "--filepath to show:" + filepath);
         Bitmap bitmap = BitmapFactory.decodeFile(filepath);
 
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
         int mDegree = 90;
-        bitmap = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(), bitmap.getHeight(),matrix,true);
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
         iv_pic.setImageBitmap(bitmap);
     }
 
     private void showImg(String fname) {
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartNewActivity.this);
-        LayoutInflater factory = LayoutInflater.from(StartNewActivity.this);
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(Run1.this);
+        LayoutInflater factory = LayoutInflater.from(Run1.this);
 
         /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
         final View view = factory.inflate(R.layout.layout_imageview, null);
@@ -235,32 +210,31 @@ public class StartNewActivity extends AppCompatActivity implements
     }
 
     private void showMedias(final int pos) {
-        if(media_filenames.size()<pos+1) {
-            Toast.makeText(_ctx,"No Medias!",Toast.LENGTH_SHORT).show();
+        if (media_filenames.size() < pos + 1) {
+            Toast.makeText(_ctx, "No Medias!", Toast.LENGTH_SHORT).show();
             return;
         }
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartNewActivity.this);
-        LayoutInflater factory = LayoutInflater.from(StartNewActivity.this);
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(Run1.this);
+        LayoutInflater factory = LayoutInflater.from(Run1.this);
 
         /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
-        if(media_filenames.get(pos).endsWith(Config._pic_ext)) {
+        if (media_filenames.get(pos).endsWith(Config._pic_ext)) {
             View view1 = factory.inflate(R.layout.layout_imageview, null);
             ImageView iv = view1.findViewById(R.id.dialog_imageview);
             TextView tv = view1.findViewById(R.id.view_title);
-            tv.setText("" + (pos+1) + "/" + media_filenames.size());
+            tv.setText("" + (pos + 1) + "/" + media_filenames.size());
             showImg(iv, media_filenames.get(pos));
             alertadd.setView(view1);
-        }
-        else {
+        } else {
             View view2 = factory.inflate(R.layout.layout_videoview, null);
             VideoView vv = view2.findViewById(R.id.dialog_video_view);
             TextView tv2 = view2.findViewById(R.id.view_title);
-            tv2.setText("" + (pos+1) + "/" + media_filenames.size());
+            tv2.setText("" + (pos + 1) + "/" + media_filenames.size());
             showVideo(vv, media_filenames.get(pos));
             alertadd.setView(view2);
         }
 
-        if(media_filenames.size() > pos+1 ) {
+        if (media_filenames.size() > pos + 1) {
             alertadd.setPositiveButton("Next", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dlg, int sumthin) {
                     showMedias(pos + 1);
@@ -268,7 +242,7 @@ public class StartNewActivity extends AppCompatActivity implements
             });
         }
 
-        if(0 < pos) {
+        if (0 < pos) {
             alertadd.setNegativeButton("Prev", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dlg, int sumthin) {
                     showMedias(pos - 1);
@@ -299,8 +273,8 @@ public class StartNewActivity extends AppCompatActivity implements
     }
 
     private void showVideo(String fname) {
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(StartNewActivity.this);
-        LayoutInflater factory = LayoutInflater.from(StartNewActivity.this);
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(Run1.this);
+        LayoutInflater factory = LayoutInflater.from(Run1.this);
 
         /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
         final View view = factory.inflate(R.layout.layout_videoview, null);
@@ -326,11 +300,10 @@ public class StartNewActivity extends AppCompatActivity implements
             case R.id.start_dash_ll_05:
                 LinearLayout startActionBar = findViewById(R.id.startActionBar);
                 LinearLayout action_menu_bar = findViewById(R.id.action_menu_bar);
-                if(viewStartActionBar) {
+                if (viewStartActionBar) {
                     startActionBar.setVisibility(View.VISIBLE);
                     action_menu_bar.setVisibility(View.VISIBLE);
-                }
-                else {
+                } else {
                     startActionBar.setVisibility(View.GONE);
                     action_menu_bar.setVisibility(View.GONE);
                 }
@@ -351,11 +324,11 @@ public class StartNewActivity extends AppCompatActivity implements
             case R.id.tv_start_km:
                 break;
             case R.id.broadcastNewStart:
-                boardCastConfigChanged(1000,1);
+                boardCastConfigChanged(1000, 1);
                 break;
             case R.id.imb_start_list:
                 //recordVideo();
-                PopupMenu p = new PopupMenu(StartNewActivity.this, v);
+                PopupMenu p = new PopupMenu(Run1.this, v);
                 getMenuInflater().inflate(R.menu.start_menu, p.getMenu());
                 p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -375,7 +348,7 @@ public class StartNewActivity extends AppCompatActivity implements
         String[] screen_layout_value = r.getStringArray(R.array.start_screen);
 
         int id = item.getItemId();
-        switch(id) {
+        switch (id) {
             case R.id.mp3Player:
                 MP3.showPlayer(_ctx);
                 return true;
@@ -383,7 +356,7 @@ public class StartNewActivity extends AppCompatActivity implements
                 MP3.stop(_ctx);
                 return true;
             case R.id.start_layout_select:
-                AlertDialog.Builder builder = new AlertDialog.Builder(StartNewActivity.this )
+                AlertDialog.Builder builder = new AlertDialog.Builder(Run1.this)
                         .setItems(screen_layout, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -394,12 +367,12 @@ public class StartNewActivity extends AppCompatActivity implements
                 mSportSelectDialog.show();
                 break;
             case R.id.imSetting:
-                Log.d(TAG,"-- Setting Activities!");
-                Intent configIntent = new Intent(StartNewActivity.this, ConfigActivity.class);
+                Log.d(TAG, "-- Setting Activities!");
+                Intent configIntent = new Intent(Run1.this, ConfigActivity.class);
                 startActivity(configIntent);
                 break;
             case R.id.action_map:
-                int i=0;
+                int i = 0;
                 break;
             case R.id.record_video:
                 recordVideo();
@@ -426,20 +399,20 @@ public class StartNewActivity extends AppCompatActivity implements
         setHeadMessages();
         ArrayList<MyActivity> mal = list;
         MyActivity lastActivity = null;
-        if(mal==null) return;
-        if(mal.size()==0) return;
+        if (mal == null) return;
+        if (mal.size() == 0) return;
         ArrayList<Marker> _markers = new ArrayList<>();
         Display display = getWindowManager().getDefaultDisplay();
-        MapUtil.DRAW(_ctx,googleMap,display,list );
+        MapUtil.DRAW(_ctx, googleMap, display, list);
     }
 
     private void initialize_views() {
-        tv_start_km = (TextView)findViewById(R.id.tv_start_km);
-        tv_start_km_str = (TextView)findViewById(R.id.tv_start_km_str);
-        tv_start_time = (TextView)findViewById(R.id.tv_start_time);
-        tv_start_avg = (TextView)findViewById(R.id.tv_start_avg);
-        tv_start_cur = (TextView)findViewById(R.id.tv_start_cur);
-        tv_start_calory = (TextView)findViewById(R.id.tv_start_calory);
+        tv_start_km = (TextView) findViewById(R.id.tv_start_km);
+        tv_start_km_str = (TextView) findViewById(R.id.tv_start_km_str);
+        tv_start_time = (TextView) findViewById(R.id.tv_start_time);
+        tv_start_avg = (TextView) findViewById(R.id.tv_start_avg);
+        tv_start_cur = (TextView) findViewById(R.id.tv_start_cur);
+        tv_start_calory = (TextView) findViewById(R.id.tv_start_calory);
     }
 
     @Override
@@ -482,69 +455,200 @@ public class StartNewActivity extends AppCompatActivity implements
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "-- Received intent " + intent.getAction());
-
+            //Log.d(TAG, "-- Received intent " + intent.getAction());
             if (Config.INTENT_LOCATION_CHANGED.equals(intent.getAction())) {
-                // Track a way point
                 Bundle extras = intent.getExtras();
                 if (extras != null) {
-                    Log.d(TAG, "-- got broad casting message of INTENT_LOCATION_CHANGED ");
-                    Location location = (Location)extras.get("location");
-                    Log.d(TAG,"-- Broad casting Location received:" + location);
+                    Location location = (Location) extras.get("location");
+                    Log.d(TAG, "-- New location received! ("+location.getLatitude() + "," + location.getLongitude()+")");
                     onLocationChanged(location);
                 }
             }
         }
     };
 
-    private void onLocationChanged(Location location){
-        Log.d(TAG, "-- onLocationChanged from BroadcastReceiver: " + location);
+    private void onLocationChanged(Location location) {
         new_location = location;
-        showGPS();
+        if(!paused) showGPS();
     }
 
-    void boardCastConfigChanged(long gpsLoggingInterval, long gpsLoggingMinDistance ) {
+    private void process_new_location() {
+        Date d = new Date();
+        Location location = new_location;
+        if(location == null) return;
+
+        if(resume) {
+            showActivities();
+            resume = false;
+        }
+
+        if(last_activity==null) {
+            dist = 0;
+            last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
+            list.add(last);
+            last_activity = last;
+        }else {
+            dist = CalDistance.dist(last_activity.getLatitude(), last_activity.getLongitude(), location.getLatitude(), location.getLongitude());
+            if(dist > Config._loc_distance) {
+                last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
+                list.add(last);
+                last_activity = last;
+                if(googleMap != null && ! paused) showActivities();
+            }
+        }
+        //Log.e(TAG, "-- Timer!");
+
+        if(!paused) {
+            String elapsed = StringUtil.elapsedStr(start_time,d);
+            tv_start_time.setText(elapsed);
+            long t1 = System.currentTimeMillis();
+            dist = MyActivityUtil.getTotalDistanceInDouble(list);
+            long t2 = System.currentTimeMillis();
+            if(dist<1000) { /* 1KM 이하 */
+                String s1 = String.format("%.0f", dist);
+                tv_start_km.setText(s1);
+                tv_start_km_str.setText("Meters");
+            } else if(dist>1000) { /* 1KM 이상 */
+                String s1 = String.format("%.2f", dist/1000.0);
+                tv_start_km.setText(s1);
+                tv_start_km_str.setText("Kilometers");
+            } else if(dist >10000){ /* 10KM 이상*/
+                String s1 = String.format("%.3f", dist/1000.0);
+                tv_start_km.setText(s1);
+                tv_start_km_str.setText("Kilometers");
+            }
+
+            double  minpkm = MyActivityUtil.getMinPerKm(list);
+            String tt1 = StringUtil.elapsedStr2((long) (minpkm*1000*60.0));
+            tv_start_avg.setText("" + tt1);
+
+            double  minp1km = MyActivityUtil.MinPer1Km(list);
+            String tt2 = StringUtil.elapsedStr2((long) (minp1km*1000*60.0));
+            tv_start_cur.setText("" + tt2);
+
+            float burntkCal;
+            int durationInSeconds = MyActivityUtil.durationInSeconds(list);
+            int stepsTaken = (int) (dist / Config._strideLengthInMeters);
+            burntkCal = CaloryUtil.calculateEnergyExpenditure((float)dist / 1000f, durationInSeconds);
+            tv_start_calory.setText("" + String.format("%.1f", burntkCal));
+        }
+    }
+
+    void boardCastConfigChanged(long gpsLoggingInterval, long gpsLoggingMinDistance) {
         Intent intent = new Intent(Config.INTENT_CONFIG_CHANGE);
         intent.putExtra("gpsLoggingInterval", gpsLoggingInterval);
         intent.putExtra("gpsLoggingMinDistance", gpsLoggingMinDistance);
         sendBroadcast(intent);
         Log.e(TAG, "--INTENT_CONFIG_CHANGED message sent :");
         Log.e(TAG, "--gpsLoggingInterval:" + gpsLoggingInterval);
-        Log.e(TAG, "--gpsLoggingMinDistance:" +  gpsLoggingMinDistance);
+        Log.e(TAG, "--gpsLoggingMinDistance:" + gpsLoggingMinDistance);
     }
 
+    // GPS Logger 관련 함수 들
+    // 정리 필요함
+    private String currentTrackId;
+    GPSLogger gpsLogger = null;
 
+    public String getCurrentTrackId() {
+        return this.currentTrackId;
+    }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        this._ctx = this;
-        // 달리기 모드일 경우, 1초, 1미터로 셋팅함
-        Config.initialize(getApplicationContext());
+    public void setGpsLogger(GPSLogger l) {
+        this.gpsLogger = l;
+    }
 
+    public GPSLogger getGpsLogger() {
+        return gpsLogger;
+    }
+
+    public void registerLocationChangedReceiver() {
         // Register our broadcast receiver
         IntentFilter filter = new IntentFilter();
         filter.addAction(Config.INTENT_LOCATION_CHANGED);
         registerReceiver(receiver, filter);
         Log.d(TAG, "-- INTENT LOCATION CHANGED registerReceiver()");
+    }
 
-        if(list==null) list = new ArrayList<>();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        this._ctx = this;
+        set_use_db(false);
+        // 달리기 모드일 경우, 1초, 1미터로 셋팅함
+        Config.initialize(getApplicationContext());
+
+        File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
+        if (lastRun.exists()) {
+            Log.e(TAG, "-- Restarting Running with last data....");
+            Toast.makeText(_ctx, "Unsaved run!!!", Toast.LENGTH_SHORT).show();
+            list = MyActivityUtil.deserializeFromCSV(lastRun);
+            lastRun.delete();
+            if (list.size() > 0) last_activity = (MyActivity) list.get(list.size() - 1);
+            Toast.makeText(_ctx, Config.Unsaved_File_name + " converted into current running!!!", Toast.LENGTH_SHORT).show();
+        } else {
+            Log.e(TAG, "-- Normal Running....");
+        }
+
+        registerLocationChangedReceiver();
+
+        Config.init_preference_value_running_default(getApplicationContext());
+        gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
+        String today = DateUtil.today();
+        currentTrackId = today;
+        gpsLoggerServiceIntent.putExtra("activity_file_name", today);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(new Intent(this, GPSLogger.class)); // 서비스 시작
+        } else {
+            startService(new Intent(this, GPSLogger.class)); // 서비스 시작
+        }
+        gpsLoggerConnection = new GPSLoggerConnection(this); // 서비스 바인딩
+        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
+
+        if (list == null) list = new ArrayList<>();
 
         super.onCreate(savedInstanceState);
         initialize_Mapview(savedInstanceState);
-        activity_file_name = StringUtil.DateToString(new Date(),"yyyyMMdd_HHmmss");
+        activity_file_name = StringUtil.DateToString(new Date(), "yyyyMMdd_HHmmss");
         start_time = new Date();
         startMyTimer();
     }
 
+    static boolean paused = false;
+
     @Override
     public void onPause() {
+        paused = true;
         Log.d(TAG, "-- onPause.");
+
+        // onPause에서 임시로 파일을 저장함
+        // reSume할때 삭제 필요함
+        if(!activity_quit_normally) {
+            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
+            MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun);
+        }
+
+        if (gpsLogger != null) {
+            if (!gpsLogger.isTracking()) {
+                //Log.d(TAG, "Service is not tracking, trying to stopService()");
+                //unbindService(gpsLoggerConnection);
+                //stopService(gpsLoggerServiceIntent);
+            } else {
+                //if(gpsLoggerConnection !=null) unbindService(gpsLoggerConnection);
+            }
+        }
+
         super.onPause();
     }
 
+    boolean resume = false;
+
     @Override
     public void onResume() {
+        paused = false;
+        resume = true;
         Log.d(TAG, "-- onResume.");
+        startService(gpsLoggerServiceIntent);
+        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
+        registerLocationChangedReceiver();
         super.onResume();
     }
 
@@ -552,6 +656,15 @@ public class StartNewActivity extends AppCompatActivity implements
     public void onDestroy() {
         // Unregister broadcast receiver
         unregisterReceiver(receiver);
+        stopMyTimer();
+        if(!activity_quit_normally) {
+            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
+            MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun );
+            Config.restore_preference_values_after_running(getApplicationContext());
+            Toast.makeText(_ctx,"Running activity saved into " + Config.Unsaved_File_name + " !!", Toast.LENGTH_SHORT).show();
+        } else {
+            if (gpsLoggerConnection != null) unbindService(gpsLoggerConnection);
+        }
         super.onDestroy();
     }
 
@@ -604,6 +717,12 @@ public class StartNewActivity extends AppCompatActivity implements
         notificationManager.notify(_id, b.build());
     }
 
+    void deleteIfExistsUnsaved() {
+        File f = new File(Config.JSN_SAVE_DIR, Config.Unsaved_File_name);
+        if(f.exists()) f.delete();
+    }
+
+    static boolean activity_quit_normally = false;
     public void alertQuitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("활동을 중지하시겠습니까?");
@@ -611,6 +730,15 @@ public class StartNewActivity extends AppCompatActivity implements
         builder.setPositiveButton("중지",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        activity_quit_normally = true;
+                        Config.restore_preference_values_after_running(getApplicationContext());
+                        deleteIfExistsUnsaved();
+                        if(gpsLoggerConnection != null)  {
+                            unbindService(gpsLoggerConnection);
+                            gpsLoggerConnection = null;
+                        }
+                        Log.d(TAG,"-- Service gpsLogger unbound...");
+
                         MyActivityUtil.serialize(list, media_filenames, activity_file_name );
                         CloudUtil.getInstance().Upload(activity_file_name + Config._csv_ext);
                         ActivityStat as = ActivityStat.getActivityStat(list);
@@ -632,91 +760,49 @@ public class StartNewActivity extends AppCompatActivity implements
                             notificationQuit(Config._notify_id, Config._notify_ticker,
                                     "활동이 저장되었습니다.", detail);
 
-                            Intent myReportIntent = new Intent(StartNewActivity.this, MyReportActivity.class);
+                            Intent myReportIntent = new Intent(Run1.this, MyReportActivity.class);
                             myReportIntent.putExtra("activity_file_name", activity_file_name);
                             startActivity(myReportIntent);
                         }
 
-                        StartNewActivity.this.quit = true;
-                        StartNewActivity.this.finish();
+                        Run1.this.quit = true;
+                        Run1.this.finish();
                     }
                 });
         builder.setNegativeButton("취소",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        StartNewActivity.this.quit = false;
+                        Run1.this.quit = false;
                     }
                 });
         builder.show();
     }
 
+    static TimerTask mTask = null;
+    Timer mTimer = null;
     private void startMyTimer() {
-        TimerTask mTask = new StartNewActivity.MyTimerTask();
-        Timer mTimer = new Timer();
+        mTask = new Run1.MyTimerTask();
+        mTimer = new Timer();
         mTimer.schedule(mTask, 0, 1000);
+    }
+
+    private void stopMyTimer() {
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer.purge();
+            mTimer = null;
+            mTask = null;
+        }
     }
 
     // MyTimerTask can run even though the app run in background
     public class MyTimerTask extends TimerTask{
         public void run() {
             long start = System.currentTimeMillis();
-            StartNewActivity.this.runOnUiThread(new Runnable() {
+            Run1.this.runOnUiThread(new Runnable() {
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 public void run() {
-                    Date d = new Date();
-                    String elapsed = StringUtil.elapsedStr(start_time,d);
-                    tv_start_time.setText(elapsed);
-
-                    Location location = new_location;
-                    if(location == null) return;
-
-                    if(last_location==null) {
-                        dist = 0;
-                        last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
-                        list.add(last);
-                        last_location = location;
-                    }else {
-                        dist = CalDistance.dist(last_location.getLatitude(), last_location.getLongitude(), location.getLatitude(), location.getLongitude());
-                        if(dist > Config._loc_distance) {
-                            last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
-                            list.add(last);
-                            last_location = location;
-                            if(googleMap != null) showActivities();
-                        }
-                    }
-
-
-                    long t1 = System.currentTimeMillis();
-                    dist = MyActivityUtil.getTotalDistanceInDouble(list);
-                    long t2 = System.currentTimeMillis();
-                    if(dist<1000) { /* 1KM 이하 */
-                        String s1 = String.format("%.0f", dist);
-                        tv_start_km.setText(s1);
-                        tv_start_km_str.setText("Meters");
-                    } else if(dist>1000) { /* 1KM 이상 */
-                        String s1 = String.format("%.2f", dist/1000.0);
-                        tv_start_km.setText(s1);
-                        tv_start_km_str.setText("Kilometers");
-                    } else if(dist >10000){ /* 10KM 이상*/
-                        String s1 = String.format("%.3f", dist/1000.0);
-                        tv_start_km.setText(s1);
-                        tv_start_km_str.setText("Kilometers");
-                    }
-
-                    double  minpkm = MyActivityUtil.getMinPerKm(list);
-                    String tt1 = StringUtil.elapsedStr2((long) (minpkm*1000*60.0));
-                    tv_start_avg.setText("" + tt1);
-
-                    double  minp1km = MyActivityUtil.MinPer1Km(list);
-                    String tt2 = StringUtil.elapsedStr2((long) (minp1km*1000*60.0));
-                    tv_start_cur.setText("" + tt2);
-
-                    float burntkCal;
-                    int durationInSeconds = MyActivityUtil.durationInSeconds(list);
-                    int stepsTaken = (int) (dist / Config._strideLengthInMeters);
-
-                    burntkCal = CaloryUtil.calculateEnergyExpenditure((float)dist / 1000f, durationInSeconds);
-                    tv_start_calory.setText("" + String.format("%.1f", burntkCal));
+                    process_new_location();
                 }
             });
         } /* end of run() */

@@ -3,12 +3,10 @@ package com.jason.moment.util.camera;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +17,6 @@ import android.widget.VideoView;
 import androidx.core.content.FileProvider;
 
 import com.jason.moment.R;
-import com.jason.moment.StartActivity;
 import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 
