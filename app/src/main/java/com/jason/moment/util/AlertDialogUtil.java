@@ -25,6 +25,7 @@ import com.jason.moment.FileActivity;
 import com.jason.moment.MapsActivity;
 import com.jason.moment.MyReportActivity;
 import com.jason.moment.R;
+import com.jason.moment.RunActivity;
 import com.jason.moment.StartNewActivity;
 import com.jason.moment.StartRunActivity;
 import com.jason.moment.util.db.MyActiviySummary;
@@ -46,6 +47,51 @@ public class AlertDialogUtil {
     }
 
     private static String last_memo = null;
+
+    public void choose_running_type(Context _ctx) {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(_ctx);
+        //alertDialog.setTitle("Choose your run");
+        LayoutInflater factory = LayoutInflater.from(_ctx);
+        final View view = factory.inflate(R.layout.layout_typeof_running, null);
+        ImageView iv_run_type1 = view.findViewById(R.id.iv_run_type1);
+        ImageView iv_run_type2 = view.findViewById(R.id.iv_run_type2);
+        ImageView iv_run_type3 = view.findViewById(R.id.iv_run_type3);
+        TextView tv_run_type1 = view.findViewById(R.id.tv_run_type1);
+        TextView tv_run_type2 = view.findViewById(R.id.tv_run_type2);
+        TextView tv_run_type3 = view.findViewById(R.id.tv_run_type3);
+
+        alertDialog.setView(view);
+        AlertDialog alert = alertDialog.create();
+
+        iv_run_type1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(_ctx, StartRunActivity.class);
+                _ctx.startActivity(intent);
+                alert.dismiss();
+            }
+        });
+
+        iv_run_type2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(_ctx, StartNewActivity.class);
+                _ctx.startActivity(intent);
+                alert.dismiss();
+            }
+        });
+
+        iv_run_type3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(_ctx, RunActivity.class);
+                _ctx.startActivity(intent);
+                alert.dismiss();
+            }
+        });
+        alert.show();
+    }
+
     public void media_information(Context _ctx, File file) {
         MyMediaInfo mm_info = null;
         try {

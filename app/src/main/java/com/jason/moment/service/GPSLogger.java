@@ -236,12 +236,12 @@ public class GPSLogger extends Service implements LocationListener {
                 lmgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 lmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, gpsLoggingInterval, gpsLoggingMinDistance, this);
             }
-            Log.d(TAG,"-- Shared Preference changed! reload ok!");
+            Log.e(TAG,"-- Shared Preference changed! reload ok!");
             Config._sharedPreferenceChanged = false;
         }
 
         // on background run this will write data to database
-        Log.d(TAG, "-- New Loc:" + location);
+        Log.e(TAG, "-- New Loc:" + location);
         // We're receiving location, so GPS is enabled
         isGpsEnabled = true;
 

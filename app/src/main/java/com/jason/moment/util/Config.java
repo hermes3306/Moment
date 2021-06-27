@@ -349,11 +349,11 @@ public class Config {
         _ctx4SharedPreferences = _ctx;
         if(sharedPreferences==null ) sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(_ctx /* Activity context */);
-
-        Map<String,?> keys = sharedPreferences.getAll();
-        for(Map.Entry<String,?> entry : keys.entrySet()){
-            Log.d(TAG,"--    " + entry.getKey() + ": " + entry.getValue().toString());
-        }
+//
+//        Map<String,?> keys = sharedPreferences.getAll();
+//        for(Map.Entry<String,?> entry : keys.entrySet()){
+//            Log.d(TAG,"--    " + entry.getKey() + ": " + entry.getValue().toString());
+//        }
 
         Config._enable_network_provider = sharedPreferences.getBoolean("NetworkProvider", Config._enable_network_provider);
         String _loc_interval = sharedPreferences.getString("interval", "1000");

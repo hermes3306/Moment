@@ -40,5 +40,4 @@ public class MyLocDbHelper extends SQLiteOpenHelper {
     }
     public void deleteAll(SQLiteDatabase db) {db.execSQL(SQL_DELETE_ALL);}
     public void createNew(SQLiteDatabase db) {db.execSQL(SQL_DELETE_ENTRIES); onCreate(db);}
-
 }

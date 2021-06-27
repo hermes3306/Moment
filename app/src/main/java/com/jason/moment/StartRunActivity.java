@@ -495,15 +495,12 @@ public class StartRunActivity extends AppCompatActivity implements
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "-- Received intent " + intent.getAction());
-
+            //Log.d(TAG, "-- Received intent " + intent.getAction());
             if (Config.INTENT_LOCATION_CHANGED.equals(intent.getAction())) {
-                // Track a way point
                 Bundle extras = intent.getExtras();
                 if (extras != null) {
-                    Log.d(TAG, "-- got broad casting message of INTENT_LOCATION_CHANGED ");
                     Location location = (Location) extras.get("location");
-                    Log.d(TAG, "-- Broad casting Location received:" + location);
+                    Log.d(TAG, "-- New location received! ("+location.getLatitude() + "," + location.getLongitude()+")");
                     onLocationChanged(location);
                 }
             }
@@ -511,8 +508,9 @@ public class StartRunActivity extends AppCompatActivity implements
     };
 
     private void onLocationChanged(Location location) {
-        Log.d(TAG, "-- onLocationChanged from BroadcastReceiver: " + location);
         new_location = location;
+
+
         showGPS();
     }
 
@@ -793,7 +791,9 @@ public class StartRunActivity extends AppCompatActivity implements
                     if(resume) {
                         showActivities();
                         resume = false;
-                    } else if(last_activity==null) {
+                    }
+
+                    if(last_activity==null) {
                         dist = 0;
                         last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
                         list.add(last);
@@ -808,7 +808,7 @@ public class StartRunActivity extends AppCompatActivity implements
                         }
                     }
 
-                    Log.e(TAG, "-- Timer!");
+                    //Log.e(TAG, "-- Timer!");
 
                     if(!paused) {
                         long t1 = System.currentTimeMillis();

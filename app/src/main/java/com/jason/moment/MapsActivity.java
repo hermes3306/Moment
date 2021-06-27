@@ -97,7 +97,7 @@ public class MapsActivity extends AppCompatActivity implements
     public static boolean firstCall = true;
     public static boolean paused = false;
 
-    public ImageView imv_start;
+    public ImageButton imb_Running;
     public TextView tv_map_address;
     public ImageButton imbt_prev = null;
     public ImageButton imbt_next = null;
@@ -207,7 +207,7 @@ public class MapsActivity extends AppCompatActivity implements
         // _start_timer : my Timer
         // ----------------------------------------------------------------------
         //
-        imv_start = (ImageView) findViewById(R.id.imvStart);
+        imb_Running = (ImageButton) findViewById(R.id.imb_Running);
         tv_map_address = (TextView) findViewById(R.id.tv_map_address);
         imbt_prev = (ImageButton) findViewById(R.id.imbt_prev);
         imbt_next = (ImageButton) findViewById(R.id.imbt_next);
@@ -618,10 +618,9 @@ public class MapsActivity extends AppCompatActivity implements
                 Log.d(TAG, "-- before call FileActivity");
                 startActivity(intent);
                 break;
-            case R.id.imvStart:
+            case R.id.imb_Running:
                 Log.d(TAG,"-- Start Run Activity!");
-                Intent _StartActivity = new Intent(MapsActivity.this, StartRunActivity.class);
-                startActivity(_StartActivity);
+                AlertDialogUtil.getInstance().choose_running_type(_ctx);
                 break;
 
             case R.id.imGallary:
