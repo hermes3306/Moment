@@ -490,10 +490,16 @@ public class Run3 extends Run implements
             Toast.makeText(_ctx, "Unsaved run!!!", Toast.LENGTH_SHORT).show();
             list = MyActivityUtil.deserializeFromCSV(lastRun);
             lastRun.delete();
-            if (list.size() > 0) last_activity = (MyActivity) list.get(list.size() - 1);
+            if (list.size() > 0) {
+                last_activity = (MyActivity) list.get(list.size() - 1);
+                start_time = StringUtil.StringToDate((MyActivity)list.get(0));
+            } else {
+                start_time = new Date();
+            }
             Toast.makeText(_ctx, Config.Unsaved_File_name + " converted into current running!!!", Toast.LENGTH_SHORT).show();
         } else {
             Log.e(TAG, "-- Normal Running....");
+            start_time = new Date();
         }
 
         Config.init_preference_value_running_default(getApplicationContext());
@@ -514,7 +520,7 @@ public class Run3 extends Run implements
         super.onCreate(savedInstanceState);
         initialize_Mapview(savedInstanceState);
         activity_file_name = StringUtil.DateToString(new Date(), "yyyyMMdd_HHmmss");
-        start_time = new Date();
+
         startMyTimer();
     }
 
