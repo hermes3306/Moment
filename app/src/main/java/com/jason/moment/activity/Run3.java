@@ -732,6 +732,7 @@ public class Run3 extends Run implements
 
                     new_location = LocationUtil.getInstance().last_location();
                     Location location = new_location;
+
                     if(location == null) return;
 
                     if(resume) {

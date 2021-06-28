@@ -88,8 +88,9 @@
                 android:id="@+id/tv_start_calory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
+                android:textAlignment="center"
                 android:autoSizeMaxTextSize="100sp"
                 android:autoSizeMinTextSize="5sp"
                 android:autoSizeStepGranularity="2sp"
@@ -121,9 +122,10 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
                 android:text="Calories"
+                android:textAlignment="center"
                 android:textColor="@color/Gray"
                 android:textSize="20dp"
                 android:textStyle="bold" />
