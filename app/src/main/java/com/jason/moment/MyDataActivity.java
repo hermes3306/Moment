@@ -73,7 +73,10 @@ public class MyDataActivity extends AppCompatActivity {
                 }
                 os.close();
                 is.close();
-                Log.d("TAG", "-- Copy stream done successfully!");
+
+                CloudUtil.getInstance().Upload(save_file.getName());
+
+                Log.d("TAG", "-- Picture uploaded successfully!");
                 Toast.makeText(this, "Copy stream done successfully!", Toast.LENGTH_SHORT).show();
                 finish();
             }catch(Exception e) {
@@ -82,7 +85,6 @@ public class MyDataActivity extends AppCompatActivity {
                 Log.e("MyDataActivity", sw.toString());
             }
         }
-
     }
 
     void handleSendVideo(Intent intent) {
@@ -102,7 +104,10 @@ public class MyDataActivity extends AppCompatActivity {
                 }
                 os.close();
                 is.close();
-                Log.d("TAG", "-- Copy stream done successfully!");
+
+                CloudUtil.getInstance().Upload(save_file.getName());
+                Log.d("TAG", "-- Video uploaded successfully!");
+
                 Toast.makeText(this, "Copy stream done successfully!", Toast.LENGTH_SHORT).show();
                 finish();
             }catch(Exception e) {
