@@ -2,6 +2,7 @@ package com.jason.moment;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 
 import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
+import com.jason.moment.util.PermissionUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,9 +22,13 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 
 public class MyDataActivity extends AppCompatActivity {
+    Context _ctx = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        PermissionUtil.getInstance().setPermission(this);
+        this._ctx = this;
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_data);
 
@@ -77,7 +83,7 @@ public class MyDataActivity extends AppCompatActivity {
                 CloudUtil.getInstance().Upload(save_file.getName());
 
                 Log.d("TAG", "-- Picture uploaded successfully!");
-                Toast.makeText(this, "Copy stream done successfully!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Picture uploaded successfully!", Toast.LENGTH_SHORT).show();
                 finish();
             }catch(Exception e) {
                 StringWriter sw = new StringWriter();
@@ -106,9 +112,8 @@ public class MyDataActivity extends AppCompatActivity {
                 is.close();
 
                 CloudUtil.getInstance().Upload(save_file.getName());
-                Log.d("TAG", "-- Video uploaded successfully!");
-
-                Toast.makeText(this, "Copy stream done successfully!", Toast.LENGTH_SHORT).show();
+                Log.d("TAG", "-- Picture uploaded successfully!");
+                Toast.makeText(this, "Video uploaded successfully!", Toast.LENGTH_SHORT).show();
                 finish();
             }catch(Exception e) {
                 StringWriter sw = new StringWriter();
