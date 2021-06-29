@@ -135,15 +135,6 @@
         </activity>
 
         <service
-            android:name=".LocService2"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="location">
-            <intent-filter>
-                <action android:name="com.jason.moment.GPS_SERVICE" />
-            </intent-filter>
-        </service>
-        <service
             android:name=".service.GPSLogger"
             android:enabled="true"
             android:exported="false"

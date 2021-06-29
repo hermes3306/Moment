@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 
 import com.jason.moment.util.AddressUtil;
-import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.MyMediaInfo;
 import com.jason.moment.util.SampleLoc;
 import com.jason.moment.util.StringUtil;

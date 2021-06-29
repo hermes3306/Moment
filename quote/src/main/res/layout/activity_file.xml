@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/White"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/tasks48"
+                android:gravity="center_horizontal|left"
+                android:text="월요일 아침"
+                android:textColor="@color/Black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/date_str"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="35sp"
+                android:gravity="center_horizontal|left"
+                android:text="2021년5월10일 12:51 오전"
+                android:textColor="@color/Gray"
+                android:textSize="16sp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="250sp"
+                android:layout_weight="1">
+
+
+
+                <com.google.android.gms.maps.MapView
+                    android:id="@+id/mapView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <ImageView
+                    android:id="@+id/iv_main_picture"
+                    android:layout_width="match_parent"
+                    android:onClick="onClick"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    android:layout_height="match_parent" />
+
+                <ImageButton
+                    android:id="@+id/imbt_picture_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:background="@android:color/transparent"
+                    android:onClick="onClick"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/gallery48" />
+
+
+                <LinearLayout
+                    android:id="@+id/ll_dashboard02"
+                    android:layout_above="@+id/ll_dashboard01"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_white_km"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="17sp"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:text="12.56"/>
+                    <TextView
+                        android:id="@+id/tv_white_avg"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:text="59:47"/>
+                    <TextView
+                        android:id="@+id/tv_white_duration"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:text="8:20"/>
+                    <TextView
+                        android:id="@+id/tv_white_calories"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:text="120"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_dashboard01"
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:visibility="gone"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_below="@+id/tv_km"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="10sp"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:text="DISTNACE"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="10sp"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:text="AVG PACE"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="10sp"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:text="DURATION"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="10sp"
+                        android:textColor="@color/white"
+                        android:layout_weight="1"
+                        android:text="CALORY"/>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_stat01"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/White"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_distance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="0.00"
+                    android:textColor="@color/Black"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/tv_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="0:0"
+                    android:textColor="@color/Black"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/tv_minperkm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="0:00"
+                    android:textColor="@color/Black"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/tv_carolies"
+                    android:layout_width="93dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="0"
+                    android:textColor="@color/Black"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_stat02"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/White"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView71"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="KM"
+                    android:textColor="@color/Gray"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/textView12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="TIME"
+                    android:textColor="@color/Gray"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/textView31"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="Min/KM"
+                    android:textColor="@color/Gray"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/textView41"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="Calories"
+                    android:textColor="@color/Gray"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_rank"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/actlist48"
+                    android:gravity="center_horizontal|left"
+                    android:text="5번째로 빠릅니다."
+                    android:onClick="onClick"
+                    android:textColor="@color/Cyan"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/tv_rank_range"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="35sp"
+                    android:gravity="center_horizontal|left"
+                    android:text="6-11마일 운동을 비교해 보세요."
+                    android:onClick="onClick"
+                    android:textColor="@color/Gray"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_activity_progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/time48"
+                android:gravity="center_horizontal|left"
+                android:text="Progress"
+                android:onClick="onClick"
+                android:textColor="@color/Black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textView118"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/tasks48"
+                android:gravity="center_horizontal|left"
+                android:text="Chart"
+                android:textColor="@color/Black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/chart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="35sp"
+                android:gravity="center_horizontal|left"
+                android:text="페이스, 경사도"
+                android:textColor="@color/Gray"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/textView238"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/file48"
+                android:gravity="center_horizontal|left"
+                android:text="Memo"
+                android:textColor="@color/Black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/memo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="35sp"
+                android:gravity="center_horizontal|left"
+                android:text="본 활동에는 메모가 없습니다."
+                android:textColor="@color/Gray"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/textView22238"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/globe48"
+                android:gravity="center_horizontal|left"
+                android:text="How was the weather?"
+                android:textColor="@color/Black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/weather"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="35sp"
+                android:gravity="center_horizontal|left"
+                android:text="날씨를 확인하여 모든 활동을 준비하세요."
+                android:textColor="@color/Gray"
+                android:textSize="16sp" />
+
+
+            <TextView
+                android:id="@+id/textView222238"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/run48"
+                android:gravity="center_horizontal|left"
+                android:text="Who do you run together?"
+                android:textColor="@color/Black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tv_co_runner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="35sp"
+                android:gravity="center_horizontal|left"
+                android:text="-"
+                android:textColor="@color/Gray"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/media_information"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/gallery48"
+                android:gravity="center_horizontal|left"
+                android:onClick="onClick"
+                android:text="Pictures and videos"
+                android:textColor="@color/Black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/medias"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="35sp"
+                android:gravity="center_horizontal|left"
+                android:onClick="onClick"
+                android:text="-"
+                android:textColor="@color/Gray"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_file_information"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/save48"
+                android:gravity="center_horizontal|left"
+                android:onClick="onClick"
+                android:text="File Name"
+                android:textColor="@color/Black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tv_file_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="35sp"
+                android:gravity="center_horizontal|left"
+                android:onClick="onClick"
+                android:text="-"
+                android:textColor="@color/Gray"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </ScrollView>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center|right"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/imbt_prev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="200dp"
+            android:layout_weight="1"
+            android:alpha="0.6"
+            android:background="@android:color/transparent"
+            android:contentDescription=""
+            android:onClick="onClick"
+            app:srcCompat="@drawable/arrow_left128" />
+        <TextView
+            android:layout_width="100sp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="200dp"
+            android:text=""/>
+        <ImageButton
+            android:id="@+id/imbt_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="200dp"
+            android:layout_weight="1"
+            android:alpha="0.6"
+            android:background="@android:color/transparent"
+            android:contentDescription="TODO"
+            android:onClick="onClick"
+            app:srcCompat="@drawable/arrow_right128" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center|right"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/imbt_marker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:background="@android:color/transparent"
+            android:visibility="gone"
+            app:srcCompat="@drawable/drawmarker32" />
+
+        <ImageButton
+            android:id="@+id/imbt_navi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:background="@android:color/transparent"
+            android:visibility="gone"
+            app:srcCompat="@drawable/arrow1" />
+
+        <ImageButton
+            android:id="@+id/imbt_trash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:visibility="gone"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/trash32" />
+        <ImageButton
+            android:id="@+id/imbt_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:visibility="gone"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/circlearrowup32" />
+
+        <ImageButton
+            android:id="@+id/imbt_hide_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:visibility="gone"
+            app:srcCompat="@drawable/arrow_32_hide" />
+
+        <ImageButton
+            android:id="@+id/imbt_pop_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="270dp"
+            android:visibility="visible"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/pop03" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top|right"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/imbt_satellite_on"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:visibility="gone"
+            app:srcCompat="@drawable/wifi_on" />
+
+        <ImageButton
+            android:id="@+id/imbt_satellite_off"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:visibility="visible"
+            app:srcCompat="@drawable/wifi_gray" />
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
