@@ -66,7 +66,7 @@ public class ItemDetailFragment extends Fragment {
             TextView textView = binding.itemDetail;
             textView.setText(mItem.details);
             if (toolbarLayout != null) {
-                toolbarLayout.setTitle(mItem.content);
+                toolbarLayout.setTitle(mItem.content + "\n" + mItem.file_mame);
             }
         }
 

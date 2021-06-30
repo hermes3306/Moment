@@ -8,6 +8,8 @@ import com.jason.quote.util.PermissionUtil;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,8 @@ public class PlaceholderContent {
         // Add some sample items.
         Log.d("----", Config.CSV_SAVE_DIR.getAbsolutePath() );
         File files[] = Config.CSV_SAVE_DIR.listFiles();
+        Arrays.sort(files, Collections.reverseOrder());
+
         for (int i = 0; i < files.length; i++) {
             addItem(createPlaceholderItem(files, i));
             Log.d("----", files[i].getName());
@@ -51,12 +55,15 @@ public class PlaceholderContent {
         String file_name = files[position].getName();
         String activity_info = MyActivityUtil.getActivityInfoFromFile(file_name);
         String content = activity_info;
-        return new PlaceholderItem(String.valueOf(position), activity_info, file_name, content, makeDetails(position));
+        return new PlaceholderItem(String.valueOf(position), activity_info, file_name, content, makeDetails(position, activity_info, file_name));
     }
 
-    private static String makeDetails(int position) {
+    private static String makeDetails(int position, String activity_info, String file_name) {
         StringBuilder builder = new StringBuilder();
-        builder.append("Details about Item: ").append(position);
+        builder.append("Activity: " + activity_info);
+        builder.append("\nFile: " + file_name);
+
+        builder.append("\n\nDetails about Item: ").append(position);
         for (int i = 0; i < position; i++) {
 
             builder.append("\nMore details information here.");
