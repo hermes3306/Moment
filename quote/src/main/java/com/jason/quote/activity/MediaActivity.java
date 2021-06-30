@@ -322,7 +322,7 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
         m = new MediaController(this);
         File mediaFile = new File(Config.MOV_SAVE_DIR, fname);
         Uri mediaUri = FileProvider.getUriForFile(this,
-                "com.jason.moment.file_provider",
+                "com.jason.quote.file_provider",
                 mediaFile);
         vv.setVideoURI(mediaUri);
         vv.start();
@@ -420,7 +420,7 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
     private void shareMov() {
         File movieFile = new File(Config.MOV_SAVE_DIR, currentFileName);
         Uri movieURI = FileProvider.getUriForFile(this,
-                "com.jason.moment.file_provider",
+                "com.jason.quote.file_provider",
                 movieFile);
         Intent sendIntent = new Intent(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, "Hello!");
@@ -441,7 +441,7 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
         currentFileName = Config.getTmpVideoName();
         File mediaFile = new File(Config.MOV_SAVE_DIR, currentFileName);
         Uri mediaUri = FileProvider.getUriForFile(this,
-                "com.jason.moment.file_provider",
+                "com.jason.quote.file_provider",
                 mediaFile);
 
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
@@ -453,7 +453,7 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
         currentFileName = Config.getTmpPicName();
         File mediaFile = new File(Config.PIC_SAVE_DIR, currentFileName);
         Uri mediaUri = FileProvider.getUriForFile(this,
-                "com.jason.moment.file_provider",
+                "com.jason.quote.file_provider",
                 mediaFile);
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

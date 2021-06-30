@@ -1,0 +1,86 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory app:title="Map">
+        <ListPreference
+            app:key="track_color"
+            app:defaultValue="0"
+            app:entries="@array/track_color"
+            app:entryValues="@array/track_color_values"
+            app:title="Track Color"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="10"
+            app:entries="@array/track_width"
+            app:entryValues="@array/track_width_values"
+            app:key="track_width"
+            app:title="Track Width"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Location">
+        <ListPreference
+            app:defaultValue="5000"
+            app:entries="@array/interval"
+            app:entryValues="@array/interval_values"
+            app:key="interval"
+            app:title="Interval"
+            app:useSimpleSummaryProvider="true" />
+        <ListPreference
+            app:defaultValue="1"
+            app:entries="@array/distance"
+            app:entryValues="@array/distance_values"
+            app:key="distance"
+            app:title="Distance"
+            app:useSimpleSummaryProvider="true" />
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            app:key="NetworkProvider"
+            app:title="Enable Network Provider..." />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="File Type">
+        <ListPreference
+            app:defaultValue="0"
+            app:entries="@array/filetype"
+            app:entryValues="@array/filetype_values"
+            app:key="filetype"
+            app:title="File Type"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Runner">
+        <EditTextPreference
+            app:defaultValue="JasonPark"
+            app:key="your_name"
+            app:title="Your Name"
+            app:useSimpleSummaryProvider="true" />
+        <SwitchPreferenceCompat
+            app:key="Gender"
+            app:title="Female" />
+        <EditTextPreference
+            app:dependency="your_name"
+            app:defaultValue="175"
+            app:key="Height"
+            app:title="Height"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            app:dependency="your_name"
+            app:defaultValue="75"
+            app:key="Weight"
+            app:title="Weight"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Activity">
+        <ListPreference
+            app:defaultValue="Running"
+            app:entries="@array/activity_types"
+            app:entryValues="@array/activity_types"
+            app:key="activity_type"
+            app:title="Activity Type"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

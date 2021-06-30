@@ -35,8 +35,8 @@ public class PlaceholderContent {
         // Add some sample items.
         Log.d("----", Config.CSV_SAVE_DIR.getAbsolutePath() );
         File files[] = Config.CSV_SAVE_DIR.listFiles();
-        for (int i = 1; i <= files.length; i++) {
-            addItem(createPlaceholderItem(i));
+        for (int i = 0; i < files.length; i++) {
+            addItem(createPlaceholderItem(files, i));
             Log.d("----", files[i].getName());
         }
     }
@@ -46,8 +46,8 @@ public class PlaceholderContent {
         ITEM_MAP.put(item.id, item);
     }
 
-    private static PlaceholderItem createPlaceholderItem(int position) {
-        return new PlaceholderItem(String.valueOf(position), "Item " + position, makeDetails(position));
+    private static PlaceholderItem createPlaceholderItem(File files[], int position) {
+        return new PlaceholderItem(String.valueOf(position), files[position].getName(), makeDetails(position));
     }
 
     private static String makeDetails(int position) {

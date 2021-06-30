@@ -49,7 +49,7 @@ public class CloudUtil {
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
-            Log.e(TAG,"Err:" + sw.toString());
+            Log.e(TAG,"---- Err:" + sw.toString());
         }
         return sb.toString();
     }
@@ -146,22 +146,22 @@ public class CloudUtil {
                     }else if(ftype==Config._mp3) {
                         listUrl = Config._listMP3Files;
                     }
-                    Log.d(TAG,"-- list url:" + listUrl);
+                    Log.d(TAG,"---- list url:" + listUrl);
 
                     try {
                         listOfFiles = getUrlContent(listUrl);
                     }catch(Exception e) {
                         StringWriter sw = new StringWriter();
                         e.printStackTrace(new PrintWriter(sw));
-                        Log.e(TAG,"Err:" + sw.toString());
+                        Log.e(TAG,"---- Err:" + sw.toString());
                     }
-                    Log.d(TAG,"-- listOfFiles:" + listOfFiles);
+                    Log.d(TAG,"---- listOfFiles:" + listOfFiles);
 
                     linesOfFiles = listOfFiles.split("<br>");
                     fileURL = new String[linesOfFiles.length] ;
                     for(int i=0;i< linesOfFiles.length;i++) {
                         fileURL[i] = Config._serverURL + Config._serverFolder + "/" + linesOfFiles[i];
-                        Log.d(TAG, "-- fileUrl:" + fileURL[i]);
+                        Log.d(TAG, "---- fileUrl:" + fileURL[i]);
                     }
 
                     if(ftype==Config._img) saveDir = Config.mediaStorageDir4pic;
@@ -177,7 +177,7 @@ public class CloudUtil {
                 }catch(Exception e) {
                     StringWriter sw = new StringWriter();
                     e.printStackTrace(new PrintWriter(sw));
-                    Log.e(TAG,"Err:" + sw.toString());
+                    Log.e(TAG,"----Err:" + sw.toString());
                 }
                 return null;
             }

@@ -18,7 +18,6 @@ import androidx.core.app.ActivityCompat;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.jason.moment.DetailMapsActivity;
 import com.jason.quote.R;
 import com.jason.quote.util.ActivityStat;
 import com.jason.quote.util.ActivitySummary;

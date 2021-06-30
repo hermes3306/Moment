@@ -19,8 +19,8 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.jason.moment.DetailMapsActivity;
 import com.jason.quote.R;
+import com.jason.quote.activity.DetailMapsActivity;
 import com.jason.quote.activity.MyReportActivity;
 import com.jason.quote.util.db.MyActiviySummary;
 import com.jason.quote.util.db.MyMedia;

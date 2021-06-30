@@ -167,7 +167,7 @@ public class Config {
     public static final int per1KM      = 3;
     public static final int per1Mile    = 4;
 
-    static String root_folder_name      = "Moment";
+    static String root_folder_name      = "Quote";
     static String mnt_folder_name       = root_folder_name + _ver + "_MNT";
     static String csv_folder_name       = root_folder_name + _ver + "_CSV";
     static String pic_folder_name       = root_folder_name + _ver + "_PIC";

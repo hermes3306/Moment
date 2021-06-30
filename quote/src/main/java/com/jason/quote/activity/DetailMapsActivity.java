@@ -1,10 +1,7 @@
-package com.jason.moment;
-
-import androidx.fragment.app.FragmentActivity;
+package com.jason.quote.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaCodecInfo;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.View;
@@ -12,12 +9,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
+import androidx.fragment.app.FragmentActivity;
+
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.jason.quote.R;
 import com.jason.quote.databinding.ActivityDetailMapsBinding;
 import com.jason.quote.util.ActivityStat;

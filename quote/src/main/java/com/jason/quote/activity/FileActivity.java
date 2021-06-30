@@ -1,26 +1,16 @@
-package com.jason.moment;
+package com.jason.quote.activity;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.location.Address;
-import android.location.Geocoder;
-import android.opengl.Visibility;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.Printer;
-import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -29,47 +19,33 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
-import com.jason.moment.util.ActivityStat;
-import com.jason.moment.util.ActivitySummary;
-import com.jason.moment.util.AddressUtil;
-import com.jason.moment.util.AlertDialogUtil;
-import com.jason.moment.util.C;
-import com.jason.moment.util.CalDistance;
-import com.jason.moment.util.CalcTime;
-import com.jason.moment.util.CaloryUtil;
-import com.jason.moment.util.CloudUtil;
-import com.jason.moment.util.Config;
-import com.jason.moment.util.MP3;
-import com.jason.moment.util.MapUtil;
-import com.jason.moment.util.MediaUtil;
-import com.jason.moment.util.MyActivity;
-import com.jason.moment.util.MyActivityUtil;
-import com.jason.moment.util.PermissionUtil;
-import com.jason.moment.util.Progress;
-import com.jason.moment.util.StringUtil;
-import com.jason.moment.util.db.MyActiviySummary;
+import com.jason.quote.R;
+import com.jason.quote.util.ActivityStat;
+import com.jason.quote.util.AlertDialogUtil;
+import com.jason.quote.util.C;
+import com.jason.quote.util.CloudUtil;
+import com.jason.quote.util.Config;
+import com.jason.quote.util.MP3;
+import com.jason.quote.util.MapUtil;
+import com.jason.quote.util.MediaUtil;
+import com.jason.quote.util.MyActivity;
+import com.jason.quote.util.MyActivityUtil;
+import com.jason.quote.util.PermissionUtil;
+import com.jason.quote.util.Progress;
+import com.jason.quote.util.StringUtil;
+import com.jason.quote.util.db.MyActiviySummary;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 public class FileActivity extends AppCompatActivity implements View.OnClickListener{
     public static String TAG = "FileActivity";
@@ -108,8 +84,13 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_file);
 
         Intent intent = getIntent();
-        position = intent.getExtras().getInt("pos");
-        filetype = intent.getExtras().getInt("filetype");
+        if(intent.getExtras()==null) {
+            position = 0;
+            filetype = Config._file_type_all;
+        }else {
+            position = intent.getExtras().getInt("pos");
+            filetype = intent.getExtras().getInt("filetype");
+        }
         _file_list = MyActivityUtil.getFiles(filetype);
 
         if(_file_list == null) {
@@ -558,12 +539,6 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 ll_dashboard01.setVisibility(View.VISIBLE);
                 ll_dashboard02.setVisibility(View.VISIBLE);
                 break;
-            case R.id.imSetting:
-                Log.d(TAG, "-- Setting Activities!");
-                Intent configIntent = new Intent(FileActivity.this, ConfigActivity.class);
-                configIntent.putExtra("1", 1);
-                startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
-                break;
             default:
                 break;
         }
@@ -572,7 +547,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu2, menu);
+        inflater.inflate(R.menu.pop_menu, menu);
         return true;
     }
 
@@ -585,12 +560,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.stopMp3:
                 MP3.stop(_ctx);
                 return true;
-            case R.id.action_settings:
-                Log.d(TAG,"-- Setting Activities!");
-                Intent configIntent = new Intent(this, ConfigActivity.class);
-                configIntent.putExtra("1", 1);
-                startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
-                return true;
+
 
             case R.id.ReportActivity:
                 Log.d(TAG,"-- Report Activity!");
@@ -599,52 +569,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(reportActivity, Config.CALL_REPORT_ACTIVITY);
                 return true;
 
-//            case R.id.quote_activity:
-//                Log.d(TAG,"-- Quote Activity!");
-//                Intent quoteIntent = new Intent(this, QuoteActivity.class);
-//                quoteIntent.putExtra("1", 1);
-//                startActivityForResult(quoteIntent, Config.CALL_QUOTE_ACTIVITY);
-//                return true;
-
-            case R.id.scrollpic_activity:
-                Log.d(TAG,"-- Scroll Pic Activity!");
-                Intent scrollPicIntent = new Intent(this, ScrollPicActivity.class);
-                startActivityForResult(scrollPicIntent, Config.CALL_SCROLL_PIC_ACTIVITY);
-                return true;
-
-//            case R.id.scrollAllpic_activity:
-//                Log.d(TAG,"-- Scroll Pic Activity!");
-//                Intent scrollAllPicIntent = new Intent(this, ScrollAllPicActivity.class);
-//                startActivityForResult(scrollAllPicIntent, Config.CALL_SCROLL_ALL_PIC_ACTIVITY);\
-//                return true;
-
-            case R.id.pic_activity:
-                Log.d(TAG,"-- Pic Activity!");
-                File folder= Config.PIC_SAVE_DIR;
-
-                File[] files = folder.listFiles(new FilenameFilter() {
-                    @Override
-                    public boolean accept(File dir, String name) {
-                        return name.endsWith("jpeg");
-                    }
-                });
-
-                if(files==null) {
-                    Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
-                    return false;
-                } else if (files.length==0) {
-                    Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
-                    return false;
-                }
-                Intent picIntent = new Intent(this, PicActivity.class);
-                ArrayList<File> fileArrayList= new ArrayList<File>();
-                for(int i=0;i< files.length;i++) {
-                    fileArrayList.add(files[i]);
-                }
-                picIntent.putExtra("files", fileArrayList);
-                startActivity(picIntent);
-                return true;
-            default:
+              default:
                 return super.onOptionsItemSelected(item);
         }
     }
