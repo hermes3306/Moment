@@ -3,6 +3,7 @@ package com.jason.quote.placeholder;
 import android.util.Log;
 
 import com.jason.quote.util.Config;
+import com.jason.quote.util.MyActivityUtil;
 import com.jason.quote.util.PermissionUtil;
 
 import java.io.File;
@@ -47,13 +48,17 @@ public class PlaceholderContent {
     }
 
     private static PlaceholderItem createPlaceholderItem(File files[], int position) {
-        return new PlaceholderItem(String.valueOf(position), files[position].getName(), makeDetails(position));
+        String file_name = files[position].getName();
+        String activity_info = MyActivityUtil.getActivityInfoFromFile(file_name);
+        String content = activity_info;
+        return new PlaceholderItem(String.valueOf(position), activity_info, file_name, content, makeDetails(position));
     }
 
     private static String makeDetails(int position) {
         StringBuilder builder = new StringBuilder();
         builder.append("Details about Item: ").append(position);
         for (int i = 0; i < position; i++) {
+
             builder.append("\nMore details information here.");
         }
         return builder.toString();
@@ -64,11 +69,15 @@ public class PlaceholderContent {
      */
     public static class PlaceholderItem {
         public final String id;
+        public final String act_info;
+        public final String file_mame;
         public final String content;
         public final String details;
 
-        public PlaceholderItem(String id, String content, String details) {
+        public PlaceholderItem(String id, String act_info, String file_name, String content, String details) {
             this.id = id;
+            this.act_info = act_info;
+            this.file_mame = file_name;
             this.content = content;
             this.details = details;
         }

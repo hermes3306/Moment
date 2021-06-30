@@ -46,6 +46,40 @@ public class MyActivityUtil {
         _default_reverse_order = true;
     }
 
+    public static String getActivityInfoFromFile(String activity_file_name) {
+        if(activity_file_name.startsWith("OOPS") || activity_file_name.equals(Config.Unsaved_File_name)) {
+            return "Unsaved_File";
+        }
+
+        String n = activity_file_name.replaceAll("[^0-9]", "");
+        Date d = new Date();
+        int type = 0; // 0:activity 1:day
+        if(n.length() == 14) {
+            d = StringUtil.StringToDate(n,"yyyyMMddHHmmss");
+            type = 1;
+        } else {
+            n = n.substring(0,7);
+            d = StringUtil.StringToDate(n,"yyyyMMdd");
+            type = 0;
+        }
+
+        if(type ==1 ) {
+            String H = DateUtil.DateToString(d, "H");
+            int t = Integer.parseInt(H);
+            String D = DateUtil.DateToString(d, "dd일 (E)요일 ");
+            if (t >= 4 && t < 12)           H = D + "아침 달리기";
+            else if (t >= 12 && t <= 18)    H = D + "오후 달리기";
+            else if (t > 18)                H = D + "저녁 달리기";
+            else if (t > 21)                H = D + "야간 달리기";
+            else if (t < 4)                 H = D + "새벽 달리기";
+            return H;
+        } else {
+            String D = DateUtil.DateToString(d, "dd일 (E)요일 전체 활동");
+            return D;
+        }
+    }
+
+
 
     public static ActivityStat getActivityStat(ArrayList <MyActivity> list) {
         if(list == null) {

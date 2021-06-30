@@ -183,7 +183,6 @@ public class ItemListFragment extends Fragment {
                 mIdView = binding.idText;
                 mContentView = binding.content;
             }
-
         }
     }
 }
