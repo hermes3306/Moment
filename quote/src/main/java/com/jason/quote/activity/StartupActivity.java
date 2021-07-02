@@ -148,7 +148,7 @@ public class StartupActivity extends AppCompatActivity implements View.OnClickLi
         Config.initialize(this);
         PermissionUtil.getInstance().setPermission(this);
 
-        /*
+
         CloudUtil.getInstance().DownloadAll(this, Config._csv);
         CloudUtil.getInstance().DownloadAll(this, Config._img);
         CloudUtil.getInstance().DownloadAll(this, Config._mov);
@@ -157,7 +157,7 @@ public class StartupActivity extends AppCompatActivity implements View.OnClickLi
         MyMedia.getInstance(this).createNew();
         rebuildActivitySummaries(this);
         ImportTodayActivity("Jason");
-        */
+
 
     }
 
