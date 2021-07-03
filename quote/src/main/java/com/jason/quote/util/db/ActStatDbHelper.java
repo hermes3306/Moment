@@ -11,7 +11,7 @@ import java.io.StringWriter;
 public class ActStatDbHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
     public static final int DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME = "Moment.db";
+    public static final String DATABASE_NAME = "Quote.db";
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE IF NOT EXISTS " + ActStatContract.LocEntry.TABLE_NAME + " (" +
                     ActStatContract.LocEntry._ID + " INTEGER PRIMARY KEY," +

@@ -30,6 +30,7 @@ import com.jason.quote.util.PermissionUtil;
 import com.jason.quote.util.db.MyActiviySummary;
 import com.jason.quote.util.db.MyLoc;
 import com.jason.quote.util.db.MyMedia;
+import com.jason.quote.util.db.MyRun;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -153,8 +154,9 @@ public class StartupActivity extends AppCompatActivity implements View.OnClickLi
         CloudUtil.getInstance().DownloadAll(this, Config._img);
         CloudUtil.getInstance().DownloadAll(this, Config._mov);
         MyLoc.getInstance(this).onCreate();
-        MyActiviySummary.getInstance(this).createNew();
         MyMedia.getInstance(this).createNew();
+        MyActiviySummary.getInstance(this).createNew();
+        MyRun.getInstance(this).createNew();
         rebuildActivitySummaries(this);
         ImportTodayActivity("Jason");
         */

@@ -41,11 +41,6 @@ public class GPSLogger extends Service implements LocationListener {
 	public static final String RUN_ID = "run_id";
 
 	/**
-	 * Data helper.
-	 */
-	private MyRun dataHelper;
-
-	/**
 	 * Are we currently tracking ?
 	 */
 	private boolean isRunning = false;
@@ -106,10 +101,10 @@ public class GPSLogger extends Service implements LocationListener {
 				if (extras != null) {
 					Long runId = extras.getLong(GPSLogger.RUN_ID);
 					Log.d(TAG,"---- runID: " + runId);
-					startTracking(runId);
+					startRunning(runId);
 				}
 			} else if (GPS.INTENT_STOP_TRACKING.equals(intent.getAction()) ) {
-				stopTrackingAndSave();
+				stopRunningAndSave();
 			}
 		}
 	};
@@ -157,7 +152,6 @@ public class GPSLogger extends Service implements LocationListener {
 	@Override
 	public void onCreate() {	
 		Log.d(TAG, "---- Service onCreate()");
-		dataHelper = new MyRun(this);
 
 		//read the logging interval from preferences
 		gpsLoggingInterval = Long.parseLong(PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext()).getString(
@@ -196,7 +190,7 @@ public class GPSLogger extends Service implements LocationListener {
 		Log.d(TAG, "---- Service onDestroy()");
 		if (isRunning) {
 			// If we're currently tracking, save user data.
-			stopTrackingAndSave();
+			stopRunningAndSave();
 		}
 
 		// Unregister listener
@@ -213,9 +207,11 @@ public class GPSLogger extends Service implements LocationListener {
 	/**
 	 * Start GPS tracking.
 	 */
-	private void startTracking(long runId) {
+	private void startRunning(long runId) {
 		currentRunId = runId;
 		Log.d(TAG, "---- Starting track logging for track #" + runId);
+
+		MyRun.getInstance(this).startRunning(currentRunId);
 		// Refresh notification with correct Track ID
 		NotificationManager nmgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		nmgr.notify(NOTIFICATION_ID, getNotification());
@@ -225,10 +221,10 @@ public class GPSLogger extends Service implements LocationListener {
 	/**
 	 * Stops GPS Logging
 	 */
-	private void stopTrackingAndSave() {
+	private void stopRunningAndSave() {
 		Log.d(TAG, "---- Stop track logging for track #" + currentRunId);
 		isRunning = false;
-		dataHelper.stopRunning(currentRunId);
+		MyRun.getInstance(this).stopRunning(currentRunId);
 		currentRunId = -1;
 		this.stopSelf();
 	}
@@ -246,8 +242,7 @@ public class GPSLogger extends Service implements LocationListener {
 			lastLocation = location;
 			
 			if (isRunning) {
-				dataHelper.track(currentRunId, location);
-
+				MyRun.getInstance(this).track(currentRunId, location);
 				Log.d(TAG, "---- " + location);
 			}
 		}

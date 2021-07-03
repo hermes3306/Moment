@@ -182,14 +182,22 @@ public class MyActivityUtil {
 
             while ((str = in.readLine()) != null) {
                 String[] tokens = str.split(",");
+                try {
+                    double latitude = Double.parseDouble(tokens[0]);
+                    double longitude = Double.parseDouble(tokens[1]);
+                    String cr_date = tokens[2];
+                    String cr_time = tokens[3];
 
-                double latitude = Double.parseDouble(tokens[0]);
-                double longitude = Double.parseDouble(tokens[1]);
-                String cr_date = tokens[2];
-                String cr_time = tokens[3];
+                    MyActivity ma = new MyActivity(latitude, longitude, cr_date, cr_time);
+                    mal.add(ma);
+                }catch(Exception e) {
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    Log.e(TAG,"---- " + sw.toString());
+                    file.delete();
+                    continue;
+                }
 
-                MyActivity ma = new MyActivity(latitude, longitude, cr_date, cr_time);
-                mal.add(ma);
             }
         }
         catch (IOException e) {

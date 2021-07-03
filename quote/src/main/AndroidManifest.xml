@@ -56,6 +56,8 @@
         <activity android:name=".activity.FileActivity" />
         <activity android:name=".activity.DetailMapsActivity" />
         <activity android:name=".activity.MediaActivity" />
+        <activity android:name=".activity.MyReportActivity" />
+
 
         <activity android:name=".activity.run.Run1" />
         <activity android:name=".activity.run.Run2" />

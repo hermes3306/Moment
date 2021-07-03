@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -80,7 +81,7 @@ public class MyRun {
     public void track(long currentRuId, Location location) {
         ins(currentRuId,location.getLatitude(),
                 location.getLongitude(),
-                location.getAccuracy());
+                location.getAltitude());
     }
 
     public long ins(long currentRuId, double lat, double lng, double alt) {
@@ -92,7 +93,6 @@ public class MyRun {
         ContentValues values = new ContentValues();
         values.put(MyRunContract.E.COL_RUN, currentRuId);
         values.put(MyRunContract.E.COL_LAT, lat);
-        values.put(MyRunContract.E.COL_LON, lng);
         values.put(MyRunContract.E.COL_LON, lng);
         values.put(MyRunContract.E.COL_ALT, alt);
         values.put(MyRunContract.E.COL_DATE, dt);
@@ -109,6 +109,8 @@ public class MyRun {
         values.put(MyRunContract.E.COL_ALT, alt);
         values.put(MyRunContract.E.COL_DATE, dt);
         long newRowId = db.insert(MyRunContract.E.TAB_NAME, null, values);
+
+        Log.d(TAG, "---- ins()" + newRowId);
         return newRowId;
     }
 

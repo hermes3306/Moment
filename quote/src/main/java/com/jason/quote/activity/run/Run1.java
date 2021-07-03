@@ -49,6 +49,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.jason.quote.R;
 import com.jason.quote.activity.MyReportActivity;
 import com.jason.quote.activity.SettingsActivity;
+import com.jason.quote.service.GPS;
 import com.jason.quote.service.GPSLogger;
 import com.jason.quote.service.GPSLoggerConnection;
 import com.jason.quote.util.ActivityStat;
@@ -576,8 +577,6 @@ public class Run1 extends Run implements
         paused = true;
         Log.d(TAG, "-- onPause.");
 
-        // onPause에서 임시로 파일을 저장함
-        // reSume할때 삭제 필요함
         if(!activity_quit_normally) {
             File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
             MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun);
@@ -585,14 +584,13 @@ public class Run1 extends Run implements
 
         if (gpsLogger != null) {
             if (!gpsLogger.isRunning()) {
-                //Log.d(TAG, "Service is not tracking, trying to stopService()");
-                //unbindService(gpsLoggerConnection);
-                //stopService(gpsLoggerServiceIntent);
+                Log.d(TAG, "---- Service is not tracking, trying to stopService()");
+                unbindService(gpsLoggerConnection);
+                stopService(gpsLoggerServiceIntent);
             } else {
-                //if(gpsLoggerConnection !=null) unbindService(gpsLoggerConnection);
+                unbindService(gpsLoggerConnection);
             }
         }
-
         super.onPause();
     }
 
@@ -602,9 +600,15 @@ public class Run1 extends Run implements
     public void onResume() {
         paused = false;
         resume = true;
-        Log.d(TAG, "-- onResume.");
+
+        // Start GPS Logger service
         startService(gpsLoggerServiceIntent);
+
+        // Bind to GPS service.
+        // We can't use BIND_AUTO_CREATE here, because when we'll ubound
+        // later, we want to keep the service alive in background
         bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
+
         super.onResume();
     }
 
@@ -687,6 +691,12 @@ public class Run1 extends Run implements
                         activity_quit_normally = true;
                         Config.restore_preference_values_after_running(getApplicationContext());
                         deleteIfExistsUnsaved();
+
+                        // Stop Running
+                        Intent intent = new Intent(GPS.INTENT_STOP_TRACKING);
+                        intent.putExtra(GPSLogger.RUN_ID, getCurrentRunId());
+                        sendBroadcast(intent);
+
                         if(gpsLoggerConnection != null)  {
                             unbindService(gpsLoggerConnection);
                             gpsLoggerConnection = null;
@@ -719,8 +729,8 @@ public class Run1 extends Run implements
                             startActivity(myReportIntent);
                         }
 
-                        Run1.this.quit = true;
-                        Run1.this.finish();
+                        quit = true;
+                        finish();
                     }
                 });
         builder.setNegativeButton("취소",
@@ -756,7 +766,8 @@ public class Run1 extends Run implements
             Run1.this.runOnUiThread(new Runnable() {
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 public void run() {
-                    if(gpsLogger != null) process_new_location(gpsLogger.getLastLocation());
+                    if(gpsLogger != null)
+                        process_new_location(gpsLogger.getLastLocation());
                 }
             });
         } /* end of run() */
