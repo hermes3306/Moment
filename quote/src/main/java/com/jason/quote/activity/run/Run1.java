@@ -473,7 +473,6 @@ public class Run1 extends Run implements
                 if(!paused) showGPS();
             }
         }
-        //Log.e(TAG, "-- Timer!");
 
         if(!paused) {
             String elapsed = StringUtil.elapsedStr(start_time,d);
@@ -521,9 +520,7 @@ public class Run1 extends Run implements
         Log.e(TAG, "--gpsLoggingMinDistance:" + gpsLoggingMinDistance);
     }
 
-
     GPSLogger gpsLogger = null;
-
     public void setGpsLogger(GPSLogger l) {
         this.gpsLogger = l;
     }
@@ -552,9 +549,9 @@ public class Run1 extends Run implements
 
         Config.init_preference_value_running_default(getApplicationContext());
         gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
-        String today = DateUtil.today();
+        Date today = new Date();
+        setCurrentRunId(today.getTime());
 
-        gpsLoggerServiceIntent.putExtra("activity_file_name", today);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(new Intent(this, GPSLogger.class)); // 서비스 시작
         } else {
@@ -759,7 +756,7 @@ public class Run1 extends Run implements
             Run1.this.runOnUiThread(new Runnable() {
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 public void run() {
-                    process_new_location(gpsLogger.getLastLocation());
+                    if(gpsLogger != null) process_new_location(gpsLogger.getLastLocation());
                 }
             });
         } /* end of run() */

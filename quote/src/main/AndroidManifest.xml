@@ -72,6 +72,16 @@
             </intent-filter>
         </activity>
 
+        <service
+            android:name=".service.GPSLogger"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location">
+            <intent-filter>
+                <action android:name="com.jason.quote.service.GPSLogger" />
+            </intent-filter>
+        </service>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.file_provider"

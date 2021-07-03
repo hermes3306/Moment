@@ -104,8 +104,9 @@ public class GPSLogger extends Service implements LocationListener {
 			if (GPS.INTENT_START_TRACKING.equals(intent.getAction()) ) {
 				Bundle extras = intent.getExtras();
 				if (extras != null) {
-					Long trackId = extras.getLong(GPSLogger.RUN_ID);
-					startTracking(trackId);
+					Long runId = extras.getLong(GPSLogger.RUN_ID);
+					Log.d(TAG,"---- runID: " + runId);
+					startTracking(runId);
 				}
 			} else if (GPS.INTENT_STOP_TRACKING.equals(intent.getAction()) ) {
 				stopTrackingAndSave();
@@ -155,7 +156,7 @@ public class GPSLogger extends Service implements LocationListener {
 	
 	@Override
 	public void onCreate() {	
-		Log.v(TAG, "Service onCreate()");
+		Log.d(TAG, "---- Service onCreate()");
 		dataHelper = new MyRun(this);
 
 		//read the logging interval from preferences
@@ -184,7 +185,7 @@ public class GPSLogger extends Service implements LocationListener {
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.v(TAG, "Service onStartCommand(-,"+flags+","+startId+")");
+		Log.v(TAG, "---- Service onStartCommand(-,"+flags+","+startId+")");
 		createNotificationChannel();
 		startForeground(NOTIFICATION_ID, getNotification());
 		return Service.START_STICKY;
@@ -192,7 +193,7 @@ public class GPSLogger extends Service implements LocationListener {
 
 	@Override
 	public void onDestroy() {
-		Log.v(TAG, "Service onDestroy()");
+		Log.d(TAG, "---- Service onDestroy()");
 		if (isRunning) {
 			// If we're currently tracking, save user data.
 			stopTrackingAndSave();
@@ -212,9 +213,9 @@ public class GPSLogger extends Service implements LocationListener {
 	/**
 	 * Start GPS tracking.
 	 */
-	private void startTracking(long trackId) {
-		currentRunId = trackId;
-		Log.v(TAG, "Starting track logging for track #" + trackId);
+	private void startTracking(long runId) {
+		currentRunId = runId;
+		Log.d(TAG, "---- Starting track logging for track #" + runId);
 		// Refresh notification with correct Track ID
 		NotificationManager nmgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		nmgr.notify(NOTIFICATION_ID, getNotification());
@@ -225,6 +226,7 @@ public class GPSLogger extends Service implements LocationListener {
 	 * Stops GPS Logging
 	 */
 	private void stopTrackingAndSave() {
+		Log.d(TAG, "---- Stop track logging for track #" + currentRunId);
 		isRunning = false;
 		dataHelper.stopRunning(currentRunId);
 		currentRunId = -1;
@@ -232,7 +234,8 @@ public class GPSLogger extends Service implements LocationListener {
 	}
 
 	@Override
-	public void onLocationChanged(Location location) {		
+	public void onLocationChanged(Location location) {
+		Log.d(TAG, "---- Location Changed: " + location);
 		// We're receiving location, so GPS is enabled
 		isGpsEnabled = true;
 		
@@ -244,6 +247,8 @@ public class GPSLogger extends Service implements LocationListener {
 			
 			if (isRunning) {
 				dataHelper.track(currentRunId, location);
+
+				Log.d(TAG, "---- " + location);
 			}
 		}
 	}
