@@ -84,7 +84,6 @@ public class Run1 extends Run implements
 
     // Loc Service binding
     MyActivity last_activity = null;
-    Location new_location = null;
 
     public ArrayList<String> pic_filenames = new ArrayList<>();
     public ArrayList<String> mov_filenames = new ArrayList<>();
@@ -446,30 +445,10 @@ public class Run1 extends Run implements
         }
     }
 
-    /**
-     * Receives Intent for new Location from GPS services
-     */
-    private final BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            //Log.d(TAG, "-- Received intent " + intent.getAction());
-            if (Config.INTENT_LOCATION_CHANGED.equals(intent.getAction())) {
-                Bundle extras = intent.getExtras();
-                if (extras != null) {
-                    Location location = (Location) extras.get("location");
-                    Log.d(TAG, "-- New location received! ("+location.getLatitude() + "," + location.getLongitude()+")");
-                    onLocationChanged(location);
-                }
-            }
-        }
-    };
-
     private void onLocationChanged(Location location) {
-        new_location = location;
-        if(!paused) showGPS();
     }
 
-    private void process_new_location() {
+    private void process_new_location(Location new_location) {
         Date d = new Date();
         Location location = new_location;
         if(location == null) return;
@@ -491,6 +470,7 @@ public class Run1 extends Run implements
                 list.add(last);
                 last_activity = last;
                 if(googleMap != null && ! paused) showActivities();
+                if(!paused) showGPS();
             }
         }
         //Log.e(TAG, "-- Timer!");
@@ -547,17 +527,8 @@ public class Run1 extends Run implements
     public void setGpsLogger(GPSLogger l) {
         this.gpsLogger = l;
     }
-
     public GPSLogger getGpsLogger() {
         return gpsLogger;
-    }
-
-    public void registerLocationChangedReceiver() {
-        // Register our broadcast receiver
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Config.INTENT_LOCATION_CHANGED);
-        registerReceiver(receiver, filter);
-        Log.d(TAG, "-- INTENT LOCATION CHANGED registerReceiver()");
     }
 
     @Override
@@ -578,8 +549,6 @@ public class Run1 extends Run implements
         } else {
             Log.e(TAG, "-- Normal Running....");
         }
-
-        registerLocationChangedReceiver();
 
         Config.init_preference_value_running_default(getApplicationContext());
         gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
@@ -639,14 +608,11 @@ public class Run1 extends Run implements
         Log.d(TAG, "-- onResume.");
         startService(gpsLoggerServiceIntent);
         bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
-        registerLocationChangedReceiver();
         super.onResume();
     }
 
     @Override
     public void onDestroy() {
-        // Unregister broadcast receiver
-        unregisterReceiver(receiver);
         stopMyTimer();
         if(!activity_quit_normally) {
             File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
@@ -793,7 +759,7 @@ public class Run1 extends Run implements
             Run1.this.runOnUiThread(new Runnable() {
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 public void run() {
-                    process_new_location();
+                    process_new_location(gpsLogger.getLastLocation());
                 }
             });
         } /* end of run() */

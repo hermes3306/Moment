@@ -322,4 +322,8 @@ public class GPSLogger extends Service implements LocationListener {
 		return isRunning;
 	}
 
+	public Location getLastLocation() {
+		return lastLocation;
+	}
+
 }
