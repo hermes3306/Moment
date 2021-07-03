@@ -57,6 +57,10 @@
         <activity android:name=".activity.DetailMapsActivity" />
         <activity android:name=".activity.MediaActivity" />
 
+        <activity android:name=".activity.run.Run1" />
+        <activity android:name=".activity.run.Run2" />
+        <activity android:name=".activity.run.Run3" />
+
 
         <activity
             android:name=".ItemDetailHostActivity"

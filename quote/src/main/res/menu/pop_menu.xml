@@ -23,6 +23,24 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_run1"
+        android:orderInCategory="100"
+        android:title="Run1"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_run2"
+        android:orderInCategory="100"
+        android:title="Run2"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_run3"
+        android:orderInCategory="100"
+        android:title="Run3"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_update"
         android:orderInCategory="100"
         android:title="Update..."

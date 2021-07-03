@@ -98,8 +98,6 @@ public class MyLoc {
         //Log.d(TAG, "-- db.insert rowid(" + newRowId +")");
     }
 
-
-
     public void qry() {
         // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         // SQLiteDatabase dbr = dbHelper.getReadableDatabase();

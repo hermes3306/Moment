@@ -544,6 +544,8 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -551,29 +553,11 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.mp3Player:
-                MP3.showPlayer(_ctx);
-                return true;
-            case R.id.stopMp3:
-                MP3.stop(_ctx);
-                return true;
-
-
-            case R.id.ReportActivity:
-                Log.d(TAG,"-- Report Activity!");
-                Intent reportActivity = new Intent(this, MyReportActivity.class);
-                reportActivity.putExtra("activity_file_name", "20210522_110818");
-                startActivityForResult(reportActivity, Config.CALL_REPORT_ACTIVITY);
-                return true;
-
-              default:
-                return super.onOptionsItemSelected(item);
-        }
+        return MyMenu.getInstance(this).onOptionsItemSelected(item);
     }
-
 
 
 }

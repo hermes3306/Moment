@@ -14,6 +14,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -536,5 +539,18 @@ public class MediaActivity extends AppCompatActivity implements View.OnClickList
                 NotificationUtil.notify_new_picture(_ctx, "서버로 부터 동영상을 다운로드 하였습니다.");
                 break;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.pop_menu, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return MyMenu.getInstance(this).onOptionsItemSelected(item);
     }
 }
