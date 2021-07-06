@@ -90,12 +90,15 @@
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".activity.Run1"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".activity.Run2"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".activity.Run3"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".ConfigActivity"
