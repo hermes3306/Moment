@@ -513,7 +513,7 @@ public class Run3 extends Run implements
             startService(new Intent(this, GPSLogger.class)); // 서비스 시작
         }
         gpsLoggerConnection = new GPSLoggerConnection(this); // 서비스 바인딩
-        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
+        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, BIND_AUTO_CREATE);
 
         if (list == null) list = new ArrayList<>();
 
@@ -562,7 +562,7 @@ public class Run3 extends Run implements
         resume = true;
         Log.d(TAG, "-- onResume.");
         startService(gpsLoggerServiceIntent);
-        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
+        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, BIND_AUTO_CREATE);
 
         if(last_pk != -1 && last_pk < LocationUtil.getInstance().get_last_pk()) {
             Log.e(TAG, "----- HERE ----------");
