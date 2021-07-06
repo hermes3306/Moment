@@ -547,7 +547,7 @@ public class Run3 extends Run implements
                 //unbindService(gpsLoggerConnection);
                 //stopService(gpsLoggerServiceIntent);
             } else {
-                if(gpsLoggerConnection !=null) unbindService(gpsLoggerConnection);
+                //if(gpsLoggerConnection !=null) unbindService(gpsLoggerConnection);
             }
         }
 
