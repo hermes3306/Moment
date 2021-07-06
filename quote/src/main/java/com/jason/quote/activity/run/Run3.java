@@ -542,7 +542,7 @@ public class Run3 extends Run implements
                 //unbindService(gpsLoggerConnection);
                 //stopService(gpsLoggerServiceIntent);
             } else {
-                if(gpsLoggerConnection !=null) unbindService(gpsLoggerConnection);
+                //if(gpsLoggerConnection !=null) unbindService(gpsLoggerConnection);
             }
         }
 
@@ -562,8 +562,8 @@ public class Run3 extends Run implements
             if(lastRun.exists()) lastRun.delete();
         }
 
-        startService(gpsLoggerServiceIntent);
-        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
+//        startService(gpsLoggerServiceIntent);
+//        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
 
         if(last_pk != -1 && last_pk < LocationUtil.getInstance().get_last_pk()) {
             Log.e(TAG, "----- HERE ----------");

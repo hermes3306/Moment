@@ -24,8 +24,18 @@
         android:theme="@style/Theme.Moment"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activity.myrun.MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.Moment.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".activity.SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings" />
         <activity
             android:name=".activity.StartupActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -57,13 +67,9 @@
         <activity android:name=".activity.DetailMapsActivity" />
         <activity android:name=".activity.MediaActivity" />
         <activity android:name=".activity.MyReportActivity" />
-
-
         <activity android:name=".activity.run.Run1" />
         <activity android:name=".activity.run.Run2" />
         <activity android:name=".activity.run.Run3" />
-
-
         <activity
             android:name=".ItemDetailHostActivity"
             android:label="@string/app_name">
