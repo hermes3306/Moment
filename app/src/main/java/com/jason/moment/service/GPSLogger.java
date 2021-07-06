@@ -234,35 +234,17 @@ public class GPSLogger extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        if(Config._sharedPreferenceChanged) {
-            Config.init_preference_values(getApplicationContext());
-            gpsLoggingInterval = Config._loc_interval;
-            gpsLoggingMinDistance = (long)Config._loc_distance;
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                lmgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                lmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, gpsLoggingInterval, gpsLoggingMinDistance, this);
-            }
-            Log.e(TAG,"-- Shared Preference changed! reload ok!");
-            Config._sharedPreferenceChanged = false;
-        }
-
-        // on background run this will write data to database
-        Log.e(TAG, "-- New Loc:" + location);
-        // We're receiving location, so GPS is enabled
         isGpsEnabled = true;
-
+w;
         // first of all we check if the time from the last used fix to the current fix is greater than the logging interval
         if((lastGPSTimestamp + gpsLoggingInterval) < System.currentTimeMillis()){
             lastGPSTimestamp = System.currentTimeMillis(); // save the time of this fix
             lastLocation = location;
-            //if (isTracking) {
-            if(true) {
-                LocationUtil.getInstance().onLocationChanged(getApplicationContext(),location);
-                Log.d(TAG, "-- Location Changed Intent Broadcasting to All Activities...");
-                Intent intent = new Intent(Config.INTENT_LOCATION_CHANGED);
-                intent.putExtra("location", location);
-                sendBroadcast(intent);
-            }
+
+            LocationUtil.getInstance().onLocationChanged(getApplicationContext(),location);
+            Intent intent = new Intent(Config.INTENT_LOCATION_CHANGED);
+            intent.putExtra("location", location);
+            sendBroadcast(intent);
 
             if(use_db) {
             }
