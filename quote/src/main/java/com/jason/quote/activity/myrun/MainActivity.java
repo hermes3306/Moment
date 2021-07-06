@@ -1,5 +1,6 @@
 package com.jason.quote.activity.myrun;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -18,6 +19,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.jason.quote.R;
 import com.jason.quote.activity.MyMenu;
+import com.jason.quote.activity.run.Run3;
 import com.jason.quote.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,8 +43,11 @@ public class MainActivity extends AppCompatActivity {
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "About to start Run3", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
+                Intent run3 = new Intent(MainActivity.this, Run3.class);
+                startActivity(run3);
             }
         });
     }

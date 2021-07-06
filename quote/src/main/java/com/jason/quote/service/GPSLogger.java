@@ -232,9 +232,6 @@ public class GPSLogger extends Service implements LocationListener {
 
 	@Override
 	public void onLocationChanged(Location location) {
-		Toast.makeText(getApplicationContext(), "New Loc:" + location.getLongitude() +
-				"," + location.getLongitude(), Toast.LENGTH_SHORT).show();
-
 		Log.d(TAG, "---- Location Changed: " + location);
 		// We're receiving location, so GPS is enabled
 		isGpsEnabled = true;
