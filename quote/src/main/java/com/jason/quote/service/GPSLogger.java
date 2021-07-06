@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
@@ -231,6 +232,9 @@ public class GPSLogger extends Service implements LocationListener {
 
 	@Override
 	public void onLocationChanged(Location location) {
+		Toast.makeText(getApplicationContext(), "New Loc:" + location.getLongitude() +
+				"," + location.getLongitude(), Toast.LENGTH_SHORT).show();
+
 		Log.d(TAG, "---- Location Changed: " + location);
 		// We're receiving location, so GPS is enabled
 		isGpsEnabled = true;

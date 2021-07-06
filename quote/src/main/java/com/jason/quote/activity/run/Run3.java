@@ -556,6 +556,12 @@ public class Run3 extends Run implements
         paused = false;
         resume = true;
         Log.d(TAG, "-- onResume.");
+
+        if(true) {
+            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
+            if(lastRun.exists()) lastRun.delete();
+        }
+
         startService(gpsLoggerServiceIntent);
         bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
 

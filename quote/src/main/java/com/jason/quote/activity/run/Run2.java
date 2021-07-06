@@ -649,6 +649,13 @@ public class Run2 extends Run implements
     public void onResume() {
         paused = false;
         resume = true;
+
+        if(true) {
+            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
+            if(lastRun.exists()) lastRun.delete();
+        }
+
+
         Log.d(TAG, "-- onResume.");
         startService(gpsLoggerServiceIntent);
         bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
