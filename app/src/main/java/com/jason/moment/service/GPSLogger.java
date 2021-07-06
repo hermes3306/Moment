@@ -235,7 +235,7 @@ public class GPSLogger extends Service implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         isGpsEnabled = true;
-w;
+
         // first of all we check if the time from the last used fix to the current fix is greater than the logging interval
         if((lastGPSTimestamp + gpsLoggingInterval) < System.currentTimeMillis()){
             lastGPSTimestamp = System.currentTimeMillis(); // save the time of this fix

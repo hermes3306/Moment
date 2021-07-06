@@ -561,8 +561,8 @@ public class Run3 extends Run implements
         paused = false;
         resume = true;
         Log.d(TAG, "-- onResume.");
-        startService(gpsLoggerServiceIntent);
-        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, BIND_AUTO_CREATE);
+//        startService(gpsLoggerServiceIntent);
+//        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, BIND_AUTO_CREATE);
 
         if(last_pk != -1 && last_pk < LocationUtil.getInstance().get_last_pk()) {
             Log.e(TAG, "----- HERE ----------");

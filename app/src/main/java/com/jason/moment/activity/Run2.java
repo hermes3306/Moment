@@ -652,9 +652,9 @@ public class Run2 extends Run implements
         paused = false;
         resume = true;
         Log.d(TAG, "-- onResume.");
-        startService(gpsLoggerServiceIntent);
-        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, BIND_AUTO_CREATE);
-        registerLocationChangedReceiver();
+//        startService(gpsLoggerServiceIntent);
+//        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, BIND_AUTO_CREATE);
+//        registerLocationChangedReceiver();
         super.onResume();
     }
 
