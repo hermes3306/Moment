@@ -616,52 +616,17 @@ public class Run2 extends Run implements
         //startMyTimer();
     }
 
-    static boolean paused = false;
 
     @Override
     public void onPause() {
-        paused = true;
-        Log.d(TAG, "-- onPause.");
-
-        // onPause에서 임시로 파일을 저장함
-        // reSume할때 삭제 필요함
-        if(!activity_quit_normally) {
-            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
-            MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun);
-        }
-
-        if (gpsLogger != null) {
-            if (!gpsLogger.isRunning()) {
-                //Log.d(TAG, "Service is not tracking, trying to stopService()");
-                //unbindService(gpsLoggerConnection);
-                //stopService(gpsLoggerServiceIntent);
-            } else {
-                //if(gpsLoggerConnection !=null) unbindService(gpsLoggerConnection);
-            }
-        }
-
         super.onPause();
     }
 
-    boolean resume = false;
-
     @Override
     public void onResume() {
-        paused = false;
-        resume = true;
-
-        if(true) {
-            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
-            if(lastRun.exists()) lastRun.delete();
-        }
-
-
-        Log.d(TAG, "-- onResume.");
-        startService(gpsLoggerServiceIntent);
-        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
-        registerLocationChangedReceiver();
         super.onResume();
     }
+
 
     @Override
     public void onDestroy() {
@@ -733,7 +698,6 @@ public class Run2 extends Run implements
         if(f.exists()) f.delete();
     }
 
-    static boolean activity_quit_normally = false;
     public void alertQuitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("활동을 중지하시겠습니까?");

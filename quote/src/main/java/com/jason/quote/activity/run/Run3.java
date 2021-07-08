@@ -519,51 +519,22 @@ public class Run3 extends Run implements
         startMyTimer();
     }
 
-    static boolean paused = false;
+
     static long last_pk = -1;
     static long start_pk = -1;
 
     @Override
     public void onPause() {
-        paused = true;
-        Log.d(TAG, "-- onPause.");
-        last_pk = LocationUtil.getInstance().get_last_pk();
-
-        // onPause에서 임시로 파일을 저장함
-        // reSume할때 삭제 필요함
-        if(!activity_quit_normally) {
-            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
-            MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun);
-        }
-
-        if (gpsLogger != null) {
-            if (!gpsLogger.isRunning()) {
-                //Log.d(TAG, "Service is not tracking, trying to stopService()");
-                //unbindService(gpsLoggerConnection);
-                //stopService(gpsLoggerServiceIntent);
-            } else {
-                //if(gpsLoggerConnection !=null) unbindService(gpsLoggerConnection);
-            }
-        }
-
         super.onPause();
     }
 
-    boolean resume = false;
-
     @Override
     public void onResume() {
-        paused = false;
-        resume = true;
-        Log.d(TAG, "-- onResume.");
+        get_last_run_from_db();
+        super.onResume();
+    }
 
-        if(true) {
-            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
-            if(lastRun.exists()) lastRun.delete();
-        }
-
-//        startService(gpsLoggerServiceIntent);
-//        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
+    public void get_last_run_from_db() {
 
         if(last_pk != -1 && last_pk < LocationUtil.getInstance().get_last_pk()) {
             Log.e(TAG, "----- HERE ----------");
@@ -577,7 +548,6 @@ public class Run3 extends Run implements
                 list.add(t.get(i));
             }
         }
-        super.onResume();
     }
 
     @Override

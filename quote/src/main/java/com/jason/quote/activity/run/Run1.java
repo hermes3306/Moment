@@ -79,17 +79,7 @@ public class Run1 extends Run implements
 
     long gpsLoggingInterval;
     long gpsLoggingMinDistance;
-    private Intent gpsLoggerServiceIntent = null;
-    private ServiceConnection gpsLoggerConnection = null;
 
-
-    // Loc Service binding
-    MyActivity last_activity = null;
-
-    public ArrayList<String> pic_filenames = new ArrayList<>();
-    public ArrayList<String> mov_filenames = new ArrayList<>();
-    public ArrayList<String> media_filenames = new ArrayList<>();
-    String activity_file_name = null;
     ImageButton imb_wifi_off;
     ImageButton imb_wifi_on;
 
@@ -110,7 +100,7 @@ public class Run1 extends Run implements
     private double dist = 0;
     private boolean quit = false;
 
-    private ArrayList list = null;
+
     private final MyActivity first = null;
     private MyActivity last = null;
 
@@ -570,50 +560,13 @@ public class Run1 extends Run implements
         startMyTimer();
     }
 
-    static boolean paused = false;
-
     @Override
     public void onPause() {
-        paused = true;
-        Log.d(TAG, "-- onPause.");
-
-        if(!activity_quit_normally) {
-            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
-            MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun);
-        }
-
-        if (gpsLogger != null) {
-            if (!gpsLogger.isRunning()) {
-                Log.d(TAG, "---- Service is not tracking, trying to stopService()");
-                unbindService(gpsLoggerConnection);
-                stopService(gpsLoggerServiceIntent);
-            } else {
-                unbindService(gpsLoggerConnection);
-            }
-        }
         super.onPause();
     }
 
-    boolean resume = false;
-
     @Override
     public void onResume() {
-        paused = false;
-        resume = true;
-
-        if(true) {
-            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
-            if(lastRun.exists()) lastRun.delete();
-        }
-
-        // Start GPS Logger service
-        startService(gpsLoggerServiceIntent);
-
-        // Bind to GPS service.
-        // We can't use BIND_AUTO_CREATE here, because when we'll ubound
-        // later, we want to keep the service alive in background
-        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
-
         super.onResume();
     }
 
@@ -626,7 +579,13 @@ public class Run1 extends Run implements
             Config.restore_preference_values_after_running(getApplicationContext());
             Toast.makeText(_ctx,"Running activity saved into " + Config.Unsaved_File_name + " !!", Toast.LENGTH_SHORT).show();
         } else {
-            if (gpsLoggerConnection != null) unbindService(gpsLoggerConnection);
+            if (gpsLogger != null) {
+                if (!gpsLogger.isRunning()) {
+                    Log.d(TAG, "---- Service is not tracking, trying to stopService()");
+                    if (gpsLoggerConnection != null) unbindService(gpsLoggerConnection);
+                    stopService(gpsLoggerServiceIntent);
+                }
+            }
         }
         super.onDestroy();
     }
@@ -685,7 +644,7 @@ public class Run1 extends Run implements
         if(f.exists()) f.delete();
     }
 
-    static boolean activity_quit_normally = false;
+
     public void alertQuitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("활동을 중지하시겠습니까?");
