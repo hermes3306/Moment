@@ -42,7 +42,7 @@ public class MyRun {
     }
 
     public void stopRunning(long run_id) {
-        db.execSQL("update myruninfo set status = false where run_d =" +
+        db.execSQL("update myruninfo set status = false where run_id =" +
                 String.format("%d", run_id));
     }
 

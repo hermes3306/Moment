@@ -39,6 +39,22 @@ public class LocationUtil {
     public void onLocationChanged(Context context, Location location) {
         double dist;
         LatLng ll = new LatLng(location.getLatitude(), location.getLongitude());
+        if(first_called || last_location==null) {
+            dist = 0;
+            last_location = location;
+            last_pk = MyLoc.getInstance(context).ins(location.getLatitude(), location.getLongitude());
+            return;
+        }else {
+            dist = CalDistance.dist(last_location.getLatitude(), last_location.getLongitude(), location.getLatitude(), location.getLongitude());
+            if(dist < Config._loc_distance) return;
+            last_pk = MyLoc.getInstance(context).ins(location.getLatitude(), location.getLongitude());
+            last_location = location;
+        }
+    }
+
+    public void onLocationChanged_old(Context context, Location location) {
+        double dist;
+        LatLng ll = new LatLng(location.getLatitude(), location.getLongitude());
         if(last_location==null) {
             dist = 0;
         }else {

@@ -37,7 +37,7 @@ public class CalDistance {
         this.cur_long = nextpos.longitude;
     }
 
-    public double getDistance() {
+    public double getDistance_old() {
         theta = bef_long - cur_long;
         dist = Math.sin(deg2rad(bef_lat)) * Math.sin(deg2rad(cur_lat)) + Math.cos(deg2rad(bef_lat))
                 * Math.cos(deg2rad(cur_lat))*Math.cos(deg2rad(theta));
@@ -51,6 +51,22 @@ public class CalDistance {
         //Log.d(TAG, "-- getDistance:" + dist + " m");
         return dist; // 단위 m
     }
+
+    public double getDistance() {
+        return calculateDistance(bef_lat,bef_long,cur_lat,cur_long);
+    }
+
+    public  double calculateDistance(double latitude1, double longitude1, double latitude2, double longitude2) {
+        double deltaLatitude = Math.toRadians(Math.abs(latitude1 - latitude2));
+        double deltaLongitude = Math.toRadians(Math.abs(longitude1 - longitude2));
+        double latitude1Rad = Math.toRadians(latitude1);
+        double latitude2Rad = Math.toRadians(latitude2);
+        double a = Math.pow(Math.sin(deltaLatitude / 2), 2) +
+                (Math.cos(latitude1Rad) * Math.cos(latitude2Rad) * Math.pow(Math.sin(deltaLongitude / 2), 2));
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return 6371 * c * 1000; //Distance in meters
+    }
+
     private double deg2rad(double deg) {
         return (double)(deg*Math.PI/(double)180d);
     }

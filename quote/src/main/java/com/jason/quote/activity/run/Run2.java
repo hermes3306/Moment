@@ -80,28 +80,14 @@ public class Run2 extends Run implements
         OnMapReadyCallback,
         View.OnClickListener {
 
-    long gpsLoggingInterval;
-    long gpsLoggingMinDistance;
-    private Intent gpsLoggerServiceIntent = null;
-    private ServiceConnection gpsLoggerConnection = null;
-
-
-    // Loc Service binding
-    MyActivity last_activity = null;
-    Location new_location = null;
-
-    public ArrayList<String> pic_filenames = new ArrayList<>();
-    public ArrayList<String> mov_filenames = new ArrayList<>();
-    public ArrayList<String> media_filenames = new ArrayList<>();
-    String activity_file_name = null;
     ImageButton imb_wifi_off;
     ImageButton imb_wifi_on;
 
-    String TAG = "Run2";
+    String TAG = "Run1";
     Context _ctx = null;
     int _default_layout = R.layout.activity_run_common;
-    private GoogleMap googleMap = null;
 
+    private GoogleMap googleMap = null;
     private TextView tv_start_km;
     private TextView tv_start_km_str;
     private TextView tv_start_time;
@@ -111,11 +97,8 @@ public class Run2 extends Run implements
 
     private Date start_time;
     private double dist = 0;
-    private boolean quit = false;
-
-    private ArrayList list = null;
-    private final MyActivity first = null;
     private MyActivity last = null;
+    boolean quit=false;
 
     public String getActivity_file_name() {
         return activity_file_name;

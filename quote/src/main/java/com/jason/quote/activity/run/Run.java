@@ -2,6 +2,7 @@ package com.jason.quote.activity.run;
 
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.location.Location;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -53,7 +54,7 @@ public class Run extends AppCompatActivity {
 
     public static boolean paused = false;
     public boolean resume = false;
-
+    public Location new_location;
 
     static Timer timer = new Timer();
     public void showGPS() {

@@ -185,6 +185,12 @@ public class GPSLogger extends Service implements LocationListener {
     }
 
     @Override
+    public void onLowMemory() {
+        Log.e(TAG,"Android is low on memory!");
+        super.onLowMemory();
+    }
+
+    @Override
     public void onDestroy() {
         Log.e(TAG, "-- GpsLogger Service onDestroy()");
         if (isTracking) {
@@ -242,13 +248,14 @@ public class GPSLogger extends Service implements LocationListener {
             lastLocation = location;
 
             LocationUtil.getInstance().onLocationChanged(getApplicationContext(),location);
+
             Intent intent = new Intent(Config.INTENT_LOCATION_CHANGED);
             intent.putExtra("location", location);
             sendBroadcast(intent);
 
             if(use_db) {
             }
-        }
+        } else return;
 
         // 한시간 마다 한번씩 DBMS 내용을 파일로 저장함
         Date d = new Date();
