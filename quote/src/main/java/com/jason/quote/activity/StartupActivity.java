@@ -18,6 +18,7 @@ import android.view.View;
 
 import com.jason.quote.ItemDetailHostActivity;
 import com.jason.quote.R;
+import com.jason.quote.activity.myrun.MainActivity;
 import com.jason.quote.databinding.ActivityStartupBinding;
 import com.jason.quote.util.ActivityStat;
 import com.jason.quote.util.CloudUtil;
@@ -144,12 +145,10 @@ public class StartupActivity extends AppCompatActivity implements View.OnClickLi
         // while interacting with the UI.
         binding.dummyButton.setOnTouchListener(mDelayHideTouchListener);
 
-
         // Startup
         Config.initialize(this);
         PermissionUtil.getInstance().setPermission(this);
 
-        /*
         CloudUtil.getInstance().DownloadAll(this, Config._csv);
         CloudUtil.getInstance().DownloadAll(this, Config._img);
         CloudUtil.getInstance().DownloadAll(this, Config._mov);
@@ -159,7 +158,7 @@ public class StartupActivity extends AppCompatActivity implements View.OnClickLi
         MyRun.getInstance(this).createNew();
         rebuildActivitySummaries(this);
         ImportTodayActivity("Jason");
-        */
+
 
 
     }
@@ -270,7 +269,7 @@ public class StartupActivity extends AppCompatActivity implements View.OnClickLi
 //                intent.putExtra("filetype", Config._file_type_all);
 
 
-                Intent intent = new Intent(this, ItemDetailHostActivity.class);
+                Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
                 break;
         }
