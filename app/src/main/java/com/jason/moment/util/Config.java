@@ -142,7 +142,7 @@ public class Config {
 
     public static boolean       _enable_network_provider = false;
     public static int           _loc_interval   = 1000;     // 1 sec
-    public static float         _loc_distance   = 1f;       // 1 meter
+    public static float         _loc_distance   = 0.5f;       // 0.5 meter
 
     public static String        _filename_fmt   ="yyyyMMdd";
     public static boolean       _save_onPause = true;
@@ -337,10 +337,13 @@ public class Config {
         editor.putString("distance",distance);
         editor.commit();
         _sharedPreferenceChanged = true;
+
+        Config._loc_interval = Integer.parseInt(interval);
+        Config._loc_distance = Float.parseFloat(distance);
     }
 
     public static void init_preference_value_running_default(Context _ctx) {
-        init_preference_values_running(_ctx, "1000","1"); // 1sec, 1meter
+        init_preference_values_running(_ctx, "1000","0.3"); // 1sec, 30 centimeter
     }
 
     public static void init_preference_values(Context _ctx) {

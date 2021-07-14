@@ -27,6 +27,7 @@ public class Run extends AppCompatActivity {
     public String getCurrentTrackId() {
         return this.currentTrackId;
     }
+    public boolean dashboard = true;
 
     static Timer timer = new Timer();
     public void showGPS() {

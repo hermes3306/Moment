@@ -111,13 +111,15 @@ public class    MapUtil {
     }
 
     public static void drawAllMarkers(GoogleMap gmap, ArrayList<MyActivity> list) {
-        if(C.nomarkers) return;
+        if(!C.showallmarkers && C.nomarkers) return;
 
         double tot_distance = MyActivityUtil.getTotalDistanceInDouble(list);
         int disunit = (int)(tot_distance / 10);
 
         double t_distance = 0;
         double t_lap = disunit;
+
+
         for(int i=0; i < list.size(); i++) {
             LatLng ll = new LatLng(list.get(i).latitude, list.get(i).longitude);
             String title = StringUtil.getDateTimeString(list.get(i));
@@ -131,12 +133,12 @@ public class    MapUtil {
                 if(Double.isNaN(dist + t_distance)) continue;
 
                 t_distance = t_distance + dist;
-                if(t_distance > t_lap) {
+                if(C.showallmarkers || t_distance > t_lap) {
                     int interval = (int)(t_distance / disunit);
                     t_lap += disunit;
                     String _title;
-                    if (t_distance < 1000) _title = String.format("%.0f", t_distance) +"m";
-                    else _title = String.format("%.2f", t_distance/1000) +"km";
+                    if (t_distance < 1000) _title = String.format("%.1f", t_distance) +"m";
+                    else _title = String.format("%.4f", t_distance/1000) +"km";
 
                     Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title(title)
                             .icon(BitmapDescriptorFactory.fromResource(Config._marker_icon))

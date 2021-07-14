@@ -354,6 +354,31 @@ public class Run2 extends Run implements
 
         int id = item.getItemId();
         switch (id) {
+            case R.id.showallmarkers:
+                C.showallmarkers = !C.showallmarkers;
+                break;
+            case R.id.toggleDashboard:
+                dashboard = ! dashboard;
+                LinearLayout ll01 = findViewById(R.id.start_dash_ll_01);
+                LinearLayout ll02 = findViewById(R.id.start_dash_ll_02);
+                LinearLayout ll03 = findViewById(R.id.start_dash_ll_03);
+                LinearLayout ll04 = findViewById(R.id.start_dash_ll_04);
+                LinearLayout ll05 = findViewById(R.id.start_dash_ll_05);
+                if(dashboard) {
+                    ll01.setVisibility(View.VISIBLE);
+                    ll02.setVisibility(View.VISIBLE);
+                    ll03.setVisibility(View.VISIBLE);
+                    ll04.setVisibility(View.VISIBLE);
+                    ll05.setVisibility(View.VISIBLE);
+                }else {
+                    ll01.setVisibility(View.GONE);
+                    ll02.setVisibility(View.GONE);
+                    ll03.setVisibility(View.GONE);
+                    ll04.setVisibility(View.GONE);
+                    ll05.setVisibility(View.GONE);
+                }
+                return true;
+
             case R.id.mp3Player:
                 MP3.showPlayer(_ctx);
                 return true;

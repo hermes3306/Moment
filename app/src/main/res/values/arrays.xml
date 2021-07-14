@@ -98,6 +98,9 @@
 
     <string-array name="distance_values">
         <item>0</item>
+        <item>0.1</item>
+        <item>0.3</item>
+        <item>0.5</item>
         <item>1</item>
         <item>2</item>
         <item>3</item>
@@ -111,6 +114,9 @@
 
     <string-array name="distance">
         <item>0 meter</item>
+        <item>10 centimeter</item>
+        <item>30 centimeter</item>
+        <item>50 centimeter</item>
         <item>1 meter</item>
         <item>2 meter</item>
         <item>3 meter</item>

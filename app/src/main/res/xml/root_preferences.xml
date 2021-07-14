@@ -21,14 +21,14 @@
 
     <PreferenceCategory app:title="Location">
         <ListPreference
-            app:defaultValue="5000"
+            app:defaultValue="1000"
             app:entries="@array/interval"
             app:entryValues="@array/interval_values"
             app:key="interval"
             app:title="Interval"
             app:useSimpleSummaryProvider="true" />
         <ListPreference
-            app:defaultValue="1"
+            app:defaultValue="0.5"
             app:entries="@array/distance"
             app:entryValues="@array/distance_values"
             app:key="distance"
