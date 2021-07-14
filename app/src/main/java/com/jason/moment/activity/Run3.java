@@ -87,9 +87,6 @@ public class Run3 extends Run implements
     MyActivity last_activity = null;
     Location new_location = null;
 
-    public ArrayList<String> pic_filenames = new ArrayList<>();
-    public ArrayList<String> mov_filenames = new ArrayList<>();
-    public ArrayList<String> media_filenames = new ArrayList<>();
     String activity_file_name = null;
     ImageButton imb_wifi_off;
     ImageButton imb_wifi_on;
@@ -120,20 +117,7 @@ public class Run3 extends Run implements
 
     // 사진 촬영 기능
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    String currentMediaName;
     Uri currentFileUri;
-
-    private void recordVideo() {
-        currentMediaName = Config.getTmpVideoName();
-        File mediaFile = new File(Config.MOV_SAVE_DIR, currentMediaName);
-        Uri mediaUri = FileProvider.getUriForFile(this,
-                "com.jason.moment.file_provider",
-                mediaFile);
-
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, mediaUri);
-        startActivityForResult(intent, Config.PICK_FROM_VIDEO);
-    }
 
     private void takePic() {
         currentMediaName = Config.getTmpPicName();
@@ -250,10 +234,6 @@ public class Run3 extends Run implements
             });
         }
         alertadd.show();
-    }
-
-    private void showImages(final int pos) {
-        AlertDialogUtil.getInstance().showMedias(_ctx, pic_filenames, pos);
     }
 
     public void showVideo(VideoView vv, String fname) {

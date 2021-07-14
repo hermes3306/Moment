@@ -20,7 +20,6 @@ public class GPSLoggerConnection implements ServiceConnection {
     public void onServiceDisconnected(ComponentName name) {
         //activity.setEnabledActionButtons(false);
         activity.getGpsLogger().set_use_db(activity.get_use_db());
-
         activity.setGpsLogger(null);
     }
 

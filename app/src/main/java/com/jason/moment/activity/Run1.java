@@ -86,15 +86,13 @@ public class Run1 extends Run implements
     MyActivity last_activity = null;
     Location new_location = null;
 
-    public ArrayList<String> pic_filenames = new ArrayList<>();
-    public ArrayList<String> mov_filenames = new ArrayList<>();
-    public ArrayList<String> media_filenames = new ArrayList<>();
+
+
     String activity_file_name = null;
     ImageButton imb_wifi_off;
     ImageButton imb_wifi_on;
 
     String TAG = "Run1";
-    Context _ctx = null;
     int _default_layout = R.layout.activity_run_common;
     private GoogleMap googleMap = null;
 
@@ -120,20 +118,10 @@ public class Run1 extends Run implements
 
     // 사진 촬영 기능
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    String currentMediaName;
+
     Uri currentFileUri;
 
-    private void recordVideo() {
-        currentMediaName = Config.getTmpVideoName();
-        File mediaFile = new File(Config.MOV_SAVE_DIR, currentMediaName);
-        Uri mediaUri = FileProvider.getUriForFile(this,
-                "com.jason.moment.file_provider",
-                mediaFile);
 
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, mediaUri);
-        startActivityForResult(intent, Config.PICK_FROM_VIDEO);
-    }
 
     private void takePic() {
         currentMediaName = Config.getTmpPicName();
@@ -252,41 +240,8 @@ public class Run1 extends Run implements
         alertadd.show();
     }
 
-    private void showImages(final int pos) {
-        AlertDialogUtil.getInstance().showMedias(_ctx, pic_filenames, pos);
-    }
 
-    public void showVideo(VideoView vv, String fname) {
-        MediaController m;
-        m = new MediaController(this);
 
-        File mediaFile = new File(Config.MOV_SAVE_DIR, fname);
-        Uri mediaUri = FileProvider.getUriForFile(this,
-                "com.jason.moment.file_provider",
-                mediaFile);
-        vv.setVideoURI(mediaUri);
-        vv.start();
-    }
-
-    private void showVideos(int pos) {
-        AlertDialogUtil.getInstance().showMedias(_ctx, mov_filenames, pos);
-    }
-
-    private void showVideo(String fname) {
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(Run1.this);
-        LayoutInflater factory = LayoutInflater.from(Run1.this);
-
-        /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
-        final View view = factory.inflate(R.layout.layout_videoview, null);
-        VideoView vv = view.findViewById(R.id.dialog_video_view);
-        showVideo(vv, fname);
-        alertadd.setView(view);
-        alertadd.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dlg, int sumthin) {
-            }
-        });
-        alertadd.show();
-    }
 
     private boolean viewStartActionBar = false;
 
@@ -342,76 +297,7 @@ public class Run1 extends Run implements
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Resources r = getResources();
-        String[] screen_layout = r.getStringArray(R.array.start_screen);
-        String[] screen_layout_value = r.getStringArray(R.array.start_screen);
 
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.showallmarkers:
-                C.showallmarkers = !C.showallmarkers;
-                break;
-            case R.id.toggleDashboard:
-                dashboard = ! dashboard;
-                LinearLayout ll01 = findViewById(R.id.start_dash_ll_01);
-                LinearLayout ll02 = findViewById(R.id.start_dash_ll_02);
-                LinearLayout ll03 = findViewById(R.id.start_dash_ll_03);
-                LinearLayout ll04 = findViewById(R.id.start_dash_ll_04);
-                LinearLayout ll05 = findViewById(R.id.start_dash_ll_05);
-                if(dashboard) {
-                    ll01.setVisibility(View.VISIBLE);
-                    ll02.setVisibility(View.VISIBLE);
-                    ll03.setVisibility(View.VISIBLE);
-                    ll04.setVisibility(View.VISIBLE);
-                    ll05.setVisibility(View.VISIBLE);
-                }else {
-                    ll01.setVisibility(View.GONE);
-                    ll02.setVisibility(View.GONE);
-                    ll03.setVisibility(View.GONE);
-                    ll04.setVisibility(View.GONE);
-                    ll05.setVisibility(View.GONE);
-                }
-                return true;
-
-            case R.id.mp3Player:
-                MP3.showPlayer(_ctx);
-                return true;
-            case R.id.stopMp3:
-                MP3.stop(_ctx);
-                return true;
-            case R.id.start_layout_select:
-                AlertDialog.Builder builder = new AlertDialog.Builder(Run1.this)
-                        .setItems(screen_layout, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                            }
-                        })
-                        .setTitle("Choose a layout");
-                AlertDialog mSportSelectDialog = builder.create();
-                mSportSelectDialog.show();
-                break;
-            case R.id.imSetting:
-                Log.d(TAG, "-- Setting Activities!");
-                Intent configIntent = new Intent(Run1.this, ConfigActivity.class);
-                startActivity(configIntent);
-                break;
-            case R.id.action_map:
-                int i = 0;
-                break;
-            case R.id.record_video:
-                recordVideo();
-                break;
-            case R.id.view_pics:
-                showImages(0);
-                break;
-            case R.id.view_videos:
-                showVideos(0);
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     private void setHeadMessages() {
         TextView name = findViewById(R.id.name);
@@ -597,7 +483,7 @@ public class Run1 extends Run implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        this._ctx = this;
+        _ctx = this;
         set_use_db(false);
         // 달리기 모드일 경우, 1초, 1미터로 셋팅함
         Config.initialize(getApplicationContext());

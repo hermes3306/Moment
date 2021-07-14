@@ -121,13 +121,28 @@ public class MapsActivity extends AppCompatActivity implements
         builder.setPositiveButton("중지",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        Log.e(TAG,"-- alertQuitDialog()");
                         already_quit = true;
                         SerializeTodayActivity();
-                        if(gpsLoggerConnection != null)  unbindService(gpsLoggerConnection);
-                        if(gpsLoggerServiceIntent != null) stopService(gpsLoggerServiceIntent);
-                        gpsLoggerConnection = null;
-                        gpsLoggerServiceIntent = null;
-                        finish();
+                        Log.e(TAG,"-- SerializeTodayActivity()");
+
+                        if(receiver != null) {
+                            unregisterReceiver(receiver);
+                        }
+
+                        if(gpsLoggerConnection != null)  {
+                            unbindService(gpsLoggerConnection);
+                            Log.e(TAG,"-- unbindService()");
+                            gpsLoggerConnection = null;
+                        }
+                        if(gpsLoggerServiceIntent != null) {
+                            stopService(gpsLoggerServiceIntent);
+                            gpsLoggerServiceIntent = null;
+                            Log.e(TAG,"-- stopService()");
+                        }
+                        Log.e(TAG,"-- before MapsActivity.this.finish()");
+                        MapsActivity.this.finish();
+                        Log.e(TAG,"-- after MapsActivity.this.finish()");
                     }
                 });
         builder.setNegativeButton("취소",
@@ -161,12 +176,11 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     public void onDestroy() {
+        Log.e(TAG,"-- onDestroy()");
         // Unregister broadcast receiver
-        unregisterReceiver(receiver);
         if(gpsLoggerConnection != null)  unbindService(gpsLoggerConnection);
         if(gpsLoggerServiceIntent != null) stopService(gpsLoggerServiceIntent);
-        gpsLoggerConnection = null;
-        gpsLoggerServiceIntent = null;
+        Log.e(TAG,"-- after onDestroy()");
         super.onDestroy();
     }
 
