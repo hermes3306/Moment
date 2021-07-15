@@ -468,6 +468,7 @@ public class Run extends AppCompatActivity{
     }
 
     public void alertQuitDialog() {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("활동을 중지하시겠습니까?");
         builder.setMessage("활동을 정말 중지하시겠습니까?");
@@ -480,10 +481,12 @@ public class Run extends AppCompatActivity{
                             unbindService(gpsLoggerConnection);
                             gpsLoggerConnection = null;
                         }
-                        Log.d(TAG,"-- Service gpsLogger unbound...");
 
                         MyActivityUtil.serialize(list, media_filenames, activity_file_name );
                         CloudUtil.getInstance().Upload(activity_file_name + Config._csv_ext);
+
+                        Toast.makeText(_ctx, " " + list.size() + " locations saved!", Toast.LENGTH_SHORT).show();
+
                         ActivityStat as = ActivityStat.getActivityStat(list);
                         if(as !=null) {
                             MyActiviySummary.getInstance(_ctx).ins(activity_file_name,as.distanceKm,as.durationInLong,as.minperKm,as.calories);
