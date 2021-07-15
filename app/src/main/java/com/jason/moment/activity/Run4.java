@@ -239,6 +239,9 @@ public class Run4 extends Run implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.name:
+                AlertDialogUtil.getInstance().show_running_stat(_ctx, new RunStat(this, list, last_pk, getCurrentRunId()));
+                break;
             case R.id.start_dash_ll_01:
             case R.id.start_dash_ll_02:
             case R.id.start_dash_ll_03:
@@ -296,7 +299,7 @@ public class Run4 extends Run implements
         int id = item.getItemId();
         switch (id) {
             case R.id.show_running_stat:
-                AlertDialogUtil.getInstance().show_running_stat(_ctx, new RunStat(list,last_pk, getCurrentRunId()));
+                AlertDialogUtil.getInstance().show_running_stat(_ctx, new RunStat(this, list,last_pk, getCurrentRunId()));
                 return true;
             case R.id.showallmarkers:
                 C.showallmarkers = !C.showallmarkers;

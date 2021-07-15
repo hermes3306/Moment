@@ -31,6 +31,7 @@ import com.jason.moment.util.Config;
 import com.jason.moment.util.MP3;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
+import com.jason.moment.util.RunStat;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Run extends AppCompatActivity {
+public class Run extends AppCompatActivity{
 
     public ArrayList<String> pic_filenames = new ArrayList<>();
     public ArrayList<String> mov_filenames = new ArrayList<>();

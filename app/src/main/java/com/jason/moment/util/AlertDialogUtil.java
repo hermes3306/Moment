@@ -65,6 +65,11 @@ public class AlertDialogUtil {
         addRunStatItem(_ctx, ll, " Last pk:" + runstat.lastPk);
         long numofrec = MyRun.getInstance(_ctx).getCountByRunId(runstat.running_id);
         addRunStatItem(_ctx, ll, " # of Rec:" + numofrec);
+        addRunStatItem(_ctx, ll, " start time:" + StringUtil.DateToString(runstat.run.start_time,"HH:mm:ss"));
+        addRunStatItem(_ctx, ll, " dist:" + runstat.run.dist);
+        addRunStatItem(_ctx, ll, " actfile:" + runstat.run.getActivity_file_name());
+
+
 
         alert.setView(view);
         alert.show();
