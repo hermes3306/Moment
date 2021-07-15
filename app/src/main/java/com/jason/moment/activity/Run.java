@@ -1,6 +1,10 @@
 package com.jason.moment.activity;
 
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,6 +15,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Display;
@@ -26,13 +31,16 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.FileProvider;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 import com.jason.moment.ConfigActivity;
+import com.jason.moment.MyReportActivity;
 import com.jason.moment.R;
 import com.jason.moment.service.GPSLogger;
+import com.jason.moment.util.ActivityStat;
 import com.jason.moment.util.AlertDialogUtil;
 import com.jason.moment.util.C;
 import com.jason.moment.util.CalDistance;
@@ -47,6 +55,7 @@ import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.RunStat;
 import com.jason.moment.util.StringUtil;
+import com.jason.moment.util.db.MyActiviySummary;
 import com.jason.moment.util.db.MyLoc;
 
 import java.io.File;
@@ -431,6 +440,85 @@ public class Run extends AppCompatActivity{
             });
         }
         alertadd.show();
+    }
+
+    public void notificationQuit(int _id, String ticker, String title, String detail) {
+        Intent intent = new Intent(_ctx, MyReportActivity.class);
+
+        intent.putExtra("activity_file_name", activity_file_name);
+        //intent.putExtra("activity_file_name", "20210502_092412");
+        PendingIntent contentIntent = PendingIntent.getActivity(_ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder b = new NotificationCompat.Builder(_ctx,"default");
+        b.setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+                .setTicker(ticker)
+                .setContentTitle(title)
+                .setContentText(detail)
+                .setDefaults(Notification.DEFAULT_LIGHTS| Notification.DEFAULT_SOUND)
+                .setContentIntent(contentIntent)
+                .setContentInfo("Info");
+        NotificationManager notificationManager = (NotificationManager) _ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationManager.createNotificationChannel(new NotificationChannel("default", "기본 채널", NotificationManager.IMPORTANCE_DEFAULT));
+        }
+        notificationManager.notify(_id, b.build());
+    }
+
+    public void alertQuitDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("활동을 중지하시겠습니까?");
+        builder.setMessage("활동을 정말 중지하시겠습니까?");
+        builder.setPositiveButton("중지",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Config.restore_preference_values_after_running(getApplicationContext());
+                        if(gpsLoggerConnection != null)  {
+                            set_use_db(false);
+                            unbindService(gpsLoggerConnection);
+                            gpsLoggerConnection = null;
+                        }
+                        Log.d(TAG,"-- Service gpsLogger unbound...");
+
+                        MyActivityUtil.serialize(list, media_filenames, activity_file_name );
+                        CloudUtil.getInstance().Upload(activity_file_name + Config._csv_ext);
+                        ActivityStat as = ActivityStat.getActivityStat(list);
+                        if(as !=null) {
+                            MyActiviySummary.getInstance(_ctx).ins(activity_file_name,as.distanceKm,as.durationInLong,as.minperKm,as.calories);
+                            Log.d(TAG,"-- Activity Stat inserted successfully !!!!");
+                            if(Config._default_ext==Config._csv)
+                                CloudUtil.getInstance().Upload(activity_file_name + Config._csv_ext);
+                            else
+                                CloudUtil.getInstance().Upload(activity_file_name + Config._mnt_ext);
+                        }
+
+                        if(as != null) {
+                            Toast.makeText(getApplicationContext(), "JASON's 활동이 저장되었습니다!" + activity_file_name, Toast.LENGTH_SHORT).show();
+                            String detail = "총운동 거리:" + tv_start_km.getText();
+                            detail += "\n총운동 시간:" + tv_start_time.getText();
+                            detail += "\n평균 분/Km:" + tv_start_avg.getText();
+                            detail += "\n소모칼로리:" + tv_start_calory.getText();
+                            notificationQuit(Config._notify_id, Config._notify_ticker,
+                                    "활동이 저장되었습니다.", detail);
+
+                            Intent myReportIntent = new Intent(Run.this, MyReportActivity.class);
+                            myReportIntent.putExtra("activity_file_name", activity_file_name);
+                            startActivity(myReportIntent);
+                        }
+
+                        Run.this.quit = true;
+                        Run.this.finish();
+                    }
+                });
+        builder.setNegativeButton("취소",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Run.this.quit = false;
+                    }
+                });
+        builder.show();
     }
 
 }

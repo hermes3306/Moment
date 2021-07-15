@@ -394,61 +394,8 @@ public class Run4 extends Run implements
     }
 
     static boolean activity_quit_normally = false;
-    public void alertQuitDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("활동을 중지하시겠습니까?");
-        builder.setMessage("활동을 정말 중지하시겠습니까?");
-        builder.setPositiveButton("중지",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        activity_quit_normally = true;
-                        Config.restore_preference_values_after_running(getApplicationContext());
-                        deleteIfExistsUnsaved();
-                        if(gpsLoggerConnection != null)  {
-                            set_use_db(false);
-                            unbindService(gpsLoggerConnection);
-                            gpsLoggerConnection = null;
-                        }
-                        Log.d(TAG,"-- Service gpsLogger unbound...");
 
-                        MyActivityUtil.serialize(list, media_filenames, activity_file_name );
-                        CloudUtil.getInstance().Upload(activity_file_name + Config._csv_ext);
-                        ActivityStat as = ActivityStat.getActivityStat(list);
-                        if(as !=null) {
-                            MyActiviySummary.getInstance(_ctx).ins(activity_file_name,as.distanceKm,as.durationInLong,as.minperKm,as.calories);
-                            Log.d(TAG,"-- Activity Stat inserted successfully !!!!");
-                            if(Config._default_ext==Config._csv)
-                                CloudUtil.getInstance().Upload(activity_file_name + Config._csv_ext);
-                            else
-                                CloudUtil.getInstance().Upload(activity_file_name + Config._mnt_ext);
-                        }
 
-                        if(as != null) {
-                            Toast.makeText(getApplicationContext(), "JASON's 활동이 저장되었습니다!" + activity_file_name, Toast.LENGTH_SHORT).show();
-                            String detail = "총운동 거리:" + tv_start_km.getText();
-                            detail += "\n총운동 시간:" + tv_start_time.getText();
-                            detail += "\n평균 분/Km:" + tv_start_avg.getText();
-                            detail += "\n소모칼로리:" + tv_start_calory.getText();
-                            notificationQuit(Config._notify_id, Config._notify_ticker,
-                                    "활동이 저장되었습니다.", detail);
-
-                            Intent myReportIntent = new Intent(Run4.this, MyReportActivity.class);
-                            myReportIntent.putExtra("activity_file_name", activity_file_name);
-                            startActivity(myReportIntent);
-                        }
-
-                        Run4.this.quit = true;
-                        Run4.this.finish();
-                    }
-                });
-        builder.setNegativeButton("취소",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        Run4.this.quit = false;
-                    }
-                });
-        builder.show();
-    }
 
     static TimerTask mTask = null;
     Timer mTimer = null;
