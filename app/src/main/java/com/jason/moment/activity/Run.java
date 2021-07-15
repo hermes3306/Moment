@@ -32,6 +32,7 @@ import android.widget.VideoView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.FileProvider;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -222,6 +223,7 @@ public class Run extends AppCompatActivity{
     @Override
     public void onDestroy() {
         Config.restore_preference_values_after_running(getApplicationContext());
+        removeNotification(Config._notify_id);
         super.onDestroy();
     }
 
@@ -440,6 +442,10 @@ public class Run extends AppCompatActivity{
             });
         }
         alertadd.show();
+    }
+
+    public void removeNotification(int _id) {
+        NotificationManagerCompat.from(this).cancel(_id);
     }
 
     public void notificationQuit(int _id, String ticker, String title, String detail) {

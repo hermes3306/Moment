@@ -340,54 +340,6 @@ public class Run2 extends Run implements
         alertQuitDialog();
     }
 
-    public void notificationSimpleQuit(int _id, String title, String detail) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "default");
-
-        builder.setSmallIcon(R.mipmap.ic_launcher);
-        builder.setContentTitle(title);
-        builder.setContentText(detail);
-        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationManager.createNotificationChannel(new NotificationChannel("default", "기본 채널", NotificationManager.IMPORTANCE_DEFAULT));
-        }
-        notificationManager.notify(_id, builder.build());
-    }
-
-    private void removeNotification(int _id) {
-        // Notification 제거
-        NotificationManagerCompat.from(this).cancel(_id);
-    }
-
-    public void notificationQuit(int _id, String ticker, String title, String detail) {
-        Intent intent = new Intent(_ctx, MyReportActivity.class);
-
-        intent.putExtra("activity_file_name", activity_file_name);
-        //intent.putExtra("activity_file_name", "20210502_092412");
-        PendingIntent contentIntent = PendingIntent.getActivity(_ctx, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder b = new NotificationCompat.Builder(_ctx,"default");
-        b.setAutoCancel(true)
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
-                .setTicker(ticker)
-                .setContentTitle(title)
-                .setContentText(detail)
-                .setDefaults(Notification.DEFAULT_LIGHTS| Notification.DEFAULT_SOUND)
-                .setContentIntent(contentIntent)
-                .setContentInfo("Info");
-        NotificationManager notificationManager = (NotificationManager) _ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationManager.createNotificationChannel(new NotificationChannel("default", "기본 채널", NotificationManager.IMPORTANCE_DEFAULT));
-        }
-        notificationManager.notify(_id, b.build());
-    }
-
-    void deleteIfExistsUnsaved() {
-        File f = new File(Config.JSN_SAVE_DIR, Config.Unsaved_File_name);
-        if(f.exists()) f.delete();
-    }
-
     static TimerTask mTask = null;
     Timer mTimer = null;
     private void startMyTimer() {
