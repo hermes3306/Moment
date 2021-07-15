@@ -183,10 +183,10 @@ public class Run extends AppCompatActivity{
     private void get_last_run_from_db() {
         long cur_pk = LocationUtil.getInstance().get_last_pk();
         if(last_pk != -1 && last_pk < cur_pk) {
-            Toast.makeText(_ctx, "Current pk: "
+            Toast.makeText(_ctx, "Last pk: "
                     + last_pk + "\nCurrent pk: "
                     + cur_pk + "\n" + (cur_pk-last_pk) +
-                    " gap", Toast.LENGTH_LONG).show();
+                    " gaps", Toast.LENGTH_LONG).show();
 
             Log.e(TAG, "----- HERE ----------");
             Log.e(TAG, "----- HAVE TO PROCESS from last_pk ----------");

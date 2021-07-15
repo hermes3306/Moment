@@ -44,6 +44,9 @@ public class LocationUtil {
             dist = 0;
             last_location = location;
             last_pk = MyLoc.getInstance(context).ins(location.getLatitude(), location.getLongitude());
+
+            // found critical bug for first_called processing
+            if(first_called) first_called = false;
             return;
         }else {
             dist = CalDistance.dist(last_location.getLatitude(), last_location.getLongitude(), location.getLatitude(), location.getLongitude());
