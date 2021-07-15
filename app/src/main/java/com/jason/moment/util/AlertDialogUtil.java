@@ -67,7 +67,7 @@ public class AlertDialogUtil {
         addRunStatItem(_ctx, ll, " # of Rec:" + numofrec);
         addRunStatItem(_ctx, ll, " start time:" + StringUtil.DateToString(runstat.run.start_time,"HH:mm:ss"));
         addRunStatItem(_ctx, ll, " dist:" + runstat.run.dist);
-        addRunStatItem(_ctx, ll, " actfile:" + runstat.run.getActivity_file_name());
+        addRunStatItem(_ctx, ll, " file:" + runstat.run.getActivity_file_name());
 
 
 
