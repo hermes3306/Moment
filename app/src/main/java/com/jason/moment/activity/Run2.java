@@ -83,18 +83,6 @@ public class Run2 extends Run implements
         OnMapReadyCallback,
         View.OnClickListener {
 
-    Context _ctx = null;
-
-    int _default_layout = R.layout.activity_run_common;
-
-    private TextView tv_start_km;
-    private TextView tv_start_km_str;
-    private TextView tv_start_time;
-    private TextView tv_start_avg;
-    private TextView tv_start_cur;
-    private TextView tv_start_calory;
-
-
     private void takePic() {
         currentMediaName = Config.getTmpPicName();
         File mediaFile = new File(Config.PIC_SAVE_DIR, currentMediaName);
@@ -136,111 +124,7 @@ public class Run2 extends Run implements
         }
     }
 
-    public void showImg(ImageView iv_pic, String fname) {
-        File folder = Config.PIC_SAVE_DIR;
-        File file = new File(folder, fname);
-        String filepath = file.getAbsolutePath();
 
-        Log.d(TAG, "--show:" + filepath);
-        Log.d(TAG, "--filepath to show:" + filepath);
-        Bitmap bitmap = BitmapFactory.decodeFile(filepath);
-
-        Matrix matrix = new Matrix();
-        matrix.postRotate(90);
-        int mDegree = 90;
-        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        iv_pic.setImageBitmap(bitmap);
-    }
-
-    private void showImg(String fname) {
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(Run2.this);
-        LayoutInflater factory = LayoutInflater.from(Run2.this);
-
-        /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
-        final View view = factory.inflate(R.layout.layout_imageview, null);
-        ImageView iv = view.findViewById(R.id.dialog_imageview);
-        showImg(iv, fname);
-        alertadd.setView(view);
-        alertadd.setNeutralButton("Upload!", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dlg, int sumthin) {
-                CloudUtil.getInstance().Upload(currentMediaName);
-            }
-        });
-        alertadd.show();
-    }
-
-    private void showMedias(final int pos) {
-        if (media_filenames.size() < pos + 1) {
-            Toast.makeText(_ctx, "No Medias!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(Run2.this);
-        LayoutInflater factory = LayoutInflater.from(Run2.this);
-
-        /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
-        if (media_filenames.get(pos).endsWith(Config._pic_ext)) {
-            View view1 = factory.inflate(R.layout.layout_imageview, null);
-            ImageView iv = view1.findViewById(R.id.dialog_imageview);
-            TextView tv = view1.findViewById(R.id.view_title);
-            tv.setText("" + (pos + 1) + "/" + media_filenames.size());
-            showImg(iv, media_filenames.get(pos));
-            alertadd.setView(view1);
-        } else {
-            View view2 = factory.inflate(R.layout.layout_videoview, null);
-            VideoView vv = view2.findViewById(R.id.dialog_video_view);
-            TextView tv2 = view2.findViewById(R.id.view_title);
-            tv2.setText("" + (pos + 1) + "/" + media_filenames.size());
-            showVideo(vv, media_filenames.get(pos));
-            alertadd.setView(view2);
-        }
-
-        if (media_filenames.size() > pos + 1) {
-            alertadd.setPositiveButton("Next", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dlg, int sumthin) {
-                    showMedias(pos + 1);
-                }
-            });
-        }
-
-        if (0 < pos) {
-            alertadd.setNegativeButton("Prev", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dlg, int sumthin) {
-                    showMedias(pos - 1);
-                }
-            });
-        }
-        alertadd.show();
-    }
-
-    public void showVideo(VideoView vv, String fname) {
-        MediaController m;
-        m = new MediaController(this);
-
-        File mediaFile = new File(Config.MOV_SAVE_DIR, fname);
-        Uri mediaUri = FileProvider.getUriForFile(this,
-                "com.jason.moment.file_provider",
-                mediaFile);
-        vv.setVideoURI(mediaUri);
-        vv.start();
-    }
-
-    private void showVideo(String fname) {
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(Run2.this);
-        LayoutInflater factory = LayoutInflater.from(Run2.this);
-
-        /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
-        final View view = factory.inflate(R.layout.layout_videoview, null);
-        VideoView vv = view.findViewById(R.id.dialog_video_view);
-        showVideo(vv, fname);
-        alertadd.setView(view);
-        alertadd.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dlg, int sumthin) {
-            }
-        });
-        alertadd.show();
-    }
-
-    private boolean viewStartActionBar = false;
 
     @Override
     public void onClick(View v) {
@@ -296,78 +180,7 @@ public class Run2 extends Run implements
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Resources r = getResources();
-        String[] screen_layout = r.getStringArray(R.array.start_screen);
-        String[] screen_layout_value = r.getStringArray(R.array.start_screen);
 
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.show_running_stat:
-                AlertDialogUtil.getInstance().show_running_stat(_ctx, new RunStat(this, list));
-                return true;
-            case R.id.showallmarkers:
-                C.showallmarkers = !C.showallmarkers;
-                return true;
-            case R.id.toggleDashboard:
-                dashboard = ! dashboard;
-                LinearLayout ll01 = findViewById(R.id.start_dash_ll_01);
-                LinearLayout ll02 = findViewById(R.id.start_dash_ll_02);
-                LinearLayout ll03 = findViewById(R.id.start_dash_ll_03);
-                LinearLayout ll04 = findViewById(R.id.start_dash_ll_04);
-                LinearLayout ll05 = findViewById(R.id.start_dash_ll_05);
-                if(dashboard) {
-                    ll01.setVisibility(View.VISIBLE);
-                    ll02.setVisibility(View.VISIBLE);
-                    ll03.setVisibility(View.VISIBLE);
-                    ll04.setVisibility(View.VISIBLE);
-                    ll05.setVisibility(View.VISIBLE);
-                }else {
-                    ll01.setVisibility(View.GONE);
-                    ll02.setVisibility(View.GONE);
-                    ll03.setVisibility(View.GONE);
-                    ll04.setVisibility(View.GONE);
-                    ll05.setVisibility(View.GONE);
-                }
-                return true;
-            case R.id.mp3Player:
-                MP3.showPlayer(_ctx);
-                return true;
-            case R.id.stopMp3:
-                MP3.stop(_ctx);
-                return true;
-            case R.id.start_layout_select:
-                AlertDialog.Builder builder = new AlertDialog.Builder(Run2.this)
-                        .setItems(screen_layout, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                            }
-                        })
-                        .setTitle("Choose a layout");
-                AlertDialog mSportSelectDialog = builder.create();
-                mSportSelectDialog.show();
-                break;
-            case R.id.imSetting:
-                Log.d(TAG, "-- Setting Activities!");
-                Intent configIntent = new Intent(Run2.this, ConfigActivity.class);
-                startActivity(configIntent);
-                break;
-            case R.id.action_map:
-                int i = 0;
-                break;
-            case R.id.record_video:
-                recordVideo();
-                break;
-            case R.id.view_pics:
-                showImages(0);
-                break;
-            case R.id.view_videos:
-                showVideos(0);
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     private void setHeadMessages() {
         TextView name = findViewById(R.id.name);
@@ -377,25 +190,7 @@ public class Run2 extends Run implements
         date_str.setText(DateUtil.getDateString(d));
     }
 
-    private void showActivities() {
-        setHeadMessages();
-        ArrayList<MyActivity> mal = list;
-        MyActivity lastActivity = null;
-        if (mal == null) return;
-        if (mal.size() == 0) return;
-        ArrayList<Marker> _markers = new ArrayList<>();
-        Display display = getWindowManager().getDefaultDisplay();
-        MapUtil.DRAW(_ctx, googleMap, display, list);
-    }
 
-    private void initialize_views() {
-        tv_start_km = (TextView) findViewById(R.id.tv_start_km);
-        tv_start_km_str = (TextView) findViewById(R.id.tv_start_km_str);
-        tv_start_time = (TextView) findViewById(R.id.tv_start_time);
-        tv_start_avg = (TextView) findViewById(R.id.tv_start_avg);
-        tv_start_cur = (TextView) findViewById(R.id.tv_start_cur);
-        tv_start_calory = (TextView) findViewById(R.id.tv_start_calory);
-    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -455,68 +250,6 @@ public class Run2 extends Run implements
         process_new_location();
     }
 
-    private void process_new_location() {
-
-        Date d = new Date();
-        String elapsed = StringUtil.elapsedStr(start_time,d);
-        tv_start_time.setText(elapsed);
-
-        Location location = new_location;
-        if(location == null) return;
-
-        if(resume) {
-            showActivities();
-            resume = false;
-        }
-
-        if(last_activity==null) {
-            dist = 0;
-            last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
-            list.add(last);
-            last_activity = last;
-        }else {
-            dist = CalDistance.dist(last_activity.getLatitude(), last_activity.getLongitude(), location.getLatitude(), location.getLongitude());
-            if(dist > Config._loc_distance) {
-                last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
-                list.add(last);
-                last_activity = last;
-                if(googleMap != null && ! paused) showActivities();
-            }
-        }
-
-        //Log.e(TAG, "-- Timer!");
-
-        if(!paused) {
-            long t1 = System.currentTimeMillis();
-            dist = MyActivityUtil.getTotalDistanceInDouble(list);
-            long t2 = System.currentTimeMillis();
-            if(dist<1000) { /* 1KM 이하 */
-                String s1 = String.format("%.0f", dist);
-                tv_start_km.setText(s1);
-                tv_start_km_str.setText("Meters");
-            } else if(dist>1000) { /* 1KM 이상 */
-                String s1 = String.format("%.2f", dist/1000.0);
-                tv_start_km.setText(s1);
-                tv_start_km_str.setText("Kilometers");
-            } else if(dist >10000){ /* 10KM 이상*/
-                String s1 = String.format("%.3f", dist/1000.0);
-                tv_start_km.setText(s1);
-                tv_start_km_str.setText("Kilometers");
-            }
-            double  minpkm = MyActivityUtil.getMinPerKm(list);
-            String tt1 = StringUtil.elapsedStr2((long) (minpkm*1000*60.0));
-            tv_start_avg.setText("" + tt1);
-            double  minp1km = MyActivityUtil.MinPer1Km(list);
-            String tt2 = StringUtil.elapsedStr2((long) (minp1km*1000*60.0));
-            tv_start_cur.setText("" + tt2);
-            float burntkCal;
-            int durationInSeconds = MyActivityUtil.durationInSeconds(list);
-            int stepsTaken = (int) (dist / Config._strideLengthInMeters);
-            burntkCal = CaloryUtil.calculateEnergyExpenditure((float)dist / 1000f, durationInSeconds);
-            tv_start_calory.setText("" + String.format("%.1f", burntkCal));
-        }
-    }
-
     void boardCastConfigChanged(long gpsLoggingInterval, long gpsLoggingMinDistance) {
         Intent intent = new Intent(Config.INTENT_CONFIG_CHANGE);
         intent.putExtra("gpsLoggingInterval", gpsLoggingInterval);
@@ -558,18 +291,7 @@ public class Run2 extends Run implements
         set_use_db(false);
         // 달리기 모드일 경우, 1초, 1미터로 셋팅함
         Config.initialize(getApplicationContext());
-
-        File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
-        if (lastRun.exists()) {
-            Log.e(TAG, "-- Restarting Running with last data....");
-            Toast.makeText(_ctx, "Unsaved run!!!", Toast.LENGTH_SHORT).show();
-            list = MyActivityUtil.deserializeFromCSV(lastRun);
-            lastRun.delete();
-            if (list.size() > 0) last_activity = (MyActivity) list.get(list.size() - 1);
-            Toast.makeText(_ctx, Config.Unsaved_File_name + " converted into current running!!!", Toast.LENGTH_SHORT).show();
-        } else {
-            Log.e(TAG, "-- Normal Running....");
-        }
+        start_time = new Date();
 
         registerLocationChangedReceiver();
 
@@ -607,17 +329,8 @@ public class Run2 extends Run implements
 
     @Override
     public void onDestroy() {
-        // Unregister broadcast receiver
         unregisterReceiver(receiver);
         stopMyTimer();
-        if(!activity_quit_normally) {
-            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
-            MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun );
-            Config.restore_preference_values_after_running(getApplicationContext());
-            Toast.makeText(_ctx,"Running activity saved into " + Config.Unsaved_File_name + " !!", Toast.LENGTH_SHORT).show();
-        } else {
-            if (gpsLoggerConnection != null) unbindService(gpsLoggerConnection);
-        }
         super.onDestroy();
     }
 

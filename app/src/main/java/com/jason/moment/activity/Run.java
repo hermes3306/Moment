@@ -6,32 +6,48 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.location.Location;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.MediaController;
+
+import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.Marker;
 import com.jason.moment.ConfigActivity;
 import com.jason.moment.R;
 import com.jason.moment.service.GPSLogger;
 import com.jason.moment.util.AlertDialogUtil;
 import com.jason.moment.util.C;
+import com.jason.moment.util.CalDistance;
+import com.jason.moment.util.CaloryUtil;
+import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
+import com.jason.moment.util.DateUtil;
+import com.jason.moment.util.LocationUtil;
 import com.jason.moment.util.MP3;
+import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.RunStat;
+import com.jason.moment.util.StringUtil;
+import com.jason.moment.util.db.MyLoc;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -49,7 +65,7 @@ public class Run extends AppCompatActivity{
     public Date start_time;
     public double dist = 0;
     public boolean quit = false;
-    public ArrayList list = null;
+    public ArrayList<MyActivity> list = null;
     public final MyActivity first = null;
     public MyActivity last = null;
     MyActivity last_activity = null;
@@ -63,13 +79,21 @@ public class Run extends AppCompatActivity{
     String currentMediaName;
     public static boolean paused = false;
     public boolean resume = false;
-    public static boolean activity_quit_normally = false;
+
     private long currentRunId;
     public long getCurrentRunId() {
         return this.currentRunId;
     }
     public void setCurrentRunId(long id) {this.currentRunId = id;}
 
+    public TextView tv_start_km;
+    public TextView tv_start_km_str;
+    public TextView tv_start_time;
+    public TextView tv_start_avg;
+    public TextView tv_start_cur;
+    public TextView tv_start_calory;
+    int _default_layout = R.layout.activity_run_common;
+    public boolean viewStartActionBar = false;
 
     GPSLogger gpsLogger = null;
     boolean use_db = false;
@@ -83,7 +107,7 @@ public class Run extends AppCompatActivity{
     public GPSLogger getGpsLogger() {
         return gpsLogger;
     }
-    private String currentTrackId;
+    public String currentTrackId;
     public String getCurrentTrackId() {
         return this.currentTrackId;
     }
@@ -97,14 +121,13 @@ public class Run extends AppCompatActivity{
             timer.purge();
             timer = new Timer();
         }
-        ImageButton imb_wifi_off = (ImageButton) findViewById(R.id.imbt_wifi_off);
-        ImageButton imb_wifi_on = (ImageButton) findViewById(R.id.imbt_wifi_on);
+        ImageButton imb_wifi_off = findViewById(R.id.imbt_wifi_off);
+        ImageButton imb_wifi_on = findViewById(R.id.imbt_wifi_on);
         imb_wifi_on.setVisibility(View.VISIBLE);
         imb_wifi_off.setVisibility(View.GONE);
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                long start = System.currentTimeMillis();
                 Run.this.runOnUiThread(new Runnable() {
                     public void run() {
                         imb_wifi_on.setVisibility(View.GONE);
@@ -115,17 +138,97 @@ public class Run extends AppCompatActivity{
         }, 500);
     }
 
+
+    public void showVideos(int pos) {
+        AlertDialogUtil.getInstance().showMedias(_ctx, mov_filenames, pos);
+    }
+
+    public void showImages(final int pos) {
+        AlertDialogUtil.getInstance().showMedias(_ctx, pic_filenames, pos);
+    }
+
+    public void showVideo(VideoView vv, String fname) {
+        File mediaFile = new File(Config.MOV_SAVE_DIR, fname);
+        Uri mediaUri = FileProvider.getUriForFile(this,
+                "com.jason.moment.file_provider",
+                mediaFile);
+        vv.setVideoURI(mediaUri);
+        vv.start();
+    }
+
+
+
+    public void recordVideo() {
+        currentMediaName = Config.getTmpVideoName();
+        File mediaFile = new File(Config.MOV_SAVE_DIR, currentMediaName);
+        Uri mediaUri = FileProvider.getUriForFile(this,
+                "com.jason.moment.file_provider",
+                mediaFile);
+
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, mediaUri);
+        startActivityForResult(intent, Config.PICK_FROM_VIDEO);
+    }
+
+
+    private void get_last_run_from_db() {
+        long cur_pk = LocationUtil.getInstance().get_last_pk();
+        if(last_pk != -1 && last_pk < cur_pk) {
+            Toast.makeText(_ctx, "Current pk: "
+                    + last_pk + "\nCurrent pk: "
+                    + cur_pk + "\n" + (cur_pk-last_pk) +
+                    " gap", Toast.LENGTH_LONG).show();
+
+            Log.e(TAG, "----- HERE ----------");
+            Log.e(TAG, "----- HAVE TO PROCESS from last_pk ----------");
+            Log.e(TAG, "----- paused_last_pk : " + last_pk );
+            Log.e(TAG, "----- current_last_pk : " + LocationUtil.getInstance().get_last_pk() );
+
+            ArrayList<MyActivity> t = MyLoc.getInstance(_ctx).getActivitiesFrom(last_pk);
+            for(int i=0;i<t.size();i++) {
+                Log.e(TAG,"----- " + t.get(i).toString());
+                list.add(t.get(i));
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        paused = true;
+        resume = false;
+
+        last_pk = LocationUtil.getInstance().get_last_pk();
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        paused = false;
+        resume = true;
+
+        get_last_run_from_db();
+        super.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        Config.restore_preference_values_after_running(getApplicationContext());
+        super.onDestroy();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Resources r = getResources();
         String[] screen_layout = r.getStringArray(R.array.start_screen);
-        String[] screen_layout_value = r.getStringArray(R.array.start_screen);
 
         int id = item.getItemId();
         switch (id) {
+            case R.id.show_running_stat:
+                AlertDialogUtil.getInstance().show_running_stat(_ctx, new RunStat(this, list));
+                return true;
             case R.id.showallmarkers:
                 C.showallmarkers = !C.showallmarkers;
-                break;
+                return true;
             case R.id.toggleDashboard:
                 dashboard = ! dashboard;
                 LinearLayout ll01 = findViewById(R.id.start_dash_ll_01);
@@ -147,7 +250,6 @@ public class Run extends AppCompatActivity{
                     ll05.setVisibility(View.GONE);
                 }
                 return true;
-
             case R.id.mp3Player:
                 MP3.showPlayer(_ctx);
                 return true;
@@ -171,7 +273,6 @@ public class Run extends AppCompatActivity{
                 startActivity(configIntent);
                 break;
             case R.id.action_map:
-                int i = 0;
                 break;
             case R.id.record_video:
                 recordVideo();
@@ -186,79 +287,150 @@ public class Run extends AppCompatActivity{
         return super.onOptionsItemSelected(item);
     }
 
-    public void showVideos(int pos) {
-        AlertDialogUtil.getInstance().showMedias(_ctx, mov_filenames, pos);
+    private void setHeadMessages() {
+        TextView name = findViewById(R.id.name);
+        TextView date_str = findViewById(R.id.date_str);
+        Date d = new Date();
+        name.setText(DateUtil.getActivityName(d));
+        date_str.setText(DateUtil.getDateString(d));
     }
 
-    private void showVideo(String fname) {
+    public void showActivities() {
+        setHeadMessages();
+        ArrayList<MyActivity> mal = list;
+        if (mal == null) return;
+        if (mal.size() == 0) return;
+        ArrayList<Marker> _markers = new ArrayList<>();
+        Display display = getWindowManager().getDefaultDisplay();
+        MapUtil.DRAW(_ctx, googleMap, display, list);
+    }
+
+    public void initialize_views() {
+        tv_start_km         = findViewById(R.id.tv_start_km);
+        tv_start_km_str     = findViewById(R.id.tv_start_km_str);
+        tv_start_time       = findViewById(R.id.tv_start_time);
+        tv_start_avg        = findViewById(R.id.tv_start_avg);
+        tv_start_cur        = findViewById(R.id.tv_start_cur);
+        tv_start_calory         = findViewById(R.id.tv_start_calory);
+    }
+
+    public void process_new_location() {
+        Date d = new Date();
+        Location location = new_location;
+        if(location == null) return;
+
+        if(resume) {
+            showActivities();
+            resume = false;
+        }
+
+        if(last_activity==null) {
+            dist = 0;
+            last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
+            list.add(last);
+            last_activity = last;
+        }else {
+            dist = CalDistance.dist(last_activity.getLatitude(), last_activity.getLongitude(), location.getLatitude(), location.getLongitude());
+            if(dist > Config._loc_distance) {
+                last = new MyActivity(location.getLatitude(), location.getLongitude(),d);
+                list.add(last);
+                last_activity = last;
+                if(googleMap != null && ! paused) showActivities();
+            }
+        }
+        //Log.e(TAG, "-- Timer!");
+
+        if(!paused) {
+            String elapsed = StringUtil.elapsedStr(start_time,d);
+            tv_start_time.setText(elapsed);
+            dist = MyActivityUtil.getTotalDistanceInDouble(list);
+            if(dist<1000) { /* 1KM 이하 */
+                String s1 = String.format("%.0f", dist);
+                tv_start_km.setText(s1);
+                tv_start_km_str.setText("Meters");
+            } else if(dist>1000) { /* 1KM 이상 */
+                String s1 = String.format("%.2f", dist/1000.0);
+                tv_start_km.setText(s1);
+                tv_start_km_str.setText("Kilometers");
+            } else if(dist >10000){ /* 10KM 이상*/
+                String s1 = String.format("%.3f", dist/1000.0);
+                tv_start_km.setText(s1);
+                tv_start_km_str.setText("Kilometers");
+            }
+
+            double  minpkm = MyActivityUtil.getMinPerKm(list);
+            String tt1 = StringUtil.elapsedStr2((long) (minpkm*1000*60.0));
+            tv_start_avg.setText("" + tt1);
+
+            double  minp1km = MyActivityUtil.MinPer1Km(list);
+            String tt2 = StringUtil.elapsedStr2((long) (minp1km*1000*60.0));
+            tv_start_cur.setText("" + tt2);
+
+            float burntkCal;
+            int durationInSeconds = MyActivityUtil.durationInSeconds(list);
+            int stepsTaken = (int) (dist / Config._strideLengthInMeters);
+            burntkCal = CaloryUtil.calculateEnergyExpenditure((float)dist / 1000f, durationInSeconds);
+            tv_start_calory.setText("" + String.format("%.1f", burntkCal));
+        }
+    }
+
+    public void showImg(ImageView iv_pic, String fname) {
+        File folder = Config.PIC_SAVE_DIR;
+        File file = new File(folder, fname);
+        String filepath = file.getAbsolutePath();
+
+        Log.d(TAG, "--show:" + filepath);
+        Log.d(TAG, "--filepath to show:" + filepath);
+        Bitmap bitmap = BitmapFactory.decodeFile(filepath);
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        iv_pic.setImageBitmap(bitmap);
+    }
+
+    public void showMedias(final int pos) {
+        if (media_filenames.size() < pos + 1) {
+            Toast.makeText(_ctx, "No Medias!", Toast.LENGTH_SHORT).show();
+            return;
+        }
         AlertDialog.Builder alertadd = new AlertDialog.Builder(Run.this);
         LayoutInflater factory = LayoutInflater.from(Run.this);
 
         /// View를 inflate하면 해당 View내의 객체를 접근하려면 해당  view.findViewById를 호출 해야 함
-        final View view = factory.inflate(R.layout.layout_videoview, null);
-        VideoView vv = view.findViewById(R.id.dialog_video_view);
-        showVideo(vv, fname);
-        alertadd.setView(view);
-        alertadd.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dlg, int sumthin) {
-            }
-        });
+        if (media_filenames.get(pos).endsWith(Config._pic_ext)) {
+            View view1 = factory.inflate(R.layout.layout_imageview, null);
+            ImageView iv = view1.findViewById(R.id.dialog_imageview);
+            TextView tv = view1.findViewById(R.id.view_title);
+            tv.setText("" + (pos + 1) + "/" + media_filenames.size());
+            showImg(iv, media_filenames.get(pos));
+            alertadd.setView(view1);
+        } else {
+            View view2 = factory.inflate(R.layout.layout_videoview, null);
+            VideoView vv = view2.findViewById(R.id.dialog_video_view);
+            TextView tv2 = view2.findViewById(R.id.view_title);
+            tv2.setText("" + (pos + 1) + "/" + media_filenames.size());
+            showVideo(vv, media_filenames.get(pos));
+            alertadd.setView(view2);
+        }
+
+        if (media_filenames.size() > pos + 1) {
+            alertadd.setPositiveButton("Next", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dlg, int sumthin) {
+                    showMedias(pos + 1);
+                }
+            });
+        }
+
+        if (0 < pos) {
+            alertadd.setNegativeButton("Prev", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dlg, int sumthin) {
+                    showMedias(pos - 1);
+                }
+            });
+        }
         alertadd.show();
-    }
-
-
-    public void showImages(final int pos) {
-        AlertDialogUtil.getInstance().showMedias(_ctx, pic_filenames, pos);
-    }
-
-    public void showVideo(VideoView vv, String fname) {
-        MediaController m;
-        m = new MediaController(this);
-
-        File mediaFile = new File(Config.MOV_SAVE_DIR, fname);
-        Uri mediaUri = FileProvider.getUriForFile(this,
-                "com.jason.moment.file_provider",
-                mediaFile);
-        vv.setVideoURI(mediaUri);
-        vv.start();
-    }
-
-
-
-    public void recordVideo() {
-        currentMediaName = Config.getTmpVideoName();
-        File mediaFile = new File(Config.MOV_SAVE_DIR, currentMediaName);
-        Uri mediaUri = FileProvider.getUriForFile(this,
-                "com.jason.moment.file_provider",
-                mediaFile);
-
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, mediaUri);
-        startActivityForResult(intent, Config.PICK_FROM_VIDEO);
-    }
-
-    @Override
-    public void onPause() {
-        paused = true;
-        resume = false;
-        if(!activity_quit_normally && list != null) {
-            if(list.size() > 5 ) { //최소 이상 정보가 있을 경우 저장
-                File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
-                MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun);
-            }
-        }
-        super.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        paused = false;
-        resume = true;
-        if(true) {
-            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
-            if(lastRun.exists()) lastRun.delete();
-        }
-        super.onResume();
     }
 
 }
