@@ -70,7 +70,6 @@ public class AlertDialogUtil {
         addRunStatItem(_ctx, ll, " file:" + runstat.run.getActivity_file_name());
 
 
-
         alert.setView(view);
         alert.show();
     }
