@@ -24,11 +24,14 @@ import com.jason.moment.DetailMapsActivity;
 import com.jason.moment.MyReportActivity;
 import com.jason.moment.R;
 import com.jason.moment.StartRunActivity;
+import com.jason.moment.activity.Run;
 import com.jason.moment.activity.Run1;
 import com.jason.moment.activity.Run2;
 import com.jason.moment.activity.Run3;
+import com.jason.moment.activity.Run4;
 import com.jason.moment.util.db.MyActiviySummary;
 import com.jason.moment.util.db.MyMedia;
+import com.jason.moment.util.db.MyRun;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -47,17 +50,48 @@ public class AlertDialogUtil {
 
     private static String last_memo = null;
 
+    public void show_running_stat(Context _ctx, RunStat runstat) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
+        AlertDialog alert = builder.create();
+        LayoutInflater factory = LayoutInflater.from(_ctx);
+        final View view = factory.inflate(R.layout.layout_scroll_tablelayout, null);
+        LinearLayout ll = view.findViewById(R.id.linearLayout);
+        TextView view_title = view.findViewById(R.id.view_title);
+
+        long countofrun = MyRun.getInstance(_ctx).CountOfRun();
+        addRunStatItem(_ctx, ll, " Tot # of Runs:" + countofrun);
+        addRunStatItem(_ctx, ll, " Cur:" + runstat.running_id);
+        addRunStatItem(_ctx, ll, " # of loc:" + String.format("%3d", runstat.list.size()));
+        addRunStatItem(_ctx, ll, " Last pk:" + runstat.lastPk);
+        long numofrec = MyRun.getInstance(_ctx).getCountByRunId(runstat.running_id);
+        addRunStatItem(_ctx, ll, " # of Rec:" + numofrec);
+
+        alert.setView(view);
+        alert.show();
+    }
+
+    private void addRunStatItem(Context _ctx, LinearLayout ll_view, String str) {
+        final TextView tv1 = new TextView(_ctx);
+        tv1.setText(str);
+        tv1.setTextColor(Color.GRAY);
+        int img = R.drawable.running_new;
+        Drawable img_drawable = _ctx.getResources().getDrawable(img);
+        tv1.setCompoundDrawablesWithIntrinsicBounds(img_drawable, null, null, null);
+        tv1.setTextSize(20);
+        ll_view.addView(tv1);
+    }
+
     public void choose_running_type(Context _ctx) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(_ctx);
         //alertDialog.setTitle("Choose your run");
         LayoutInflater factory = LayoutInflater.from(_ctx);
         final View view = factory.inflate(R.layout.layout_typeof_running, null);
         ImageView iv_run_type1 = view.findViewById(R.id.iv_run_type1);
-        ImageView iv_run_type2 = view.findViewById(R.id.iv_run_type2);
         ImageView iv_run_type3 = view.findViewById(R.id.iv_run_type3);
+        ImageView iv_run_type4 = view.findViewById(R.id.iv_run_type4);
         TextView tv_run_type1 = view.findViewById(R.id.tv_run_type1);
-        TextView tv_run_type2 = view.findViewById(R.id.tv_run_type2);
         TextView tv_run_type3 = view.findViewById(R.id.tv_run_type3);
+        TextView tv_run_type4 = view.findViewById(R.id.tv_run_type4);
 
         alertDialog.setView(view);
         AlertDialog alert = alertDialog.create();
@@ -75,19 +109,6 @@ public class AlertDialogUtil {
             }
         });
 
-        iv_run_type2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name).exists()) {
-                    AlertDialogUtil.getInstance().checkActiveRunning(_ctx, Run2.class);
-                } else {
-                    Intent intent = new Intent(_ctx, Run2.class);
-                    _ctx.startActivity(intent);
-                }
-                alert.dismiss();
-            }
-        });
-
         iv_run_type3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -95,6 +116,19 @@ public class AlertDialogUtil {
                     AlertDialogUtil.getInstance().checkActiveRunning(_ctx, Run3.class);
                 } else {
                     Intent intent = new Intent(_ctx, Run3.class);
+                    _ctx.startActivity(intent);
+                }
+                alert.dismiss();
+            }
+        });
+
+        iv_run_type4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name).exists()) {
+                    AlertDialogUtil.getInstance().checkActiveRunning(_ctx, Run4.class);
+                } else {
+                    Intent intent = new Intent(_ctx, Run4.class);
                     _ctx.startActivity(intent);
                 }
                 alert.dismiss();

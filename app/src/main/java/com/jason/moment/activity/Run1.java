@@ -63,6 +63,7 @@ import com.jason.moment.util.MP3;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
+import com.jason.moment.util.RunStat;
 import com.jason.moment.util.StringUtil;
 import com.jason.moment.util.db.MyActiviySummary;
 
@@ -75,27 +76,9 @@ import java.util.TimerTask;
 public class Run1 extends Run implements
         OnMapReadyCallback,
         View.OnClickListener {
+    Context _ctx = null;
 
-    long gpsLoggingInterval;
-    long gpsLoggingMinDistance;
-    private Intent gpsLoggerServiceIntent = null;
-    private ServiceConnection gpsLoggerConnection = null;
-
-
-    // Loc Service binding
-    MyActivity last_activity = null;
-    Location new_location = null;
-
-
-
-    String activity_file_name = null;
-    ImageButton imb_wifi_off;
-    ImageButton imb_wifi_on;
-
-    String TAG = "Run1";
     int _default_layout = R.layout.activity_run_common;
-    private GoogleMap googleMap = null;
-
 
     private TextView tv_start_km;
     private TextView tv_start_km_str;
@@ -103,25 +86,6 @@ public class Run1 extends Run implements
     private TextView tv_start_avg;
     private TextView tv_start_cur;
     private TextView tv_start_calory;
-
-    private Date start_time;
-    private double dist = 0;
-    private boolean quit = false;
-
-    private ArrayList list = null;
-    private final MyActivity first = null;
-    private MyActivity last = null;
-
-    public String getActivity_file_name() {
-        return activity_file_name;
-    }
-
-    // 사진 촬영 기능
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-
-    Uri currentFileUri;
-
-
 
     private void takePic() {
         currentMediaName = Config.getTmpPicName();
@@ -524,49 +488,16 @@ public class Run1 extends Run implements
         startMyTimer();
     }
 
-    static boolean paused = false;
-
     @Override
     public void onPause() {
-        paused = true;
-        Log.d(TAG, "-- onPause.");
-
-        // onPause에서 임시로 파일을 저장함
-        // reSume할때 삭제 필요함
-        if(!activity_quit_normally) {
-            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
-            MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun);
-        }
-
-        if (gpsLogger != null) {
-            if (!gpsLogger.isTracking()) {
-                //Log.d(TAG, "Service is not tracking, trying to stopService()");
-                //unbindService(gpsLoggerConnection);
-                //stopService(gpsLoggerServiceIntent);
-            } else {
-                //if(gpsLoggerConnection !=null) unbindService(gpsLoggerConnection);
-            }
-        }
-
         super.onPause();
     }
 
-    boolean resume = false;
-
     @Override
     public void onResume() {
-        paused = false;
-        resume = true;
-        Log.d(TAG, "-- onResume.");
-
-        File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
-        if(lastRun.exists()) lastRun.delete();
-
-//        startService(gpsLoggerServiceIntent);
-//        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, BIND_AUTO_CREATE);
-//        registerLocationChangedReceiver();
         super.onResume();
     }
+
 
     @Override
     public void onDestroy() {
@@ -723,4 +654,79 @@ public class Run1 extends Run implements
             });
         } /* end of run() */
     } /* end of MyTimerTask */
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Resources r = getResources();
+        String[] screen_layout = r.getStringArray(R.array.start_screen);
+        String[] screen_layout_value = r.getStringArray(R.array.start_screen);
+
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.show_running_stat:
+                AlertDialogUtil.getInstance().show_running_stat(_ctx, new RunStat(list));
+                return true;
+            case R.id.showallmarkers:
+                C.showallmarkers = !C.showallmarkers;
+                return true;
+            case R.id.toggleDashboard:
+                dashboard = ! dashboard;
+                LinearLayout ll01 = findViewById(R.id.start_dash_ll_01);
+                LinearLayout ll02 = findViewById(R.id.start_dash_ll_02);
+                LinearLayout ll03 = findViewById(R.id.start_dash_ll_03);
+                LinearLayout ll04 = findViewById(R.id.start_dash_ll_04);
+                LinearLayout ll05 = findViewById(R.id.start_dash_ll_05);
+                if(dashboard) {
+                    ll01.setVisibility(View.VISIBLE);
+                    ll02.setVisibility(View.VISIBLE);
+                    ll03.setVisibility(View.VISIBLE);
+                    ll04.setVisibility(View.VISIBLE);
+                    ll05.setVisibility(View.VISIBLE);
+                }else {
+                    ll01.setVisibility(View.GONE);
+                    ll02.setVisibility(View.GONE);
+                    ll03.setVisibility(View.GONE);
+                    ll04.setVisibility(View.GONE);
+                    ll05.setVisibility(View.GONE);
+                }
+                return true;
+            case R.id.mp3Player:
+                MP3.showPlayer(_ctx);
+                return true;
+            case R.id.stopMp3:
+                MP3.stop(_ctx);
+                return true;
+            case R.id.start_layout_select:
+                AlertDialog.Builder builder = new AlertDialog.Builder(Run1.this)
+                        .setItems(screen_layout, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        })
+                        .setTitle("Choose a layout");
+                AlertDialog mSportSelectDialog = builder.create();
+                mSportSelectDialog.show();
+                break;
+            case R.id.imSetting:
+                Log.d(TAG, "-- Setting Activities!");
+                Intent configIntent = new Intent(Run1.this, ConfigActivity.class);
+                startActivity(configIntent);
+                break;
+            case R.id.action_map:
+                int i = 0;
+                break;
+            case R.id.record_video:
+                recordVideo();
+                break;
+            case R.id.view_pics:
+                showImages(0);
+                break;
+            case R.id.view_videos:
+                showVideos(0);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
 }

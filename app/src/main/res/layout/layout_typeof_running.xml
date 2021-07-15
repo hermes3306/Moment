@@ -18,45 +18,18 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:alpha="0.3"
-            app:srcCompat="@drawable/runner_2" />
+            app:srcCompat="@drawable/runnew" />
+
         <TextView
             android:id="@+id/tv_run_type1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/Gray"
             android:layout_gravity="center"
             android:alpha="0.84"
-            android:textSize="20dp"
-            android:text="Timer(1)"
-            />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_gravity="center"
-        android:orientation="vertical">
-
-        <ImageView
-            android:id="@+id/iv_run_type2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:alpha="0.3"
-            app:srcCompat="@drawable/runner_2" />
-        <TextView
-            android:id="@+id/tv_run_type2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:text="BCST"
             android:textColor="@color/Gray"
-            android:layout_gravity="center"
-            android:alpha="0.84"
-            android:textSize="20dp"
-            android:text="NoTim(2)"
-            />
+            android:textSize="30dp" />
     </LinearLayout>
-
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -71,17 +44,44 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:alpha="0.3"
-            app:srcCompat="@drawable/runner_2" />
+            app:srcCompat="@drawable/runnew" />
+
         <TextView
             android:id="@+id/tv_run_type3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/Gray"
             android:layout_gravity="center"
             android:alpha="0.84"
-            android:textSize="20dp"
-            android:text="GpsDB(3)"
-            />
+            android:text="DB 1"
+            android:textColor="@color/Gray"
+            android:textSize="30dp" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/iv_run_type4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:alpha="0.3"
+            app:srcCompat="@drawable/runnew" />
+
+        <TextView
+            android:id="@+id/tv_run_type4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:alpha="0.84"
+            android:text="DB new"
+            android:textColor="@color/Gray"
+            android:textSize="30dp" />
     </LinearLayout>
 
 </LinearLayout>

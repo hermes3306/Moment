@@ -27,6 +27,13 @@ public class MyActivity implements Serializable {
         this.cr_time = crt;
     }
 
+    public MyActivity(double l1, double l2, Date d) {
+        this.latitude = l1;
+        this.longitude = l2;
+        this.cr_date = StringUtil.DateToString(d,"yyyy/MM/dd");
+        this.cr_time = StringUtil.DateToString(d,"HH:mm:ss");
+    }
+
     public MyActivity(LatLng ll) {
         Date d = new Date();
         new MyActivity(ll.latitude, ll.longitude);
@@ -43,13 +50,6 @@ public class MyActivity implements Serializable {
     public double getLatitude() { return this.latitude;}
     public double getLongitude() {return this.longitude;}
 
-
-    public MyActivity(double l1, double l2, Date d) {
-        this.latitude = l1;
-        this.longitude = l2;
-        this.cr_date = StringUtil.DateToString(d,"yyyy/MM/dd");
-        this.cr_time = StringUtil.DateToString(d,"HH:mm:ss");
-    }
 
     public String toString() {
         return "("+ latitude + "," + longitude + "," + cr_date + "," + cr_time + ")";

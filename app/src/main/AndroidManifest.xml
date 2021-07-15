@@ -101,6 +101,11 @@
             android:launchMode="singleTop"
             android:theme="@style/Theme.AppCompat" />
         <activity
+            android:name=".activity.Run4"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.AppCompat" />
+
+        <activity
             android:name=".ConfigActivity"
             android:label="@string/title_activity_config"
             android:theme="@style/Theme.AppCompat" />

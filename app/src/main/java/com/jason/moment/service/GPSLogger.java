@@ -61,6 +61,8 @@ public class GPSLogger extends Service implements LocationListener {
     private long gpsLoggingInterval;
     private long gpsLoggingMinDistance;
 
+    public static final String RUN_ID = "run_id";
+
     public void set_use_db(boolean b) {
         use_db = b;
     }

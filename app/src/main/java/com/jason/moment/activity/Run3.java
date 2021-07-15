@@ -64,6 +64,7 @@ import com.jason.moment.util.MP3;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
+import com.jason.moment.util.RunStat;
 import com.jason.moment.util.StringUtil;
 import com.jason.moment.util.db.MyActiviySummary;
 import com.jason.moment.util.db.MyLoc;
@@ -78,23 +79,9 @@ public class Run3 extends Run implements
         OnMapReadyCallback,
         View.OnClickListener {
 
-    long gpsLoggingInterval;
-    long gpsLoggingMinDistance;
-    private Intent gpsLoggerServiceIntent = null;
-    private ServiceConnection gpsLoggerConnection = null;
-
-    // Loc Service binding
-    MyActivity last_activity = null;
-    Location new_location = null;
-
-    String activity_file_name = null;
-    ImageButton imb_wifi_off;
-    ImageButton imb_wifi_on;
-
-    String TAG = "Run3";
     Context _ctx = null;
+
     int _default_layout = R.layout.activity_run_common;
-    private GoogleMap googleMap = null;
 
     private TextView tv_start_km;
     private TextView tv_start_km_str;
@@ -102,22 +89,6 @@ public class Run3 extends Run implements
     private TextView tv_start_avg;
     private TextView tv_start_cur;
     private TextView tv_start_calory;
-
-    private Date start_time;
-    private double dist = 0;
-    private boolean quit = false;
-
-    private ArrayList list = null;
-    private final MyActivity first = null;
-    private MyActivity last = null;
-
-    public String getActivity_file_name() {
-        return activity_file_name;
-    }
-
-    // 사진 촬영 기능
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    Uri currentFileUri;
 
     private void takePic() {
         currentMediaName = Config.getTmpPicName();
@@ -248,9 +219,6 @@ public class Run3 extends Run implements
         vv.start();
     }
 
-    private void showVideos(int pos) {
-        AlertDialogUtil.getInstance().showMedias(_ctx, mov_filenames, pos);
-    }
 
     private void showVideo(String fname) {
         AlertDialog.Builder alertadd = new AlertDialog.Builder(Run3.this);
@@ -329,9 +297,12 @@ public class Run3 extends Run implements
 
         int id = item.getItemId();
         switch (id) {
+            case R.id.show_running_stat:
+                AlertDialogUtil.getInstance().show_running_stat(_ctx, new RunStat(list));
+                return true;
             case R.id.showallmarkers:
                 C.showallmarkers = !C.showallmarkers;
-                break;
+                return true;
             case R.id.toggleDashboard:
                 dashboard = ! dashboard;
                 LinearLayout ll01 = findViewById(R.id.start_dash_ll_01);
@@ -353,7 +324,6 @@ public class Run3 extends Run implements
                     ll05.setVisibility(View.GONE);
                 }
                 return true;
-
             case R.id.mp3Player:
                 MP3.showPlayer(_ctx);
                 return true;
@@ -529,51 +499,22 @@ public class Run3 extends Run implements
         startMyTimer();
     }
 
-    static boolean paused = false;
+
     static long last_pk = -1;
-    static long start_pk = -1;
 
     @Override
     public void onPause() {
-        paused = true;
-        Log.d(TAG, "-- onPause.");
-        last_pk = LocationUtil.getInstance().get_last_pk();
-
-        // onPause에서 임시로 파일을 저장함
-        // reSume할때 삭제 필요함
-        if(!activity_quit_normally) {
-            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
-            MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun);
-        }
-
-        if (gpsLogger != null) {
-            if (!gpsLogger.isTracking()) {
-                //Log.d(TAG, "Service is not tracking, trying to stopService()");
-                //unbindService(gpsLoggerConnection);
-                //stopService(gpsLoggerServiceIntent);
-            } else {
-                //if(gpsLoggerConnection !=null) unbindService(gpsLoggerConnection);
-            }
-        }
-
         super.onPause();
     }
 
-    boolean resume = false;
+    private void get_last_run_from_db() {
+        long cur_pk = LocationUtil.getInstance().get_last_pk();
+        if(last_pk != -1 && last_pk < cur_pk) {
+            Toast.makeText(_ctx, "Current pk: "
+                    + last_pk + "\nCurrent pk: "
+                    + cur_pk + "\n" + (cur_pk-last_pk) +
+                    " gap", Toast.LENGTH_LONG).show();
 
-    @Override
-    public void onResume() {
-        paused = false;
-        resume = true;
-        Log.d(TAG, "-- onResume.");
-
-        File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
-        if(lastRun.exists()) lastRun.delete();
-
-//        startService(gpsLoggerServiceIntent);
-//        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, BIND_AUTO_CREATE);
-
-        if(last_pk != -1 && last_pk < LocationUtil.getInstance().get_last_pk()) {
             Log.e(TAG, "----- HERE ----------");
             Log.e(TAG, "----- HAVE TO PROCESS from last_pk ----------");
             Log.e(TAG, "----- paused_last_pk : " + last_pk );
@@ -585,6 +526,11 @@ public class Run3 extends Run implements
                 list.add(t.get(i));
             }
         }
+    }
+
+    @Override
+    public void onResume() {
+        get_last_run_from_db();
         super.onResume();
     }
 
