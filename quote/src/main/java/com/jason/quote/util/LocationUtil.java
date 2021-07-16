@@ -43,6 +43,9 @@ public class LocationUtil {
             dist = 0;
             last_location = location;
             last_pk = MyLoc.getInstance(context).ins(location.getLatitude(), location.getLongitude());
+
+            // found critical bug for first_called processing
+            if(first_called) first_called = false;
             return;
         }else {
             dist = CalDistance.dist(last_location.getLatitude(), last_location.getLongitude(), location.getLatitude(), location.getLongitude());
@@ -52,32 +55,4 @@ public class LocationUtil {
         }
     }
 
-    public void onLocationChanged_old(Context context, Location location) {
-        double dist;
-        LatLng ll = new LatLng(location.getLatitude(), location.getLongitude());
-        if(last_location==null) {
-            dist = 0;
-        }else {
-            dist = CalDistance.dist(last_location.getLatitude(), last_location.getLongitude(), location.getLatitude(), location.getLongitude());
-        }
-        last_location = location;
-        if(!first_called && dist < Config._loc_distance) return;
-
-        MyLoc myloc = new MyLoc(context);
-        if(first_called) {
-            first_called = false;
-            MyActivity ma = myloc.lastActivity();
-            if(ma == null) {
-                last_pk = myloc.ins(location.getLatitude(), location.getLongitude());
-                return;
-            }
-            double d2 = CalDistance.dist(ma.latitude, ma.longitude, location.getLatitude(), location.getLongitude());
-            if (d2 > Config._loc_distance) myloc.ins(location.getLatitude(), location.getLongitude());
-        }
-        else {
-            if (dist > Config._loc_distance) {
-                last_pk = myloc.ins(location.getLatitude(), location.getLongitude());
-            } else return;
-        }
-    }
 }

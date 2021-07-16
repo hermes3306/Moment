@@ -1,11 +1,13 @@
 package com.jason.quote.activity.run;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.Location;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,8 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.jason.quote.R;
 import com.jason.quote.service.GPSLogger;
 import com.jason.quote.util.Config;
+import com.jason.quote.util.LocationUtil;
 import com.jason.quote.util.MyActivity;
 import com.jason.quote.util.MyActivityUtil;
+import com.jason.quote.util.db.MyLoc;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -22,6 +26,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Run extends AppCompatActivity {
+    public Context _ctx = null;
+    public String TAG = "Run";
     GPSLogger gpsLogger = null;
     boolean use_db = false;
     public boolean get_use_db() {return use_db;}
@@ -55,6 +61,7 @@ public class Run extends AppCompatActivity {
     public static boolean paused = false;
     public boolean resume = false;
     public Location new_location;
+    public static long last_pk = -1;
 
     static Timer timer = new Timer();
     public void showGPS() {
@@ -85,10 +92,8 @@ public class Run extends AppCompatActivity {
     public void onPause() {
         paused = true;
         resume = false;
-        if(!activity_quit_normally) {
-            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
-            MyActivityUtil.serializeIntoCSV(list, media_filenames, lastRun);
-        }
+
+        last_pk = LocationUtil.getInstance().get_last_pk();
         super.onPause();
     }
 
@@ -96,12 +101,32 @@ public class Run extends AppCompatActivity {
     public void onResume() {
         paused = false;
         resume = true;
-        if(true) {
-            File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
-            if(lastRun.exists()) lastRun.delete();
-        }
+
+        get_last_run_from_db();
         super.onResume();
     }
+
+    private void get_last_run_from_db() {
+        long cur_pk = LocationUtil.getInstance().get_last_pk();
+        if(last_pk != -1 && last_pk < cur_pk) {
+            Toast.makeText(_ctx, "Last pk: "
+                    + last_pk + "\nCurrent pk: "
+                    + cur_pk + "\n" + (cur_pk-last_pk) +
+                    " gaps", Toast.LENGTH_LONG).show();
+
+            Log.e(TAG, "----- HERE ----------");
+            Log.e(TAG, "----- HAVE TO PROCESS from last_pk ----------");
+            Log.e(TAG, "----- paused_last_pk : " + last_pk );
+            Log.e(TAG, "----- current_last_pk : " + LocationUtil.getInstance().get_last_pk() );
+
+            ArrayList<MyActivity> t = MyLoc.getInstance(_ctx).getActivitiesFrom(last_pk);
+            for(int i=0;i<t.size();i++) {
+                Log.e(TAG,"----- " + t.get(i).toString());
+                list.add(t.get(i));
+            }
+        }
+    }
+
 
 
 

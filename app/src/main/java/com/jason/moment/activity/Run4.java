@@ -53,7 +53,6 @@ import com.jason.moment.util.MyActivity2;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.RunStat;
 import com.jason.moment.util.StringUtil;
-import com.jason.moment.util.db.MyActiviySummary;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -286,11 +285,11 @@ public class Run4 extends Run implements
         Log.e(TAG, "--gpsLoggingMinDistance:" + gpsLoggingMinDistance);
     }
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this._ctx = this;
+
+        // MyRun 테이블을 사용할 경우 set_use_db(true)
         set_use_db(true);
 
         // 달리기 모드일 경우, 1초, 1미터로 셋팅함

@@ -78,15 +78,15 @@ public class Run extends AppCompatActivity{
     public ArrayList<MyActivity> list = null;
     public final MyActivity first = null;
     public MyActivity last = null;
-    MyActivity last_activity = null;
-    Location new_location = null;
-    String activity_file_name = null;
+    public MyActivity last_activity = null;
+    public Location new_location = null;
+    public String activity_file_name = null;
     public String getActivity_file_name() {
         return activity_file_name;
     }
     public String TAG = "Run";
     public GoogleMap googleMap = null;
-    String currentMediaName;
+    public String currentMediaName;
     public static boolean paused = false;
     public boolean resume = false;
 
@@ -102,11 +102,11 @@ public class Run extends AppCompatActivity{
     public TextView tv_start_avg;
     public TextView tv_start_cur;
     public TextView tv_start_calory;
-    int _default_layout = R.layout.activity_run_common;
+    public int _default_layout = R.layout.activity_run_common;
     public boolean viewStartActionBar = false;
 
     GPSLogger gpsLogger = null;
-    boolean use_db = false;
+    public boolean use_db = false;
     public boolean get_use_db() {return use_db;}
     public void set_use_db(boolean b) {use_db = b;}
     public Context _ctx = null;
@@ -122,7 +122,7 @@ public class Run extends AppCompatActivity{
         return this.currentTrackId;
     }
     public boolean dashboard = true;
-    static long last_pk = -1;
+    public static long last_pk = -1;
 
     static Timer timer = new Timer();
     public void showGPS() {

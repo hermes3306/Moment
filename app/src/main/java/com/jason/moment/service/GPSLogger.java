@@ -35,6 +35,7 @@ import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.LocationUtil;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.db.MyLoc;
+import com.jason.moment.util.db.MyRun;
 
 import java.util.Date;
 
@@ -256,6 +257,7 @@ public class GPSLogger extends Service implements LocationListener {
             sendBroadcast(intent);
 
             if(use_db) {
+                //MyRun.getInstance(_ctx).ins()
             }
         } else return;
 

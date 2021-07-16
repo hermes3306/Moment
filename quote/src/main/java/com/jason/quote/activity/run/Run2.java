@@ -83,8 +83,6 @@ public class Run2 extends Run implements
     ImageButton imb_wifi_off;
     ImageButton imb_wifi_on;
 
-    String TAG = "Run1";
-    Context _ctx = null;
     int _default_layout = R.layout.activity_run_common;
 
     private GoogleMap googleMap = null;

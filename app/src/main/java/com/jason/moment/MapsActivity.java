@@ -2,14 +2,12 @@ package com.jason.moment;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.preference.PreferenceManager;
 
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,13 +15,11 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Display;
@@ -32,7 +28,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,8 +40,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.snackbar.Snackbar;
 import com.jason.moment.service.GPSLogger;
 import com.jason.moment.service.GPSLoggerServiceConnection;
@@ -88,8 +81,6 @@ public class MapsActivity extends AppCompatActivity implements
         View.OnClickListener {
     private GoogleMap googleMap=null;
     private Context _ctx;
-    long gpsLoggingInterval;
-    long gpsLoggingMinDistance;
     private Intent gpsLoggerServiceIntent = null;
 
     private static final String TAG = "MapsActivity";
@@ -98,19 +89,17 @@ public class MapsActivity extends AppCompatActivity implements
     public static boolean paused = false;
 
     public ImageButton imb_Running;
-    public TextView tv_map_address;
+    public TextView tv_log;
     public ImageButton imbt_prev = null;
     public ImageButton imbt_next = null;
     public TextView tv_activity_name = null;
     public TextView tv_date_str = null;
     public ImageButton imbt_pop_menu = null;
-    //public ImageButton imbt_globe = null;
     public ImageButton imbt_down = null;
     public ImageButton imbt_hide_arrow = null;
     public ImageButton imbt_up = null;
     public ImageButton imbt_save = null;
     public ImageButton imbt_marker = null;
-    //    public ImageButton imbt_trash = null;
     public ImageButton imbt_navi = null;
 
     static boolean already_quit = false;
@@ -159,8 +148,9 @@ public class MapsActivity extends AppCompatActivity implements
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "-- Received intent " + intent.getAction());
+            if(paused) return;
 
+            Log.d(TAG, "-- Received intent " + intent.getAction());
             if (Config.INTENT_LOCATION_CHANGED.equals(intent.getAction())) {
                 // Track a way point
                 Bundle extras = intent.getExtras();
@@ -206,6 +196,8 @@ public class MapsActivity extends AppCompatActivity implements
         // list와 mActivityList 정리 필요함.
         // list = mActivityList = MyLoc.getInstance(_ctx).todayActivity();
         list = MyLoc.getInstance(_ctx).getToodayActivities();
+
+        Toast.makeText(_ctx, "# of Today's activities are " + list.size(), Toast.LENGTH_LONG).show();
         currentTrackId = DateUtil.today();
 
         super.onCreate(savedInstanceState);
@@ -222,7 +214,7 @@ public class MapsActivity extends AppCompatActivity implements
         // ----------------------------------------------------------------------
         //
         imb_Running = (ImageButton) findViewById(R.id.imb_Running);
-        tv_map_address = (TextView) findViewById(R.id.tv_map_address);
+        tv_log = (TextView) findViewById(R.id.tv_log);
         imbt_prev = (ImageButton) findViewById(R.id.imbt_prev);
         imbt_next = (ImageButton) findViewById(R.id.imbt_next);
         tv_date_str = (TextView) findViewById(R.id.tv_date_str);
@@ -293,19 +285,40 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
+
+    private void get_last_run_from_db() {
+        long cur_pk = LocationUtil.getInstance().get_last_pk();
+        if(last_pk != -1 && last_pk < cur_pk) {
+            Toast.makeText(_ctx, "Last pk: "
+                    + last_pk + "\nCurrent pk: "
+                    + cur_pk + "\n" + (cur_pk-last_pk) +
+                    " gaps", Toast.LENGTH_LONG).show();
+
+            Log.e(TAG, "----- HERE ----------");
+            Log.e(TAG, "----- HAVE TO PROCESS from last_pk ----------");
+            Log.e(TAG, "----- paused_last_pk : " + last_pk );
+            Log.e(TAG, "----- current_last_pk : " + LocationUtil.getInstance().get_last_pk() );
+
+            ArrayList<MyActivity> t = MyLoc.getInstance(_ctx).getActivitiesFrom(last_pk);
+            for(int i=0;i<t.size();i++) {
+                Log.e(TAG,"----- " + t.get(i).toString());
+                list.add(t.get(i));
+            }
+        }
+    }
+
     @Override
     protected void onResume() {
         paused = false;
         Log.d(TAG,"-- onResume.");
+
+        get_last_run_from_db();
 
         startService(gpsLoggerServiceIntent);
         if(gpsLoggerConnection==null)
             gpsLoggerConnection = new GPSLoggerServiceConnection(this);
         bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
         registerLocationChangedReceiver();
-
-        initializeMap();
-        super.onResume();
 
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
@@ -320,6 +333,7 @@ public class MapsActivity extends AppCompatActivity implements
         }
         MyActivityUtil.initialize();
         initializeMap();
+        super.onResume();
     }
 
     void SerializeTodayActivity() {
@@ -337,8 +351,16 @@ public class MapsActivity extends AppCompatActivity implements
         alertQuitDialog();
     }
 
+    long last_pk = -1;
+
     @Override
     protected void onPause() {
+        // 배터리 절약을 위해서 마지막 PK를 저장하고 Loc Change 메시지를 받지 않는다.
+        last_pk = LocationUtil.getInstance().get_last_pk();
+        if(receiver != null) {
+            unregisterReceiver(receiver);
+        }
+
         if(already_quit) {
             super.onPause();
             return;
@@ -412,6 +434,8 @@ public class MapsActivity extends AppCompatActivity implements
             // new loc notify
             showGPS();
             if(googleMap != null) showActivities();
+            String txt = "" + location.getLatitude() + "," + location.getLongitude() + " " +Config._loc_interval + " / " + Config._loc_distance;
+            tv_log.setText("" + txt);
         }
     }
 
@@ -451,21 +475,9 @@ public class MapsActivity extends AppCompatActivity implements
         MyActivity a = myloc.lastActivity();
         if(a==null) googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Config._olympic_park, DEFAULT_ZOOM));
         else googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(a.toLatLng(), DEFAULT_ZOOM));
-        //refresh();
+
     }
 
-    public void refresh(){
-        Log.d(TAG,"-- refresh.");
-        Location loc = getLocation();
-        if(loc==null) return;
-        LatLng defaultLocation = new LatLng(loc.getLatitude(), loc.getLongitude());
-        googleMap.moveCamera(CameraUpdateFactory
-                .newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
-        googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-        drawMarker(defaultLocation);
-    }
-
-    //ArrayList<MyActivity> mActivityList=null;
     int cntofactivities=0;
     int marker_pos_prev=0;
     int marker_pos=0;
@@ -646,8 +658,6 @@ public class MapsActivity extends AppCompatActivity implements
                 break;
 
             default:
-                // doesn't work
-                refresh();
         }
     }
 
@@ -699,7 +709,7 @@ public class MapsActivity extends AppCompatActivity implements
 
         String addinfo = AddressUtil.getAddress(_ctx, list.get(marker_pos));
         addinfo += " (" + (marker_pos+1) + "/" + cntofactivities +")";
-        tv_map_address.setText(addinfo);
+        tv_log.setText(addinfo);
     }
 
     private void setHeadMessages() {
@@ -903,167 +913,6 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-    private Marker mMarker  = null;
-    public void drawMarker(LatLng ll) {
-        Log.d(TAG,"-- drawMarker.");
-        String _head = DateToString(new Date(), "hh:mm:ss");
-        String _body = AddressUtil.getAddress(getApplicationContext(),ll);
-        drawMarker(ll,_head,_body);
-        mMarker.showInfoWindow();
-    }
-
-    public void drawMarker(LatLng l, String head, String body) {
-        if (mMarker == null) {
-            MarkerOptions opt = new MarkerOptions()
-                    .position(l)
-                    .title(head)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                    .draggable(true).visible(true).snippet(body);
-            mMarker = googleMap.addMarker(opt);
-            CameraPosition cameraPosition = new CameraPosition.Builder().target(l).zoom(15.0f).build();
-        } else {
-            mMarker.setPosition(l);
-            mMarker.setTitle(head);
-            mMarker.setSnippet(body);
-        }
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(l, googleMap.getCameraPosition().zoom));
-    }
-
-
-    public static void drawTrack2(GoogleMap gmap, ArrayList<LatLng> list) {
-        if(list == null) return;
-        PolylineOptions plo = new PolylineOptions();
-        plo.color(Color.RED);
-        Polyline line = gmap.addPolyline(plo);
-        line.setWidth(20);
-        line.setPoints(list);
-    }
-
-    public static void drawTrack(GoogleMap gmap, ArrayList<MyActivity> list) {
-        if(list == null) return;
-        ArrayList<LatLng> l = new ArrayList<>();
-        for(int i=0; i<list.size();i++) {
-            l.add(new LatLng(list.get(i).latitude, list.get(i).longitude));
-        }
-
-        PolylineOptions plo = new PolylineOptions();
-        plo.color(Color.RED);
-        Polyline line = gmap.addPolyline(plo);
-        line.setWidth(20);
-        line.setPoints(l);
-    }
-
-    public static Polyline line_prev = null;
-    public static void drawTrackInRange(GoogleMap map, ArrayList<MyActivity> list, int start, int end) {
-        if(list == null) return;
-        ArrayList<LatLng> l = new ArrayList<>();
-        for(int i=start; i < end; i++) {
-            l.add(new LatLng(list.get(i).latitude, list.get(i).longitude));
-        }
-
-        PolylineOptions plo = new PolylineOptions();
-        plo.color(Color.BLACK);
-        Polyline line = map.addPolyline(plo);
-        line.setWidth(20);
-        line.setPoints(l);
-
-        if(line_prev!=null) line_prev.remove();
-        line_prev = line;
-    }
-
-
-
-    public static ArrayList<Marker> markers = null;
-    public static void drawStartMarker(GoogleMap gmap, ArrayList<MyActivity> list) {
-        if(markers==null) markers = new ArrayList<Marker>();
-        if(list.size()==0) return;
-        LatLng ll = new LatLng(list.get(0).latitude, list.get(0).longitude);
-        Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title("START")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                .draggable(true)
-                .visible(true)
-                .snippet("START"));
-        markers.add(marker);
-    }
-
-    public static void drawEndMarker(GoogleMap gmap, ArrayList<MyActivity> list) {
-        if(list.size()==0) return;
-        LatLng ll = new LatLng(list.get(list.size()-1).latitude, list.get(list.size()-1).longitude);
-        Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title("종료")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                .draggable(true)
-                .visible(true)
-                .snippet("FINISH"));
-        markers.add(marker);
-    }
-
-    // return total distance in meters
-    public static double getTotalDistanceDouble(ArrayList<MyActivity> list) {
-        if(list == null) return 0;
-        if(list.size() ==2) return 0;
-        double dist_meter = 0;
-        for(int i=0; i<list.size()-1; i++) {
-            double bef_lat = list.get(i).latitude;
-            double bef_lon = list.get(i).longitude;
-            double aft_lat = list.get(i+1).latitude;
-            double aft_lon = list.get(i+1).longitude;
-
-            CalDistance cd = new CalDistance(bef_lat, bef_lon, aft_lat, aft_lon);
-            double dist_2 = cd.getDistance();
-            if(Double.isNaN(dist_2)) {
-                Log.d(TAG, "--Double.NaN between ("+bef_lat + ","+ bef_lon +") ~ ("+ aft_lat + ","+ aft_lon + ")" ) ;
-                continue;
-            } else if ( Double.isNaN(dist_meter + dist_2)) {
-                Log.d(TAG, "--Double.NaN between ("+bef_lat + ","+ bef_lon +") ~ ("+ aft_lat + ","+ aft_lon + ")" ) ;
-                continue;
-            }
-            dist_meter = dist_meter + dist_2;
-        }
-        return dist_meter;
-    }
-
-    public static void drawMarkers(GoogleMap gmap, ArrayList<MyActivity> list) {
-        double tot_distance = getTotalDistanceDouble(list);
-
-        int disunit = 1000;
-        String unitstr = "미터";
-        if (tot_distance > 1000) {  // 1km 이상
-            disunit = 1000;
-            unitstr = "킬로";
-        } else disunit = 100;
-
-        double t_distance = 0;
-        double t_lap = disunit;
-        for(int i=0; i < list.size(); i++) {
-            LatLng ll = new LatLng(list.get(i).latitude, list.get(i).longitude);
-            float color = (i==0) ?  BitmapDescriptorFactory.HUE_GREEN : ((i==list.size()-1)? BitmapDescriptorFactory.HUE_RED  :  BitmapDescriptorFactory.HUE_CYAN);
-
-            String title = list.get(i).cr_date + " " + list.get(i).cr_time;
-            if(i==0) drawStartMarker(gmap,list);
-            else if(i==list.size()-1) drawEndMarker(gmap,list);
-            else {
-                CalDistance cd = new CalDistance(list.get(i-1).latitude, list.get(i-1).longitude, list.get(i).latitude, list.get(i).longitude);
-                double dist = cd.getDistance();
-                if(Double.isNaN(dist)) continue;
-                if(Double.isNaN(dist + t_distance)) continue;
-
-                t_distance = t_distance + dist;
-                if(t_distance > t_lap) {
-                    int interval = (int)(t_distance / disunit);
-                    t_lap += disunit;
-
-                    Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title(title)
-                            .icon(BitmapDescriptorFactory.defaultMarker(color))
-                            .draggable(true)
-                            .visible(true)
-                            .snippet(""+interval + unitstr));
-                    markers.add(marker);
-                }
-            }
-        }
-    }
-
-    // LocationManager variable declaration
     private LocationManager mLocationManager = null;
     // return Location of current location of GPS
     public Location getLocation() {

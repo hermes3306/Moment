@@ -161,7 +161,6 @@ public class Run3 extends Run implements
         }
     }
 
-
     private void setHeadMessages() {
         TextView name = findViewById(R.id.name);
         TextView date_str = findViewById(R.id.date_str);
@@ -234,7 +233,8 @@ public class Run3 extends Run implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this._ctx = this;
-        set_use_db(true);
+        // MyRun 테이블을 사용할 경우 set_use_db(true)
+        set_use_db(false);
 
         // 달리기 모드일 경우, 1초, 1미터로 셋팅함
         Config.initialize(getApplicationContext());
@@ -266,7 +266,6 @@ public class Run3 extends Run implements
     public void onPause() {
         super.onPause();
     }
-
 
     @Override
     public void onResume() {
@@ -318,6 +317,7 @@ public class Run3 extends Run implements
                     String elapsed = StringUtil.elapsedStr(start_time,d);
                     tv_start_time.setText(elapsed);
 
+                    // MyLoc 에서 최신 위치를 가져와서 진행함.
                     new_location = LocationUtil.getInstance().last_location();
                     Location location = new_location;
 

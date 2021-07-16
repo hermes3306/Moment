@@ -63,7 +63,6 @@ import com.jason.quote.util.MyActivity;
 import com.jason.quote.util.MyActivityUtil;
 import com.jason.quote.util.StringUtil;
 import com.jason.quote.util.db.MyActiviySummary;
-import com.jason.quote.util.db.MyRun;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -79,8 +78,6 @@ public class Run4 extends Run implements
     ImageButton imb_wifi_off;
     ImageButton imb_wifi_on;
 
-    String TAG = "Run1";
-    Context _ctx = null;
     int _default_layout = R.layout.activity_run_common;
 
     private GoogleMap googleMap = null;
@@ -503,25 +500,9 @@ public class Run4 extends Run implements
 
     @Override
     public void onResume() {
-        get_last_run_from_db();
         super.onResume();
     }
 
-    public void get_last_run_from_db() {
-
-        if(last_pk != -1 && last_pk < LocationUtil.getInstance().get_last_pk()) {
-            Log.e(TAG, "----- HERE ----------");
-            Log.e(TAG, "----- HAVE TO PROCESS from last_pk ----------");
-            Log.e(TAG, "----- paused_last_pk : " + last_pk );
-            Log.e(TAG, "----- current_last_pk : " + LocationUtil.getInstance().get_last_pk() );
-
-            ArrayList<MyActivity> t = MyRun.getInstance(_ctx).qry_from_last_pk(last_pk);
-            for(int i=0;i<t.size();i++) {
-                Log.e(TAG,"----- " + t.get(i).toString());
-                list.add(t.get(i));
-            }
-        }
-    }
 
     @Override
     public void onDestroy() {
