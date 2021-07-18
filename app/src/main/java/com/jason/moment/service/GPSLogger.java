@@ -62,7 +62,12 @@ public class GPSLogger extends Service implements LocationListener {
     private long gpsLoggingInterval;
     private long gpsLoggingMinDistance;
 
+
     public static final String RUN_ID = "run_id";
+    private long currentRunId = -1;
+    public void setCurrentRunId(long run_id) {
+        currentRunId = run_id;
+    }
 
     public void set_use_db(boolean b) {
         use_db = b;
@@ -96,7 +101,27 @@ public class GPSLogger extends Service implements LocationListener {
                 } else {
                     Log.d(TAG, "-- activity_file_name" + null);
                 }
-            } else if (Config.INTENT_STOP_TRACKING.equals(intent.getAction()) ) {
+            } else if (Config.INTENT_START_RUNNING.equals(intent.getAction()) ) {
+                Log.d(TAG, "-- INTENT_START_RUNNING");
+                Bundle extras = intent.getExtras();
+                if (extras != null) {
+                    currentRunId = extras.getLong("currentRunId");
+                    Log.d(TAG, "-- currentRunId" + currentRunId);
+                    startRunning(currentRunId);
+                } else {
+                    Log.d(TAG, "-- currentRunId" + null);
+                }
+            } else if (Config.INTENT_STOP_RUNNING.equals(intent.getAction()) ) {
+                Log.d(TAG, "-- INTENT_STOP_RUNNING");
+                Bundle extras = intent.getExtras();
+                if (extras != null) {
+                    currentRunId = extras.getLong("currentRunId");
+                    Log.d(TAG, "-- currentRunId" + currentRunId);
+                    stopRunning();
+                } else {
+                    Log.d(TAG, "-- currentRunId" + null);
+                }
+            }else if (Config.INTENT_STOP_TRACKING.equals(intent.getAction()) ) {
                 stopTrackingAndSave();
             } else if (Config.INTENT_CONFIG_CHANGE.equals(intent.getAction()) ) {
                 Log.e(TAG, "-- GPSLogger get message of CONFIG_CHANGE");
@@ -235,6 +260,24 @@ public class GPSLogger extends Service implements LocationListener {
         isTracking = false;
         activity_file_name = "-1";
         this.stopSelf();
+    }
+
+    boolean isRunning = false;
+    /**
+     * Start GPS tracking.
+     */
+    private void startRunning(long currentRunId) {
+        this.currentRunId = currentRunId;
+        Log.d(TAG, "-- Starting running logging for run #" + currentRunId);
+        isRunning= true;
+    }
+
+    /**
+     * Stops GPS Logging
+     */
+    private void stopRunning() {
+        isRunning = false;
+        this.currentRunId = -1;
     }
 
     public void setTracking(boolean b) {

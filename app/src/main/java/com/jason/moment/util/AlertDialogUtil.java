@@ -61,6 +61,7 @@ public class AlertDialogUtil {
         long countofrun = MyRun.getInstance(_ctx).CountOfRun();
         addRunStatItem(_ctx, ll, " Tot # of Runs:" + countofrun);
         addRunStatItem(_ctx, ll, " Cur:" + runstat.running_id);
+        addRunStatItem(_ctx, ll, " use_db:" + runstat.run.get_use_db());
         addRunStatItem(_ctx, ll, " # of loc:" + String.format("%3d", runstat.list.size()));
         addRunStatItem(_ctx, ll, " Last pk:" + runstat.lastPk);
         long numofrec = MyRun.getInstance(_ctx).getCountByRunId(runstat.running_id);

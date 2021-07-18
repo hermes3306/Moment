@@ -18,23 +18,29 @@ public class GPSLoggerConnection implements ServiceConnection {
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        //activity.setEnabledActionButtons(false);
-        activity.getGpsLogger().set_use_db(activity.get_use_db());
         activity.setGpsLogger(null);
     }
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         activity.setGpsLogger( ((GPSLogger.GPSLoggerBinder) service).getService());
-        // If not already tracking, start tracking
+        activity.getGpsLogger().set_use_db(activity.get_use_db());
+        activity.getGpsLogger().setCurrentRunId(activity.getCurrentRunId());
+
+        if(activity.get_use_db()) {
+            Intent intent = new Intent(Config.INTENT_START_RUNNING);
+            intent.putExtra("currentRunId", activity.getCurrentRunId());
+            activity.sendBroadcast(intent);
+        }
+
         if (!activity.getGpsLogger().isTracking()) {
-            //activity.setEnabledActionButtons(false);
             activity.getGpsLogger().setTracking(true);
-            activity.getGpsLogger().set_use_db(activity.get_use_db());
 
             Intent intent = new Intent(Config.INTENT_START_TRACKING);
             intent.putExtra("activity_file_name", activity.getCurrentTrackId());
             activity.sendBroadcast(intent);
+
         }
+
     }
 }

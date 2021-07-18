@@ -193,13 +193,8 @@ public class MapsActivity extends AppCompatActivity implements
         // Register our broadcast receiver
         registerLocationChangedReceiver();
 
-        // list와 mActivityList 정리 필요함.
-        // list = mActivityList = MyLoc.getInstance(_ctx).todayActivity();
-        list = MyLoc.getInstance(_ctx).getToodayActivities();
 
-        Toast.makeText(_ctx, "# of Today's activities are " + list.size(), Toast.LENGTH_LONG).show();
         currentTrackId = DateUtil.today();
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -240,6 +235,9 @@ public class MapsActivity extends AppCompatActivity implements
         }
         gpsLoggerConnection = new GPSLoggerServiceConnection(this); // 서비스 바인딩
         bindService(gpsLoggerServiceIntent,gpsLoggerConnection, 0);
+
+        list = MyLoc.getInstance(_ctx).getToodayActivities();
+        Toast.makeText(_ctx, "# of Today's activities are " + list.size(), Toast.LENGTH_LONG).show();
 
 
         // check last activity not saving...
@@ -471,11 +469,16 @@ public class MapsActivity extends AppCompatActivity implements
         }
         showActivities();
 
-        MyLoc myloc = new MyLoc(_ctx);
-        MyActivity a = myloc.lastActivity();
-        if(a==null) googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Config._olympic_park, DEFAULT_ZOOM));
-        else googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(a.toLatLng(), DEFAULT_ZOOM));
-
+        if(list.size()==0) {
+            try {
+                MyActivity ma = MyLoc.getInstance(_ctx).getLastActivity();
+                MapUtil.drawMarker(googleMap, "Last Activity", "" + ma.cr_date + " " + ma.cr_time, ma);
+            }catch(Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Log.e(TAG, "-- " + sw.toString());
+            }
+        }
     }
 
     int cntofactivities=0;

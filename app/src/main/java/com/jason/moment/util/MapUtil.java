@@ -74,6 +74,17 @@ public class    MapUtil {
         markers.add(marker);
     }
 
+    public static void drawMarker(GoogleMap gmap, String title, String snippet, MyActivity ma) {
+        float color =  Config._marker_end_color;
+        LatLng ll = new LatLng(ma.getLatitude(), ma.getLongitude());
+        Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title(title)
+                .icon(BitmapDescriptorFactory.defaultMarker(color))
+                .draggable(true)
+                .visible(true)
+                .snippet(snippet));
+        markers.add(marker);
+    }
+
     public static void drawMarker(GoogleMap gmap, MyMediaInfo mm) {
         LatLng ll = new LatLng(mm.latitude, mm.longitude);
         float color =  Config._marker_start_color;

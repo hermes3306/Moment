@@ -61,6 +61,29 @@ public class MyLoc {
         dbHelper.deleteAll(db);
     }
 
+    public static final String TABLE_NAME = "myloc";
+    public static final String COLUMN_NAME_LATITUDE = "latitude";
+    public static final String COLUMN_NAME_LONGITUDE = "longitude";
+    public static final String COLUMN_NAME_CRDATE = "crdate";
+    public static final String COLUMN_NAME_CRTIME = "crtime";
+
+    public MyActivity getLastActivity() {
+        Cursor cursor = db.rawQuery(
+                "select latitude, longitude, crdate, crtime from myloc order by crdate desc, crtime desc limit ?",
+                new String[]{String.valueOf(1)});
+
+        if(cursor != null) {
+            cursor.moveToFirst();
+            MyActivity ma = new MyActivity(cursor.getDouble(0),
+                    cursor.getDouble(1),
+                    cursor.getString(2),
+                    cursor.getString(3));
+            return ma;
+        }
+        return null;
+    }
+
+
     public long ins(double lat, double lng) {
         // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
         // Gets the data repository in write mode

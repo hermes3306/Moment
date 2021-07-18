@@ -15,7 +15,7 @@
         <ImageView
             android:id="@+id/iv_run_type1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
             android:layout_gravity="center"
             android:alpha="0.3"
             app:srcCompat="@drawable/runnew" />
@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:alpha="0.84"
-            android:text="BCST"
+            android:text="Run1"
             android:textColor="@color/Gray"
             android:textSize="30dp" />
     </LinearLayout>
@@ -41,7 +41,7 @@
         <ImageView
             android:id="@+id/iv_run_type3"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
             android:layout_gravity="center"
             android:alpha="0.3"
             app:srcCompat="@drawable/runnew" />
@@ -52,8 +52,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:alpha="0.84"
-            android:text="DB 1"
-            android:textColor="@color/Gray"
+            android:text="Run3"
+            android:textColor="@color/CornflowerBlue"
             android:textSize="30dp" />
     </LinearLayout>
 
@@ -68,7 +68,7 @@
         <ImageView
             android:id="@+id/iv_run_type4"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
             android:layout_gravity="center"
             android:alpha="0.3"
             app:srcCompat="@drawable/runnew" />
@@ -79,8 +79,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:alpha="0.84"
-            android:text="DB new"
-            android:textColor="@color/Gray"
+            android:text="Run4"
+            android:textColor="@color/DarkOrchid"
             android:textSize="30dp" />
     </LinearLayout>
 

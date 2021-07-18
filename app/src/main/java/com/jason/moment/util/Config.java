@@ -45,6 +45,9 @@ public class Config {
     public final static String INTENT_DELETE_WP = Config.PACKAGE_NAME + ".intent.DELETE_WP";
     public final static String INTENT_START_TRACKING = Config.PACKAGE_NAME + ".intent.START_TRACKING";
     public final static String INTENT_STOP_TRACKING = Config.PACKAGE_NAME + ".intent.STOP_TRACKING";
+    public final static String INTENT_START_RUNNING = Config.PACKAGE_NAME + ".intent.START_RUNNING";
+    public final static String INTENT_STOP_RUNNING = Config.PACKAGE_NAME + ".intent.STOP_RUNNING";
+
 
     // my first broadcasting intent
     public final static String INTENT_LOCATION_CHANGED = Config.PACKAGE_NAME+ ".intent.LOCATION_CHANGED";

@@ -90,7 +90,7 @@ public class Run extends AppCompatActivity{
     public static boolean paused = false;
     public boolean resume = false;
 
-    private long currentRunId;
+    private long currentRunId=-1;
     public long getCurrentRunId() {
         return this.currentRunId;
     }
@@ -488,33 +488,38 @@ public class Run extends AppCompatActivity{
                             gpsLoggerConnection = null;
                         }
 
-                        MyActivityUtil.serialize(list, media_filenames, activity_file_name );
-                        CloudUtil.getInstance().Upload(activity_file_name + Config._csv_ext);
-
-                        Toast.makeText(_ctx, " " + list.size() + " locations saved!", Toast.LENGTH_SHORT).show();
-
-                        ActivityStat as = ActivityStat.getActivityStat(list);
-                        if(as !=null) {
-                            MyActiviySummary.getInstance(_ctx).ins(activity_file_name,as.distanceKm,as.durationInLong,as.minperKm,as.calories);
-                            Log.d(TAG,"-- Activity Stat inserted successfully !!!!");
-                            if(Config._default_ext==Config._csv)
-                                CloudUtil.getInstance().Upload(activity_file_name + Config._csv_ext);
-                            else
-                                CloudUtil.getInstance().Upload(activity_file_name + Config._mnt_ext);
+                        if(list.size()==0) {
+                            Toast.makeText(_ctx, " No activities to be saved!", Toast.LENGTH_LONG).show();
+                        } else {
+                            MyActivityUtil.serialize(list, media_filenames, activity_file_name );
+                            CloudUtil.getInstance().Upload(activity_file_name + Config._csv_ext);
+                            Toast.makeText(_ctx, " " + list.size() + " activities saved!", Toast.LENGTH_LONG).show();
                         }
 
-                        if(as != null) {
-                            Toast.makeText(getApplicationContext(), "JASON's 활동이 저장되었습니다!" + activity_file_name, Toast.LENGTH_SHORT).show();
-                            String detail = "총운동 거리:" + tv_start_km.getText();
-                            detail += "\n총운동 시간:" + tv_start_time.getText();
-                            detail += "\n평균 분/Km:" + tv_start_avg.getText();
-                            detail += "\n소모칼로리:" + tv_start_calory.getText();
-                            notificationQuit(Config._notify_id, Config._notify_ticker,
-                                    "활동이 저장되었습니다.", detail);
+                        if(list.size() > 0 ) {
+                            ActivityStat as = ActivityStat.getActivityStat(list);
+                            if(as !=null) {
+                                MyActiviySummary.getInstance(_ctx).ins(activity_file_name,as.distanceKm,as.durationInLong,as.minperKm,as.calories);
+                                Log.d(TAG,"-- Activity Stat inserted successfully !!!!");
+                                if(Config._default_ext==Config._csv)
+                                    CloudUtil.getInstance().Upload(activity_file_name + Config._csv_ext);
+                                else
+                                    CloudUtil.getInstance().Upload(activity_file_name + Config._mnt_ext);
+                            }
 
-                            Intent myReportIntent = new Intent(Run.this, MyReportActivity.class);
-                            myReportIntent.putExtra("activity_file_name", activity_file_name);
-                            startActivity(myReportIntent);
+                            if(as != null) {
+                                Toast.makeText(getApplicationContext(), "JASON's 활동이 저장되었습니다!" + activity_file_name, Toast.LENGTH_SHORT).show();
+                                String detail = "총운동 거리:" + tv_start_km.getText();
+                                detail += "\n총운동 시간:" + tv_start_time.getText();
+                                detail += "\n평균 분/Km:" + tv_start_avg.getText();
+                                detail += "\n소모칼로리:" + tv_start_calory.getText();
+                                notificationQuit(Config._notify_id, Config._notify_ticker,
+                                        "활동이 저장되었습니다.", detail);
+
+                                Intent myReportIntent = new Intent(Run.this, MyReportActivity.class);
+                                myReportIntent.putExtra("activity_file_name", activity_file_name);
+                                startActivity(myReportIntent);
+                            }
                         }
 
                         Run.this.quit = true;

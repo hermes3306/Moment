@@ -233,8 +233,8 @@ public class Run3 extends Run implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this._ctx = this;
-        // MyRun 테이블을 사용할 경우 set_use_db(true)
         set_use_db(false);
+        super.setCurrentRunId(-1);
 
         // 달리기 모드일 경우, 1초, 1미터로 셋팅함
         Config.initialize(getApplicationContext());
