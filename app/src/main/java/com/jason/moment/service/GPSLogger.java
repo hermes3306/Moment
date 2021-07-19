@@ -18,14 +18,9 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
-
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
-
-import com.jason.moment.MapsActivity;
 import com.jason.moment.MyReportActivity;
 import com.jason.moment.R;
 import com.jason.moment.util.C;
@@ -47,14 +42,11 @@ public class GPSLogger extends Service implements LocationListener {
     private boolean isTracking = true;
     private boolean isGpsEnabled = false;
     private boolean use_db = false;
-
-    private final boolean use_barometer = false;
     private static final int NOTIFICATION_ID = 1;
     private static final String CHANNEL_ID = "Moment_Channel";
 
-    private Location lastLocation;
+    private static Location lastLocation=null;
     private LocationManager lmgr;
-    private String activity_file_name = "-1";
 
     private long lastGPSTimestamp = 0;
     private long lastSAVETimestamp = 0;
@@ -77,65 +69,37 @@ public class GPSLogger extends Service implements LocationListener {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.v(TAG, "-- Received intent " + intent.getAction());
+            Bundle extras;
+            extras = intent.getExtras();
 
-            if (Config.INTENT_TRACK_WP.equals(intent.getAction())) {
-                // Track a way point
-                Bundle extras = intent.getExtras();
-                if (extras != null) {
-                    // because of the gps logging interval our last fix could be very old
-                    // so we'll request the last known location from the gps provider
-                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        lastLocation = lmgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        if (lastLocation != null) {
-                        }
-                    }
-                }
-            } else if (Config.INTENT_START_TRACKING.equals(intent.getAction()) ) {
-                Log.d(TAG, "-- INTENT_START_TRACKING");
-                Bundle extras = intent.getExtras();
-                if (extras != null) {
-                    activity_file_name = extras.getString("activity_file_name");
-                    Log.d(TAG, "-- activity_file_name" + activity_file_name);
-                    startTracking(activity_file_name);
-                } else {
-                    Log.d(TAG, "-- activity_file_name" + null);
-                }
-            } else if (Config.INTENT_START_RUNNING.equals(intent.getAction()) ) {
-                Log.d(TAG, "-- INTENT_START_RUNNING");
-                Bundle extras = intent.getExtras();
-                if (extras != null) {
-                    currentRunId = extras.getLong("currentRunId");
-                    Log.d(TAG, "-- currentRunId" + currentRunId);
-                    startRunning(currentRunId);
-                } else {
-                    Log.d(TAG, "-- currentRunId" + null);
-                }
-            } else if (Config.INTENT_STOP_RUNNING.equals(intent.getAction()) ) {
-                Log.d(TAG, "-- INTENT_STOP_RUNNING");
-                Bundle extras = intent.getExtras();
-                if (extras != null) {
-                    currentRunId = extras.getLong("currentRunId");
-                    Log.d(TAG, "-- currentRunId" + currentRunId);
-                    stopRunning();
-                } else {
-                    Log.d(TAG, "-- currentRunId" + null);
-                }
-            }else if (Config.INTENT_STOP_TRACKING.equals(intent.getAction()) ) {
+            if (Config.INTENT_START_TRACKING.equals(intent.getAction()) ) {
+                startTracking();
+
+            } else if (Config.INTENT_STOP_TRACKING.equals(intent.getAction()) ) {
                 stopTrackingAndSave();
+
+            } else if (Config.INTENT_START_RUNNING.equals(intent.getAction()) ) {
+                if (extras != null) {
+                    currentRunId = extras.getLong("currentRunId");
+                    startRunning(currentRunId);
+                }
+
+            } else if (Config.INTENT_STOP_RUNNING.equals(intent.getAction()) ) {
+                if (extras != null) {
+                    currentRunId = extras.getLong("currentRunId");
+                    stopRunning();
+                }
+
             } else if (Config.INTENT_CONFIG_CHANGE.equals(intent.getAction()) ) {
-                Log.e(TAG, "-- GPSLogger get message of CONFIG_CHANGE");
                 Config.initialize(getApplicationContext());
                 gpsLoggingInterval = intent.getLongExtra("gpsLoggingInterval",Config._loc_interval);
                 gpsLoggingMinDistance = intent.getLongExtra("gpsLoggingMinDistance", (long)Config._loc_distance);
                 if (ContextCompat.checkSelfPermission(_ctx, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    // Register ourselves for location updates
                     lmgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                     lmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, gpsLoggingInterval, gpsLoggingMinDistance, _myLocationListener);
-                    Log.e(TAG, "-- gpsLoggingInterval:" + gpsLoggingInterval);
-                    Log.e(TAG, "-- gpsLoggingMinDistance:" + gpsLoggingMinDistance);
                 }
             }
+
         }
     };
 
@@ -171,7 +135,6 @@ public class GPSLogger extends Service implements LocationListener {
         Log.d(TAG, "-- GpsLogger Service onCreate()");
         _ctx = getApplicationContext();
         _myLocationListener = this;
-        //dataHelper = new DataHelper(this);
 
         Log.d(TAG, "-- Config information read done!");
         Log.d(TAG, "-- gpsLoggingInterval: " + gpsLoggingInterval);
@@ -181,6 +144,8 @@ public class GPSLogger extends Service implements LocationListener {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Config.INTENT_START_TRACKING);
         filter.addAction(Config.INTENT_STOP_TRACKING);
+        filter.addAction(Config.INTENT_START_RUNNING);
+        filter.addAction(Config.INTENT_STOP_RUNNING);
         filter.addAction(Config.INTENT_CONFIG_CHANGE);
         registerReceiver(receiver, filter);
         Log.d(TAG, "-- registerReceiver done!");
@@ -241,43 +206,34 @@ public class GPSLogger extends Service implements LocationListener {
         super.onDestroy();
     }
 
-    /**
-     * Start GPS tracking.
-     */
-    private void startTracking(String trackId) {
-        activity_file_name = trackId;
-        Log.d(TAG, "-- Starting track logging for track #" + trackId);
-        // Refresh notification with correct Track ID
-        NotificationManager nmgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        nmgr.notify(NOTIFICATION_ID, getNotification());
+    private void startTracking() {
         isTracking = true;
     }
 
-    /**
-     * Stops GPS Logging
-     */
     private void stopTrackingAndSave() {
         isTracking = false;
-        activity_file_name = "-1";
         this.stopSelf();
     }
 
     boolean isRunning = false;
-    /**
-     * Start GPS tracking.
-     */
     private void startRunning(long currentRunId) {
         this.currentRunId = currentRunId;
-        Log.d(TAG, "-- Starting running logging for run #" + currentRunId);
         isRunning= true;
+        MyRun.getInstance(_ctx).startRunning(currentRunId);
+
     }
 
-    /**
-     * Stops GPS Logging
-     */
     private void stopRunning() {
+        MyRun.getInstance(_ctx).stopRunning(currentRunId);
         isRunning = false;
         this.currentRunId = -1;
+    }
+
+    private void recordRunning(Location loc) {
+        MyRun.getInstance(_ctx).ins(currentRunId,
+                loc.getLatitude(),
+                loc.getLongitude(),
+                loc.getAltitude());
     }
 
     public void setTracking(boolean b) {
@@ -294,13 +250,12 @@ public class GPSLogger extends Service implements LocationListener {
             lastLocation = location;
 
             LocationUtil.getInstance().onLocationChanged(getApplicationContext(),location);
-
             Intent intent = new Intent(Config.INTENT_LOCATION_CHANGED);
             intent.putExtra("location", location);
             sendBroadcast(intent);
 
-            if(use_db) {
-                //MyRun.getInstance(_ctx).ins()
+            if(isRunning & use_db) {
+                recordRunning(location);
             }
         } else return;
 
@@ -317,8 +272,7 @@ public class GPSLogger extends Service implements LocationListener {
     }
 
     private String getActivity_file_name () {
-        String file_name = DateUtil.today() + "_" + C.getRunnerName(getApplicationContext());
-        return file_name;
+        return DateUtil.today() + "_" + C.getRunnerName(getApplicationContext());
     }
 
     private void saveTodayActivities() {
@@ -331,9 +285,8 @@ public class GPSLogger extends Service implements LocationListener {
      * Builds the notification to display when tracking in background.
      */
     private Notification getNotification() {
-        if(activity_file_name.endsWith("-1")) activity_file_name = getActivity_file_name();
         Intent myReportIntent = new Intent(this, MyReportActivity.class);
-        myReportIntent.putExtra("activity_file_name", activity_file_name);
+        myReportIntent.putExtra("activity_file_name", getActivity_file_name());
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, myReportIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications_black_24dp)
@@ -346,8 +299,7 @@ public class GPSLogger extends Service implements LocationListener {
     }
 
     private void createNotificationChannel() {
-        if(activity_file_name.endsWith("-1")) activity_file_name = getActivity_file_name();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // FIXME: following two strings must be obtained from 'R.string' to support translations
             CharSequence name = "Moment";
             String description = "New Activity("+DateUtil.getActivityName(new Date())+")";
@@ -361,9 +313,6 @@ public class GPSLogger extends Service implements LocationListener {
         }
     }
 
-    /**
-     * Stops notifying the user that we're tracking in the background
-     */
     private void stopNotifyBackgroundService() {
         NotificationManager nmgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         nmgr.cancel(NOTIFICATION_ID);
@@ -384,18 +333,6 @@ public class GPSLogger extends Service implements LocationListener {
         // Not interested in provider status
     }
 
-    /**
-     * Getter for gpsEnabled
-     * @return true if GPS is enabled, otherwise false.
-     */
-    public boolean isGpsEnabled() {
-        return isGpsEnabled;
-    }
-
-    /**
-     * Setter for isTracking
-     * @return true if we're currently tracking, otherwise false.
-     */
     public boolean isTracking() {
         return isTracking;
     }

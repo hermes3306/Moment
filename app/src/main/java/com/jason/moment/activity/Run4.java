@@ -333,7 +333,6 @@ public class Run4 extends Run implements
 
     @Override
     public void onDestroy() {
-        //unregisterReceiver(receiver);
         stopMyTimer();
         super.onDestroy();
     }

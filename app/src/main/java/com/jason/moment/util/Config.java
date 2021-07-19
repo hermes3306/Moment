@@ -38,18 +38,12 @@ public class Config {
 
     public static boolean _sharedPreferenceChanged                = false;
 
-    // 정리 필요함
     public final static String PACKAGE_NAME = Config.class.getPackage().getName();
-    public final static String INTENT_TRACK_WP = Config.PACKAGE_NAME + ".intent.TRACK_WP";
-    public final static String INTENT_UPDATE_WP = Config.PACKAGE_NAME + ".intent.UPDATE_WP";
-    public final static String INTENT_DELETE_WP = Config.PACKAGE_NAME + ".intent.DELETE_WP";
     public final static String INTENT_START_TRACKING = Config.PACKAGE_NAME + ".intent.START_TRACKING";
     public final static String INTENT_STOP_TRACKING = Config.PACKAGE_NAME + ".intent.STOP_TRACKING";
     public final static String INTENT_START_RUNNING = Config.PACKAGE_NAME + ".intent.START_RUNNING";
     public final static String INTENT_STOP_RUNNING = Config.PACKAGE_NAME + ".intent.STOP_RUNNING";
 
-
-    // my first broadcasting intent
     public final static String INTENT_LOCATION_CHANGED = Config.PACKAGE_NAME+ ".intent.LOCATION_CHANGED";
     public final static String INTENT_CONFIG_CHANGE = Config.PACKAGE_NAME+ ".intent.CONFIG_CHANGE";
 

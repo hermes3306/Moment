@@ -53,11 +53,13 @@ import com.jason.moment.util.LocationUtil;
 import com.jason.moment.util.MP3;
 import com.jason.moment.util.MapUtil;
 import com.jason.moment.util.MyActivity;
+import com.jason.moment.util.MyActivity2;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.RunStat;
 import com.jason.moment.util.StringUtil;
 import com.jason.moment.util.db.MyActiviySummary;
 import com.jason.moment.util.db.MyLoc;
+import com.jason.moment.util.db.MyRun;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -483,7 +485,14 @@ public class Run extends AppCompatActivity{
                     public void onClick(DialogInterface dialog, int which) {
                         Config.restore_preference_values_after_running(getApplicationContext());
                         if(gpsLoggerConnection != null)  {
-                            set_use_db(false);
+
+                            if (use_db) {
+                                Intent intent = new Intent(Config.INTENT_STOP_RUNNING);
+                                intent.putExtra("currentRunId", getCurrentRunId());
+                                sendBroadcast(intent);
+                                set_use_db(false);
+                            }
+
                             unbindService(gpsLoggerConnection);
                             gpsLoggerConnection = null;
                         }
@@ -491,6 +500,11 @@ public class Run extends AppCompatActivity{
                         if(list.size()==0) {
                             Toast.makeText(_ctx, " No activities to be saved!", Toast.LENGTH_LONG).show();
                         } else {
+                            if(use_db) {
+                                ArrayList<MyActivity2> l2 = MyRun.getInstance(_ctx).qry_by_runid(currentRunId);
+                                list = MyActivityUtil.conv(l2);
+                            }
+
                             MyActivityUtil.serialize(list, media_filenames, activity_file_name );
                             CloudUtil.getInstance().Upload(activity_file_name + Config._csv_ext);
                             Toast.makeText(_ctx, " " + list.size() + " activities saved!", Toast.LENGTH_LONG).show();

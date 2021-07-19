@@ -27,6 +27,13 @@ public class MyActivity implements Serializable {
         this.cr_time = crt;
     }
 
+    public MyActivity(MyActivity2 ma2) {
+        this.latitude = ma2.latitude;
+        this.longitude = ma2.longitude;
+        this.cr_date = ma2.cr_date;
+        this.cr_time = ma2.cr_date;
+    }
+
     public MyActivity(double l1, double l2, Date d) {
         this.latitude = l1;
         this.longitude = l2;

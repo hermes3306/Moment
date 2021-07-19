@@ -4,6 +4,8 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.util.Log;
+
 import com.jason.moment.activity.Run;
 import com.jason.moment.util.Config;
 
@@ -18,11 +20,13 @@ public class GPSLoggerConnection implements ServiceConnection {
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        activity.setGpsLogger(null);
+        // it doesn't work well
     }
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
+        Log.d(TAG, "-- onServiceConnected");
+
         activity.setGpsLogger( ((GPSLogger.GPSLoggerBinder) service).getService());
         activity.getGpsLogger().set_use_db(activity.get_use_db());
         activity.getGpsLogger().setCurrentRunId(activity.getCurrentRunId());

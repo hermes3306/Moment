@@ -35,6 +35,19 @@ public class MyRun {
         if(dbr == null) dbr = dbHelper.getReadableDatabase();
     }
 
+
+    public long CountOfRun() {
+        long count = 0;
+        Cursor cursor = db.rawQuery(
+                "select count(run_id) from myruninfo where run_id > ? ",
+                new String[]{String.valueOf(0)});
+        if(cursor != null) {
+            cursor.moveToFirst();
+            count = cursor.getLong(0);
+        }
+        return count;
+    }
+
     public void stopRunning(long run_id) {
         db.execSQL("update myruninfo set status = false where run_id =" +
                 String.format("%d", run_id));
@@ -223,17 +236,6 @@ public class MyRun {
         return count;
     }
 
-    public long CountOfRun() {
-        long count = 0;
-        Cursor cursor = db.rawQuery(
-                "select count(runid) from myrun where runid > ? ",
-                new String[]{String.valueOf(0)});
-        if(cursor != null) {
-            cursor.moveToFirst();
-            count = cursor.getLong(0);
-        }
-        return count;
-    }
 
 
 

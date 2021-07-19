@@ -339,6 +339,22 @@ public class MyActivityUtil {
         }
     }
 
+    public static ArrayList<MyActivity> conv(ArrayList<MyActivity2> l2) {
+        ArrayList<MyActivity> l = new ArrayList<MyActivity>();
+        for(int i=0;i<l2.size();i++)  {
+            l.add(new MyActivity(l2.get(i)));
+        }
+        return l;
+    }
+
+    public static void serialize2(ArrayList<MyActivity2> l2, ArrayList<String> media_list, String _filename) {
+        ArrayList<MyActivity> l = new ArrayList<MyActivity>();
+        for(int i=0;i<l2.size();i++)  {
+            l.add(new MyActivity(l2.get(i)));
+        }
+        serialize(l,media_list,_filename);
+    }
+
     public static void serialize(ArrayList<MyActivity> list, ArrayList<String> media_list, String _filename) {
         String filename = _filename;
         if(filename.endsWith(".mnt") || filename.endsWith(".csv")) {
@@ -350,6 +366,7 @@ public class MyActivityUtil {
             serializeIntoMnt(list,filename + ".mnt");
         }
     }
+
     public static void serializeIntoMnt(ArrayList<MyActivity> list, String fileName) {
         if(list == null) return;
 

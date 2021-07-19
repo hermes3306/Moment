@@ -40,8 +40,8 @@ public class StartupBatch {
             //rebuildActivitySummaries(_ctx);
             //uploadAll(_ctx);
             //ImportTodayActivity();
-//            initDatabase(_ctx);
-//            ImportTodayActivity("Jason");
+            //initDatabase(_ctx);
+            //ImportTodayActivity("Jason");
             //MyMedia.getInstance(_ctx).createNew();
             //MyRun.getInstance(_ctx).createNew();
         }catch(Exception e) {
