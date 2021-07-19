@@ -219,8 +219,8 @@ public class Run extends AppCompatActivity{
         paused = false;
         resume = true;
 
-        if (use_db) {
-            ArrayList<MyActivity2> l2 = MyRun.getInstance(_ctx).qry_from_last_pk(last_pk);
+        if (use_db && last_pk != -1) {
+            ArrayList<MyActivity2> l2 = MyRun.getInstance(_ctx).qry_from_last_pk(currentRunId, last_pk);
             for(int i=0;i<l2.size();i++) list.add(new MyActivity(l2.get(i)));
         } else get_last_run_from_db();
 
@@ -495,7 +495,6 @@ public class Run extends AppCompatActivity{
                                 Intent intent = new Intent(Config.INTENT_STOP_RUNNING);
                                 intent.putExtra("currentRunId", getCurrentRunId());
                                 sendBroadcast(intent);
-                                set_use_db(false);
                             }
 
                             unbindService(gpsLoggerConnection);
@@ -506,8 +505,13 @@ public class Run extends AppCompatActivity{
                             Toast.makeText(_ctx, " No activities to be saved!", Toast.LENGTH_LONG).show();
                         } else {
                             if(use_db) {
+
                                 ArrayList<MyActivity2> l2 = MyRun.getInstance(_ctx).qry_by_runid(currentRunId);
+                                MyActivityUtil.printArrayListHead2(l2);
+
+                                Log.e(TAG, "-----------------------");
                                 list = MyActivityUtil.conv(l2);
+                                MyActivityUtil.printArrayListHead1(list);
                             }
 
                             MyActivityUtil.serialize(list, media_filenames, activity_file_name );
@@ -541,6 +545,7 @@ public class Run extends AppCompatActivity{
                             }
                         }
 
+                        set_use_db(false);
                         Run.this.quit = true;
                         Run.this.finish();
                     }

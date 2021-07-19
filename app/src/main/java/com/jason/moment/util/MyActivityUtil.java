@@ -203,6 +203,20 @@ public class MyActivityUtil {
         return ma.toDate();
     }
 
+    public static void printArrayListHead1(ArrayList<MyActivity> l) {
+        for(int i=0;i<l.size();i++) {
+            Log.e(TAG, "-- " + l.get(i));
+            if(i==10) break;
+        }
+    }
+
+    public static void printArrayListHead2(ArrayList<MyActivity2> l) {
+        for(int i=0;i<l.size();i++) {
+            Log.e(TAG, "-- " + l.get(i));
+            if(i==10) break;
+        }
+    }
+
     public static void serializeIntoCSV(ArrayList<MyActivity> list, ArrayList<String> media_list, File f) {
         try {
             FileWriter file = new FileWriter(f);
@@ -227,6 +241,9 @@ public class MyActivityUtil {
             // output.write("x,y,d,t\n");
             for(int i=0;i<list.size();i++ ) {
                 MyActivity a = list.get(i);
+                Log.e(TAG, "-- " + a.toString() );
+
+
                 output.write("" + a.latitude);
                 output.write("," + a.longitude);
 
@@ -342,7 +359,9 @@ public class MyActivityUtil {
     public static ArrayList<MyActivity> conv(ArrayList<MyActivity2> l2) {
         ArrayList<MyActivity> l = new ArrayList<MyActivity>();
         for(int i=0;i<l2.size();i++)  {
-            l.add(new MyActivity(l2.get(i)));
+            MyActivity ma = new MyActivity(l2.get(i));
+            Log.d(TAG, "-- " + ma);
+            l.add(ma);
         }
         return l;
     }
@@ -613,6 +632,9 @@ public class MyActivityUtil {
     }
 
     public static double getMinPerKm(Date start, Date end, double km) {
+        if(km == 0) return 0;
+        if(start==null || end==null) return 0;
+
         long dur_sec = (end.getTime() - start.getTime())/1000;
         long dur_min = dur_sec/60;
         double minpk = (double)(dur_min / km);
@@ -620,6 +642,8 @@ public class MyActivityUtil {
     }
 
     public static double getMinPerKm(MyActivity start, MyActivity end, double dist) {
+        if(dist == 0) return 0;
+        if(start==null || end==null) return 0;
         return getMinPerKm(start.toDate(), end.toDate(), dist/1000);
     }
 

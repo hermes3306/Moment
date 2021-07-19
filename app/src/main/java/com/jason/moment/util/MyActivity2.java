@@ -17,18 +17,22 @@ public class MyActivity2 extends MyActivity implements Serializable {
 
     public MyActivity2(double l1, double l2, String crd, String crt) {
         super(l1,l2,crd,crt);
+        this.altitude = 0;
     }
 
     public MyActivity2(double l1, double l2, Date d) {
         super(l1,l2,d);
+        this.altitude = 0;
     }
 
     public MyActivity2(LatLng ll) {
         super(ll);
+        this.altitude = 0;
     }
 
     public MyActivity2(double l1, double l2) {
         super(l1,l2);
+        this.altitude = 0;
     }
 
     public MyActivity2(double l1, double l2, double alt) {

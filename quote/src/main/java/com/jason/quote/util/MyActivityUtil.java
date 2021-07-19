@@ -79,8 +79,6 @@ public class MyActivityUtil {
         }
     }
 
-
-
     public static ActivityStat getActivityStat(ArrayList <MyActivity> list) {
         if(list == null) {
             Log.e(TAG,"Activity List null");
