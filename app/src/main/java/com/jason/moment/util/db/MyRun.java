@@ -236,8 +236,17 @@ public class MyRun {
         return count;
     }
 
+    public long get_last_pk(long runid) {
+        long last_pk = -1;
+        Cursor cursor = db.rawQuery(
+                "select max(_id) from myrun where runid=?",
+                new String[]{String.valueOf(runid)});
 
-
-
+        if(cursor != null) {
+            cursor.moveToFirst();
+            last_pk = cursor.getLong(0);
+        }
+        return last_pk;
+    }
 
 }

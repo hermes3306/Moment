@@ -209,7 +209,8 @@ public class Run extends AppCompatActivity{
         paused = true;
         resume = false;
 
-        last_pk = LocationUtil.getInstance().get_last_pk();
+        if(use_db) last_pk = MyRun.getInstance(_ctx).get_last_pk(currentRunId);
+        else last_pk = LocationUtil.getInstance().get_last_pk();
         super.onPause();
     }
 
@@ -218,7 +219,11 @@ public class Run extends AppCompatActivity{
         paused = false;
         resume = true;
 
-        get_last_run_from_db();
+        if (use_db) {
+            ArrayList<MyActivity2> l2 = MyRun.getInstance(_ctx).qry_from_last_pk(last_pk);
+            for(int i=0;i<l2.size();i++) list.add(new MyActivity(l2.get(i)));
+        } else get_last_run_from_db();
+
         super.onResume();
     }
 
