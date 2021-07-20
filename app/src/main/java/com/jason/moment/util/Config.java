@@ -41,6 +41,10 @@ public class Config {
     public final static String PACKAGE_NAME = Config.class.getPackage().getName();
     public final static String INTENT_START_TRACKING = Config.PACKAGE_NAME + ".intent.START_TRACKING";
     public final static String INTENT_STOP_TRACKING = Config.PACKAGE_NAME + ".intent.STOP_TRACKING";
+
+    public final static String INTENT_START_BROADCAST = Config.PACKAGE_NAME + ".intent.START_BROADCAST";
+    public final static String INTENT_STOP_BROADCAST = Config.PACKAGE_NAME + ".intent.STOP_BROADCAST";
+
     public final static String INTENT_START_RUNNING = Config.PACKAGE_NAME + ".intent.START_RUNNING";
     public final static String INTENT_STOP_RUNNING = Config.PACKAGE_NAME + ".intent.STOP_RUNNING";
 

@@ -292,6 +292,7 @@ public class Run4 extends Run implements
         this._ctx = this;
         // MyRun 테이블을 사용할 경우 set_use_db(true)
         set_use_db(true);
+        set_use_broadcast(false);
         super.setCurrentRunId(new Date().getTime());
 
         // 달리기 모드일 경우, 1초, 1미터로 셋팅함

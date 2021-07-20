@@ -92,6 +92,8 @@ public class AlertDialogUtil {
         addRunStatItem(_ctx, ll, "Running/Closed:" + countofrunning + "/" + (countofallrun - countofrunning));
         addRunStatItem(_ctx, ll, "Cur:" + runstat.running_id);
         addRunStatItem(_ctx, ll, "use_db:" + runstat.run.get_use_db());
+        addRunStatItem(_ctx, ll, "use_bcst:" + runstat.run.get_use_broadcast());
+
         addRunStatItem(_ctx, ll, "# of loc:" + String.format("%3d", runstat.list.size()));
         long numofrec = MyRun.getInstance(_ctx).getCountByRunId(runstat.running_id);
         addRunStatItem(_ctx, ll, "# of Rec:" + numofrec);

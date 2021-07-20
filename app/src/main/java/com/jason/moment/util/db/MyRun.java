@@ -224,6 +224,13 @@ public class MyRun {
         return qry1(selection, selectionArgs, order_by);
     }
 
+    public ArrayList<MyActivity2> qry_from_by_runid(long current_run_id) {
+        String selection = MyRunContract.E.COL_RUN + " = ?";
+        String order_by = MyRunContract.E._ID + " ASC";
+        String[] selectionArgs = { String.format("%d", current_run_id) };
+        return qry1(selection, selectionArgs, order_by);
+    }
+
     public ArrayList<MyActivity2> qry_from_last_pk(long current_run_id, long last_pk) {
         String selection = MyRunContract.E.COL_RUN + " = ? AND " +  MyRunContract.E._ID  + " > ? ";
         String order_by = MyRunContract.E._ID + " ASC";
@@ -255,7 +262,7 @@ public class MyRun {
     public long get_last_pk(long runid) {
         long last_pk = -1;
         Cursor cursor = db.rawQuery(
-                "select max(_id) from myrun where runid=?",
+                "select max(_id) from myrun where runid= ? ",
                 new String[]{String.valueOf(runid)});
 
         if(cursor != null) {

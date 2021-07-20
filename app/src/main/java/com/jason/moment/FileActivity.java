@@ -210,7 +210,14 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
 
                 MyActivity ta = mActivityList.get(0);
                 String date_str = ta.cr_date + " " + ta.cr_time;
-                activityStat= ActivityStat.getActivityStat(mActivityList);
+                try {
+                    activityStat = ActivityStat.getActivityStat(mActivityList);
+                }catch(Exception e) {
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    Log.e(TAG, "-- " + sw.toString());
+                    myfile.delete();
+                }
 
                 if(activityStat !=null) {
                     String _minDist = String.format("%.1f", activityStat.distanceKm);

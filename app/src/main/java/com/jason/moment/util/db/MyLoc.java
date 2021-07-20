@@ -264,6 +264,7 @@ public class MyLoc {
         return Path2Activity(selection, selectionArgs, order_by);
     }
 
+
     public ArrayList<MyActivity> getActivitiesFrom(long last_pk) {
         String selection = MyLocContract.LocEntry._ID  + " > ? ";
         String order_by = MyLocContract.LocEntry._ID + " ASC";

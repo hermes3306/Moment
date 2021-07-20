@@ -43,6 +43,7 @@ public class GPSLogger extends Service implements LocationListener {
     private boolean isTracking = true;
     private boolean isGpsEnabled = false;
     private boolean use_db = false;
+    private boolean use_broadcast = false;
     private static final int NOTIFICATION_ID = 1;
     private static final String CHANNEL_ID = "Moment_Channel";
 
@@ -65,6 +66,7 @@ public class GPSLogger extends Service implements LocationListener {
     public void set_use_db(boolean b) {
         use_db = b;
     }
+    public void set_use_broadcast(boolean b) {use_broadcast = b; }
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
 
@@ -90,6 +92,12 @@ public class GPSLogger extends Service implements LocationListener {
                     currentRunId = extras.getLong("currentRunId");
                     stopRunning();
                 }
+
+            } else if (Config.INTENT_START_BROADCAST.equals(intent.getAction()) ) {
+                startBroadcast();
+
+            } else if (Config.INTENT_STOP_BROADCAST.equals(intent.getAction()) ) {
+                stopBroadcast();
 
             } else if (Config.INTENT_CONFIG_CHANGE.equals(intent.getAction()) ) {
                 Config.initialize(getApplicationContext());
@@ -217,6 +225,15 @@ public class GPSLogger extends Service implements LocationListener {
     }
 
     boolean isRunning = false;
+
+    private void startBroadcast() {
+        use_broadcast = true;
+    }
+
+    private void stopBroadcast() {
+        use_broadcast = false;
+    }
+
     private void startRunning(long currentRunId) {
         this.currentRunId = currentRunId;
         isRunning= true;
@@ -252,7 +269,7 @@ public class GPSLogger extends Service implements LocationListener {
 
             LocationUtil.getInstance().onLocationChanged(getApplicationContext(),location);
 
-            if(true) { // if there is listener than broadcast
+            if(use_broadcast) { // if there is listener than broadcast
                 Intent intent = new Intent(Config.INTENT_LOCATION_CHANGED);
                 intent.putExtra("location", location);
                 sendBroadcast(intent);

@@ -29,11 +29,17 @@ public class GPSLoggerConnection implements ServiceConnection {
 
         activity.setGpsLogger( ((GPSLogger.GPSLoggerBinder) service).getService());
         activity.getGpsLogger().set_use_db(activity.get_use_db());
+        activity.getGpsLogger().set_use_broadcast(activity.get_use_broadcast());
         activity.getGpsLogger().setCurrentRunId(activity.getCurrentRunId());
 
         if(activity.get_use_db()) {
             Intent intent = new Intent(Config.INTENT_START_RUNNING);
             intent.putExtra("currentRunId", activity.getCurrentRunId());
+            activity.sendBroadcast(intent);
+        }
+
+        if(activity.get_use_broadcast()) {
+            Intent intent = new Intent(Config.INTENT_START_BROADCAST);
             activity.sendBroadcast(intent);
         }
 

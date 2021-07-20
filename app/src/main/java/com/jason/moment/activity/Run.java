@@ -111,6 +111,11 @@ public class Run extends AppCompatActivity{
     public boolean use_db = false;
     public boolean get_use_db() {return use_db;}
     public void set_use_db(boolean b) {use_db = b;}
+
+    public boolean use_broadcast = false;
+    public boolean get_use_broadcast() {return use_broadcast;}
+    public void set_use_broadcast(boolean b) {use_broadcast = b;}
+
     public Context _ctx = null;
 
     public void setGpsLogger(GPSLogger l) {
@@ -220,8 +225,11 @@ public class Run extends AppCompatActivity{
         resume = true;
 
         if (use_db && last_pk != -1) {
-            ArrayList<MyActivity2> l2 = MyRun.getInstance(_ctx).qry_from_last_pk(currentRunId, last_pk);
+            ArrayList<MyActivity2> l2 = MyRun.getInstance(_ctx).qry_from_by_runid(currentRunId);
+            list = new ArrayList<MyActivity>();
             for(int i=0;i<l2.size();i++) list.add(new MyActivity(l2.get(i)));
+            last_pk = MyRun.getInstance(_ctx).get_last_pk(currentRunId);
+
         } else get_last_run_from_db();
 
         super.onResume();
@@ -494,6 +502,11 @@ public class Run extends AppCompatActivity{
                             if (use_db) {
                                 Intent intent = new Intent(Config.INTENT_STOP_RUNNING);
                                 intent.putExtra("currentRunId", getCurrentRunId());
+                                sendBroadcast(intent);
+                            }
+
+                            if(use_broadcast) {
+                                Intent intent = new Intent(Config.INTENT_STOP_BROADCAST);
                                 sendBroadcast(intent);
                             }
 
