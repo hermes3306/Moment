@@ -24,6 +24,7 @@ import androidx.core.content.ContextCompat;
 import com.jason.moment.MyReportActivity;
 import com.jason.moment.R;
 import com.jason.moment.util.C;
+import com.jason.moment.util.CalDistance;
 import com.jason.moment.util.CloudUtil;
 import com.jason.moment.util.Config;
 import com.jason.moment.util.DateUtil;
@@ -230,6 +231,7 @@ public class GPSLogger extends Service implements LocationListener {
     }
 
     private void recordRunning(Location loc) {
+
         MyRun.getInstance(_ctx).ins(currentRunId,
                 loc.getLatitude(),
                 loc.getLongitude(),
@@ -247,16 +249,24 @@ public class GPSLogger extends Service implements LocationListener {
         // first of all we check if the time from the last used fix to the current fix is greater than the logging interval
         if((lastGPSTimestamp + gpsLoggingInterval) < System.currentTimeMillis()){
             lastGPSTimestamp = System.currentTimeMillis(); // save the time of this fix
-            lastLocation = location;
 
             LocationUtil.getInstance().onLocationChanged(getApplicationContext(),location);
-            Intent intent = new Intent(Config.INTENT_LOCATION_CHANGED);
-            intent.putExtra("location", location);
-            sendBroadcast(intent);
+
+            if(true) { // if there is listener than broadcast
+                Intent intent = new Intent(Config.INTENT_LOCATION_CHANGED);
+                intent.putExtra("location", location);
+                sendBroadcast(intent);
+            }
 
             if(isRunning & use_db) {
-                recordRunning(location);
+                if(lastLocation!= null) {
+                    double dist = CalDistance.getInstance().calculateDistance(lastLocation,location);
+                    if(dist < Config._loc_distance) return;
+                    else recordRunning(location);
+                }
+                else recordRunning(location);
             }
+            lastLocation = location;
         } else return;
 
         // 한시간 마다 한번씩 DBMS 내용을 파일로 저장함

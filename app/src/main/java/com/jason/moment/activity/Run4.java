@@ -49,10 +49,12 @@ import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.LocationUtil;
 import com.jason.moment.util.MP3;
 
+import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivity2;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.RunStat;
 import com.jason.moment.util.StringUtil;
+import com.jason.moment.util.db.MyRun;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -329,8 +331,6 @@ public class Run4 extends Run implements
         super.onResume();
     }
 
-
-
     @Override
     public void onDestroy() {
         stopMyTimer();
@@ -373,33 +373,16 @@ public class Run4 extends Run implements
                     String elapsed = StringUtil.elapsedStr(start_time,d);
                     tv_start_time.setText(elapsed);
 
-                    new_location = LocationUtil.getInstance().last_location();
-                    Location location = new_location;
-
-                    if(location == null) return;
-
-                    if(resume) {
-                        showActivities();
-                        resume = false;
+                    if (use_db) {
+                        ArrayList<MyActivity2> l2 = MyRun.getInstance(_ctx).qry_from_last_pk(getCurrentRunId(), last_pk);
+                        if(l2==null) return;
+                        if(l2.size()==0) return;
+                        last_pk = MyRun.getInstance(_ctx).get_last_pk(getCurrentRunId());
+                        for(int i=0;i<l2.size();i++) list.add(new MyActivity(l2.get(i)));
                     }
 
-                    if(last_activity==null) {
-                        dist = 0;
-                        last = new MyActivity2(location.getLatitude(), location.getLongitude(), location.getAltitude(), d);
-                        list.add(last);
-                        last_activity = last;
-                    }else {
-                        dist = CalDistance.dist(last_activity.getLatitude(), last_activity.getLongitude(), location.getLatitude(), location.getLongitude());
-                        if(dist > Config._loc_distance) {
-                            last = new MyActivity2(location.getLatitude(), location.getLongitude(), location.getAltitude(), d);
-                            list.add(last);
-                            last_activity = last;
-                            if(googleMap != null && ! paused) showActivities();
-                        }
-                    }
-
-                    //Log.e(TAG, "-- Timer!");
-
+                    if(resume) resume=false;
+                    if(googleMap!=null && !paused)showActivities();
                     if(!paused) {
                         dist = MyActivityUtil.getTotalDistanceInDouble(list);
                         if(dist<1000) { /* 1KM 이하 */
@@ -418,9 +401,11 @@ public class Run4 extends Run implements
                         double  minpkm = MyActivityUtil.getMinPerKm(list);
                         String tt1 = StringUtil.elapsedStr2((long) (minpkm*1000*60.0));
                         tv_start_avg.setText("" + tt1);
+
                         double  minp1km = MyActivityUtil.MinPer1Km(list);
                         String tt2 = StringUtil.elapsedStr2((long) (minp1km*1000*60.0));
                         tv_start_cur.setText("" + tt2);
+
                         float burntkCal;
                         int durationInSeconds = MyActivityUtil.durationInSeconds(list);
                         int stepsTaken = (int) (dist / Config._strideLengthInMeters);

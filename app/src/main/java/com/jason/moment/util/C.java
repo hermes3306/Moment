@@ -25,7 +25,7 @@ public class C {
     public static boolean cloud_dn = true;
 
     public static boolean showallmarkers = false;
-    public static boolean nomarkers = false;
+    public static boolean nomarkers = true;
     public static boolean notrack = false;
     public static boolean satellite = false;
 

@@ -48,6 +48,21 @@ public class MyRun {
         return count;
     }
 
+
+    public long CountOfRun(boolean is_running) {
+        long count = 0;
+        String status;
+        if(is_running) status= "true"; else status = "false"
+        Cursor cursor = db.rawQuery(
+                "select count(run_id) from myruninfo where run_id > ? and status = ? ",
+                new String[]{String.valueOf(0), status});
+        if(cursor != null) {
+            cursor.moveToFirst();
+            count = cursor.getLong(0);
+        }
+        return count;
+    }
+
     public void stopRunning(long run_id) {
         db.execSQL("update myruninfo set status = false where run_id =" +
                 String.format("%d", run_id));

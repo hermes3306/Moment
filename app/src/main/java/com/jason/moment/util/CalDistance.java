@@ -1,5 +1,6 @@
 package com.jason.moment.util;
 
+import android.location.Location;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -9,6 +10,14 @@ public class CalDistance {
     public double theta, dist;
     public double bef_lat, bef_long, cur_lat, cur_long;
     public static String TAG = "CalDistance";
+
+    public static CalDistance instance = null;
+    public static CalDistance getInstance() {
+        if(instance==null) instance =new CalDistance();
+        return instance;
+    }
+
+    public CalDistance() {}
 
     public CalDistance(double bef_lat, double bef_long, double cur_lat, double cur_long) {
         this.theta = 0;
@@ -56,7 +65,7 @@ public class CalDistance {
         return calculateDistance(bef_lat,bef_long,cur_lat,cur_long);
     }
 
-    public  double calculateDistance(double latitude1, double longitude1, double latitude2, double longitude2) {
+    public double calculateDistance(double latitude1, double longitude1, double latitude2, double longitude2) {
         double deltaLatitude = Math.toRadians(Math.abs(latitude1 - latitude2));
         double deltaLongitude = Math.toRadians(Math.abs(longitude1 - longitude2));
         double latitude1Rad = Math.toRadians(latitude1);
@@ -65,6 +74,14 @@ public class CalDistance {
                 (Math.cos(latitude1Rad) * Math.cos(latitude2Rad) * Math.pow(Math.sin(deltaLongitude / 2), 2));
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return 6371 * c * 1000; //Distance in meters
+    }
+
+    public double calculateDistance(Location l1, Location l2) {
+        double latitude1    = l1.getLatitude();
+        double longitude1   = l1.getLongitude();
+        double latitude2     = l2.getLatitude();
+        double longitude2   = l2.getLongitude();
+        return calculateDistance(latitude1,longitude1, latitude2, longitude2);
     }
 
     private double deg2rad(double deg) {

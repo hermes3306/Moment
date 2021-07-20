@@ -635,8 +635,8 @@ public class MyActivityUtil {
         if(km == 0) return 0;
         if(start==null || end==null) return 0;
 
-        long dur_sec = (end.getTime() - start.getTime())/1000;
-        long dur_min = dur_sec/60;
+        double dur_sec = (end.getTime() - start.getTime())/1000;
+        double dur_min = dur_sec/60;
         double minpk = (double)(dur_min / km);
         return minpk;
     }

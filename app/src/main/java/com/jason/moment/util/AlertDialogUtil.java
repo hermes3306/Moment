@@ -58,18 +58,20 @@ public class AlertDialogUtil {
         LinearLayout ll = view.findViewById(R.id.linearLayout);
         TextView view_title = view.findViewById(R.id.view_title);
 
-        long countofrun = MyRun.getInstance(_ctx).CountOfRun();
-        addRunStatItem(_ctx, ll, " Tot # of Runs:" + countofrun);
-        addRunStatItem(_ctx, ll, " Cur:" + runstat.running_id);
-        addRunStatItem(_ctx, ll, " use_db:" + runstat.run.get_use_db());
-        addRunStatItem(_ctx, ll, " # of loc:" + String.format("%3d", runstat.list.size()));
-        addRunStatItem(_ctx, ll, " Last pk:" + runstat.lastPk);
-        long numofrec = MyRun.getInstance(_ctx).getCountByRunId(runstat.running_id);
-        addRunStatItem(_ctx, ll, " # of Rec:" + numofrec);
-        addRunStatItem(_ctx, ll, " start time:" + StringUtil.DateToString(runstat.run.start_time,"HH:mm:ss"));
-        addRunStatItem(_ctx, ll, " dist:" + runstat.run.dist);
-        addRunStatItem(_ctx, ll, " file:" + runstat.run.getActivity_file_name());
+        long countofallrun = MyRun.getInstance(_ctx).CountOfRun();
+        long countofrunning = MyRun.getInstance(_ctx).CountOfRun(true);
 
+        addRunStatItem(_ctx, ll, "Runs:" + countofallrun);
+        addRunStatItem(_ctx, ll, "Running/Closed:" + countofrunning + "/" + (countofallrun - countofrunning));s
+        addRunStatItem(_ctx, ll, "Cur:" + runstat.running_id);
+        addRunStatItem(_ctx, ll, "use_db:" + runstat.run.get_use_db());
+        addRunStatItem(_ctx, ll, "# of loc:" + String.format("%3d", runstat.list.size()));
+        long numofrec = MyRun.getInstance(_ctx).getCountByRunId(runstat.running_id);
+        addRunStatItem(_ctx, ll, "# of Rec:" + numofrec);
+        addRunStatItem(_ctx, ll, "Last pk:" + runstat.lastPk);
+        addRunStatItem(_ctx, ll, "start time:" + StringUtil.DateToString(runstat.run.start_time,"HH:mm:ss"));
+        addRunStatItem(_ctx, ll, "dist:" + String.format("%.2f", runstat.run.dist));
+        addRunStatItem(_ctx, ll, "file:" + runstat.run.getActivity_file_name());
 
         alert.setView(view);
         alert.show();
@@ -79,7 +81,7 @@ public class AlertDialogUtil {
         final TextView tv1 = new TextView(_ctx);
         tv1.setText(str);
         tv1.setTextColor(Color.GRAY);
-        int img = R.drawable.running_new;
+        int img = R.drawable.drawmarker20;
         Drawable img_drawable = _ctx.getResources().getDrawable(img);
         tv1.setCompoundDrawablesWithIntrinsicBounds(img_drawable, null, null, null);
         tv1.setTextSize(20);
