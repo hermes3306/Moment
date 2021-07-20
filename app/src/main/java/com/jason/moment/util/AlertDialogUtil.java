@@ -62,7 +62,9 @@ public class AlertDialogUtil {
 
         long countofallrun = MyRun.getInstance(_ctx).CountOfRun();
         long countofrunning = MyRun.getInstance(_ctx).CountOfRun(true);
+        long countofdays = MyLoc.getInstance(_ctx).CountOfDays();
 
+        addRunStatItem(_ctx, ll, "Days:" + countofdays);
         addRunStatItem(_ctx, ll, "Runs:" + countofallrun);
         addRunStatItem(_ctx, ll, "Running/Closed:" + countofrunning + "/" + (countofallrun - countofrunning));
         addRunStatItem(_ctx, ll, "# of loc:" + String.format("%3d", ma.list.size()));

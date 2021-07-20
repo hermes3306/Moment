@@ -377,6 +377,7 @@ public class Run4 extends Run implements
                         ArrayList<MyActivity2> l2 = MyRun.getInstance(_ctx).qry_from_last_pk(getCurrentRunId(), last_pk);
                         if(l2==null) return;
                         if(l2.size()==0) return;
+                        if(!paused) showGPS();
                         last_pk = MyRun.getInstance(_ctx).get_last_pk(getCurrentRunId());
                         for(int i=0;i<l2.size();i++) list.add(new MyActivity(l2.get(i)));
                     }

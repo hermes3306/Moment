@@ -309,4 +309,17 @@ public class MyLoc {
         return count;
     }
 
+    public long CountOfDays() {
+        long count = 0;
+        Cursor cursor = db.rawQuery(
+                "select count(distinct crdate) from myloc",
+                new String[]{});
+
+        if(cursor != null) {
+            cursor.moveToFirst();
+            count = cursor.getLong(0);
+        }
+        return count;
+    }
+
 }
