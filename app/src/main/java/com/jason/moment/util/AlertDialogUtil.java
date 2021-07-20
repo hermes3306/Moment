@@ -62,7 +62,7 @@ public class AlertDialogUtil {
         long countofrunning = MyRun.getInstance(_ctx).CountOfRun(true);
 
         addRunStatItem(_ctx, ll, "Runs:" + countofallrun);
-        addRunStatItem(_ctx, ll, "Running/Closed:" + countofrunning + "/" + (countofallrun - countofrunning));s
+        addRunStatItem(_ctx, ll, "Running/Closed:" + countofrunning + "/" + (countofallrun - countofrunning));
         addRunStatItem(_ctx, ll, "Cur:" + runstat.running_id);
         addRunStatItem(_ctx, ll, "use_db:" + runstat.run.get_use_db());
         addRunStatItem(_ctx, ll, "# of loc:" + String.format("%3d", runstat.list.size()));
