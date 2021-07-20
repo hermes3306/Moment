@@ -380,7 +380,7 @@ public class MapsActivity extends AppCompatActivity implements
 
     private Location last_location = null;
     private MyActivity last_activity = null;
-    private ArrayList<MyActivity> list = new ArrayList<>();
+    public ArrayList<MyActivity> list = new ArrayList<>();
     ImageButton imb_wifi_off;
     ImageButton imb_wifi_on;
 
@@ -523,6 +523,9 @@ public class MapsActivity extends AppCompatActivity implements
         ImageButton imbt_wifi_on = (ImageButton)findViewById(R.id.imbt_wifi_on);
 
         switch (view.getId()) {
+            case R.id.tv_activity_name:
+                AlertDialogUtil.getInstance().show_today_stat(_ctx, this);
+                break;
             case R.id.imbt_wifi_on:
                 C.satellite = false;
                 googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);

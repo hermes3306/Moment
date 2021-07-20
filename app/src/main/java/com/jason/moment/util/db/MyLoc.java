@@ -295,4 +295,18 @@ public class MyLoc {
         line.setPoints(l);
     }
 
+    public long CountOfTodayActivities() {
+        long count = 0;
+        String today = DateUtil.DateToString(new Date(), "yyyy/MM/dd");
+
+        Cursor cursor = db.rawQuery(
+                "select count(*) from myloc where crdate = ? ",
+                new String[]{today});
+        if(cursor != null) {
+            cursor.moveToFirst();
+            count = cursor.getLong(0);
+        }
+        return count;
+    }
+
 }

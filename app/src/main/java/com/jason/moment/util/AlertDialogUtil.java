@@ -21,6 +21,7 @@ import android.widget.VideoView;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.jason.moment.DetailMapsActivity;
+import com.jason.moment.MapsActivity;
 import com.jason.moment.MyReportActivity;
 import com.jason.moment.R;
 import com.jason.moment.StartRunActivity;
@@ -30,6 +31,7 @@ import com.jason.moment.activity.Run2;
 import com.jason.moment.activity.Run3;
 import com.jason.moment.activity.Run4;
 import com.jason.moment.util.db.MyActiviySummary;
+import com.jason.moment.util.db.MyLoc;
 import com.jason.moment.util.db.MyMedia;
 import com.jason.moment.util.db.MyRun;
 
@@ -49,6 +51,29 @@ public class AlertDialogUtil {
     }
 
     private static String last_memo = null;
+
+    public void show_today_stat(Context _ctx, MapsActivity ma) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
+        AlertDialog alert = builder.create();
+        LayoutInflater factory = LayoutInflater.from(_ctx);
+        final View view = factory.inflate(R.layout.layout_scroll_tablelayout, null);
+        LinearLayout ll = view.findViewById(R.id.linearLayout);
+        TextView view_title = view.findViewById(R.id.view_title);
+
+        long countofallrun = MyRun.getInstance(_ctx).CountOfRun();
+        long countofrunning = MyRun.getInstance(_ctx).CountOfRun(true);
+
+        addRunStatItem(_ctx, ll, "Runs:" + countofallrun);
+        addRunStatItem(_ctx, ll, "Running/Closed:" + countofrunning + "/" + (countofallrun - countofrunning));
+        addRunStatItem(_ctx, ll, "# of loc:" + String.format("%3d", ma.list.size()));
+        long numofrec = MyLoc.getInstance(_ctx).CountOfTodayActivities();
+        addRunStatItem(_ctx, ll, "# of Rec:" + numofrec);
+        if(ma.list!=null) {
+            if(ma.list.size()>0) addRunStatItem(_ctx, ll, "start time:" + ma.list.get(0).cr_time);
+        }
+        alert.setView(view);
+        alert.show();
+    }
 
     public void show_running_stat(Context _ctx, RunStat runstat) {
         AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
