@@ -305,11 +305,11 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
+
     @Override
     protected void onResume() {
         paused = false;
         Log.d(TAG,"-- onResume.");
-
         get_last_run_from_db();
 
         startService(gpsLoggerServiceIntent);
@@ -331,6 +331,8 @@ public class MapsActivity extends AppCompatActivity implements
         }
         MyActivityUtil.initialize();
         initializeMap();
+
+        this.getGpsLogger().set_use_broadcast(true);
         super.onResume();
     }
 
@@ -355,6 +357,8 @@ public class MapsActivity extends AppCompatActivity implements
     protected void onPause() {
         // 배터리 절약을 위해서 마지막 PK를 저장하고 Loc Change 메시지를 받지 않는다.
         last_pk = LocationUtil.getInstance().get_last_pk();
+        this.getGpsLogger().set_use_broadcast(false);
+
         if(receiver != null) {
             unregisterReceiver(receiver);
         }
@@ -947,7 +951,6 @@ public class MapsActivity extends AppCompatActivity implements
         }
         return null;
     }
-
 
     // Common Utilities
     public static String DateToString(Date date, String format) { // eg) format = "yyyy/MM/dd HH:mm:ss"
