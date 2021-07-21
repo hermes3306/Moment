@@ -236,6 +236,8 @@ public class MapsActivity extends AppCompatActivity implements
         gpsLoggerConnection = new GPSLoggerServiceConnection(this); // 서비스 바인딩
         bindService(gpsLoggerServiceIntent,gpsLoggerConnection, 0);
 
+        if(this.getGpsLogger()!=null) this.getGpsLogger().set_use_broadcast(true);
+
         list = MyLoc.getInstance(_ctx).getToodayActivities();
         Toast.makeText(_ctx, "# of Today's activities are " + list.size(), Toast.LENGTH_LONG).show();
 
@@ -312,11 +314,25 @@ public class MapsActivity extends AppCompatActivity implements
         Log.d(TAG,"-- onResume.");
         get_last_run_from_db();
 
-        startService(gpsLoggerServiceIntent);
-        if(gpsLoggerConnection==null)
-            gpsLoggerConnection = new GPSLoggerServiceConnection(this);
-        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
-        registerLocationChangedReceiver();
+//        startService(gpsLoggerServiceIntent);
+//        if(gpsLoggerConnection==null)
+//            gpsLoggerConnection = new GPSLoggerServiceConnection(this);
+//        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
+//        registerLocationChangedReceiver();
+//
+//
+
+        gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
+        String activity_file_name = DateUtil.today();
+        gpsLoggerServiceIntent.putExtra("activity_file_name", activity_file_name );
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(new Intent(MapsActivity.this, GPSLogger.class)); // 서비스 시작
+        } else {
+            startService(new Intent(MapsActivity.this, GPSLogger.class)); // 서비스 시작
+        }
+        gpsLoggerConnection = new GPSLoggerServiceConnection(this); // 서비스 바인딩
+        bindService(gpsLoggerServiceIntent,gpsLoggerConnection, 0);
+
 
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
@@ -332,7 +348,7 @@ public class MapsActivity extends AppCompatActivity implements
         MyActivityUtil.initialize();
         initializeMap();
 
-        this.getGpsLogger().set_use_broadcast(true);
+        if(this.getGpsLogger()!=null) this.getGpsLogger().set_use_broadcast(true);
         super.onResume();
     }
 

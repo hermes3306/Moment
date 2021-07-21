@@ -202,7 +202,7 @@ public class GPSLogger extends Service implements LocationListener {
         }
 
         // Unregister listener
-        lmgr.removeUpdates(this);
+        if(lmgr!=null) lmgr.removeUpdates(this);
         Log.e(TAG, "-- lmgr.removeUpdates!");
 
         // Unregister broadcast receiver
