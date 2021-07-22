@@ -44,6 +44,8 @@ public class StartupBatch {
             //ImportTodayActivity("Jason");
             //MyMedia.getInstance(_ctx).createNew();
             //MyRun.getInstance(_ctx).createNew();
+            //serializeAllDays();
+            //serializeAllRuns();
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             StringWriter sw = new StringWriter();
@@ -55,6 +57,32 @@ public class StartupBatch {
             Log.d(TAG,"-- Startup Batch End...");
         }
         return;
+    }
+
+    public void serializeAllDays() {
+        ArrayList<String> list = MyLoc.getInstance(_ctx).listOfDays();
+        for(int i=0;i<list.size();i++) {
+            String today = (String)list.get(i);
+            ArrayList<MyActivity> mal = MyLoc.getInstance(_ctx).getActivitiesByDay(today);
+
+            String filename = today.replace("/","") + ".csv";
+
+            MyActivityUtil.serialize(mal,filename);
+            Log.e(TAG,"-- Date("+ today+") was serialized into " + filename +"" );
+        }
+    }
+
+    public void serializeAllRuns() {
+        ArrayList<Long> list = MyRun.getInstance(_ctx).listOfRunIDs(false);
+        for(int i=0;i<list.size();i++) {
+            long run_id = (long)list.get(i);
+            ArrayList<MyActivity2> ma2l = MyRun.getInstance(_ctx).qry_by_runid(run_id);
+            ArrayList<MyActivity> mal = MyActivityUtil.conv(ma2l);
+
+            String filename = MyActivityUtil.getActivityFilename(run_id);
+            MyActivityUtil.serialize(mal,filename);
+            Log.e(TAG,"-- RunId("+ run_id+") was serialized into " + filename +"" );
+        }
     }
 
     public void uploadAll(Context _ctx) {

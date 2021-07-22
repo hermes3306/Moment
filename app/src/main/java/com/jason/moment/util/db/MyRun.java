@@ -63,6 +63,24 @@ public class MyRun {
         return count;
     }
 
+    public ArrayList<Long> listOfRunIDs(boolean is_running) {
+        long count = 0;
+        String status;
+        if(is_running) status= "1"; else status = "0";
+        Cursor cursor = db.rawQuery(
+                "select distinct run_id from myruninfo where run_id > ? and status = ? ",
+                new String[]{String.valueOf(0), status});
+
+        ArrayList<Long> runids = new ArrayList<>();
+        while(cursor.moveToNext()) {
+            Long l = cursor.getLong(0);
+            runids.add(l);
+        }
+        return runids;
+    }
+
+
+
     public void stopRunning(long run_id) {
         db.execSQL("update myruninfo set status = false where run_id =" +
                 String.format("%d", run_id));
@@ -216,6 +234,8 @@ public class MyRun {
         return qry1(selection, selectionArgs, order_by);
     }
 
+
+
     public ArrayList<MyActivity2> qry_today2() {
         String selection = "SUBSTR( " + MyRunContract.E.COL_DATE + ", 1,10)  == ?";
         String order_by = MyRunContract.E.COL_DATE + " ASC";
@@ -230,6 +250,8 @@ public class MyRun {
         String[] selectionArgs = { String.format("%d", current_run_id) };
         return qry1(selection, selectionArgs, order_by);
     }
+
+
 
     public ArrayList<MyActivity2> qry_from_last_pk(long current_run_id, long last_pk) {
         String selection = MyRunContract.E.COL_RUN + " = ? AND " +  MyRunContract.E._ID  + " > ? ";

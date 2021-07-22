@@ -492,7 +492,7 @@ public class MapsActivity extends AppCompatActivity implements
         if(list.size()==0) {
             try {
                 MyActivity ma = MyLoc.getInstance(_ctx).getLastActivity();
-                MapUtil.drawMarker(googleMap, "Last Activity", "" + ma.cr_date + " " + ma.cr_time, ma);
+                if(ma != null) MapUtil.drawMarker(googleMap, "Last Activity", "" + ma.cr_date + " " + ma.cr_time, ma);
             }catch(Exception e) {
                 StringWriter sw = new StringWriter();
                 e.printStackTrace(new PrintWriter(sw));

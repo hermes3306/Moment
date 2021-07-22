@@ -323,4 +323,26 @@ public class MyLoc {
         return count;
     }
 
+    public ArrayList<String> listOfDays() {
+        Cursor cursor = db.rawQuery(
+                "select distinct crdate from myloc",
+                new String[]{});
+
+        ArrayList<String> l = new ArrayList<String>();
+        while(cursor.moveToNext()) {
+            String d = cursor.getString(0);
+            l.add(d);
+        }
+        return l;
+    }
+
+    public ArrayList<MyActivity> getActivitiesByDay(String crdate) {
+        String selection = MyLocContract.LocEntry.COLUMN_NAME_CRDATE + " == ?";
+        String order_by = MyLocContract.LocEntry.COLUMN_NAME_CRTIME + " ASC";
+        String[] selectionArgs = { crdate };
+        return Path2Activity(selection, selectionArgs, order_by);
+    }
+
+
+
 }

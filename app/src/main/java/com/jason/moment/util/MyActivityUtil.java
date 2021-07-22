@@ -340,6 +340,18 @@ public class MyActivityUtil {
         }
     }
 
+
+
+    public static String getActivityFilename(Date d) {
+        String activity_file_name = StringUtil.DateToString(d, "yyyyMMdd_HHmmss") + ".csv";
+        return activity_file_name;
+    }
+
+    public static String getActivityFilename(long timestamp) {
+        Date d = new Date(timestamp);
+        return getActivityFilename(d);
+    }
+
     public static ArrayList<MyActivity> deserializeFromJason(String fileName) {
         return null;
     }
