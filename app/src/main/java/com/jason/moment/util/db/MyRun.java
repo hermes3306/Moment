@@ -163,7 +163,7 @@ public class MyRun {
                     cursor.getColumnIndexOrThrow(MyRunContract.E.COL_ALT));
             String dt = cursor.getString(
                     cursor.getColumnIndexOrThrow(MyRunContract.E.COL_DATE));
-            l.add(new MyActivity2(lat, lng, dt.substring(0,9), dt.substring(11)));
+            l.add(new MyActivity2(lat, lng, dt.substring(0,10), dt.substring(11)));
         }
         return l;
     }
