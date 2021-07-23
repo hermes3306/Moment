@@ -493,6 +493,9 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         final ImageView iv_main_picture = (ImageView) findViewById(R.id.iv_main_picture);
 
         switch (v.getId()) {
+            case R.id.name:
+                AlertDialogUtil.getInstance().show_activity_file_stat(_ctx,this);
+                break;
             case R.id.iv_main_picture:
             case R.id.imbt_picture_view:
                 v.setVisibility(View.GONE);

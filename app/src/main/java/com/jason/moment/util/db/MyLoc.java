@@ -310,6 +310,21 @@ public class MyLoc {
         return count;
     }
 
+    public long CountOfActivitiesByDay(Date date) {
+        long count = 0;
+        String today = DateUtil.DateToString(date, "yyyy/MM/dd");
+
+        Cursor cursor = db.rawQuery(
+                "select count(*) from myloc where crdate = ? ",
+                new String[]{today});
+        if(cursor != null) {
+            cursor.moveToFirst();
+            count = cursor.getLong(0);
+        }
+        return count;
+    }
+
+
     public long CountOfDays() {
         long count = 0;
         Cursor cursor = db.rawQuery(

@@ -251,8 +251,6 @@ public class MyRun {
         return qry1(selection, selectionArgs, order_by);
     }
 
-
-
     public ArrayList<MyActivity2> qry_from_last_pk(long current_run_id, long last_pk) {
         String selection = MyRunContract.E.COL_RUN + " = ? AND " +  MyRunContract.E._ID  + " > ? ";
         String order_by = MyRunContract.E._ID + " ASC";

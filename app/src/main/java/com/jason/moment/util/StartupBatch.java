@@ -44,8 +44,8 @@ public class StartupBatch {
             //ImportTodayActivity("Jason");
             //MyMedia.getInstance(_ctx).createNew();
             //MyRun.getInstance(_ctx).createNew();
-            //serializeAllDays();
-            //serializeAllRuns();
+//            serializeAllDays();
+//            serializeAllRuns();
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             StringWriter sw = new StringWriter();
@@ -64,9 +64,7 @@ public class StartupBatch {
         for(int i=0;i<list.size();i++) {
             String today = (String)list.get(i);
             ArrayList<MyActivity> mal = MyLoc.getInstance(_ctx).getActivitiesByDay(today);
-
             String filename = today.replace("/","") + ".csv";
-
             MyActivityUtil.serialize(mal,filename);
             Log.e(TAG,"-- Date("+ today+") was serialized into " + filename +"" );
         }

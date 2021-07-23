@@ -515,6 +515,7 @@ public class MyActivityUtil {
         if(_default_ext==Config._csv) folder = Config.CSV_SAVE_DIR;
         else folder = Config.MNT_SAVE_DIR;
 
+        if(!Config.MNT_SAVE_DIR.exists()) MNT_SAVE_DIR.mkdir();
         File[] files = folder.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {

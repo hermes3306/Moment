@@ -373,10 +373,16 @@ public class MapsActivity extends AppCompatActivity implements
     protected void onPause() {
         // 배터리 절약을 위해서 마지막 PK를 저장하고 Loc Change 메시지를 받지 않는다.
         last_pk = LocationUtil.getInstance().get_last_pk();
-        this.getGpsLogger().set_use_broadcast(false);
+        if(this.getGpsLogger()!=null) this.getGpsLogger().set_use_broadcast(false);
 
         if(receiver != null) {
-            unregisterReceiver(receiver);
+            try {
+                unregisterReceiver(receiver);
+            }catch(Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                Log.e(TAG, "-- " + sw);
+            }
         }
 
         if(already_quit) {

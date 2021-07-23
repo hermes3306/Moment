@@ -21,6 +21,7 @@ import android.widget.VideoView;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.jason.moment.DetailMapsActivity;
+import com.jason.moment.FileActivity;
 import com.jason.moment.MapsActivity;
 import com.jason.moment.MyReportActivity;
 import com.jason.moment.R;
@@ -51,6 +52,34 @@ public class AlertDialogUtil {
     }
 
     private static String last_memo = null;
+    public void show_activity_file_stat(Context _ctx, FileActivity ma) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
+        AlertDialog alert = builder.create();
+        LayoutInflater factory = LayoutInflater.from(_ctx);
+        final View view = factory.inflate(R.layout.layout_scroll_tablelayout, null);
+        LinearLayout ll = view.findViewById(R.id.linearLayout);
+        TextView view_title = view.findViewById(R.id.view_title);
+
+        long countofallrun = MyRun.getInstance(_ctx).CountOfRun();
+        long countofrunning = MyRun.getInstance(_ctx).CountOfRun(true);
+        long countofdays = MyLoc.getInstance(_ctx).CountOfDays();
+
+        addRunStatItem(_ctx, ll, "Days:" + countofdays);
+        addRunStatItem(_ctx, ll, "Runs:" + countofallrun);
+        addRunStatItem(_ctx, ll, "Running/Closed:" + countofrunning + "/" + (countofallrun - countofrunning));
+        addRunStatItem(_ctx, ll, "# of loc:" + String.format("%3d", ma.mActivityList.size()));
+
+        String d = ma.activity_filename.substring(0,7);
+        Date today = StringUtil.StringToDate(d,"yyyyMMdd");
+        long numofrec = MyLoc.getInstance(_ctx).CountOfActivitiesByDay(today);
+
+        addRunStatItem(_ctx, ll, "# of Rec:" + numofrec);
+        if(ma.mActivityList!=null) {
+            if(ma.mActivityList.size()>0) addRunStatItem(_ctx, ll, "start time:" + ma.mActivityList.get(0).cr_time);
+        }
+        alert.setView(view);
+        alert.show();
+    }
 
     public void show_today_stat(Context _ctx, MapsActivity ma) {
         AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
