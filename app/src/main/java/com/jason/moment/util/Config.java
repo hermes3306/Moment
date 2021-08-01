@@ -313,6 +313,11 @@ public class Config {
 
     static String last_interval=null;
     static String last_distance=null;
+
+    public static void restore_preference_values_after_battery(Context _ctx) {
+        restore_preference_values_after_running(_ctx);
+    }
+
     public static void restore_preference_values_after_running(Context _ctx) {
         if(last_interval==null || last_distance==null) return;
         if(sharedPreferences==null ) sharedPreferences =
@@ -344,7 +349,11 @@ public class Config {
     }
 
     public static void init_preference_value_running_default(Context _ctx) {
-        init_preference_values_running(_ctx, "1000","1"); // 1sec, 30 centimeter
+        init_preference_values_running(_ctx, "1000","1"); // 1sec, 100 centimeter
+    }
+
+    public static void init_preference_value_battery_default(Context _ctx) {
+        init_preference_values_running(_ctx, "60000","1"); // 1sec, 100 centimeter
     }
 
     public static void init_preference_values(Context _ctx) {

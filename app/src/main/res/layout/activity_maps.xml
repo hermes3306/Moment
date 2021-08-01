@@ -182,12 +182,29 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center|right"
+        android:gravity="center|left"
         android:layout_marginTop="220dp"
         android:orientation="horizontal"
         android:layout_marginRight="10dp">
 
+        <ImageButton
+            android:id="@+id/imbt_battery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:onClick="onClick"
+            android:alpha="0.5"
+            app:srcCompat="@drawable/battery48" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center|right"
+        android:layout_marginTop="220dp"
+        android:orientation="horizontal"
+        android:layout_marginRight="10dp">
 
         <ImageButton
             android:id="@+id/imbt_marker"

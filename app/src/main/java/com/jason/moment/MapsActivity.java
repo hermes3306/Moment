@@ -241,7 +241,6 @@ public class MapsActivity extends AppCompatActivity implements
         list = MyLoc.getInstance(_ctx).getToodayActivities();
         Toast.makeText(_ctx, "# of Today's activities are " + list.size(), Toast.LENGTH_LONG).show();
 
-
         // check last activity not saving...
         AlertDialogUtil.getInstance().checkActiveRunning(_ctx);
     }
@@ -538,6 +537,7 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     static boolean hide_arrow = true;
+    static boolean battery_toggle = false;
 
     @Override
     public void onClick(View view) {
@@ -549,6 +549,17 @@ public class MapsActivity extends AppCompatActivity implements
         ImageButton imbt_wifi_on = (ImageButton)findViewById(R.id.imbt_wifi_on);
 
         switch (view.getId()) {
+            case R.id.imbt_battery:
+                battery_toggle = !battery_toggle;
+                if(battery_toggle) {
+                    Config.init_preference_value_battery_default(_ctx);
+                    Toast.makeText(_ctx,"Battery saving mode ON!", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Config.restore_preference_values_after_battery(_ctx);
+                    Toast.makeText(_ctx,"Battery saving mode OFF!", Toast.LENGTH_LONG).show();
+                }
+                break;
             case R.id.tv_activity_name:
                 AlertDialogUtil.getInstance().show_today_stat(_ctx, this);
                 break;
