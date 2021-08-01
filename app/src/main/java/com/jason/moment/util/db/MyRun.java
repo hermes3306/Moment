@@ -10,6 +10,8 @@ import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.jason.moment.util.DateUtil;
 import com.jason.moment.util.MyActivity2;
+import com.jason.moment.util.MyRunInfo;
+import com.jason.moment.util.StringUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,7 +42,7 @@ public class MyRun {
         long count = 0;
         Cursor cursor = db.rawQuery(
                 "select count(run_id) from myruninfo where run_id > ? ",
-                new String[]{String.valueOf(0)});
+                new String[]{String.valueOf(-1)});
         if(cursor != null) {
             cursor.moveToFirst();
             count = cursor.getLong(0);
@@ -48,6 +50,29 @@ public class MyRun {
         return count;
     }
 
+    public void cleanNotFinishedRun()  {
+        db.execSQL("delete from myruninfo  where status =" +
+                String.format("%d", 1));
+        db.execSQL("delete from myRun where runid not in (select distinct run_id from myruninfo)");
+    }
+
+    public MyRunInfo notFinishedRun() {
+        MyRunInfo myruninfo = null;
+
+        Cursor cursor = db.rawQuery(
+                "select run_id, cr_date, status from myruninfo where status =  ? order by run_id desc ",
+                new String[]{String.valueOf(1)});
+        if(cursor != null) {
+            if(cursor.moveToFirst()) {
+                long run_id = cursor.getLong(0);
+                String cr_date = cursor.getString(1);
+                Date d = StringUtil.StringToDate(cr_date,"yyyy/MM/dd HH:mm:ss");
+                int status = (int)cursor.getInt(2);
+                myruninfo = new MyRunInfo(run_id, d, status);
+            }
+        }
+        return myruninfo;
+    }
 
     public long CountOfRun(boolean is_running) {
         long count = 0;
@@ -87,15 +112,16 @@ public class MyRun {
     }
 
     public long startRunning(long run_id) {
-        Date today = new Date();
+        Date today = new Date(run_id);
         SimpleDateFormat format1;
         format1 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         String dt = format1.format(today);
+
         db.execSQL("create table if not exists myruninfo (_id integer primary key, run_id long, cr_date string, status boolean)");
         ContentValues values = new ContentValues();
         values.put("run_id", run_id);
         values.put("status", true);
-        values.put("cr_date", new Date().toString());
+        values.put("cr_date", dt);
         long newRowId = db.insert("myruninfo", null, values);
         return newRowId;
     }

@@ -321,6 +321,33 @@ public class AlertDialogUtil {
         alert.show();
     }
 
+    public void checkActiveRun4(Context _ctx) {
+        MyRunInfo myRunInfo = MyRun.getInstance(_ctx).notFinishedRun();
+        if (myRunInfo!=null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(_ctx);
+            builder.setTitle("Do you wanna run with last run("+ myRunInfo.cr_date+")?");
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Log.e("--","-- Start Run4 Activity!");
+                    Intent _StartActivity = new Intent(_ctx, Run4.class);
+                    _ctx.startActivity(_StartActivity);
+                }
+            });
+
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    MyRun.getInstance(_ctx).cleanNotFinishedRun();
+                }
+            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+    }
+
+
     public void checkActiveRunning(Context _ctx, Class activity) {
         File lastRun = new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name);
 

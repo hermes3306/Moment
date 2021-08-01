@@ -24,8 +24,11 @@ public class StartupBatch {
     }
     static boolean _executed = false;
     static String TAG = "StartupBatch";
+
+
     public void execute() {
         try {
+            AlertDialogUtil.getInstance().checkActiveRun4(_ctx);
             //initDatabase(_ctx);
             //if(genCVSfiles()) Log.d(TAG, "-- Success");
             //if(genMNTfiles()) Log.d(TAG, "-- Success");
@@ -44,8 +47,8 @@ public class StartupBatch {
             //ImportTodayActivity("Jason");
             //MyMedia.getInstance(_ctx).createNew();
             //MyRun.getInstance(_ctx).createNew();
-//            serializeAllDays();
-//            serializeAllRuns();
+            //serializeAllDays();
+            //serializeAllRuns();
         }catch(Exception e) {
             Log.d(TAG,"-- Startup Batch Exception...");
             StringWriter sw = new StringWriter();

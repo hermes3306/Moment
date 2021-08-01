@@ -3,6 +3,7 @@ package com.jason.quote;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -15,7 +16,7 @@ import com.jason.quote.activity.run.Run1;
  * Implementation of App Widget functionality.
  * App Widget Configuration implemented in {@link NewAppWidgetConfigureActivity NewAppWidgetConfigureActivity}
  */
-public class NewAppWidget extends AppWidgetProvider implements View.OnClickListener {
+public class NewAppWidget extends AppWidgetProvider{
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
@@ -35,6 +36,15 @@ public class NewAppWidget extends AppWidgetProvider implements View.OnClickListe
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
+
+        Intent intent = new Intent(context, Run1.class);
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.new_app_widget);
+        PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, 0);
+
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.new_app_widget);
+        views.setOnClickPendingIntent(R.id.layout, pendingIntent);
+        appWidgetManager.updateAppWidget(appWidgetIds, views);
+
     }
 
     @Override
@@ -55,11 +65,4 @@ public class NewAppWidget extends AppWidgetProvider implements View.OnClickListe
         // Enter relevant functionality for when the last widget is disabled
     }
 
-    @Override
-    public void onClick(View v) {
-        switch(v.getId()) {
-            case R.id.appwidget_text:
-                break;
-        }
-    }
 }

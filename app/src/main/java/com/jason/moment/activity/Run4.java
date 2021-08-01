@@ -52,6 +52,7 @@ import com.jason.moment.util.MP3;
 import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivity2;
 import com.jason.moment.util.MyActivityUtil;
+import com.jason.moment.util.MyRunInfo;
 import com.jason.moment.util.RunStat;
 import com.jason.moment.util.StringUtil;
 import com.jason.moment.util.db.MyRun;
@@ -293,16 +294,22 @@ public class Run4 extends Run implements
         // MyRun 테이블을 사용할 경우 set_use_db(true)
         set_use_db(true);
         set_use_broadcast(false);
-        super.setCurrentRunId(new Date().getTime());
-
         // 달리기 모드일 경우, 1초, 1미터로 셋팅함
         Config.initialize(getApplicationContext());
-        start_time = new Date();
-
         Config.init_preference_value_running_default(getApplicationContext());
+
+        MyRunInfo myRunInfo = MyRun.getInstance(_ctx).notFinishedRun();
+        if(myRunInfo!=null) {
+            // 마치지 못한 러닝이 있는 경우, 다시 시작하도록 한다.
+            start_time = myRunInfo.cr_date;
+            super.setCurrentRunId(myRunInfo.run_id);
+            Toast.makeText(_ctx,"Restarting not saved run(" +  myRunInfo.run_id + ")", Toast.LENGTH_LONG).show();
+        }else {
+            start_time = new Date();
+            super.setCurrentRunId(start_time.getTime());
+        }
+
         gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
-
-
         gpsLoggerServiceIntent.putExtra(GPSLogger.RUN_ID, super.getCurrentRunId());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(new Intent(this, GPSLogger.class)); // 서비스 시작
