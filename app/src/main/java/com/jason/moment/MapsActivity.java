@@ -552,11 +552,11 @@ public class MapsActivity extends AppCompatActivity implements
             case R.id.imbt_battery:
                 battery_toggle = !battery_toggle;
                 if(battery_toggle) {
-                    Config.init_preference_value_battery_default(_ctx);
+                    C.init_preference_value_battery_default(this);
                     Toast.makeText(_ctx,"Battery saving mode ON!", Toast.LENGTH_LONG).show();
                 }
                 else {
-                    Config.restore_preference_values_after_battery(_ctx);
+                    C.restore_preference_values_after_battery(this);
                     Toast.makeText(_ctx,"Battery saving mode OFF!", Toast.LENGTH_LONG).show();
                 }
                 break;

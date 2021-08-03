@@ -338,6 +338,7 @@ public class Config {
 
         if(sharedPreferences==null ) sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(_ctx /* Activity context */);
+
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("interval",interval);
         editor.putString("distance",distance);

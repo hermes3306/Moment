@@ -1,9 +1,11 @@
 package com.jason.moment.util;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
@@ -66,6 +68,49 @@ public class C {
     public static String getRunnerName(Context _ctx) {
         if(sPref==null ) sPref = PreferenceManager.getDefaultSharedPreferences(_ctx);
         return sPref.getString("your_name", "Runner");
+    }
+
+    static String last_interval=null;
+    static String last_distance=null;
+
+    public static void restore_preference_values_after_battery(Activity _activity) {
+        restore_preference_values_after_running(_activity);
+    }
+
+    public static void restore_preference_values_after_running(Activity _activity) {
+        if(last_interval==null || last_distance==null) return;
+        SharedPreferences sharedPref = _activity.getPreferences(Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("interval",last_interval);
+        editor.putString("distance",last_distance);
+        editor.commit();
+        last_interval = last_distance = null;
+    }
+
+    public static void init_preference_values_running(Activity _activity, String interval, String distance) {
+        Log.d("C", "-- Config, init_preference_values_running");
+
+        last_interval = Config.getPreference(_activity.getApplicationContext(),"interval");
+        last_distance = Config.getPreference(_activity.getApplicationContext(),"distance");
+
+        SharedPreferences sharedPref = _activity.getPreferences(Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("interval",interval);
+        editor.putString("distance",distance);
+        editor.commit();
+
+        Config._loc_interval = Integer.parseInt(interval);
+        Config._loc_distance = Float.parseFloat(distance);
+    }
+
+    public static void init_preference_value_running_default(Activity _activity) {
+        init_preference_values_running(_activity, "1000","1"); // 1sec, 100 centimeter
+    }
+
+    public static void init_preference_value_battery_default(Activity _activity) {
+        init_preference_values_running(_activity, "60000","1"); // 1sec, 100 centimeter
     }
 
 
