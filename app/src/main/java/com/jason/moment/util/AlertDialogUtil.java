@@ -68,15 +68,6 @@ public class AlertDialogUtil {
         addRunStatItem(_ctx, ll, "Runs:" + countofallrun);
         addRunStatItem(_ctx, ll, "Running/Closed:" + countofrunning + "/" + (countofallrun - countofrunning));
         addRunStatItem(_ctx, ll, "# of loc:" + String.format("%3d", ma.mActivityList.size()));
-
-        String d = ma.activity_filename.substring(0,7);
-        Date today = StringUtil.StringToDate(d,"yyyyMMdd");
-        long numofrec = MyLoc.getInstance(_ctx).CountOfActivitiesByDay(today);
-
-        addRunStatItem(_ctx, ll, "# of Rec:" + numofrec);
-        if(ma.mActivityList!=null) {
-            if(ma.mActivityList.size()>0) addRunStatItem(_ctx, ll, "start time:" + ma.mActivityList.get(0).cr_time);
-        }
         alert.setView(view);
         alert.show();
     }

@@ -29,6 +29,7 @@ public class StartupBatch {
     public void execute() {
         try {
             AlertDialogUtil.getInstance().checkActiveRun4(_ctx);
+            //AlertDialogUtil.getInstance().checkActiveRunning(_ctx);
             //initDatabase(_ctx);
             //if(genCVSfiles()) Log.d(TAG, "-- Success");
             //if(genMNTfiles()) Log.d(TAG, "-- Success");

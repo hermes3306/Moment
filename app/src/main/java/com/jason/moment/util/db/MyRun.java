@@ -59,18 +59,25 @@ public class MyRun {
     public MyRunInfo notFinishedRun() {
         MyRunInfo myruninfo = null;
 
-        Cursor cursor = db.rawQuery(
-                "select run_id, cr_date, status from myruninfo where status =  ? order by run_id desc ",
-                new String[]{String.valueOf(1)});
-        if(cursor != null) {
-            if(cursor.moveToFirst()) {
-                long run_id = cursor.getLong(0);
-                String cr_date = cursor.getString(1);
-                Date d = StringUtil.StringToDate(cr_date,"yyyy/MM/dd HH:mm:ss");
-                int status = (int)cursor.getInt(2);
-                myruninfo = new MyRunInfo(run_id, d, status);
+        try {
+            Cursor cursor = db.rawQuery(
+                    "select run_id, cr_date, status from myruninfo where status =  ? order by run_id desc ",
+                    new String[]{String.valueOf(1)});
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    long run_id = cursor.getLong(0);
+                    String cr_date = cursor.getString(1);
+                    Date d = StringUtil.StringToDate(cr_date,"yyyy/MM/dd HH:mm:ss");
+                    int status = (int)cursor.getInt(2);
+                    myruninfo = new MyRunInfo(run_id, d, status);
+                }
             }
+
+        }catch(Exception e) {
+            e.printStackTrace();
+            Log.e(TAG,e.toString());
         }
+
         return myruninfo;
     }
 
