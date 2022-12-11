@@ -59,12 +59,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         googleMap.getUiSettings().setCompassEnabled(true);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
 
-        //-- 현재위치
-        // Add a marker in Sydney and move the camera
-        LatLng current_location = new LatLng(37.62648896058849, 127.09326422378007);
-        mMap.addMarker(new MarkerOptions().position(current_location).title("현재위치"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(current_location));
-        Log.d(TAG,"-- onMapReady(현재위치=학교).");
 
         // 초기데이터 로드
         SsingDatabase.generateTestData();
@@ -72,6 +66,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Display display = getWindowManager().getDefaultDisplay();
         ArrayList<Ssing> list = SsingDatabase.list;
         MapUtil.DRAW(_ctx, googleMap, display.getWidth(), display.getHeight(), list);
+
+
+        //-- 현재위치
+        // Add a marker in Sydney and move the camera
+        LatLng current_location = new LatLng(37.62648896058849, 127.09326422378007);
+        mMap.addMarker(new MarkerOptions().position(current_location).title("현재위치"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(current_location));
+        Log.d(TAG,"-- onMapReady(현재위치=학교).");
+        MapUtil.drawMarker(googleMap,"현재위치","가까운 모빌리티를 선택하세요",current_location, MapUtil.colors[0]);
 
 
 
