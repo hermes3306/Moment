@@ -63,8 +63,8 @@ public class Config {
     public static float _marker_start_color = BitmapDescriptorFactory.HUE_RED;
     public static float _marker_end_color = BitmapDescriptorFactory.HUE_GREEN;
     public static float _marker_color = BitmapDescriptorFactory.HUE_CYAN;
-    public static int _marker_icon = R.drawable.drawmarker24;
 
+    public static int _marker_icon = R.drawable.drawmarker24;
     public static float _marker_alpha = 0.9f;
 
     public static int _track_color          = Color.RED;
