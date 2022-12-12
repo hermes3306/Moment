@@ -49,15 +49,6 @@ public class MapUtil {
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
-    public static void drawMarker(GoogleMap gmap, String title, String snippet, LatLng ll, float color) {
-        Marker marker = gmap.addMarker(new MarkerOptions().position(ll).title(title)
-                .icon(BitmapDescriptorFactory.defaultMarker(color))
-                .draggable(true)
-                .visible(true)
-                .snippet(snippet));
-        markers.add(marker);
-    }
-
     public static void drawAllMarkers(GoogleMap gmap, ArrayList<Ssing> list) {
         for(int i=0; i < list.size(); i++) {
             LatLng ll = new LatLng(list.get(i).latitude, list.get(i).longitude);
