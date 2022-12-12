@@ -7,6 +7,7 @@ import com.jason.moment.util.db.*;
 
 public class MyLocDbHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
+    private Context context;
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "Moment.db";
     private static final String SQL_CREATE_ENTRIES =
@@ -25,10 +26,13 @@ public class MyLocDbHelper extends SQLiteOpenHelper {
 
     public MyLocDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
+    @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(SQL_CREATE_ENTRIES);
+        MyLoc.getInstance(this.context).createNew();
     }
+
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over

@@ -41,17 +41,37 @@ public class MyLoc {
         if(dbHelper == null) dbHelper = new MyLocDbHelper(ctx);
         if(db == null) db = dbHelper.getWritableDatabase();
         if(dbr == null) dbr = dbHelper.getReadableDatabase();
+        ensureTableExists();
     }
+
+    private void ensureTableExists() {
+        if (!isTableExists()) {
+            createNew();
+        }
+    }
+
+    private boolean isTableExists() {
+        Cursor cursor = dbr.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name=?", new String[]{"myloc"});
+        boolean exists = cursor != null && cursor.getCount() > 0;
+        if (cursor != null) {
+            cursor.close();
+        }
+        return exists;
+    }
+
 
     public void onCreate() {
         dbHelper.onCreate(db);
     }
 
     public void createNew() {
-        // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
-        // Gets the data repository in write mode
-        // SQLiteDatabase db = dbHelper.getWritableDatabase();
-        dbHelper.createNew(db);
+        String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + MyLocContract.LocEntry.TABLE_NAME + " (" +
+                MyLocContract.LocEntry._ID + " INTEGER PRIMARY KEY," +
+                MyLocContract.LocEntry.COLUMN_NAME_LATITUDE + " REAL," +
+                MyLocContract.LocEntry.COLUMN_NAME_LONGITUDE + " REAL," +
+                MyLocContract.LocEntry.COLUMN_NAME_CRDATE + " TEXT," +
+                MyLocContract.LocEntry.COLUMN_NAME_CRTIME + " TEXT)";
+        db.execSQL(CREATE_TABLE);
     }
 
     public void deleteAll() {
