@@ -1,2 +1,2 @@
-include ':app'
+include ':moment'
 rootProject.name = "Moment"
