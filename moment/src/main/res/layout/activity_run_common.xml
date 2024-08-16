@@ -55,6 +55,7 @@
             android:layout_marginLeft="35sp"
             android:gravity="center_horizontal|left"
             android:text="2021년5월10일 12:51 오전"
+            android:onClick="onClick"
             android:textColor="@color/Gray"
             android:textSize="16sp" />
 
@@ -147,6 +148,7 @@
                 android:textAlignment="center"
                 android:textColor="@color/Aqua"
                 android:textSize="70sp"
+                android:onClick="onClick"
                 android:textStyle="bold" />
 
             <TextView
@@ -158,6 +160,7 @@
                 android:textAlignment="center"
                 android:textColor="@color/Gray"
                 android:textSize="30dp"
+                android:onClick="onClick"
                 android:textStyle="bold" />
         </LinearLayout>
 

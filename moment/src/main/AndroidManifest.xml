@@ -102,7 +102,16 @@
         <activity
             android:name=".activity.Run4"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.AppCompat" />
+            android:theme="@style/Theme.AppCompat">
+            <!-- this is for Strava redirect -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="myapp" android:host="strava-auth" />
+            </intent-filter>
+
+        </activity>
 
         <activity
             android:name=".ConfigActivity"

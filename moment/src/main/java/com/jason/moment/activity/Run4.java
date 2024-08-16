@@ -1,5 +1,7 @@
 package com.jason.moment.activity;
 
+import static android.app.ProgressDialog.show;
+
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -108,6 +110,18 @@ public class Run4 extends Run implements
             case R.id.name:
                 AlertDialogUtil.getInstance().show_running_stat(_ctx, new RunStat(this, list, last_pk, getCurrentRunId()));
                 break;
+            case R.id.date_str:
+                Toast.makeText(this, "Date", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.tv_start_km:
+            case R.id.tv_start_km_str:
+                Toast.makeText(this, "KM", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.imbt_wifi_off:
+            case R.id.imbt_wifi_on:
+                Toast.makeText(this, "WIFI", Toast.LENGTH_SHORT).show();
+                break;
             case R.id.start_dash_ll_01:
             case R.id.start_dash_ll_02:
             case R.id.start_dash_ll_03:
@@ -135,8 +149,6 @@ public class Run4 extends Run implements
                 break;
             case R.id.imb_start_movie:
                 recordVideo();
-                break;
-            case R.id.tv_start_km:
                 break;
             case R.id.broadcastNewStart:
                 boardCastConfigChanged(1000, 1);
@@ -381,6 +393,12 @@ public class Run4 extends Run implements
         initialize_Mapview(savedInstanceState);
         activity_file_name = StringUtil.DateToString(new Date(), "yyyyMMdd_HHmmss");
 
+        // Strava Redirect Intent
+        Uri data = getIntent().getData();
+        if (data != null && data.toString().startsWith(StravaUploader.CUSTOM_SCHEME)) {
+            StravaUploader uploader = new StravaUploader(this);
+            uploader.handleAuthResponse(data);
+        }
         startMyTimer();
     }
 

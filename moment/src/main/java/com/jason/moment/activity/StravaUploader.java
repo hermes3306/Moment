@@ -1,10 +1,13 @@
 package com.jason.moment.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,7 +26,9 @@ public class StravaUploader {
     private static final String TAG = "StravaUploader";
     private static final String CLIENT_ID = "67174";
     private static final String CLIENT_SECRET = "e6b45fcea5836d356bb3c81908b5dbdaa363b1ed";
-    public static final String REDIRECT_URI = "http://localhost:8000";
+    public static final String CUSTOM_SCHEME = "myapp";
+    public static final String CUSTOM_HOST = "strava-auth";
+    private static final String REDIRECT_URI = CUSTOM_SCHEME + "://" + CUSTOM_HOST;
     private static final String SCOPE = "activity:write,activity:read_all";
     private static final String AUTH_URL = "https://www.strava.com/oauth/authorize?client_id=" + CLIENT_ID + "&redirect_uri=" + REDIRECT_URI + "&response_type=code&scope=" + SCOPE;
     private static final String TOKEN_URL = "https://www.strava.com/oauth/token";
@@ -47,8 +52,27 @@ public class StravaUploader {
     }
 
     private void initiateAuth() {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(AUTH_URL));
-        context.startActivity(intent);
+        if (context instanceof Activity) {
+            WebView webView = new WebView(context);
+            webView.getSettings().setJavaScriptEnabled(true);
+            webView.setWebViewClient(new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    if (url.startsWith(REDIRECT_URI)) {
+                        handleAuthResponse(Uri.parse(url));
+                        ((Activity) context).finish();
+                        return true;
+                    }
+                    return false;
+                }
+            });
+            webView.loadUrl(AUTH_URL);
+
+            ((Activity) context).setContentView(webView);
+        } else {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(AUTH_URL));
+            context.startActivity(intent);
+        }
     }
 
     public void handleAuthResponse(Uri responseUri) {
