@@ -87,11 +87,11 @@ public class AlertDialogUtil {
         addRunStatItem(_ctx, ll, "Days:" + countofdays);
         addRunStatItem(_ctx, ll, "Runs:" + countofallrun);
         addRunStatItem(_ctx, ll, "Running/Closed:" + countofrunning + "/" + (countofallrun - countofrunning));
-        addRunStatItem(_ctx, ll, "# of loc:" + String.format("%3d", ma.list.size()));
+        addRunStatItem(_ctx, ll, "# of loc:" + String.format("%3d", ma.getListSize()));
         long numofrec = MyLoc.getInstance(_ctx).CountOfTodayActivities();
         addRunStatItem(_ctx, ll, "# of Rec:" + numofrec);
-        if(ma.list!=null) {
-            if(ma.list.size()>0) addRunStatItem(_ctx, ll, "start time:" + ma.list.get(0).cr_time);
+        if(ma.getListSize() > 0) {
+            addRunStatItem(_ctx, ll, "start time:" + ma.getFirstActivityTime());
         }
         alert.setView(view);
         alert.show();

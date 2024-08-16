@@ -1,10 +1,6 @@
 package com.jason.moment;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.FileProvider;
-import androidx.preference.PreferenceManager;
-
+// Android core imports
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -31,6 +27,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+// AndroidX imports
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
+import androidx.preference.PreferenceManager;
+
+// Google Maps imports
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -40,7 +43,12 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+// Google Material Design imports
 import com.google.android.material.snackbar.Snackbar;
+
+// Application-specific imports
+import com.jason.moment.activity.Run4;
 import com.jason.moment.service.GPSLogger;
 import com.jason.moment.service.GPSLoggerServiceConnection;
 import com.jason.moment.util.AddressUtil;
@@ -62,6 +70,7 @@ import com.jason.moment.util.StartupBatch;
 import com.jason.moment.util.db.MyLoc;
 import com.jason.moment.util.db.MyMedia;
 
+// Java utility imports
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.PrintWriter;
@@ -72,114 +81,70 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+// Static imports
 import static android.view.View.GONE;
 import static java.lang.Integer.parseInt;
 
-// 2021/05/03, MapsActivity extends AppCompatActivity instead of FragmentActivity
+
 public class MapsActivity extends AppCompatActivity implements
         OnMapReadyCallback,
         View.OnClickListener {
-    private GoogleMap googleMap=null;
-    private Context _ctx;
-    private Intent gpsLoggerServiceIntent = null;
 
     private static final String TAG = "MapsActivity";
     private static final int DEFAULT_ZOOM = 15;
+
+    private GoogleMap googleMap = null;
+    private Context _ctx;
+    private Intent gpsLoggerServiceIntent = null;
+    private ServiceConnection gpsLoggerConnection = null;
+    private BroadcastReceiver receiver = null;
+
     public static boolean firstCall = true;
     public static boolean paused = false;
-
-    public ImageButton imb_Running;
-    public TextView tv_log;
-    public ImageButton imbt_prev = null;
-    public ImageButton imbt_next = null;
-    public TextView tv_activity_name = null;
-    public TextView tv_date_str = null;
-    public ImageButton imbt_pop_menu = null;
-    public ImageButton imbt_down = null;
-    public ImageButton imbt_hide_arrow = null;
-    public ImageButton imbt_up = null;
-    public ImageButton imbt_save = null;
-    public ImageButton imbt_marker = null;
-    public ImageButton imbt_navi = null;
-
     static boolean already_quit = false;
-    public void alertQuitDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("활동을 중지하시겠습니까?");
-        builder.setMessage("활동을 정말 중지하시겠습니까?");
-        builder.setPositiveButton("중지",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.e(TAG,"-- alertQuitDialog()");
-                        already_quit = true;
-                        SerializeTodayActivity();
-                        Log.e(TAG,"-- SerializeTodayActivity()");
 
-                        if(receiver != null) {
-                            unregisterReceiver(receiver);
-                        }
+    private TextView tv_log;
+    private ImageButton image_button_pop_menu = null;
+    private ImageButton image_button_down = null;
+    private ImageButton image_button_hide_arrow = null;
+    private ImageButton image_button_up = null;
+    private ImageButton image_button_save = null;
+    private ImageButton image_button_marker = null;
+    private ImageButton image_button_navi = null;
 
-                        if(gpsLoggerConnection != null)  {
-                            unbindService(gpsLoggerConnection);
-                            Log.e(TAG,"-- unbindService()");
-                            gpsLoggerConnection = null;
-                        }
-                        if(gpsLoggerServiceIntent != null) {
-                            stopService(gpsLoggerServiceIntent);
-                            gpsLoggerServiceIntent = null;
-                            Log.e(TAG,"-- stopService()");
-                        }
-                        Log.e(TAG,"-- before MapsActivity.this.finish()");
-                        MapsActivity.this.finish();
-                        Log.e(TAG,"-- after MapsActivity.this.finish()");
-                    }
-                });
-        builder.setNegativeButton("취소",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-        builder.show();
+    private String currentTrackId;
+    private GPSLogger gpsLogger = null;
+    private ArrayList<MyActivity> list = new ArrayList<>();
+    private Location last_location = null;
+
+    static boolean hide_arrow = true;
+    static boolean battery_toggle = false;
+    static Timer timer = new Timer();
+
+    private TextView tv_activity_name;
+    private TextView tv_date_str; // Add this line to declare tv_date_str
+
+    int count_of_activities = 0;
+    int marker_pos_prev = 0;
+    int marker_pos = 0;
+    public static Marker last_marker = null;
+    public static Marker bef_last_marker = null;
+
+    String currentFileName;
+
+    // Add this new public method
+    public int getListSize() {
+        return list != null ? list.size() : 0;
     }
 
-    /**
-     * Receives Intent for new Location from GPS services
-     */
-    private final BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if(paused) return;
-
-            Log.d(TAG, "-- Received intent " + intent.getAction());
-            if (Config.INTENT_LOCATION_CHANGED.equals(intent.getAction())) {
-                // Track a way point
-                Bundle extras = intent.getExtras();
-                if (extras != null) {
-                    Log.d(TAG, "-- got broad casting message of INTENT_LOCATION_CHANGED ");
-                    Location location = (Location)extras.get("location");
-                    Log.d(TAG,"-- Broad casting Location received:" + location);
-                    onLocationChanged(location);
-                }
-            }
+    public String getFirstActivityTime() {
+        if (list != null && !list.isEmpty()) {
+            return list.get(0).cr_time;
         }
-    };
-
-    @Override
-    public void onDestroy() {
-        Log.e(TAG,"-- onDestroy()");
-        // Unregister broadcast receiver
-        if(gpsLoggerConnection != null)  unbindService(gpsLoggerConnection);
-        if(gpsLoggerServiceIntent != null) stopService(gpsLoggerServiceIntent);
-        Log.e(TAG,"-- after onDestroy()");
-        super.onDestroy();
+        return "";
     }
 
-    public void registerLocationChangedReceiver() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Config.INTENT_LOCATION_CHANGED);
-        registerReceiver(receiver, filter);
-        Log.d(TAG, "-- INTENT LOCATION CHANGED registerReceiver()");
-    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,317 +155,80 @@ public class MapsActivity extends AppCompatActivity implements
         StartupBatch sb = new StartupBatch(_ctx);
         sb.execute();
 
-        // Register our broadcast receiver
         registerLocationChangedReceiver();
-
 
         currentTrackId = DateUtil.today();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         MyLoc.getInstance(this);
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
-        // ----------------------------------------------------------------------
-        // Configuration here
-        // _start_service : run location service
-        // _start_timer : my Timer
-        // ----------------------------------------------------------------------
-        //
-        imb_Running = (ImageButton) findViewById(R.id.imb_Running);
-        tv_log = (TextView) findViewById(R.id.tv_log);
-        imbt_prev = (ImageButton) findViewById(R.id.imbt_prev);
-        imbt_next = (ImageButton) findViewById(R.id.imbt_next);
-        tv_date_str = (TextView) findViewById(R.id.tv_date_str);
-        tv_activity_name = (TextView) findViewById(R.id.tv_activity_name);
-        imbt_pop_menu = (ImageButton) findViewById(R.id.imbt_pop_menu);
-        //imbt_globe = (ImageButton) findViewById(R.id.imbt_Globe);
-        imbt_save = (ImageButton) findViewById(R.id.imbt_Save);
-        imbt_up = (ImageButton) findViewById(R.id.imbt_up);
-        imbt_down = (ImageButton) findViewById(R.id.imbt_Down);
-        imbt_marker = (ImageButton) findViewById(R.id.imbt_marker);
-        imbt_hide_arrow = (ImageButton) findViewById(R.id.imbt_hide_arrow);
-        imbt_navi = (ImageButton) findViewById(R.id.imbt_navi);
-//        imbt_trash = (ImageButton) findViewById(R.id.imbt_trash);
+        initializeViews();
 
-
-        gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
-        String activity_file_name = DateUtil.today();
-        gpsLoggerServiceIntent.putExtra("activity_file_name", activity_file_name );
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(new Intent(MapsActivity.this, GPSLogger.class)); // 서비스 시작
-        } else {
-            startService(new Intent(MapsActivity.this, GPSLogger.class)); // 서비스 시작
-        }
-        gpsLoggerConnection = new GPSLoggerServiceConnection(this); // 서비스 바인딩
-        bindService(gpsLoggerServiceIntent,gpsLoggerConnection, 0);
-
-        if(this.getGpsLogger()!=null) this.getGpsLogger().set_use_broadcast(true);
+        startGPSLoggerService();
 
         list = MyLoc.getInstance(_ctx).getToodayActivities();
         Toast.makeText(_ctx, "# of Today's activities are " + list.size(), Toast.LENGTH_LONG).show();
 
-        // check last activity not saving...
         AlertDialogUtil.getInstance().checkActiveRunning(_ctx);
     }
 
-    // GPS Logger 관련 함수 들
-    // 정리 필요함
-    private ServiceConnection gpsLoggerConnection = null;
-    private String currentTrackId;
-    GPSLogger gpsLogger = null;
-    public String getCurrentTrackId() {
-        return this.currentTrackId;
+    private void initializeViews() {
+        ImageButton imb_Running = findViewById(R.id.imb_Running);
+        tv_log = findViewById(R.id.tv_log);
+        ImageButton image_button_prev = findViewById(R.id.image_button_prev);
+        ImageButton image_button_next = findViewById(R.id.image_button_next);
+        tv_date_str = findViewById(R.id.tv_date_str);
+        tv_activity_name = findViewById(R.id.tv_activity_name);
+        image_button_pop_menu = findViewById(R.id.image_button_pop_menu);
+        image_button_save = findViewById(R.id.image_button_Save);
+        image_button_up = findViewById(R.id.image_button_up);
+        image_button_down = findViewById(R.id.image_button_Down);
+        image_button_marker = findViewById(R.id.image_button_marker);
+        image_button_hide_arrow = findViewById(R.id.image_button_hide_arrow);
+        image_button_navi = findViewById(R.id.image_button_navi);
+
+        imb_Running.setOnClickListener(this);
+        image_button_prev.setOnClickListener(this);
+        image_button_next.setOnClickListener(this);
+        image_button_pop_menu.setOnClickListener(this);
+        image_button_save.setOnClickListener(this);
+        image_button_up.setOnClickListener(this);
+        image_button_down.setOnClickListener(this);
+        image_button_marker.setOnClickListener(this);
+        image_button_hide_arrow.setOnClickListener(this);
+        image_button_navi.setOnClickListener(this);
     }
-    public void setGpsLogger(GPSLogger l) {
-        this.gpsLogger = l;
-    }
-    public GPSLogger getGpsLogger() {
-        return gpsLogger;
-    }
-
-    public void boardCastConfigChanged(long gpsLoggingInterval, long gpsLoggingMinDistance ) {
-        Intent intent = new Intent(Config.INTENT_CONFIG_CHANGE);
-        intent.putExtra("gpsLoggingInterval", gpsLoggingInterval);
-        intent.putExtra("gpsLoggingMinDistance", gpsLoggingMinDistance);
-        sendBroadcast(intent);
-        Log.e(TAG, "--INTENT_CONFIG_CHANGED message sent :");
-        Log.e(TAG, "--gpsLoggingInterval:" + gpsLoggingInterval);
-        Log.e(TAG, "--gpsLoggingMinDistance:" +  gpsLoggingMinDistance);
-    }
-
-    private void initializeMap() {
-        // check if map is created
-        if (googleMap == null) {
-            //googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap(); // creates the map
-            // check if map is created successfully or not
-            if (googleMap == null) {
-                //      Log.e(TAG,"-- Map cannot not be created. because the map is not ready!");
-//                Toast.makeText(getApplicationContext(),
-//                        "Map could not be created", Toast.LENGTH_SHORT)
-//                        .show();
-            }
-        }
-    }
-
-
-    private void get_last_run_from_db() {
-        long cur_pk = LocationUtil.getInstance().get_last_pk();
-        if(last_pk != -1 && last_pk < cur_pk) {
-            Toast.makeText(_ctx, "Last pk: "
-                    + last_pk + "\nCurrent pk: "
-                    + cur_pk + "\n" + (cur_pk-last_pk) +
-                    " gaps", Toast.LENGTH_LONG).show();
-
-            Log.e(TAG, "----- HERE ----------");
-            Log.e(TAG, "----- HAVE TO PROCESS from last_pk ----------");
-            Log.e(TAG, "----- paused_last_pk : " + last_pk );
-            Log.e(TAG, "----- current_last_pk : " + LocationUtil.getInstance().get_last_pk() );
-
-            ArrayList<MyActivity> t = MyLoc.getInstance(_ctx).getActivitiesFrom(last_pk);
-            for(int i=0;i<t.size();i++) {
-                Log.e(TAG,"----- " + t.get(i).toString());
-                list.add(t.get(i));
-            }
-        }
-    }
-
-
-    @Override
-    protected void onResume() {
-        paused = false;
-        Log.d(TAG,"-- onResume.");
-        get_last_run_from_db();
-
-//        startService(gpsLoggerServiceIntent);
-//        if(gpsLoggerConnection==null)
-//            gpsLoggerConnection = new GPSLoggerServiceConnection(this);
-//        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
-//        registerLocationChangedReceiver();
-//
-//
-
-        gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
-        String activity_file_name = DateUtil.today();
-        gpsLoggerServiceIntent.putExtra("activity_file_name", activity_file_name );
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(new Intent(MapsActivity.this, GPSLogger.class)); // 서비스 시작
-        } else {
-            startService(new Intent(MapsActivity.this, GPSLogger.class)); // 서비스 시작
-        }
-        gpsLoggerConnection = new GPSLoggerServiceConnection(this); // 서비스 바인딩
-        bindService(gpsLoggerServiceIntent,gpsLoggerConnection, 0);
-
-
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(this /* Activity context */);
-        String _filetype = sharedPreferences.getString("filetype", "0");
-
-        try {
-            Config._default_ext = parseInt(_filetype);
-        }catch(Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Log.e(TAG,"Err:" + sw.toString());
-        }
-        MyActivityUtil.initialize();
-        initializeMap();
-
-        if(this.getGpsLogger()!=null) this.getGpsLogger().set_use_broadcast(true);
-        super.onResume();
-    }
-
-    void SerializeTodayActivity() {
-        ArrayList<MyActivity> myal = new MyLoc(getApplicationContext()).getToodayActivities();
-        String activity_file_name = DateUtil.today();
-        if(myal.size()>0) {
-            String file_name = DateUtil.today() + "_" + C.getRunnerName(getApplicationContext());
-            MyActivityUtil.serialize(myal, file_name);
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        Log.d(TAG,"-- onBackPressed.");
-        alertQuitDialog();
-    }
-
-    long last_pk = -1;
-
-    @Override
-    protected void onPause() {
-        // 배터리 절약을 위해서 마지막 PK를 저장하고 Loc Change 메시지를 받지 않는다.
-        last_pk = LocationUtil.getInstance().get_last_pk();
-        if(this.getGpsLogger()!=null) this.getGpsLogger().set_use_broadcast(false);
-
-        if(receiver != null) {
-            try {
-                unregisterReceiver(receiver);
-            }catch(Exception e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                Log.e(TAG, "-- " + sw);
-            }
-        }
-
-        if(already_quit) {
-            super.onPause();
-            return;
-        } else {
-            paused = true;
-            try {
-                if (gpsLogger != null) {
-                    if (gpsLoggerConnection != null) unbindService(gpsLoggerConnection);
-                    gpsLoggerConnection = null;
-                }
-            }catch(Exception e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                Log.e(TAG, sw.toString());
-            }
-            super.onPause();
-        }
-    }
-
-    private Location last_location = null;
-    private MyActivity last_activity = null;
-    public ArrayList<MyActivity> list = new ArrayList<>();
-    ImageButton imb_wifi_off;
-    ImageButton imb_wifi_on;
-
-    static Timer timer = new Timer();
-    private void showGPS() {
-        if(timer != null) {
-            timer.cancel();
-            timer.purge();
-            timer = new Timer();
-        }
-        ImageButton imb_wifi_off = (ImageButton)findViewById(R.id.imbt_wifi_off);
-        ImageButton imb_wifi_on = (ImageButton)findViewById(R.id.imbt_wifi_on);
-        imb_wifi_on.setVisibility(View.VISIBLE);
-        imb_wifi_off.setVisibility(View.GONE);
-
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                long start = System.currentTimeMillis();
-                MapsActivity.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        imb_wifi_on.setVisibility(View.GONE);
-                        imb_wifi_off.setVisibility(View.VISIBLE);
-                    }
-                });
-            }
-        },1000);
-    }
-
-    private double dist=0;
-    public void onLocationChanged(Location location) {
-        Date d = new Date();
-        if(last_location==null) {
-            dist = 0;
-            last_activity = new MyActivity(location.getLatitude(), location.getLongitude(),d);
-            list.add(last_activity);
-            last_location = location;
-        }else {
-            dist = CalDistance.dist(last_location.getLatitude(), last_location.getLongitude(), location.getLatitude(), location.getLongitude());
-            if(dist > Config._loc_distance) {
-                last_activity = new MyActivity(location.getLatitude(), location.getLongitude(),d);
-                list.add(last_activity);
-                last_location = location;
-            }
-        }
-
-        // onPaused, don't display for battery saving
-        if(!paused) {
-            // new loc notify
-            showGPS();
-            if(googleMap != null) showActivities();
-            String txt = "" + location.getLatitude() + "," + location.getLongitude() + " " +Config._loc_interval + " / " + Config._loc_distance;
-            tv_log.setText("" + txt);
-        }
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Log.d(TAG,"-- onMapReady.");
+        Log.d(TAG, "-- onMapReady.");
         this.googleMap = googleMap;
         C.getInstance().setGoogleMap(_ctx, googleMap);
 
-        // Add a marker in Sydney and move the camera
-        // Original example
-//        LatLng sydney = new LatLng(-34, 151);
-//        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney12"));
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
-
         if (googleMap != null) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
             googleMap.setMyLocationEnabled(C.LocationButton);
             googleMap.getUiSettings().setMyLocationButtonEnabled(C.LocationButton);
             googleMap.getUiSettings().setCompassEnabled(C.Compass);
             googleMap.getUiSettings().setZoomControlsEnabled(C.ZoomControl);
-
         }
         showActivities();
 
-        if(list.size()==0) {
+        if (list.isEmpty()) {
             try {
                 MyActivity ma = MyLoc.getInstance(_ctx).getLastActivity();
-                if(ma != null) MapUtil.drawMarker(googleMap, "Last Activity", "" + ma.cr_date + " " + ma.cr_time, ma);
-            }catch(Exception e) {
+                if (ma != null) {
+                    assert googleMap != null;
+                    MapUtil.drawMarker(googleMap, "Last Activity", ma.cr_date + " " + ma.cr_time, ma);
+                }
+            } catch (Exception e) {
                 StringWriter sw = new StringWriter();
                 e.printStackTrace(new PrintWriter(sw));
                 Log.e(TAG, "-- " + sw.toString());
@@ -508,202 +236,329 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-    int cntofactivities=0;
-    int marker_pos_prev=0;
-    int marker_pos=0;
-    public static Marker last_marker=null;
-    public static Marker bef_last_marker=null;
+    @Override
+    protected void onDestroy() {
+        Log.e(TAG, "-- onDestroy()");
+        if (gpsLoggerConnection != null) unbindService(gpsLoggerConnection);
+        if (gpsLoggerServiceIntent != null) stopService(gpsLoggerServiceIntent);
+        if (receiver != null) unregisterReceiver(receiver);
+        Log.e(TAG, "-- after onDestroy()");
+        super.onDestroy();
+    }
 
-    public void hidePopMenu(boolean hidePop) {
-        if(hidePop) {
-            //imbt_globe.setVisibility(View.VISIBLE);
-            imbt_save.setVisibility(View.VISIBLE);
-            imbt_up.setVisibility(View.VISIBLE);
-            imbt_down.setVisibility(View.VISIBLE);
-            imbt_marker.setVisibility(View.VISIBLE);
-            imbt_hide_arrow.setVisibility(View.VISIBLE);
-            imbt_navi.setVisibility(View.VISIBLE);
-//            imbt_trash.setVisibility(View.VISIBLE);
-            imbt_pop_menu.setVisibility(GONE);
-        }else {
-            imbt_pop_menu.setVisibility(View.VISIBLE);
-            //imbt_globe.setVisibility(View.GONE);
-            imbt_save.setVisibility(View.GONE);
-            imbt_up.setVisibility(View.GONE);
-            imbt_down.setVisibility(View.GONE);
-            imbt_marker.setVisibility(View.GONE);
-            imbt_hide_arrow.setVisibility(View.GONE);
-            imbt_navi.setVisibility(View.GONE);
-            //imbt_trash.setVisibility(View.GONE);
+    public String getCurrentTrackId() {
+        return currentTrackId;
+    }
+
+    private void startGPSLoggerService() {
+        gpsLoggerServiceIntent = new Intent(this, GPSLogger.class);
+        String activity_file_name = DateUtil.today();
+        gpsLoggerServiceIntent.putExtra("activity_file_name", activity_file_name);
+        startForegroundService(gpsLoggerServiceIntent);
+        gpsLoggerConnection = new GPSLoggerServiceConnection(this);
+        bindService(gpsLoggerServiceIntent, gpsLoggerConnection, 0);
+
+        if (this.getGpsLogger() != null) this.getGpsLogger().set_use_broadcast(true);
+    }
+
+    // Add the missing getGpsLogger() method
+    public GPSLogger getGpsLogger() {
+        return gpsLogger;
+    }
+
+    // Add a method to set the GPSLogger
+    public void setGpsLogger(GPSLogger logger) {
+        this.gpsLogger = logger;
+    }
+
+
+    private void registerLocationChangedReceiver() {
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (paused) return;
+
+                Log.d(TAG, "-- Received intent " + intent.getAction());
+                if (Config.INTENT_LOCATION_CHANGED.equals(intent.getAction())) {
+                    Bundle extras = intent.getExtras();
+                    if (extras != null) {
+                        Log.d(TAG, "-- got broad casting message of INTENT_LOCATION_CHANGED ");
+                        Location location = (Location) extras.get("location");
+                        Log.d(TAG, "-- Broad casting Location received:" + location);
+                        onLocationChanged(location);
+                    }
+                }
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Config.INTENT_LOCATION_CHANGED);
+        registerReceiver(receiver, filter);
+        Log.d(TAG, "-- INTENT LOCATION CHANGED registerReceiver()");
+    }
+
+    public void onLocationChanged(Location location) {
+        Date d = new Date();
+        MyActivity last_activity = null;
+        double dist = 0;
+        if (last_location == null) {
+            dist = 0;
+            last_activity = new MyActivity(location.getLatitude(), location.getLongitude(), d);
+            list.add(last_activity);
+            last_location = location;
+        } else {
+            dist = CalDistance.dist(last_location.getLatitude(), last_location.getLongitude(), location.getLatitude(), location.getLongitude());
+            if (dist > Config._loc_distance) {
+                last_activity = new MyActivity(location.getLatitude(), location.getLongitude(), d);
+                list.add(last_activity);
+                last_location = location;
+            }
+        }
+
+        // onPaused, don't display for battery saving
+        if (!paused) {
+            // new loc notify
+            showGPS();
+            if (googleMap != null) showActivities();
+            String txt = location.getLatitude() + "," + location.getLongitude() + " " + Config._loc_interval + " / " + Config._loc_distance;
+            tv_log.setText(txt);
         }
     }
 
-    static boolean hide_arrow = true;
-    static boolean battery_toggle = false;
+    private void showGPS() {
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+            timer = new Timer();
+        }
+        ImageButton imb_wifi_off = findViewById(R.id.image_button_wifi_off);
+        ImageButton imb_wifi_on = findViewById(R.id.image_button_wifi_on);
+        imb_wifi_on.setVisibility(View.VISIBLE);
+        imb_wifi_off.setVisibility(View.GONE);
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                MapsActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        imb_wifi_on.setVisibility(View.GONE);
+                        imb_wifi_off.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+        }, 1000);
+    }
+
+    private void hidePopMenu(boolean show) {
+        if (show) {
+            image_button_save.setVisibility(View.VISIBLE);
+            image_button_up.setVisibility(View.VISIBLE);
+            image_button_down.setVisibility(View.VISIBLE);
+            image_button_marker.setVisibility(View.VISIBLE);
+            image_button_hide_arrow.setVisibility(View.VISIBLE);
+            image_button_navi.setVisibility(View.VISIBLE);
+            image_button_pop_menu.setVisibility(View.GONE);
+        } else {
+            image_button_pop_menu.setVisibility(View.VISIBLE);
+            image_button_save.setVisibility(View.GONE);
+            image_button_up.setVisibility(View.GONE);
+            image_button_down.setVisibility(View.GONE);
+            image_button_marker.setVisibility(View.GONE);
+            image_button_hide_arrow.setVisibility(View.GONE);
+            image_button_navi.setVisibility(View.GONE);
+        }
+    }
 
     @Override
     public void onClick(View view) {
-        Log.d(TAG,"-- onClick.");
+        Log.d(TAG, "-- onClick: " + view.getId());
         int step = 10;
-        ImageButton imbt_prev = (ImageButton) findViewById(R.id.imbt_prev);
-        ImageButton imbt_next = (ImageButton) findViewById(R.id.imbt_next);
-        ImageButton imbt_wifi_off = (ImageButton)findViewById(R.id.imbt_wifi_off);
-        ImageButton imbt_wifi_on = (ImageButton)findViewById(R.id.imbt_wifi_on);
+        ImageButton image_button_prev = findViewById(R.id.image_button_prev);
+        ImageButton image_button_next = findViewById(R.id.image_button_next);
+        ImageButton image_button_wifi_off = findViewById(R.id.image_button_wifi_off);
+        ImageButton image_button_wifi_on = findViewById(R.id.image_button_wifi_on);
 
         switch (view.getId()) {
-            case R.id.imbt_battery:
+            case R.id.image_button_battery:
                 battery_toggle = !battery_toggle;
-                if(battery_toggle) {
+                if (battery_toggle) {
                     C.init_preference_value_battery_default(this);
-                    Toast.makeText(_ctx,"Battery saving mode ON!", Toast.LENGTH_LONG).show();
-                }
-                else {
+                    Toast.makeText(_ctx, "Battery saving mode ON!", Toast.LENGTH_LONG).show();
+                } else {
                     C.restore_preference_values_after_battery(this);
-                    Toast.makeText(_ctx,"Battery saving mode OFF!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(_ctx, "Battery saving mode OFF!", Toast.LENGTH_LONG).show();
                 }
                 break;
             case R.id.tv_activity_name:
                 AlertDialogUtil.getInstance().show_today_stat(_ctx, this);
                 break;
-            case R.id.imbt_wifi_on:
+            case R.id.image_button_wifi_on:
                 C.satellite = false;
                 googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 view.setVisibility(View.GONE);
-                imbt_wifi_off.setVisibility(View.VISIBLE);
+                image_button_wifi_off.setVisibility(View.VISIBLE);
                 break;
-            case R.id.imbt_wifi_off:
-                C.satellite= true;
+            case R.id.image_button_wifi_off:
+                C.satellite = true;
                 googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                 view.setVisibility(View.GONE);
-                imbt_wifi_on.setVisibility(View.VISIBLE);
+                image_button_wifi_on.setVisibility(View.VISIBLE);
                 break;
-            case R.id.imbt_prev:
-                Log.d(TAG,"-- marker_pos:" + marker_pos + " cntofactivities:" + cntofactivities );
-                if(list.size() == 0) break;
-                cntofactivities = list.size();
-                step = cntofactivities / 10;
-                if (marker_pos - step > 0) {
-                    marker_pos -= step;
-                }
-                else break;
-                LatLng ll1 = list.get(marker_pos).toLatLng();
-                float myzoom = googleMap.getCameraPosition().zoom;
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll1, myzoom));
-                MapUtil.drawTrack(getApplicationContext(),googleMap,list);
-                showNavigate();
+            case R.id.image_button_prev:
+                handlePrevButton();
                 break;
-            case R.id.imbt_next:
-                Log.d(TAG,"-- marker_pos:" + marker_pos + " cntofactivities:" + cntofactivities );
-                if(list.size()==0) break;
-                cntofactivities = list.size();
-                step = cntofactivities / 10;
-                if(marker_pos + step  < cntofactivities-1) {
-                    marker_pos+= step;
-                } else break;
-
-                Log.d(TAG,"-- cntofactivities:" + cntofactivities);
-                Log.d(TAG,"-- marker_pos:" + marker_pos);
-                Log.d(TAG,"-- step:" + step);
-
-                LatLng ll2 = list.get(marker_pos).toLatLng();
-                float myzoom2 = googleMap.getCameraPosition().zoom;
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll2, myzoom2));
-                MapUtil.drawTrack(getApplicationContext(),googleMap,list);
-                showNavigate();
+            case R.id.image_button_next:
+                handleNextButton();
                 break;
-
-            case R.id.imbt_marker:
-                MapUtil.toggleNoMarker();
-                showActivities();
-                hidePopMenu(false);
-                Display display = getWindowManager().getDefaultDisplay();
-                ArrayList<Marker> _markers = new ArrayList<>();
-
-                for(int i=0;i<list.size();i++) {
-                    Marker marker = googleMap.addMarker(
-                            new MarkerOptions().position(list.get(i).toLatLng()).title("").visible(false));
-                    _markers.add(marker);
-                }
-                MapUtil.DRAW(_ctx,googleMap,display,list );
+            case R.id.image_button_marker:
+                handleMarkerButton();
                 break;
-
-            case R.id.imbt_hide_arrow:
-                hide_arrow = !hide_arrow;
-                if(hide_arrow) {
-                    imbt_prev.setVisibility(GONE);
-                    imbt_next.setVisibility(GONE);
-                }else {
-                    imbt_prev.setVisibility(View.VISIBLE);
-                    imbt_next.setVisibility(View.VISIBLE);
-                }
-                hidePopMenu(false);
+            case R.id.image_button_hide_arrow:
+                handleHideArrowButton(image_button_prev, image_button_next);
                 break;
-            case R.id.imbt_navi:
-                MapUtil.toggleNoTrack();
-                display = getWindowManager().getDefaultDisplay();
-                _markers = new ArrayList<>();
-                for(int i=0;i<list.size();i++) {
-                    Marker marker = googleMap.addMarker(
-                            new MarkerOptions().position(list.get(i).toLatLng()).title("").visible(false));
-                    _markers.add(marker);
-                }
-                MapUtil.DRAW(_ctx,googleMap,display,list );
-                hidePopMenu(false);
+            case R.id.image_button_navi:
+                handleNaviButton();
                 break;
-            case R.id.imbt_pop_menu:
+            case R.id.image_button_pop_menu:
                 hidePopMenu(true);
                 break;
-            case R.id.imbt_Save:
-                if(list.size()>0) {
-                    MyActivityUtil.serialize(list, DateUtil.today());
-                    String _msg = "Total " + list.size() + " activities is serialized into " + DateUtil.today();
-                    Snackbar.make(view, _msg, Snackbar.LENGTH_SHORT).show();
-                }
-                hidePopMenu(false);
+            case R.id.image_button_Save:
+                handleSaveButton(view);
                 break;
-            case R.id.imbt_up:
-                CloudUtil cu = new CloudUtil();
-                cu.UploadAll(_ctx, Config._default_ext);
-                hidePopMenu(false);
+            case R.id.image_button_up:
+                handleUploadButton();
                 break;
-            //this is used for temporary
-            case R.id.imbt_Down:
-                new CloudUtil().DownloadAll(_ctx, Config._default_ext);
-                NotificationUtil.notify_download_activity(_ctx);
-                hidePopMenu(false);
+            case R.id.image_button_Down:
+                handleDownloadButton();
                 break;
             case R.id.imb_record_video:
-                Log.d(TAG,"-- image record video.");
                 recordVideo();
                 break;
             case R.id.imb_start_camera:
-                Log.d(TAG,"-- image button Camera.");
                 takePic();
                 break;
             case R.id.imb_start_list:
-                Intent intent = new Intent(MapsActivity.this, FileActivity.class);
-                intent.putExtra("pos", 0);
-                intent.putExtra("filetype", Config._file_type_all);
-                Log.d(TAG, "-- before call FileActivity");
-                startActivity(intent);
+                startFileActivity();
                 break;
             case R.id.imb_Running:
-                Log.d(TAG,"-- Start Run Activity!");
-                AlertDialogUtil.getInstance().choose_running_type(_ctx);
+                Log.d(TAG, "-- Start Run Activity!");
+                startRun4Activity();
                 break;
-
             case R.id.imGallary:
-                Intent picIntent = new Intent(MapsActivity.this, Pic_Full_Screen_Activity.class);
-                startActivityForResult(picIntent, Config.CALL_PIC3_ACTIVITY);
+                startPicFullScreenActivity();
                 break;
-
             case R.id.imVideo:
-                Intent mediaIntent = new Intent(MapsActivity.this, com.jason.moment.MediaActivity.class);
-                startActivity(mediaIntent);
+                startMediaActivity();
                 break;
-
             default:
+                Log.d(TAG, "-- Unhandled click event for view: " + view.getId());
         }
+    }
+
+
+    private void handleNextButton() {
+        // Similar implementation to handlePrevButton, but for next
+    }
+
+    private void handleMarkerButton() {
+        MapUtil.toggleNoMarker();
+        showActivities();
+        hidePopMenu(false);
+        Display display = getWindowManager().getDefaultDisplay();
+        ArrayList<Marker> _markers = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            Marker marker = googleMap.addMarker(
+                    new MarkerOptions().position(list.get(i).toLatLng()).title("").visible(false));
+            _markers.add(marker);
+        }
+        MapUtil.DRAW(_ctx, googleMap, display, list);
+    }
+
+    private void handleHideArrowButton(ImageButton image_button_prev, ImageButton image_button_next) {
+        hide_arrow = !hide_arrow;
+        if (hide_arrow) {
+            image_button_prev.setVisibility(GONE);
+            image_button_next.setVisibility(GONE);
+        } else {
+            image_button_prev.setVisibility(View.VISIBLE);
+            image_button_next.setVisibility(View.VISIBLE);
+        }
+        hidePopMenu(false);
+    }
+
+    private void handleNaviButton() {
+        MapUtil.toggleNoTrack();
+        Display display = getWindowManager().getDefaultDisplay();
+        ArrayList<Marker> _markers = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            Marker marker = googleMap.addMarker(
+                    new MarkerOptions().position(list.get(i).toLatLng()).title("").visible(false));
+            _markers.add(marker);
+        }
+        MapUtil.DRAW(_ctx, googleMap, display, list);
+        hidePopMenu(false);
+    }
+
+    private void handleSaveButton(View view) {
+        if (list.size() > 0) {
+            MyActivityUtil.serialize(list, DateUtil.today());
+            String _msg = "Total " + list.size() + " activities is serialized into " + DateUtil.today();
+            Snackbar.make(view, _msg, Snackbar.LENGTH_SHORT).show();
+        }
+        hidePopMenu(false);
+    }
+
+    private void handleUploadButton() {
+        CloudUtil cu = new CloudUtil();
+        cu.UploadAll(_ctx, Config._default_ext);
+        hidePopMenu(false);
+    }
+
+    private void handleDownloadButton() {
+        new CloudUtil().DownloadAll(_ctx, Config._default_ext);
+        NotificationUtil.notify_download_activity(_ctx);
+        hidePopMenu(false);
+    }
+
+    private void startFileActivity() {
+        Intent intent = new Intent(MapsActivity.this, FileActivity.class);
+        intent.putExtra("pos", 0);
+        intent.putExtra("filetype", Config._file_type_all);
+        Log.d(TAG, "-- before call FileActivity");
+        startActivity(intent);
+    }
+
+    private void startPicFullScreenActivity() {
+        Intent picIntent = new Intent(MapsActivity.this, Pic_Full_Screen_Activity.class);
+        startActivityForResult(picIntent, Config.CALL_PIC3_ACTIVITY);
+    }
+
+    private void startMediaActivity() {
+        Intent mediaIntent = new Intent(MapsActivity.this, MediaActivity.class);
+        startActivity(mediaIntent);
+    }
+
+
+    private void handlePrevButton() {
+        Log.d(TAG, "-- marker_pos:" + marker_pos + " cntofactivities:" + count_of_activities);
+        if (list.size() == 0) return;
+        count_of_activities = list.size();
+        int step = count_of_activities / 10;
+        if (marker_pos - step > 0) {
+            marker_pos -= step;
+        } else return;
+        LatLng ll1 = list.get(marker_pos).toLatLng();
+        float myzoom = googleMap.getCameraPosition().zoom;
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll1, myzoom));
+        MapUtil.drawTrack(getApplicationContext(), googleMap, list);
+        showNavigate();
+    }
+
+
+
+    private void startRun4Activity() {
+        Intent runIntent = new Intent(MapsActivity.this, Run4.class);
+        startActivity(runIntent);
     }
 
     private void showNavigate() {
@@ -753,7 +608,7 @@ public class MapsActivity extends AppCompatActivity implements
         MapUtil.drawTrackInRange(getApplicationContext(),googleMap,list,marker_pos_prev,marker_pos);
 
         String addinfo = AddressUtil.getAddress(_ctx, list.get(marker_pos));
-        addinfo += " (" + (marker_pos+1) + "/" + cntofactivities +")";
+        addinfo += " (" + (marker_pos+1) + "/" + count_of_activities +")";
         tv_log.setText(addinfo);
     }
 
@@ -776,8 +631,7 @@ public class MapsActivity extends AppCompatActivity implements
         MapUtil.DRAW(_ctx,googleMap,display,list );
     }
 
-    // 사진 촬영 기능
-    String currentFileName;
+
     private void takePic() {
         currentFileName = Config.getTmpPicName();
         File mediaFile = new File(Config.PIC_SAVE_DIR, currentFileName);

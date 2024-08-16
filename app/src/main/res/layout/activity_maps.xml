@@ -127,7 +127,7 @@
         android:gravity="center"
         android:orientation="horizontal">
         <ImageButton
-            android:id="@+id/imbt_prev"
+            android:id="@+id/image_button_prev"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -141,7 +141,7 @@
             android:layout_height="wrap_content"
             android:text=""/>
         <ImageButton
-            android:id="@+id/imbt_next"
+            android:id="@+id/image_button_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -159,7 +159,7 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/imbt_wifi_on"
+            android:id="@+id/image_button_wifi_on"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -169,7 +169,7 @@
             app:srcCompat="@drawable/wifi_on" />
 
         <ImageButton
-            android:id="@+id/imbt_wifi_off"
+            android:id="@+id/image_button_wifi_off"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -188,7 +188,7 @@
         android:layout_marginRight="10dp">
 
         <ImageButton
-            android:id="@+id/imbt_battery"
+            android:id="@+id/image_button_battery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -207,7 +207,7 @@
         android:layout_marginRight="10dp">
 
         <ImageButton
-            android:id="@+id/imbt_marker"
+            android:id="@+id/image_button_marker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -216,7 +216,7 @@
             app:srcCompat="@drawable/drawmarker32" />
 
         <ImageButton
-            android:id="@+id/imbt_navi"
+            android:id="@+id/image_button_navi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -225,7 +225,7 @@
             app:srcCompat="@drawable/arrow1" />
 
         <ImageButton
-            android:id="@+id/imbt_Globe"
+            android:id="@+id/image_button_Globe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
@@ -234,7 +234,7 @@
             app:srcCompat="@drawable/globe48" />
 
         <ImageButton
-            android:id="@+id/imbt_Save"
+            android:id="@+id/image_button_Save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
@@ -242,7 +242,7 @@
             android:onClick="onClick"
             app:srcCompat="@drawable/save32" />
         <ImageButton
-            android:id="@+id/imbt_Down"
+            android:id="@+id/image_button_Down"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
@@ -251,7 +251,7 @@
             app:srcCompat="@drawable/circlearrowdn32" />
 
         <ImageButton
-            android:id="@+id/imbt_up"
+            android:id="@+id/image_button_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
@@ -260,7 +260,7 @@
             app:srcCompat="@drawable/circlearrowup32" />
 
         <ImageButton
-            android:id="@+id/imbt_hide_arrow"
+            android:id="@+id/image_button_hide_arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -269,7 +269,7 @@
             app:srcCompat="@drawable/arrow_32_hide" />
 
         <ImageButton
-            android:id="@+id/imbt_pop_menu"
+            android:id="@+id/image_button_pop_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="visible"
