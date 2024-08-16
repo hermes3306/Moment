@@ -78,4 +78,7 @@ public class MyActivity implements Serializable {
         return date;
     }
 
+    public double getAltitude() {
+        return -1;
+    }
 }

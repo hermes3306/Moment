@@ -187,7 +187,7 @@ public class Run extends AppCompatActivity{
     }
 
 
-    private void get_last_run_from_db() {
+    public void get_last_run_from_db() {
         long cur_pk = LocationUtil.getInstance().get_last_pk();
         if(last_pk != -1 && last_pk < cur_pk) {
             Toast.makeText(_ctx, "Last pk: "

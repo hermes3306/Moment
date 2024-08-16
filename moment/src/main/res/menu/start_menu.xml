@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item
+        android:id="@+id/strava"
+        android:title="Strava" />
 
     <item
         android:id="@+id/show_running_stat"
@@ -18,7 +21,7 @@
         android:title="Broadcast a new run" />
     <item
         android:id="@+id/mp3Player"
-        android:title="MP3 Player" />9
+        android:title="MP3 Player" />
     <item
         android:id="@+id/stopMp3"
         android:title="Stop MP3 Player" />

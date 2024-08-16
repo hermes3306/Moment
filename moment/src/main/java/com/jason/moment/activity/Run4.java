@@ -45,15 +45,21 @@ import com.jason.moment.util.StringUtil;
 import com.jason.moment.util.db.MyRun;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
-
 
 public class Run4 extends Run implements
         OnMapReadyCallback,
         View.OnClickListener {
+
+    private StravaUploader stravaUploader;
 
     private void takePic() {
         currentMediaName = Config.getTmpPicName();
@@ -150,6 +156,64 @@ public class Run4 extends Run implements
         }
     }
 
+    private void uploadToStrava() {
+        // Generate GPX file from the activity data
+        File gpxFile = generateGpxFile();
+
+        if (gpxFile != null) {
+            String name = DateUtil.getActivityName(start_time);
+            String description = "Uploaded from my running app";
+            String activityType = "run"; // or "ride" for cycling, etc.
+
+            stravaUploader.authenticateAndUpload(gpxFile, name, description, activityType);
+        } else {
+            Toast.makeText(this, "Failed to generate GPX file", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public File generateGpxFile() {
+        get_last_run_from_db();
+        ArrayList<MyActivity> activities = list;
+        if (activities == null || activities.isEmpty()) {
+            Log.e(TAG, "No activities found for the last run");
+            return null;
+        }
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        File gpxFile = new File(getExternalFilesDir(null), "last_run.gpx");
+
+        try (FileWriter writer = new FileWriter(gpxFile)) {
+            writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+            writer.write("<gpx version=\"1.1\" creator=\"MyRunningApp\" xmlns=\"http://www.topografix.com/GPX/1/1\">\n");
+            writer.write("  <metadata>\n");
+            writer.write("    <name>My Last Run</name>\n");
+            writer.write("    <time>" + dateFormat.format(activities.get(0).toDate()) + "</time>\n");
+            writer.write("  </metadata>\n");
+            writer.write("  <trk>\n");
+            writer.write("    <name>My Running Track</name>\n");
+            writer.write("    <trkseg>\n");
+
+            for (MyActivity activity : activities) {
+                writer.write("      <trkpt lat=\"" + activity.getLatitude() + "\" lon=\"" + activity.getLongitude() + "\">\n");
+                writer.write("        <ele>" + activity.getAltitude() + "</ele>\n");
+                writer.write("        <time>" + dateFormat.format(activity.toDate()) + "</time>\n");
+                writer.write("      </trkpt>\n");
+            }
+
+            writer.write("    </trkseg>\n");
+            writer.write("  </trk>\n");
+            writer.write("</gpx>");
+
+            Log.d(TAG, "GPX file generated successfully: " + gpxFile.getAbsolutePath());
+            return gpxFile;
+        } catch (IOException e) {
+            Log.e(TAG, "Error generating GPX file", e);
+            return null;
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Resources r = getResources();
@@ -158,6 +222,10 @@ public class Run4 extends Run implements
 
         int id = item.getItemId();
         switch (id) {
+            case R.id.strava:
+                uploadToStrava();
+                Toast.makeText(_ctx,"Upload to Strava", Toast.LENGTH_LONG).show();
+                return true;
             case R.id.show_running_stat:
                 AlertDialogUtil.getInstance().show_running_stat(_ctx, new RunStat(this, list,last_pk, getCurrentRunId()));
                 return true;
@@ -278,6 +346,7 @@ public class Run4 extends Run implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this._ctx = this;
+        stravaUploader = new StravaUploader(this);
         // MyRun 테이블을 사용할 경우 set_use_db(true)
         set_use_db(true);
         set_use_broadcast(false);
