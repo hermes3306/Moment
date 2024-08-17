@@ -167,8 +167,14 @@ public class StravaUploader {
                     handleClientRequest(clientSocket);
                 }
             } catch (IOException e) {
-                Log.e(TAG, "Error starting local server: " + e.getMessage());
-                showToast("Failed to start local server: " + e.getMessage());
+                if(stopLocalServer_called) {
+                    Log.e(TAG, "Stop local serve called: " + e.getMessage());
+                    showToast("Stop local serve called: " + e.getMessage());
+                    stopLocalServer_called = false;
+                }else {
+                    Log.e(TAG, "Error starting local server: " + e.getMessage());
+                    showToast("Failed to start local server: " + e.getMessage());
+                }
             }
         });
     }
@@ -203,10 +209,12 @@ public class StravaUploader {
         }
     }
 
+    boolean stopLocalServer_called = false;
     private void stopLocalServer() {
         isServerRunning = false;
         if (serverSocket != null && !serverSocket.isClosed()) {
             try {
+                stopLocalServer_called = true;
                 serverSocket.close();
             } catch (IOException e) {
                 Log.e(TAG, "Error closing server socket: " + e.getMessage());
