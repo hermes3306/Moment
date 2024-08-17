@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".FileActivity">
 
+
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
@@ -422,29 +423,6 @@
                 android:text="-"
                 android:textColor="@color/Gray"
                 android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/tv_strava_logo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/strava48"
-                android:gravity="center_horizontal|left"
-                android:onClick="onClick"
-                android:text="Upload to Strava"
-                android:textColor="@color/Black"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/tv_strava"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="35sp"
-                android:gravity="center_horizontal|left"
-                android:onClick="onClick"
-                android:text="Strava에 활동을 업로드하세요."
-                android:textColor="@color/Gray"
-                android:textSize="16sp" />
-
         </LinearLayout>
     </ScrollView>
 
