@@ -281,7 +281,8 @@ public class MapsActivity extends AppCompatActivity implements
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(Config.INTENT_LOCATION_CHANGED);
-        registerReceiver(receiver, filter);
+        registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
+
         Log.d(TAG, "-- INTENT LOCATION CHANGED registerReceiver()");
     }
 

@@ -39,28 +39,23 @@ import java.util.Date;
 
 public class GPSLogger extends Service implements LocationListener {
     private static final String TAG = GPSLogger.class.getSimpleName();
-    LocationListener _myLocationListener = null;
-    Context _ctx = null;
-
+    private LocationManager lmgr;
+    private Context _ctx;
     private boolean isTracking = true;
     private boolean isGpsEnabled = false;
     private boolean use_db = false;
     private boolean use_broadcast = false;
     private static final int NOTIFICATION_ID = 1;
     private static final String CHANNEL_ID = "Moment_Channel";
-
-    private static Location lastLocation=null;
-    private LocationManager lmgr;
-
+    private static Location lastLocation = null;
     private long lastGPSTimestamp = 0;
     private long lastSAVETimestamp = 0;
-
     private long gpsLoggingInterval;
     private long gpsLoggingMinDistance;
-
-
     public static final String RUN_ID = "run_id";
     private long currentRunId = -1;
+    private boolean isRunning = false;
+
     public void setCurrentRunId(long run_id) {
         currentRunId = run_id;
     }
@@ -68,72 +63,46 @@ public class GPSLogger extends Service implements LocationListener {
     public void set_use_db(boolean b) {
         use_db = b;
     }
-    public void set_use_broadcast(boolean b) {use_broadcast = b; }
+
+    public void set_use_broadcast(boolean b) {
+        use_broadcast = b;
+    }
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
-
         @Override
         public void onReceive(Context context, Intent intent) {
-            Bundle extras;
-            extras = intent.getExtras();
+            Bundle extras = intent.getExtras();
 
-            if (Config.INTENT_START_TRACKING.equals(intent.getAction()) ) {
+            if (Config.INTENT_START_TRACKING.equals(intent.getAction())) {
                 startTracking();
-
-            } else if (Config.INTENT_STOP_TRACKING.equals(intent.getAction()) ) {
+            } else if (Config.INTENT_STOP_TRACKING.equals(intent.getAction())) {
                 stopTrackingAndSave();
-
-            } else if (Config.INTENT_START_RUNNING.equals(intent.getAction()) ) {
+            } else if (Config.INTENT_START_RUNNING.equals(intent.getAction())) {
                 if (extras != null) {
                     currentRunId = extras.getLong("currentRunId");
                     startRunning(currentRunId);
                 }
-
-            } else if (Config.INTENT_STOP_RUNNING.equals(intent.getAction()) ) {
+            } else if (Config.INTENT_STOP_RUNNING.equals(intent.getAction())) {
                 if (extras != null) {
                     currentRunId = extras.getLong("currentRunId");
                     stopRunning();
                 }
-
-            } else if (Config.INTENT_START_BROADCAST.equals(intent.getAction()) ) {
+            } else if (Config.INTENT_START_BROADCAST.equals(intent.getAction())) {
                 startBroadcast();
-
-            } else if (Config.INTENT_STOP_BROADCAST.equals(intent.getAction()) ) {
+            } else if (Config.INTENT_STOP_BROADCAST.equals(intent.getAction())) {
                 stopBroadcast();
-
-            } else if (Config.INTENT_CONFIG_CHANGE.equals(intent.getAction()) ) {
+            } else if (Config.INTENT_CONFIG_CHANGE.equals(intent.getAction())) {
                 Config.initialize(getApplicationContext());
-                gpsLoggingInterval = intent.getLongExtra("gpsLoggingInterval",Config._loc_interval);
-                gpsLoggingMinDistance = intent.getLongExtra("gpsLoggingMinDistance", (long)Config._loc_distance);
-                if (ContextCompat.checkSelfPermission(_ctx, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    lmgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                    lmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, gpsLoggingInterval, gpsLoggingMinDistance, _myLocationListener);
+                gpsLoggingInterval = intent.getLongExtra("gpsLoggingInterval", Config._loc_interval);
+                gpsLoggingMinDistance = intent.getLongExtra("gpsLoggingMinDistance", (long) Config._loc_distance);
+                if (checkLocationPermission()) {
+                    lmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, gpsLoggingInterval, gpsLoggingMinDistance, GPSLogger.this);
                 }
             }
-
         }
     };
 
     private final IBinder binder = new GPSLoggerBinder();
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        Log.v(TAG, "Service onBind()");
-        return binder;
-    }
-
-    @Override
-    public boolean onUnbind(Intent intent) {
-        Log.v(TAG, "Service onUnbind()");
-        // If we aren't currently tracking we can
-        // stop ourselves
-        if (! isTracking ) {
-            Log.v(TAG, "Service self-stopping");
-            stopSelf();
-        }
-        // We don't want onRebind() to be called, so return false.
-        return false;
-    }
 
     public class GPSLoggerBinder extends Binder {
         public GPSLogger getService() {
@@ -145,20 +114,14 @@ public class GPSLogger extends Service implements LocationListener {
     public void onCreate() {
         Log.d(TAG, "-- GpsLogger Service onCreate()");
         _ctx = getApplicationContext();
-        _myLocationListener = this;
 
-        Log.d(TAG, "-- Config information read done!");
-        Log.d(TAG, "-- gpsLoggingInterval: " + gpsLoggingInterval);
-        Log.d(TAG, "-- gpsLoggingMinDistance: " + gpsLoggingMinDistance);
-
-        // Register our broadcast receiver
         IntentFilter filter = new IntentFilter();
         filter.addAction(Config.INTENT_START_TRACKING);
         filter.addAction(Config.INTENT_STOP_TRACKING);
         filter.addAction(Config.INTENT_START_RUNNING);
         filter.addAction(Config.INTENT_STOP_RUNNING);
         filter.addAction(Config.INTENT_CONFIG_CHANGE);
-        registerReceiver(receiver, filter);
+        registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
         Log.d(TAG, "-- registerReceiver done!");
 
         super.onCreate();
@@ -166,55 +129,69 @@ public class GPSLogger extends Service implements LocationListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // 다른 Activity가 Pause하여 UnBind후 다시 StartService하면 실행됨.
-        Log.d(TAG, "-- GpsLogger Service onStartCommand(-,"+flags+","+startId+")");
+        Log.d(TAG, "-- GpsLogger Service onStartCommand(-," + flags + "," + startId + ")");
         createNotificationChannel();
-        Log.d(TAG, "-- createNotificationChannel!");
         startForeground(NOTIFICATION_ID, getNotification());
 
-        // Register ourselves for location updates
         Config.initialize(getApplicationContext());
         gpsLoggingInterval = Config._loc_interval;
-        gpsLoggingMinDistance = (long)Config._loc_distance;
+        gpsLoggingMinDistance = (long) Config._loc_distance;
 
         lmgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Log.d(TAG, "-- LocationManager!");
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            lmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, gpsLoggingInterval, gpsLoggingMinDistance, this);
+        if (checkLocationPermission()) {
+            startLocationUpdates();
+        } else {
+            Log.e(TAG, "Location permission not granted. Unable to start location updates.");
         }
-        Log.d(TAG, "-- lmgr.requestLocationUpdates called with interval and distance!");
 
-        return Service.START_STICKY;
+        return START_STICKY;
     }
 
     @Override
-    public void onLowMemory() {
-        Log.e(TAG,"Android is low on memory!");
-        super.onLowMemory();
+    public IBinder onBind(Intent intent) {
+        Log.v(TAG, "Service onBind()");
+        return binder;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.v(TAG, "Service onUnbind()");
+        if (!isTracking) {
+            Log.v(TAG, "Service self-stopping");
+            stopSelf();
+        }
+        return false;
     }
 
     @Override
     public void onDestroy() {
         Log.e(TAG, "-- GpsLogger Service onDestroy()");
         if (isTracking) {
-            // If we're currently tracking, save user data.
             stopTrackingAndSave();
             Log.e(TAG, "-- stopTrackingAndSave called!");
         }
 
-        // Unregister listener
-        if(lmgr!=null) lmgr.removeUpdates(this);
+        if (lmgr != null) lmgr.removeUpdates(this);
         Log.e(TAG, "-- lmgr.removeUpdates!");
 
-        // Unregister broadcast receiver
         unregisterReceiver(receiver);
         Log.e(TAG, "-- receiver removed!");
 
-        // Cancel any existing notification
         stopNotifyBackgroundService();
         Log.e(TAG, "-- stopNotifyBackgroundService!");
         super.onDestroy();
+    }
+
+    private boolean checkLocationPermission() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void startLocationUpdates() {
+        if (checkLocationPermission()) {
+            lmgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, gpsLoggingInterval, gpsLoggingMinDistance, this);
+            Log.d(TAG, "Location updates started");
+        }
     }
 
     private void startTracking() {
@@ -226,8 +203,6 @@ public class GPSLogger extends Service implements LocationListener {
         this.stopSelf();
     }
 
-    boolean isRunning = false;
-
     private void startBroadcast() {
         use_broadcast = true;
     }
@@ -238,9 +213,8 @@ public class GPSLogger extends Service implements LocationListener {
 
     private void startRunning(long currentRunId) {
         this.currentRunId = currentRunId;
-        isRunning= true;
+        isRunning = true;
         MyRun.getInstance(_ctx).startRunning(currentRunId);
-
     }
 
     private void stopRunning() {
@@ -250,7 +224,6 @@ public class GPSLogger extends Service implements LocationListener {
     }
 
     private void recordRunning(Location loc) {
-
         MyRun.getInstance(_ctx).ins(currentRunId,
                 loc.getLatitude(),
                 loc.getLongitude(),
@@ -265,42 +238,42 @@ public class GPSLogger extends Service implements LocationListener {
     public void onLocationChanged(Location location) {
         isGpsEnabled = true;
 
-        // first of all we check if the time from the last used fix to the current fix is greater than the logging interval
-        if((lastGPSTimestamp + gpsLoggingInterval) < System.currentTimeMillis()){
-            lastGPSTimestamp = System.currentTimeMillis(); // save the time of this fix
+        if ((lastGPSTimestamp + gpsLoggingInterval) < System.currentTimeMillis()) {
+            lastGPSTimestamp = System.currentTimeMillis();
 
-            LocationUtil.getInstance().onLocationChanged(getApplicationContext(),location);
+            LocationUtil.getInstance().onLocationChanged(getApplicationContext(), location);
 
-            if(use_broadcast) { // if there is listener than broadcast
+            if (use_broadcast) {
                 Intent intent = new Intent(Config.INTENT_LOCATION_CHANGED);
                 intent.putExtra("location", location);
                 sendBroadcast(intent);
             }
 
-            if(isRunning & use_db) {
-                if(lastLocation!= null) {
-                    double dist = CalDistance.getInstance().calculateDistance(lastLocation,location);
-                    if(dist < Config._loc_distance) return;
-                    else recordRunning(location);
+            if (isRunning && use_db) {
+                if (lastLocation != null) {
+                    double dist = CalDistance.getInstance().calculateDistance(lastLocation, location);
+                    if (dist >= Config._loc_distance) {
+                        recordRunning(location);
+                    }
+                } else {
+                    recordRunning(location);
                 }
-                else recordRunning(location);
             }
             lastLocation = location;
-        } else return;
 
-        // 한시간 마다 한번씩 DBMS 내용을 파일로 저장함
-        Date d = new Date();
-        if(lastSAVETimestamp==0) {
-            lastSAVETimestamp = d.getTime();
-        } else {
-            if( (d.getTime() - lastSAVETimestamp) > Config._ONE_HOUR) {
-                saveTodayActivities();
+            Date d = new Date();
+            if (lastSAVETimestamp == 0) {
                 lastSAVETimestamp = d.getTime();
+            } else {
+                if ((d.getTime() - lastSAVETimestamp) > Config._ONE_HOUR) {
+                    saveTodayActivities();
+                    lastSAVETimestamp = d.getTime();
+                }
             }
         }
     }
 
-    private String getActivity_file_name () {
+    private String getActivity_file_name() {
         return DateUtil.today() + "_" + C.getRunnerName(getApplicationContext());
     }
 
@@ -310,33 +283,28 @@ public class GPSLogger extends Service implements LocationListener {
         CloudUtil.getInstance().Upload(file_name + Config._csv_ext);
     }
 
-    /**
-     * Builds the notification to display when tracking in background.
-     */
     private Notification getNotification() {
         Intent myReportIntent = new Intent(this, MyReportActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, myReportIntent, PendingIntent.FLAG_IMMUTABLE);
+
         myReportIntent.putExtra("activity_file_name", getActivity_file_name());
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, myReportIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications_black_24dp)
                 .setContentTitle("Moment")
-                .setContentText("New Activity("+DateUtil.getActivityName(new Date())+")")
+                .setContentText("New Activity(" + DateUtil.getActivityName(new Date()) + ")")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentIntent(contentIntent)
+                .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
         return mBuilder.build();
     }
 
     private void createNotificationChannel() {
-           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // FIXME: following two strings must be obtained from 'R.string' to support translations
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Moment";
-            String description = "New Activity("+DateUtil.getActivityName(new Date())+")";
+            String description = "New Activity(" + DateUtil.getActivityName(new Date()) + ")";
             int importance = NotificationManager.IMPORTANCE_LOW;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
             NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(channel);
         }
