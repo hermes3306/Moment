@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -43,15 +42,12 @@ import com.jason.moment.util.StringUtil;
 import com.jason.moment.util.db.MyActiviySummary;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import com.jason.moment.util.StravaUploader;
-
 
 public class FileActivity extends AppCompatActivity implements View.OnClickListener{
     public static String TAG = "FileActivity";
@@ -59,7 +55,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     GoogleMap _googleMap;
     ArrayList<String> media_list = null;
     ArrayList<String> pic_list = null;
-    private StravaUploader stravaUploader;
+    StravaUploader stravaUploader = null;
 
     public String activity_filename = null;
 
@@ -76,6 +72,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     public float myzoom = 16f;
     public static Marker last_marker=null;
     public static Marker bef_last_marker=null;
+    static ActivityStat activityStat = null;
 
     public static final int REQUEST_ACTIVITY_FILE_LIST = 0x0001;
     File[] _file_list = null;
@@ -88,13 +85,8 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         PermissionUtil.getInstance().setPermission(this);
         super.onCreate(savedInstanceState);
         _ctx = this;
-        try {
-            setContentView(R.layout.activity_file);
-        }catch(Exception e) {
-            Log.e(TAG,e.getMessage());
-            e.printStackTrace();
-        }
-        stravaUploader = new StravaUploader(this);
+        setContentView(R.layout.activity_file);
+        stravaUploader = new StravaUploader(_ctx);
 
         Intent intent = getIntent();
         position = intent.getExtras().getInt("pos");
@@ -160,7 +152,7 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             final File[] flist = MyActivityUtil.getFiles(filetype);
 
             public void GO(final GoogleMap googleMap, File myfile) {
-                ActivityStat activityStat = null;
+
                 if(myfile != null) {
                     mActivityList = MyActivityUtil.deserialize(myfile);
                     _file = myfile;
@@ -533,6 +525,12 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 detailMaps.putExtra("activity_filename", activity_filename);
                 startActivity(detailMaps);
                 break;
+
+            case R.id.tv_strava_info:
+            case R.id.tv_strava:
+                uploadToStrava();
+                break;
+
             case R.id.imbt_satellite_on:
                 C.satellite = false;
                 mMapView.setVisibility(View.VISIBLE);
@@ -563,95 +561,10 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 configIntent.putExtra("1", 1);
                 startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
                 break;
-            case R.id.tv_strava:
-            case R.id.tv_strava_logo:
-                Log.d(TAG, "-- About to upload activity to Strava!");
-                stravaUploader.authenticate();
-                break;
             default:
                 break;
         }
     }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1001) {
-            stravaUploader.handleAuthorizationResponse(data);
-        }
-    }
-
-    private void uploadToStrava() {
-
-        if (_file == null || mActivityList.isEmpty()) {
-            Toast.makeText(this, "No activity data available", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        File gpxFile = generateGpxFile();
-        if (gpxFile == null) {
-            Toast.makeText(this, "Failed to convert activity to GPX", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        ActivityStat activityStat;
-        try {
-            activityStat = ActivityStat.getActivityStat(mActivityList);
-        } catch (Exception e) {
-            Toast.makeText(this, "Error getting activity statistics", Toast.LENGTH_SHORT).show();
-            Log.e(TAG, "Error getting activity statistics", e);
-            return;
-        }
-
-        String name = activityStat.name;
-        String description = "Distance: " + String.format("%.2f", activityStat.distanceKm) + " km, Duration: " + activityStat.durationM;
-        String activityType = "run";
-
-        stravaUploader.authenticate();
-    }
-
-    private File generateGpxFile() {
-        ArrayList<MyActivity> activityList = this.mActivityList; // Assuming 'list' contains your activity data
-        if (activityList == null || activityList.isEmpty()) {
-            Toast.makeText(this, "No activity data available", Toast.LENGTH_SHORT).show();
-            return null;
-        }
-
-        try {
-            File gpxFile = new File(getExternalFilesDir(null), "activity.gpx");
-            FileWriter writer = new FileWriter(gpxFile);
-            writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-            writer.write("<gpx version=\"1.1\" creator=\"MyApp\" xmlns=\"http://www.topografix.com/GPX/1/1\">\n");
-            writer.write("  <metadata>\n");
-            writer.write("    <name>My Activity</name>\n");
-            writer.write("    <time>" + activityList.get(0).cr_date + "T" + activityList.get(0).cr_time + "Z</time>\n");
-            writer.write("  </metadata>\n");
-            writer.write("  <trk>\n");
-            writer.write("    <name>My Activity Track</name>\n");
-            writer.write("    <trkseg>\n");
-
-            for (MyActivity activity : activityList) {
-                writer.write(String.format("      <trkpt lat=\"%f\" lon=\"%f\">\n", activity.latitude, activity.longitude));
-                writer.write(String.format("        <time>%sT%sZ</time>\n", activity.cr_date.replace("/", "-"), activity.cr_time));
-                writer.write("      </trkpt>\n");
-            }
-
-            writer.write("    </trkseg>\n");
-            writer.write("  </trk>\n");
-            writer.write("</gpx>");
-            writer.close();
-
-            Log.d(TAG, "GPX file generated successfully: " + gpxFile.getAbsolutePath());
-            return gpxFile;
-        } catch (IOException e) {
-            Toast.makeText(this, "Error creating GPX file: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            Log.e(TAG, "Error creating GPX file", e);
-            return null;
-        }
-    }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -731,6 +644,26 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+
+    private void uploadToStrava() {
+        // Generate GPX file from the activity data
+        File gpxFile = generateGpxFile();
+
+        if (gpxFile != null) {
+            String name = activityStat.name;
+            String description = activityStat.date_str;
+            String activityType = "run"; // or "ride" for cycling, etc.
+
+            stravaUploader.authenticate(gpxFile, name, description, activityType);
+        } else {
+            Toast.makeText(this, "Failed to generate GPX file", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public File generateGpxFile() {
+        return stravaUploader.generateGpxFile(mActivityList);
     }
 
 
