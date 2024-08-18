@@ -45,6 +45,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import com.jason.moment.util.StravaUploader;
@@ -646,14 +647,22 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
     private void uploadToStrava() {
         // Generate GPX file from the activity data
         File gpxFile = generateGpxFile();
 
         if (gpxFile != null) {
-            String name = activityStat.name;
-            String description = activityStat.date_str;
+            String dateTimeString = mActivityList.get(0).cr_date + " " + mActivityList.get(0).cr_time;
+            SimpleDateFormat parser = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            Date date = new Date();
+            try {
+                date = parser.parse(dateTimeString);
+            } catch(Exception ignored) {}
+
+            // Get the activity name using the Date object
+            String name = DateUtil.getActivityNameInEng(date);
+
+            String description = "Uploaded from MOMENT";
             String activityType = "run"; // or "ride" for cycling, etc.
 
             stravaUploader.authenticate(gpxFile, name, description, activityType);

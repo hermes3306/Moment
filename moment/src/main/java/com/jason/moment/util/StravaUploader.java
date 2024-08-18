@@ -54,54 +54,13 @@ public class StravaUploader {
 
 
     boolean for_test = true;
-    private static final double EARTH_RADIUS = 6371000; // Earth's radius in meters
-
-    public static ArrayList<MyActivity> generateCircularTrack(int pointCount, int laps) {
-        ArrayList<MyActivity> activities = new ArrayList<>();
-        Random random = new Random();
-
-        // Generate random center point
-        double centerLat = (random.nextDouble() * 170) - 85; // Avoid poles
-        double centerLon = (random.nextDouble() * 360) - 180;
-
-        // Generate smaller random radius between 20 and 80 meters
-        double baseRadius = 20 + random.nextDouble() * 60;
-
-        for (int lap = 0; lap < laps; lap++) {
-            for (int i = 0; i < pointCount; i++) {
-                double angle = 2 * Math.PI * i / pointCount;
-
-                // Add more randomness to the angle
-                angle += (random.nextDouble() - 0.5) * 0.2;
-
-                // Add irregularity to the radius
-                double radiusVariation = (random.nextDouble() - 0.5) * 10; // +/- 5 meters
-                double currentRadius = baseRadius + radiusVariation;
-
-                // Calculate new point
-                double lat = centerLat + (currentRadius / EARTH_RADIUS) * (180 / Math.PI) * Math.cos(angle);
-                double lon = centerLon + (currentRadius / EARTH_RADIUS) * (180 / Math.PI) / Math.cos(centerLat * Math.PI / 180) * Math.sin(angle);
-
-                // Add more noise to make it more realistic
-                lat += (random.nextDouble() - 0.5) * 0.0002;
-                lon += (random.nextDouble() - 0.5) * 0.0002;
-
-                // Round to 6 decimal places
-                lat = Math.round(lat * 1e6) / 1e6;
-                lon = Math.round(lon * 1e6) / 1e6;
-
-                activities.add(new MyActivity(lat, lon));
-            }
-        }
-        return activities;
-    }
 
     public File generateGpxFile(ArrayList<MyActivity> activities) {
         if (activities == null || activities.isEmpty()) {
             Log.e(TAG, "No activities found for the last run");
 
             if(for_test) {
-                activities = generateCircularTrack(100, 5);
+                activities = TrackGenerator.generateRandomRealisticTrack();
             }
             else return null;
         }

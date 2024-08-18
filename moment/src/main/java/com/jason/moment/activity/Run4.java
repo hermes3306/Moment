@@ -175,8 +175,8 @@ public class Run4 extends Run implements
         File gpxFile = generateGpxFile();
 
         if (gpxFile != null) {
-            String name = DateUtil.getActivityName(start_time);
-            String description = "Uploaded from my running app";
+            String name = DateUtil.getActivityNameInEng(start_time);
+            String description = "Uploaded from MOMENT";
             String activityType = "run"; // or "ride" for cycling, etc.
 
             stravaUploader.authenticate(gpxFile, name, description, activityType);
@@ -200,7 +200,7 @@ public class Run4 extends Run implements
         switch (id) {
             case R.id.strava:
                 uploadToStrava();
-                Toast.makeText(_ctx,"Upload to Strava", Toast.LENGTH_LONG).show();
+                //Toast.makeText(_ctx,"Upload to Strava", Toast.LENGTH_LONG).show();
                 return true;
             case R.id.show_running_stat:
                 AlertDialogUtil.getInstance().show_running_stat(_ctx, new RunStat(this, list,last_pk, getCurrentRunId()));

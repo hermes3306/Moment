@@ -85,10 +85,13 @@ public class ActivityStat {
             else if(t>21) H= "Night Run";
             else  H= "Evening Run";
 
+//            this.name = DateUtil.DateToString(start,"E요일 ") + " " + H;
+//            this.date_str = DateUtil.DateToString(start,"yyyy년MM월dd일 HH:mm a");
+//            this.date_str2 = DateUtil.DateToString(start,"MM월dd일 HH:mm a");
 
-            this.name = DateUtil.DateToString(start,"E요일 ") + " " + H;
-            this.date_str = DateUtil.DateToString(start,"yyyy년MM월dd일 HH:mm a");
-            this.date_str2 = DateUtil.DateToString(start,"MM월dd일 HH:mm a");
+            this.name = DateUtil.DateToString(start, "EEEE") + " " + H;
+            this.date_str = DateUtil.DateToString(start, "MMMM d, yyyy h:mm a");
+            this.date_str2 = DateUtil.DateToString(start, "MMMM d, h:mm a");
         }
 
         public String toString() {

@@ -2,6 +2,7 @@ package com.jason.moment.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class DateUtil {
 
@@ -35,6 +36,28 @@ public class DateUtil {
         else if(t<4) H= "새벽 활동";
         String activityName = DateUtil.DateToString(d,"E요일 ") + " " + H;
         return activityName;
+    }
+
+    public static String getActivityNameInEng(Date d) {
+        String H = DateUtil.DateToString(d,"H");
+        String activityType;
+        int hour = Integer.parseInt(H);
+        if (hour >= 0 && hour < 4) {
+            activityType = "Early Morning Activity";
+        } else if (hour >= 4 && hour < 12) {
+            activityType = "Morning Activity";
+        } else if (hour >= 12 && hour < 18) {
+            activityType = "Afternoon Activity";
+        } else if (hour >= 18 && hour < 21) {
+            activityType = "Evening Activity";
+        } else {  // hour >= 21 && hour < 24
+            activityType = "Night Activity";
+        }
+
+        Object Locale;
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", java.util.Locale.ENGLISH);
+        String dayOfWeek = dayFormat.format(d);
+        return dayOfWeek + " " + activityType;
     }
 
     public static String getDateString(Date d) {
