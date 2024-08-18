@@ -24,7 +24,6 @@ import com.jason.moment.FileActivity;
 import com.jason.moment.MapsActivity;
 import com.jason.moment.MyReportActivity;
 import com.jason.moment.R;
-import com.jason.moment.StartRunActivity;
 import com.jason.moment.activity.Run1;
 import com.jason.moment.activity.Run3;
 import com.jason.moment.activity.Run4;
@@ -373,7 +372,7 @@ public class AlertDialogUtil {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     Log.e("--","-- Start Run Activity!");
-                    Intent _StartActivity = new Intent(_ctx, StartRunActivity.class);
+                    Intent _StartActivity = new Intent(_ctx, Run4.class);
                     _ctx.startActivity(_StartActivity);
                 }
             });

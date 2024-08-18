@@ -685,8 +685,6 @@ public class MapsActivity extends AppCompatActivity implements
 
             case R.id.action_update:
                 Log.d(TAG,"-- Self Install!");
-                Intent self_install = new Intent(MapsActivity.this, SelfInstallActivity.class);
-                startActivity(self_install);
                 return true;
 
             case R.id.action_settings:
@@ -745,16 +743,9 @@ public class MapsActivity extends AppCompatActivity implements
 
             case R.id.StartRunActivity:
                 Log.d(TAG,"-- Start Run Activity!");
-                Intent _StartActivity = new Intent(MapsActivity.this, StartRunActivity.class);
+                Intent _StartActivity = new Intent(MapsActivity.this, Run4.class);
                 startActivity(_StartActivity);
                 return true;
-
-//            case R.id.quote_activity:
-//                Log.d(TAG,"-- Quote Activity!");
-//                Intent quoteIntent = new Intent(MapsActivity.this, QuoteActivity.class);
-//                quoteIntent.putExtra("1", 1);
-//                startActivityForResult(quoteIntent, Config.CALL_QUOTE_ACTIVITY);
-//                return true;
 
             case R.id.scrollpic_activity:
                 Log.d(TAG,"-- Scroll Pic Activity!");

@@ -79,14 +79,15 @@ public class LocalRedirectServer {
                         String code = params.get("code");
                         Log.d(TAG, "Authorization code received: " + code);
                         callback.onAuthorizationCodeReceived(code);
-                        response = "HTTP/1.1 200 OK\r\n\r\nAuthorization successful! You can close this window and return to the app.";
+                        response = generateSuccessHtml(code, params.get("scope"), params.get("state"));
                     } else if (params.containsKey("error")) {
                         String error = params.get("error");
-                        Log.e(TAG, "Authorization error: " + error);
+                        String errorDescription = params.get("error_description");
+                        Log.e(TAG, "Authorization error: " + error + " - " + errorDescription);
                         callback.onError(error);
-                        response = "HTTP/1.1 400 Bad Request\r\n\r\nAuthorization failed. Error: " + error;
+                        response = generateErrorHtml(error, errorDescription);
                     } else {
-                        response = "HTTP/1.1 400 Bad Request\r\n\r\nInvalid request";
+                        response = generateErrorHtml("Invalid Request", "The request does not contain expected parameters.");
                     }
 
                     out.write(response.getBytes(StandardCharsets.UTF_8));
@@ -96,6 +97,52 @@ public class LocalRedirectServer {
             Log.e(TAG, "Error handling client: " + e.getMessage());
         }
     }
+
+    private String generateSuccessHtml(String code, String scope, String state) {
+        return "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n" +
+                "<!DOCTYPE html><html><head><title>Authorization Successful</title>" +
+                "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                "<style>" +
+                "body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; padding: 20px; font-size: 18px; }" +
+                "h1 { color: #4CAF50; font-size: 28px; }" +
+                "h2 { font-size: 24px; }" +
+                "pre { background-color: #f4f4f4; padding: 15px; border-radius: 5px; font-size: 20px; white-space: pre-wrap; word-break: break-all; }" +
+                ".info-label { font-weight: bold; }" +
+                ".info-value { margin-left: 10px; }" +
+                "</style></head><body>" +
+                "<h1>Authorization Successful!</h1>" +
+                "<p style='font-size: 22px;'>You can now close this window and return to the app.</p>" +
+                "<h2>Authorization Details:</h2>" +
+                "<div style='font-size: 20px;'>" +
+                "<p><span class='info-label'>Authorization Code:</span><span class='info-value'>" + code + "</span></p>" +
+                "<p><span class='info-label'>Scope:</span><span class='info-value'>" + (scope != null ? scope : "N/A") + "</span></p>" +
+                "<p><span class='info-label'>State:</span><span class='info-value'>" + (state != null ? state : "N/A") + "</span></p>" +
+                "</div>" +
+                "</body></html>";
+    }
+
+
+    private String generateErrorHtml(String error, String errorDescription) {
+        return "HTTP/1.1 400 Bad Request\r\nContent-Type: text/html\r\n\r\n" +
+                "<!DOCTYPE html><html><head><title>Authorization Failed</title>" +
+                "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                "<style>" +
+                "body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; padding: 20px; font-size: 18px; }" +
+                "h1 { color: #D32F2F; font-size: 28px; }" +
+                "h2 { font-size: 24px; }" +
+                "pre { background-color: #f4f4f4; padding: 15px; border-radius: 5px; font-size: 20px; white-space: pre-wrap; word-break: break-all; }" +
+                ".info-label { font-weight: bold; }" +
+                ".info-value { margin-left: 10px; }" +
+                "</style></head><body>" +
+                "<h1>Authorization Failed</h1>" +
+                "<h2>Error Details:</h2>" +
+                "<div style='font-size: 20px;'>" +
+                "<p><span class='info-label'>Error:</span><span class='info-value'>" + error + "</span></p>" +
+                "<p><span class='info-label'>Description:</span><span class='info-value'>" + (errorDescription != null ? errorDescription : "No description provided") + "</span></p>" +
+                "</div>" +
+                "</body></html>";
+    }
+
 
     private Map<String, String> parseQueryString(String url) {
         Map<String, String> params = new HashMap<>();
