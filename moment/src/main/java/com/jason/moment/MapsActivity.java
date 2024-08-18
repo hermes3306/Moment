@@ -664,7 +664,7 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu2, menu);
+        inflater.inflate(R.menu.menu_mapsactivity, menu);
         return true;
     }
 
@@ -672,14 +672,53 @@ public class MapsActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
-            case R.id.action_update:
-                Log.d(TAG,"-- Self Install!");
-                return true;
-
             case R.id.action_settings:
                 Log.d(TAG,"-- Setting Activities!");
                 Intent configIntent = new Intent(MapsActivity.this, ConfigActivity.class);
                 startActivity(configIntent);
+                return true;
+
+            case R.id.download_activities:
+                new CloudUtil().DownloadAll(_ctx, Config._default_ext);
+                return true;
+
+            case R.id.download_images:
+                new CloudUtil().DownloadAll(_ctx, Config._img);
+                return true;
+
+            case R.id.download_videos:
+                new CloudUtil().DownloadAll(_ctx, Config._mov);
+                return true;
+
+            case R.id.download_musics:
+                new CloudUtil().DownloadAll(_ctx, Config._mp3);
+                return true;
+
+            case R.id.upload_activities:
+                new CloudUtil().UploadAll(_ctx, Config._default_ext);
+                return true;
+
+            case R.id.upload_images:
+                new CloudUtil().UploadAll(_ctx, Config._img);
+                return true;
+
+            case R.id.upload_videos:
+                new CloudUtil().UploadAll(_ctx, Config._mov);
+                return true;
+
+            case R.id.upload_musics:
+                new CloudUtil().UploadAll(_ctx, Config._mp3);
+                return true;
+
+            case R.id.playMp3:
+                MP3.playNext(_ctx);
+
+            case R.id.stopMp3:
+                MP3.stop(_ctx);
+                return true;
+
+            case R.id.mp3Player:
+                MP3.showPlayer(_ctx);
                 return true;
 
             case R.id.rebuild_rank:
@@ -709,20 +748,6 @@ public class MapsActivity extends AppCompatActivity implements
                 mSportSelectDialog.show();
                 return true;
 
-            case R.id.download_mp3:
-                CloudUtil cu = new CloudUtil();
-                cu.DownloadAll(_ctx, Config._mp3);
-//                cu.DownloadMP3(_ctx);
-                return true;
-
-            case R.id.mp3Player:
-                MP3.showPlayer(_ctx);
-                return true;
-
-            case R.id.stopMp3:
-                MP3.stop(_ctx);
-                return true;
-
             case R.id.ReportActivity:
                 Log.d(TAG,"-- Report Activity!");
                 Intent reportActivity = new Intent(MapsActivity.this, MyReportActivity.class);
@@ -730,24 +755,13 @@ public class MapsActivity extends AppCompatActivity implements
                 startActivityForResult(reportActivity, Config.CALL_REPORT_ACTIVITY);
                 return true;
 
-            case R.id.StartRunActivity:
-                Log.d(TAG,"-- Start Run Activity!");
-                Intent _StartActivity = new Intent(MapsActivity.this, Run4.class);
-                startActivity(_StartActivity);
-                return true;
 
             case R.id.scrollpic_activity:
                 Log.d(TAG,"-- Scroll Pic Activity!");
                 Intent scrollPicIntent = new Intent(MapsActivity.this, Pic_Full_Screen_Activity.class);
                 startActivityForResult(scrollPicIntent, Config.CALL_SCROLL_PIC_ACTIVITY);
-
                 return true;
 
-            case R.id.scrollAllpic_activity:
-                Log.d(TAG,"-- Scroll Pic Activity!");
-                Intent scrollAllPicIntent = new Intent(MapsActivity.this, ScrollAllPicActivity.class);
-                startActivityForResult(scrollAllPicIntent, Config.CALL_SCROLL_ALL_PIC_ACTIVITY);
-                return true;
 
             case R.id.pic_activity:
                 Log.d(TAG,"-- Pic Activity!");

@@ -96,7 +96,7 @@ public class Config {
     public static File JSN_SAVE_DIR         = null;
 
 
-    public static String        _serverURL      = "http://ezehub.club/moment";        //Z
+    public static String        _serverURL      = "http://58.233.69.198:8080/moment";      //Z
     public static String        _apkname        = "moment.apk";
     public static String        _apkurl         = _serverURL + "/apk/moment.apk";
     public static String        _apkver         = _serverURL + "/apk/version";
