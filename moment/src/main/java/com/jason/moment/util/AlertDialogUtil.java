@@ -54,7 +54,6 @@ public class AlertDialogUtil {
         LayoutInflater factory = LayoutInflater.from(_ctx);
         final View view = factory.inflate(R.layout.layout_scroll_tablelayout, null);
         LinearLayout ll = view.findViewById(R.id.linearLayout);
-        TextView view_title = view.findViewById(R.id.view_title);
 
         long countofallrun = MyRun.getInstance(_ctx).CountOfRun();
         long countofrunning = MyRun.getInstance(_ctx).CountOfRun(true);
@@ -74,7 +73,6 @@ public class AlertDialogUtil {
         LayoutInflater factory = LayoutInflater.from(_ctx);
         final View view = factory.inflate(R.layout.layout_scroll_tablelayout, null);
         LinearLayout ll = view.findViewById(R.id.linearLayout);
-        TextView view_title = view.findViewById(R.id.view_title);
 
         long countofallrun = MyRun.getInstance(_ctx).CountOfRun();
         long countofrunning = MyRun.getInstance(_ctx).CountOfRun(true);
@@ -99,7 +97,7 @@ public class AlertDialogUtil {
         LayoutInflater factory = LayoutInflater.from(_ctx);
         final View view = factory.inflate(R.layout.layout_scroll_tablelayout, null);
         LinearLayout ll = view.findViewById(R.id.linearLayout);
-        TextView view_title = view.findViewById(R.id.view_title);
+
 
         long countofallrun = MyRun.getInstance(_ctx).CountOfRun();
         long countofrunning = MyRun.getInstance(_ctx).CountOfRun(true);
@@ -131,62 +129,6 @@ public class AlertDialogUtil {
         tv1.setCompoundDrawablesWithIntrinsicBounds(img_drawable, null, null, null);
         tv1.setTextSize(20);
         ll_view.addView(tv1);
-    }
-
-    public void choose_running_type(Context _ctx) {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(_ctx);
-        //alertDialog.setTitle("Choose your run");
-        LayoutInflater factory = LayoutInflater.from(_ctx);
-        final View view = factory.inflate(R.layout.layout_typeof_running, null);
-        ImageView iv_run_type1 = view.findViewById(R.id.iv_run_type1);
-        ImageView iv_run_type3 = view.findViewById(R.id.iv_run_type3);
-        ImageView iv_run_type4 = view.findViewById(R.id.iv_run_type4);
-        TextView tv_run_type1 = view.findViewById(R.id.tv_run_type1);
-        TextView tv_run_type3 = view.findViewById(R.id.tv_run_type3);
-        TextView tv_run_type4 = view.findViewById(R.id.tv_run_type4);
-
-        alertDialog.setView(view);
-        AlertDialog alert = alertDialog.create();
-
-        iv_run_type1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name).exists()) {
-                    AlertDialogUtil.getInstance().checkActiveRunning(_ctx, Run1.class);
-                } else {
-                    Intent intent = new Intent(_ctx, Run1.class);
-                    _ctx.startActivity(intent);
-                }
-                alert.dismiss();
-            }
-        });
-
-        iv_run_type3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name).exists()) {
-                    AlertDialogUtil.getInstance().checkActiveRunning(_ctx, Run3.class);
-                } else {
-                    Intent intent = new Intent(_ctx, Run3.class);
-                    _ctx.startActivity(intent);
-                }
-                alert.dismiss();
-            }
-        });
-
-        iv_run_type4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(new File(Config.CSV_SAVE_DIR, Config.Unsaved_File_name).exists()) {
-                    AlertDialogUtil.getInstance().checkActiveRunning(_ctx, Run4.class);
-                } else {
-                    Intent intent = new Intent(_ctx, Run4.class);
-                    _ctx.startActivity(intent);
-                }
-                alert.dismiss();
-            }
-        });
-        alert.show();
     }
 
     public void media_information(Context _ctx, File file) {
@@ -262,12 +204,12 @@ public class AlertDialogUtil {
             public void onClick(DialogInterface dialogInterface, int i) {
                 MyMediaInfo mm_info = new MyMediaInfo();
 
-                mm_info.setName((String)tv_media_name.getText().toString());
-                mm_info.setMemo((String)ed_media_memo.getText().toString());
+                mm_info.setName(tv_media_name.getText().toString());
+                mm_info.setMemo(ed_media_memo.getText().toString());
 
-                mm_info.setAddress((String)tv_media_address.getText().toString());
-                mm_info.setPlace((String)sp_media_place.getItemAtPosition(sp_media_place.getSelectedItemPosition()).toString());
-                mm_info.setGrade((String)sp_media_grade.getItemAtPosition(sp_media_grade.getSelectedItemPosition()).toString());
+                mm_info.setAddress(tv_media_address.getText().toString());
+                mm_info.setPlace(sp_media_place.getItemAtPosition(sp_media_place.getSelectedItemPosition()).toString());
+                mm_info.setGrade(sp_media_grade.getItemAtPosition(sp_media_grade.getSelectedItemPosition()).toString());
 
                 mm_info.setLatitude(Double.parseDouble(tv_media_latitude.getText().toString()));
                 mm_info.setLongitude(Double.parseDouble(tv_media_longitude.getText().toString()));
@@ -284,12 +226,12 @@ public class AlertDialogUtil {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 MyMediaInfo mm_info = new MyMediaInfo();
-                mm_info.setName((String)tv_media_name.getText().toString());
-                mm_info.setMemo((String)ed_media_memo.getText().toString());
+                mm_info.setName(tv_media_name.getText().toString());
+                mm_info.setMemo(ed_media_memo.getText().toString());
 
-                mm_info.setAddress((String)tv_media_address.getText().toString());
-                mm_info.setPlace((String)sp_media_place.getItemAtPosition(sp_media_place.getSelectedItemPosition()).toString());
-                mm_info.setGrade((String)sp_media_grade.getItemAtPosition(sp_media_grade.getSelectedItemPosition()).toString());
+                mm_info.setAddress(tv_media_address.getText().toString());
+                mm_info.setPlace(sp_media_place.getItemAtPosition(sp_media_place.getSelectedItemPosition()).toString());
+                mm_info.setGrade(sp_media_grade.getItemAtPosition(sp_media_grade.getSelectedItemPosition()).toString());
 
                 mm_info.setLatitude(Double.parseDouble(tv_media_latitude.getText().toString()));
                 mm_info.setLongitude(Double.parseDouble(tv_media_longitude.getText().toString()));

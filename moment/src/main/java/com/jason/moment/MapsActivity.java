@@ -79,7 +79,6 @@ public class MapsActivity extends AppCompatActivity implements
         View.OnClickListener {
 
     private static final String TAG = "MapsActivity";
-    private static final int DEFAULT_ZOOM = 15;
 
     private GoogleMap googleMap = null;
     private Context _ctx;
@@ -87,9 +86,7 @@ public class MapsActivity extends AppCompatActivity implements
     private ServiceConnection gpsLoggerConnection = null;
     private BroadcastReceiver receiver = null;
 
-    public static boolean firstCall = true;
     public static boolean paused = false;
-    static boolean already_quit = false;
 
     private TextView tv_log;
     private ImageButton image_button_pop_menu = null;
@@ -109,7 +106,6 @@ public class MapsActivity extends AppCompatActivity implements
     static boolean battery_toggle = false;
     static Timer timer = new Timer();
 
-    private TextView tv_activity_name;
     private TextView tv_date_str; // Add this line to declare tv_date_str
 
     int count_of_activities = 0;
@@ -219,7 +215,7 @@ public class MapsActivity extends AppCompatActivity implements
             } catch (Exception e) {
                 StringWriter sw = new StringWriter();
                 e.printStackTrace(new PrintWriter(sw));
-                Log.e(TAG, "-- " + sw.toString());
+                Log.e(TAG, "-- " + sw);
             }
         }
     }
@@ -290,7 +286,6 @@ public class MapsActivity extends AppCompatActivity implements
         MyActivity last_activity = null;
         double dist = 0;
         if (last_location == null) {
-            dist = 0;
             last_activity = new MyActivity(location.getLatitude(), location.getLongitude(), d);
             list.add(last_activity);
             last_location = location;
@@ -360,7 +355,6 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     public void onClick(View view) {
         Log.d(TAG, "-- onClick: " + view.getId());
-        int step = 10;
         ImageButton image_button_prev = findViewById(R.id.image_button_prev);
         ImageButton image_button_next = findViewById(R.id.image_button_next);
         ImageButton image_button_wifi_off = findViewById(R.id.image_button_wifi_off);
@@ -488,7 +482,7 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     private void handleSaveButton(View view) {
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             MyActivityUtil.serialize(list, DateUtil.today());
             String _msg = "Total " + list.size() + " activities is serialized into " + DateUtil.today();
             Snackbar.make(view, _msg, Snackbar.LENGTH_SHORT).show();
@@ -529,7 +523,7 @@ public class MapsActivity extends AppCompatActivity implements
 
     private void handlePrevButton() {
         Log.d(TAG, "-- marker_pos:" + marker_pos + " cntofactivities:" + count_of_activities);
-        if (list.size() == 0) return;
+        if (!list.isEmpty()) return;
         count_of_activities = list.size();
         int step = count_of_activities / 10;
         if (marker_pos - step > 0) {
@@ -550,7 +544,7 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
     private void showNavigate() {
-        if(list.size()==0) {
+        if(!list.isEmpty()) {
             Toast.makeText(_ctx, "No Activities yet!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -613,8 +607,7 @@ public class MapsActivity extends AppCompatActivity implements
         ArrayList<MyActivity> mal = list;
         MyActivity lastActivity = null;
         if(mal==null) return;
-        if(mal.size()==0) return;
-        ArrayList<Marker> _markers = new ArrayList<>();
+        if(mal.isEmpty()) return;
         Display display = getWindowManager().getDefaultDisplay();
         MapUtil.DRAW(_ctx,googleMap,display,list );
     }
@@ -666,11 +659,6 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-
-
-    // check how to use this galleryAddPic
-    private void galleryAddPic() {
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -809,13 +797,12 @@ public class MapsActivity extends AppCompatActivity implements
             // this function will return current location
             Location lastKnownLocation = mLocationManager.getLastKnownLocation(locationProvider);
             if (lastKnownLocation != null) {
-                Location location = lastKnownLocation;
-                return location;
+                return lastKnownLocation;
             }
         }catch(Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
-            Log.e(TAG,"Err:" + sw.toString());
+            Log.e(TAG,"Err:" + sw);
         }
         return null;
     }
@@ -826,8 +813,7 @@ public class MapsActivity extends AppCompatActivity implements
         if (format == null) dformat = "yyyy_MM_dd_HH_mm_ss";
 
         SimpleDateFormat dateformatyyyyMMdd = new SimpleDateFormat(dformat);
-        String date_to_string = dateformatyyyyMMdd.format(date);
-        return date_to_string;
+        return dateformatyyyyMMdd.format(date);
     }
 
 }
