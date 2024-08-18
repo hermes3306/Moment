@@ -180,6 +180,8 @@ public class StravaUploader {
     }
 
 
+
+
     private void handleClientRequest(Socket clientSocket) {
         try (
                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
