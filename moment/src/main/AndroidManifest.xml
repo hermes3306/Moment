@@ -115,9 +115,6 @@
             android:name=".MediaActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity
-            android:name=".VideoActivity"
-            android:theme="@style/Theme.AppCompat" />
-        <activity
             android:name=".FileActivity"
             android:theme="@style/Theme.AppCompat" /> <!-- android:name="androidx.core.content.FileProvider" -->
         <provider

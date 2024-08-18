@@ -19,7 +19,6 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.jason.moment.DetailMapsActivity;
 import com.jason.moment.FileActivity;
 import com.jason.moment.MapsActivity;
 import com.jason.moment.MyReportActivity;
@@ -225,25 +224,6 @@ public class AlertDialogUtil {
         alertDialog.setNegativeButton("Map", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                MyMediaInfo mm_info = new MyMediaInfo();
-                mm_info.setName(tv_media_name.getText().toString());
-                mm_info.setMemo(ed_media_memo.getText().toString());
-
-                mm_info.setAddress(tv_media_address.getText().toString());
-                mm_info.setPlace(sp_media_place.getItemAtPosition(sp_media_place.getSelectedItemPosition()).toString());
-                mm_info.setGrade(sp_media_grade.getItemAtPosition(sp_media_grade.getSelectedItemPosition()).toString());
-
-                mm_info.setLatitude(Double.parseDouble(tv_media_latitude.getText().toString()));
-                mm_info.setLongitude(Double.parseDouble(tv_media_longitude.getText().toString()));
-                mm_info.setCr_datetime(tv_media_cr_datetime.getText().toString());
-                mm_info.setMo_datetime(tv_media_mo_datetime.getText().toString());
-                mm_info.setKey(key);
-                mm_info.print();
-                last_memo = mm_info.getMemo();
-
-                Intent detailMaps = new Intent(_ctx, DetailMapsActivity.class);
-                detailMaps.putExtra("my_media_info", mm_info);
-                _ctx.startActivity(detailMaps);
             }
         });
         AlertDialog alert = alertDialog.create();

@@ -522,9 +522,6 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 tv_file_name.setText(f_name);
                 break;
             case R.id.tv_file_name:
-                Intent detailMaps = new Intent(FileActivity.this, DetailMapsActivity.class);
-                detailMaps.putExtra("activity_filename", activity_filename);
-                startActivity(detailMaps);
                 break;
 
             case R.id.tv_strava_info:
