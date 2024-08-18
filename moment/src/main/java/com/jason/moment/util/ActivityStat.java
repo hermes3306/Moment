@@ -83,7 +83,7 @@ public class ActivityStat {
             else if(t>=12 && t <=18) H = "Afternoon Run";
             else if(t<4) H= "Early Morning Run";
             else if(t>21) H= "Night Run";
-            else if(t>18) H= "Evening Run";
+            else  H= "Evening Run";
 
 
             this.name = DateUtil.DateToString(start,"E요일 ") + " " + H;
@@ -128,8 +128,7 @@ public class ActivityStat {
         float burntkCal;
         int durationInSeconds = MyActivityUtil.durationInSeconds(list);
         burntkCal = CaloryUtil.calculateEnergyExpenditure((float)total_distM / 1000f, durationInSeconds);
-        ActivityStat as = new ActivityStat(start_date, stop_date, duration, total_distM, total_distKm, minpk, (int)burntkCal);
-        return as;
+        return new ActivityStat(start_date, stop_date, duration, total_distM, total_distKm, minpk, (int)burntkCal);
     }
 
 }
