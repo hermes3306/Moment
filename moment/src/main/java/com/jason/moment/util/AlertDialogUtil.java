@@ -24,8 +24,6 @@ import com.jason.moment.FileActivity;
 import com.jason.moment.MapsActivity;
 import com.jason.moment.MyReportActivity;
 import com.jason.moment.R;
-import com.jason.moment.activity.Run1;
-import com.jason.moment.activity.Run3;
 import com.jason.moment.activity.Run4;
 import com.jason.moment.util.db.MyActiviySummary;
 import com.jason.moment.util.db.MyLoc;

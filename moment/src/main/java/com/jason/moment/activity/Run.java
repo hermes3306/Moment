@@ -91,6 +91,7 @@ public class Run extends AppCompatActivity{
     public static boolean paused = false;
     public boolean resume = false;
 
+
     private long currentRunId=-1;
     public long getCurrentRunId() {
         return this.currentRunId;

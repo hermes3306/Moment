@@ -6,6 +6,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -15,8 +16,10 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,6 +65,15 @@ import com.jason.moment.util.StravaUploader;
 public class Run4 extends Run implements
         OnMapReadyCallback,
         View.OnClickListener {
+
+
+    private ImageButton btnToggleUp;
+    private ImageButton btnToggleDown;
+    private MapView mapView;
+    private ScrollView statsContainer;
+    private ImageButton imbtWifiOn;
+    private ImageButton imbtWifiOff;
+
 
     private StravaUploader stravaUploader;
 
@@ -120,9 +132,9 @@ public class Run4 extends Run implements
                 Toast.makeText(this, "KM", Toast.LENGTH_SHORT).show();
                 break;
 
-            case R.id.imbt_wifi_off:
             case R.id.imbt_wifi_on:
-                Toast.makeText(this, "WIFI", Toast.LENGTH_SHORT).show();
+            case R.id.imbt_wifi_off:
+                toggleMapView();
                 break;
             case R.id.start_dash_ll_01:
             case R.id.start_dash_ll_02:
@@ -275,6 +287,20 @@ public class Run4 extends Run implements
         date_str.setText(DateUtil.getDateString(d));
     }
 
+    private void toggleMapView() {
+        if (mapView.getVisibility() == View.VISIBLE) {
+            mapView.setVisibility(View.GONE);
+            statsContainer.setVisibility(View.VISIBLE);
+            imbtWifiOn.setVisibility(View.GONE);
+            imbtWifiOff.setVisibility(View.VISIBLE);
+        } else {
+            mapView.setVisibility(View.VISIBLE);
+            statsContainer.setVisibility(View.GONE);
+            imbtWifiOn.setVisibility(View.VISIBLE);
+            imbtWifiOff.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
@@ -284,12 +310,13 @@ public class Run4 extends Run implements
     }
 
     protected void initialize_Mapview(Bundle savedInstanceState) {
-        setContentView(_default_layout);
-        MapView mapView = findViewById(R.id.mapView);
+        mapView = findViewById(R.id.mapView);
 
-        mapView.onCreate(savedInstanceState);
-        mapView.onResume();
-        mapView.getMapAsync(this);
+        if (mapView != null) {
+            mapView.onCreate(savedInstanceState);
+            mapView.onResume();
+            mapView.getMapAsync(this);
+        }
         // mMap is null, when it created
         if (googleMap != null) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -309,6 +336,8 @@ public class Run4 extends Run implements
         }
     }
 
+
+
     void boardCastConfigChanged(long gpsLoggingInterval, long gpsLoggingMinDistance) {
         Intent intent = new Intent(Config.INTENT_CONFIG_CHANGE);
         intent.putExtra("gpsLoggingInterval", gpsLoggingInterval);
@@ -321,9 +350,26 @@ public class Run4 extends Run implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_run_common);
+
+        // Initialize views
+        mapView = findViewById(R.id.mapView);
+        statsContainer = findViewById(R.id.stats_container);
+        imbtWifiOn = findViewById(R.id.imbt_wifi_on);
+        imbtWifiOff = findViewById(R.id.imbt_wifi_off);
+
+        imbtWifiOn.setOnClickListener(this);
+        imbtWifiOff.setOnClickListener(this);
+
+        if (mapView != null) {
+            mapView.onCreate(savedInstanceState);
+            mapView.getMapAsync(this);
+        }
+
+
         this._ctx = this;
-        stravaUploader = new StravaUploader(this);
-        // MyRun 테이블을 사용할 경우 set_use_db(true)
+
         set_use_db(true);
         set_use_broadcast(false);
         // 달리기 모드일 경우, 1초, 1미터로 셋팅함
@@ -353,7 +399,6 @@ public class Run4 extends Run implements
 
         if (list == null) list = new ArrayList<>();
 
-        super.onCreate(savedInstanceState);
         initialize_Mapview(savedInstanceState);
         activity_file_name = StringUtil.DateToString(new Date(), "yyyyMMdd_HHmmss");
 
@@ -364,24 +409,75 @@ public class Run4 extends Run implements
             uploader.handleAuthorizationResponse(data);
         }
 
+        btnToggleUp = findViewById(R.id.btn_toggle_up);
+        btnToggleDown = findViewById(R.id.btn_toggle_down);
+        mapView = findViewById(R.id.mapView);
+        statsContainer = findViewById(R.id.stats_container);
+
+        btnToggleUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mapView.setVisibility(View.GONE);
+                statsContainer.setVisibility(View.VISIBLE);
+            }
+        });
+
+        btnToggleDown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mapView.setVisibility(View.VISIBLE);
+                statsContainer.setVisibility(View.GONE);
+            }
+        });
+
         startMyTimer();
     }
 
-
-    @Override
-    public void onPause() {
-        super.onPause();
+    private void saveViewState() {
+        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("mapVisible", mapView.getVisibility() == View.VISIBLE);
+        editor.apply();
     }
+
+    private void restoreViewState() {
+        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        boolean mapVisible = prefs.getBoolean("mapVisible", true);
+        mapView.setVisibility(mapVisible ? View.VISIBLE : View.GONE);
+        statsContainer.setVisibility(mapVisible ? View.GONE : View.VISIBLE);
+    }
+
 
     @Override
     public void onResume() {
         super.onResume();
+        if (mapView != null) {
+            mapView.onResume();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        if (mapView != null) {
+            mapView.onPause();
+        }
+        super.onPause();
     }
 
     @Override
     public void onDestroy() {
-        stopMyTimer();
+        if (mapView != null) {
+            mapView.onDestroy();
+        }
         super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        if (mapView != null) {
+            mapView.onLowMemory();
+        }
     }
 
     @Override
