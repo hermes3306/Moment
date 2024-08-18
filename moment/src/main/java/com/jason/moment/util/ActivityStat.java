@@ -82,11 +82,11 @@ public class ActivityStat {
 
             String H = DateUtil.DateToString(start,"H");
             int t = Integer.parseInt(H);
-            if(t >= 4 && t < 12) H = "아침 달리기";
-            else if(t>=12 && t <=18) H = "오후 달리기";
-            else if(t>18) H= "저녁 달리기";
-            else if(t>21) H= "야간 달리기";
-            else if(t<4) H= "새벽 달리기";
+            if(t >= 4 && t < 12) H = "Morning Run";
+            else if(t>=12 && t <=18) H = "Afternoon Run";
+            else if(t>18) H= "Evening Run";
+            else if(t>21) H= "Night Run";
+            else if(t<4) H= "Early Morning Run";
 
             this.name = DateUtil.DateToString(start,"E요일 ") + " " + H;
             this.date_str = DateUtil.DateToString(start,"yyyy년MM월dd일 HH:mm a");
