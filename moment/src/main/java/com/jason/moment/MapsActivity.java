@@ -107,6 +107,7 @@ public class MapsActivity extends AppCompatActivity implements
     static Timer timer = new Timer();
 
     private TextView tv_date_str; // Add this line to declare tv_date_str
+    private TextView tv_activity_name;
 
     int count_of_activities = 0;
     int marker_pos_prev = 0;

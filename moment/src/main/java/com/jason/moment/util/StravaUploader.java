@@ -55,6 +55,7 @@ public class StravaUploader {
 
     boolean for_test = true;
     private static final double EARTH_RADIUS = 6371000; // Earth's radius in meters
+
     public static ArrayList<MyActivity> generateCircularTrack(int pointCount, int laps) {
         ArrayList<MyActivity> activities = new ArrayList<>();
         Random random = new Random();
@@ -63,23 +64,27 @@ public class StravaUploader {
         double centerLat = (random.nextDouble() * 170) - 85; // Avoid poles
         double centerLon = (random.nextDouble() * 360) - 180;
 
-        // Generate random radius between 50 and 200 meters
-        double radius = 50 + random.nextDouble() * 150;
+        // Generate smaller random radius between 20 and 80 meters
+        double baseRadius = 20 + random.nextDouble() * 60;
 
         for (int lap = 0; lap < laps; lap++) {
             for (int i = 0; i < pointCount; i++) {
                 double angle = 2 * Math.PI * i / pointCount;
 
-                // Add some randomness to the angle
-                angle += (random.nextDouble() - 0.5) * 0.1;
+                // Add more randomness to the angle
+                angle += (random.nextDouble() - 0.5) * 0.2;
+
+                // Add irregularity to the radius
+                double radiusVariation = (random.nextDouble() - 0.5) * 10; // +/- 5 meters
+                double currentRadius = baseRadius + radiusVariation;
 
                 // Calculate new point
-                double lat = centerLat + (radius / EARTH_RADIUS) * (180 / Math.PI) * Math.cos(angle);
-                double lon = centerLon + (radius / EARTH_RADIUS) * (180 / Math.PI) / Math.cos(centerLat * Math.PI / 180) * Math.sin(angle);
+                double lat = centerLat + (currentRadius / EARTH_RADIUS) * (180 / Math.PI) * Math.cos(angle);
+                double lon = centerLon + (currentRadius / EARTH_RADIUS) * (180 / Math.PI) / Math.cos(centerLat * Math.PI / 180) * Math.sin(angle);
 
-                // Add some noise to make it more realistic
-                lat += (random.nextDouble() - 0.5) * 0.0001;
-                lon += (random.nextDouble() - 0.5) * 0.0001;
+                // Add more noise to make it more realistic
+                lat += (random.nextDouble() - 0.5) * 0.0002;
+                lon += (random.nextDouble() - 0.5) * 0.0002;
 
                 // Round to 6 decimal places
                 lat = Math.round(lat * 1e6) / 1e6;
@@ -96,7 +101,7 @@ public class StravaUploader {
             Log.e(TAG, "No activities found for the last run");
 
             if(for_test) {
-                activities = generateCircularTrack(300, 10);
+                activities = generateCircularTrack(100, 5);
             }
             else return null;
         }
@@ -105,7 +110,7 @@ public class StravaUploader {
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         File gpxFile = new File(context.getExternalFilesDir(null), "last_run.gpx");
 
-        try (FileWriter writer = new FileWriter(gpxFile)) {
+        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(gpxFile), StandardCharsets.UTF_8)) {
             writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
             writer.write("<gpx version=\"1.1\" creator=\"MyRunningApp\" xmlns=\"http://www.topografix.com/GPX/1/1\">\n");
             writer.write("  <metadata>\n");
@@ -134,7 +139,6 @@ public class StravaUploader {
             return null;
         }
     }
-
 
     public void authenticate(File gpxFile, String name, String description, String activityType) {
         Log.d(TAG, "Starting authentication process");
@@ -264,10 +268,14 @@ public class StravaUploader {
                         while ((responseLine = br.readLine()) != null) {
                             response.append(responseLine.trim());
                         }
+
                         JSONObject jsonResponse = new JSONObject(response.toString());
                         String accessToken = jsonResponse.getString("access_token");
                         Log.d(TAG, "Access token received, initiating activity upload");
-                        showToast("Access token received, uploading activity...");
+                        String truncatedToken = accessToken.substring(0, 5) + "..." +
+                                accessToken.substring(accessToken.length() - 5);
+
+                        showToast("Access token received: " + truncatedToken + "\nUploading activity...");
                         uploadActivity(gpxFile, activityName, activityDescription, activityType, accessToken);
                     }
                 } else {
