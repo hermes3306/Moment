@@ -24,8 +24,6 @@ public class ActivityStat {
         public String memo;
         public String weather;
         public String co_runner;
-        public int[] progress_info;
-        public int[] chart_info;
 
         public void setExtra() {
             this.memo = "메모가 없습니다.";
@@ -43,7 +41,6 @@ public class ActivityStat {
 
         public ActivityStat(String name, double distanceKm, long durationInLong, double minperKm, int calories) {
             this._fname = name;
-            this.duration = duration;
             this.distanceKm = distanceKm;
             this.minperKm = minperKm;
             this.calories = calories;
@@ -52,7 +49,7 @@ public class ActivityStat {
             setExtra();
 
             String fnameWithoutExtension = name.substring(0,name.length()-4);
-            Date start = new Date();
+            Date start;
             if(fnameWithoutExtension.length() < 15) {  // Day Activity
                 start = StringUtil.StringToDate(fnameWithoutExtension, "yyyyMMdd");
             }else { // Activity
@@ -84,9 +81,10 @@ public class ActivityStat {
             int t = Integer.parseInt(H);
             if(t >= 4 && t < 12) H = "Morning Run";
             else if(t>=12 && t <=18) H = "Afternoon Run";
-            else if(t>18) H= "Evening Run";
-            else if(t>21) H= "Night Run";
             else if(t<4) H= "Early Morning Run";
+            else if(t>21) H= "Night Run";
+            else if(t>18) H= "Evening Run";
+
 
             this.name = DateUtil.DateToString(start,"E요일 ") + " " + H;
             this.date_str = DateUtil.DateToString(start,"yyyy년MM월dd일 HH:mm a");
@@ -94,7 +92,7 @@ public class ActivityStat {
         }
 
         public String toString() {
-            return "" + name + "," + distanceKm + "Km," + duration + "," + minperKm + "," + calories;
+            return  name + "," + distanceKm + "Km," + duration + "," + minperKm + "," + calories;
         }
 
         public ActivityStat stat(ArrayList<MyActivity> list) {
@@ -129,7 +127,6 @@ public class ActivityStat {
 
         float burntkCal;
         int durationInSeconds = MyActivityUtil.durationInSeconds(list);
-        int stepsTaken = (int) (total_distM / Config._strideLengthInMeters);
         burntkCal = CaloryUtil.calculateEnergyExpenditure((float)total_distM / 1000f, durationInSeconds);
         ActivityStat as = new ActivityStat(start_date, stop_date, duration, total_distM, total_distKm, minpk, (int)burntkCal);
         return as;
