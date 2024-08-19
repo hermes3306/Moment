@@ -38,6 +38,7 @@ import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.PermissionUtil;
 import com.jason.moment.util.Progress;
+import com.jason.moment.util.StartupBatch;
 import com.jason.moment.util.StringUtil;
 import com.jason.moment.util.db.MyActiviySummary;
 
@@ -576,7 +577,103 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        CloudUtil cu;
         switch (item.getItemId()) {
+
+            case R.id.action_settings:
+                Log.d(TAG,"-- Setting Activities!");
+                Intent configIntent = new Intent(FileActivity.this, ConfigActivity.class);
+                startActivity(configIntent);
+                return true;
+
+            case R.id.action_database:
+                Log.d(TAG,"-- Database Activities!");
+                Intent dbIntent = new Intent(FileActivity.this, MyLocViewActivity.class);
+                startActivity(dbIntent);
+                return true;
+
+            case R.id.rebuild_rank:
+                new StartupBatch(_ctx).rebuildActivitySummaries(_ctx);
+                return true;
+
+            case R.id.activityList:
+                File dir = null;
+                if(Config._default_ext == Config._csv) dir = Config.CSV_SAVE_DIR;
+                else dir = Config.MNT_SAVE_DIR;
+                File[] _flist = dir.listFiles();
+                String[] fnamelist = new String[_flist.length];
+                for(int i=0;i<_flist.length;i++) {
+                    fnamelist[i] = _flist[i].getName().substring(0,_flist[i].getName().length()-4);
+                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(FileActivity.this )
+                        .setItems(fnamelist, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(_ctx, MyReportActivity.class);
+                                intent.putExtra("activity_file_name", fnamelist[i]);
+                                startActivity(intent);
+                            }
+                        })
+                        .setTitle("Choose an activity");
+                AlertDialog mSportSelectDialog = builder.create();
+                mSportSelectDialog.show();
+                return true;
+
+            case R.id.upload_all:
+                cu = new CloudUtil();
+                cu.UploadAll(_ctx, Config._default_ext);
+                cu.UploadAll(_ctx, Config._mp3);
+                cu.UploadAll(_ctx, Config._mov);
+                cu.UploadAll(_ctx, Config._img);
+                return true;
+
+            case R.id.download_all:
+                cu = new CloudUtil();
+                cu.DownloadAll(_ctx, Config._default_ext);
+                cu.DownloadAll(_ctx, Config._mp3);
+                cu.DownloadAll(_ctx, Config._mov);
+                cu.DownloadAll(_ctx, Config._img);
+                return true;
+
+            case R.id.ReportActivity:
+                Log.d(TAG,"-- Report Activity!");
+                Intent reportActivity = new Intent(FileActivity.this, MyReportActivity.class);
+                reportActivity.putExtra("activity_file_name", "20210522_110818");
+                startActivityForResult(reportActivity, Config.CALL_REPORT_ACTIVITY);
+                return true;
+
+            case R.id.scrollpic_activity:
+                Log.d(TAG,"-- Scroll Pic Activity!");
+                Intent scrollPicIntent = new Intent(FileActivity.this, Pic_Full_Screen_Activity.class);
+                startActivityForResult(scrollPicIntent, Config.CALL_SCROLL_PIC_ACTIVITY);
+                return true;
+
+            case R.id.pic_activity:
+                Log.d(TAG,"-- Pic Activity!");
+                File folder= Config.PIC_SAVE_DIR;
+
+                File[] files = folder.listFiles(new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        return name.endsWith("jpeg");
+                    }
+                });
+
+                if(files==null) {
+                    Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
+                    return false;
+                } else if (files.length==0) {
+                    Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
+                    return false;
+                }
+                Intent picIntent = new Intent(FileActivity.this, PicActivity.class);
+                ArrayList<File> fileArrayList= new ArrayList<File>();
+                for(int i=0;i< files.length;i++) {
+                    fileArrayList.add(files[i]);
+                }
+                picIntent.putExtra("files", fileArrayList);
+                startActivity(picIntent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
