@@ -2,8 +2,40 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/action_settings"
+        android:title="Setting..."/>
+
+    <item
         android:id="@+id/strava"
         android:title="Strava" />
+
+    <item
+        android:id="@+id/action_database"
+        android:title="Database"/>
+
+    <item
+        android:id="@+id/activityList"
+        android:title="Actity List"/>
+
+    <item
+        android:id="@+id/download_cloud_mp3"
+        android:title="Download Mp3 Cloud"/>
+
+    <item
+        android:id="@+id/rebuild_rank"
+        android:title="Rank"/>
+
+    <item
+        android:id="@+id/ReportActivity"
+        android:title="ReportActivity" />
+
+    <item
+        android:id="@+id/scrollpic_activity"
+        android:title="Scroll Pics" />
+
+    <item
+        android:id="@+id/pic_activity"
+        android:title="Pictures" />
 
     <item
         android:id="@+id/show_running_stat"
@@ -42,5 +74,5 @@
         android:title="View Map"/>
     <item
         android:id="@+id/imSetting"
-        android:title="Setting" />
+        android:title="imSetting" />
 </menu>
