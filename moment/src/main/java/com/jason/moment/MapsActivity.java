@@ -714,18 +714,12 @@ public class MapsActivity extends AppCompatActivity implements
 
             case R.id.upload_all:
                 cu = new CloudUtil();
-                cu.UploadAll(_ctx, Config._default_ext);
-                cu.UploadAll(_ctx, Config._mp3);
-                cu.UploadAll(_ctx, Config._mov);
-                cu.UploadAll(_ctx, Config._img);
+                cu.UploadAll(_ctx, Config._all);
                 return true;
 
             case R.id.download_all:
                 cu = new CloudUtil();
-                cu.DownloadAll(_ctx, Config._default_ext);
-                cu.DownloadAll(_ctx, Config._mp3);
-                cu.DownloadAll(_ctx, Config._mov);
-                cu.DownloadAll(_ctx, Config._img);
+                cu.DownloadAll(_ctx, Config._all);
                 return true;
 
             case R.id.ReportActivity:

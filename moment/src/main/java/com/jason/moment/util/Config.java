@@ -26,6 +26,8 @@ public class Config {
     static String TAG                       = "Config";
     static String _ver                      = "1.0";
 
+    public static boolean _overwrite_when_exist   = true;
+
     public static long  _ONE_SEC            = 1000;
     public static long  _ONE_MIN            = _ONE_SEC * 60;
     public static long  _ONE_HOUR           = _ONE_MIN * 60;
@@ -95,29 +97,27 @@ public class Config {
     public static File APK_SAVE_DIR         = null;
     public static File JSN_SAVE_DIR         = null;
 
-    public static String        _serverURL      = "http://20.2.83.111";        //Z
+    public static String        _serverURL      = "http://58.233.69.198/moment";        //Z
+    //public static String        _serverURL      = "http://211.177.94.209/moment";        //Z
     public static String        _apkname        = "moment.apk";
     public static String        _apkurl         = _serverURL + "/apk/moment.apk";
     public static String        _apkver         = _serverURL + "/apk/version";
 
     public static String        _serverFolder   = "/upload";
-    public static String        _sererMP3Folder = "/mp3";
     public static String        _uploadURL      = _serverURL + "/upload.php";
     public static String        _listFiles      = _serverURL + "/list.php";
     public static String        _listImageFiles = _serverURL + "/list.php?dir=upload&&ext=jpeg";
     public static String        _listMovFiles   = _serverURL + "/list.php?dir=upload&&ext=mp4";
     public static String        _listCSVFiles   = _serverURL + "/list.php?dir=upload&&ext=csv";
-    //public static String        _listCSVFiles   = _serverURL + "/list.php?dir=tmp&&ext=csv";
     public static String        _listSerFiles   = _serverURL + "/list.php?dir=upload&&ext=mnt";
-    public static String        _listMP3Files   = _serverURL + "/list.php?dir=mp3&&ext=mp3";
+    public static String        _listMP3Files   = _serverURL + "/list.php?dir=upload&&ext=mp3";
 
     public static final int     _csv            = 0;
     public static final int     _ser            = 1;
-    public static final int     _jsn            = 2;
     public static final int     _img            = 3;
     public static final int     _mov            = 4;
     public static final int     _mp3            = 5;
-    public static final int     _apk            = 6;
+    public static final int     _all            = 6;
 
     public static int           _default_ext    = _csv;
 
