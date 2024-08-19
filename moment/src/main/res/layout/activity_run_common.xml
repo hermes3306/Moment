@@ -48,9 +48,9 @@
             android:gravity="center_vertical|left"
             android:text="월요일 오후 활동"
             android:onClick="onClick"
-            android:textColor="@color/Black"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textColor="@color/Gray"
+            android:textStyle="bold"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/date_str"
@@ -60,7 +60,7 @@
             android:gravity="center_vertical|left"
             android:text="2024년08월19일 15:12 오후"
             android:onClick="onClick"
-            android:textColor="@color/Gray"
+            android:textColor="@color/DimGray"
             android:textSize="16sp" />
     </LinearLayout>
 
@@ -107,8 +107,8 @@
                             android:layout_weight="1"
                             android:text="00:00:00"
                             android:textAlignment="center"
-                            android:textColor="@color/DimGray"
-                            android:textSize="30sp"
+                            android:textColor="@color/Aqua"
+                            android:textSize="40sp"
                             android:textStyle="bold" />
 
                         <TextView
@@ -206,7 +206,7 @@
                             android:text="0"
                             android:textAlignment="center"
                             android:textColor="@color/Aqua"
-                            android:textSize="50sp"
+                            android:textSize="40sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
