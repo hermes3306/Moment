@@ -267,10 +267,6 @@ public class MyLoc {
     }
 
     public ArrayList<MyActivity> getToodayActivities() {
-        //Log.d(TAG, "-- todayActivity()");
-        // MyLocDbHelper dbHelper = new MyLocDbHelper(ctx);
-        // SQLiteDatabase dbr = dbHelper.getReadableDatabase();
-
         String selection = MyLocContract.LocEntry.COLUMN_NAME_CRDATE + " == ?";
         String order_by = MyLocContract.LocEntry.COLUMN_NAME_CRTIME + " ASC";
         String today = DateUtil.DateToString(new Date(), "yyyy/MM/dd");
@@ -278,7 +274,6 @@ public class MyLoc {
         String[] selectionArgs = { today };
         return Path2Activity(selection, selectionArgs, order_by);
     }
-
 
     public ArrayList<MyActivity> getActivitiesFrom(long last_pk) {
         String selection = MyLocContract.LocEntry._ID  + " > ? ";

@@ -11,6 +11,7 @@ import com.jason.moment.util.db.MyLoc;
 import com.jason.moment.util.MyActivity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import com.jason.moment.util.db.MyLocAdapter;
 
@@ -42,6 +43,10 @@ public class MyLocViewActivity extends AppCompatActivity {
 
     private void loadData() {
         List<MyActivity> activities = myLoc.getToodayActivities();
+
+
+        Collections.reverse(activities);
+        adapter.updateData(activities);
         adapter.updateData(activities);
     }
 
