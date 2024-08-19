@@ -7,19 +7,23 @@
 
     <item
         android:id="@+id/strava"
-        android:title="Strava" />
+        android:title="Upload To Strava" />
 
     <item
         android:id="@+id/action_database"
-        android:title="Database"/>
+        android:title="Database View"/>
 
     <item
         android:id="@+id/activityList"
-        android:title="Actity List"/>
+        android:title="Activities"/>
 
     <item
-        android:id="@+id/download_cloud_mp3"
-        android:title="Download Mp3 Cloud"/>
+        android:id="@+id/upload_all"
+        android:title="Upload All"/>
+
+    <item
+        android:id="@+id/download_all"
+        android:title="Download All"/>
 
     <item
         android:id="@+id/rebuild_rank"
@@ -37,42 +41,4 @@
         android:id="@+id/pic_activity"
         android:title="Pictures" />
 
-    <item
-        android:id="@+id/show_running_stat"
-        android:title="Running Status" />
-    <item
-        android:id="@+id/toggleDashboard"
-        android:title="Toggle dashboard" />
-
-    <item
-        android:id="@+id/showallmarkers"
-        android:title="Show all markers" />
-
-    <item
-        android:id="@+id/broadcastNewStart"
-        android:title="Broadcast a new run" />
-    <item
-        android:id="@+id/mp3Player"
-        android:title="MP3 Player" />
-    <item
-        android:id="@+id/stopMp3"
-        android:title="Stop MP3 Player" />
-    <item
-        android:id="@+id/view_pics"
-        android:title="View Pics" />
-    <item
-        android:id="@+id/view_videos"
-        android:title="View Videos" />
-    <item
-        android:id="@+id/record_video"
-        android:title="Record a Video" />
-    <item
-        android:id="@+id/start_layout_select"
-        android:title="Chose a Layout" />
-    <item
-        android:id="@+id/action_map"
-        android:title="View Map"/>
-    <item
-        android:id="@+id/imSetting"
-        android:title="imSetting" />
 </menu>

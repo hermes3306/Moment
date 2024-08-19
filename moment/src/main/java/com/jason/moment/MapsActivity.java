@@ -670,6 +670,7 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        CloudUtil cu;
         switch (item.getItemId()) {
 
             case R.id.action_settings:
@@ -677,7 +678,6 @@ public class MapsActivity extends AppCompatActivity implements
                 Intent configIntent = new Intent(MapsActivity.this, ConfigActivity.class);
                 startActivity(configIntent);
                 return true;
-
 
             case R.id.action_database:
                 Log.d(TAG,"-- Database Activities!");
@@ -712,17 +712,20 @@ public class MapsActivity extends AppCompatActivity implements
                 mSportSelectDialog.show();
                 return true;
 
-            case R.id.download_cloud_mp3:
-                CloudUtil cu = new CloudUtil();
+            case R.id.upload_all:
+                cu = new CloudUtil();
+                cu.UploadAll(_ctx, Config._default_ext);
+                cu.UploadAll(_ctx, Config._mp3);
+                cu.UploadAll(_ctx, Config._mov);
+                cu.UploadAll(_ctx, Config._img);
+                return true;
+
+            case R.id.download_all:
+                cu = new CloudUtil();
+                cu.DownloadAll(_ctx, Config._default_ext);
                 cu.DownloadAll(_ctx, Config._mp3);
-                return true;
-
-            case R.id.mp3Player:
-                MP3.showPlayer(_ctx);
-                return true;
-
-            case R.id.stopMp3:
-                MP3.stop(_ctx);
+                cu.DownloadAll(_ctx, Config._mov);
+                cu.DownloadAll(_ctx, Config._img);
                 return true;
 
             case R.id.ReportActivity:
@@ -737,7 +740,6 @@ public class MapsActivity extends AppCompatActivity implements
                 Intent scrollPicIntent = new Intent(MapsActivity.this, Pic_Full_Screen_Activity.class);
                 startActivityForResult(scrollPicIntent, Config.CALL_SCROLL_PIC_ACTIVITY);
                 return true;
-
 
             case R.id.pic_activity:
                 Log.d(TAG,"-- Pic Activity!");

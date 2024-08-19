@@ -94,7 +94,7 @@ public class ActivityStat {
             this.date_str2 = DateUtil.DateToString(start, "MMMM d, h:mm a");
         }
 
-        public String toString() {
+        public String  toString() {
             return  name + "," + distanceKm + "Km," + duration + "," + minperKm + "," + calories;
         }
 

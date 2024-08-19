@@ -95,15 +95,11 @@ public class Config {
     public static File APK_SAVE_DIR         = null;
     public static File JSN_SAVE_DIR         = null;
 
-
-    public static String        _serverURL      = "http://ezehub.club/moment";        //Z
+    public static String        _serverURL      = "http://20.2.83.111";        //Z
     public static String        _apkname        = "moment.apk";
     public static String        _apkurl         = _serverURL + "/apk/moment.apk";
     public static String        _apkver         = _serverURL + "/apk/version";
 
-    //public static String        _serverURL      = "http://ezehub.club:8080/moment";   //W
-    //public static String        _serverURL      = "http://ezehub.club:8888/moment";   //M
-    //public static String        _serverURL      = "http://ezehub.club:8899/moment";     //DESKTOP1
     public static String        _serverFolder   = "/upload";
     public static String        _sererMP3Folder = "/mp3";
     public static String        _uploadURL      = _serverURL + "/upload.php";

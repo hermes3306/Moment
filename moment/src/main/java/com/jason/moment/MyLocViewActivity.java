@@ -43,8 +43,6 @@ public class MyLocViewActivity extends AppCompatActivity {
 
     private void loadData() {
         List<MyActivity> activities = myLoc.getToodayActivities();
-
-
         Collections.reverse(activities);
         adapter.updateData(activities);
         adapter.updateData(activities);

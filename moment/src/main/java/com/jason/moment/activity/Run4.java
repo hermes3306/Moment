@@ -164,9 +164,6 @@ public class Run4 extends Run implements
             case R.id.imb_start_movie:
                 recordVideo();
                 break;
-            case R.id.broadcastNewStart:
-                boardCastConfigChanged(1000, 1);
-                break;
             case R.id.imb_start_list:
                 //recordVideo();
                 PopupMenu p = new PopupMenu(Run4.this, v);
@@ -222,66 +219,10 @@ public class Run4 extends Run implements
                 uploadToStrava();
                 //Toast.makeText(_ctx,"Upload to Strava", Toast.LENGTH_LONG).show();
                 return true;
-            case R.id.show_running_stat:
-                AlertDialogUtil.getInstance().show_running_stat(_ctx, new RunStat(this, list,last_pk, getCurrentRunId()));
-                return true;
-            case R.id.showallmarkers:
-                C.showallmarkers = !C.showallmarkers;
-                return true;
-            case R.id.toggleDashboard:
-                dashboard = ! dashboard;
-                LinearLayout ll01 = findViewById(R.id.start_dash_ll_01);
-                LinearLayout ll02 = findViewById(R.id.start_dash_ll_02);
-                LinearLayout ll03 = findViewById(R.id.start_dash_ll_03);
-                LinearLayout ll04 = findViewById(R.id.start_dash_ll_04);
-                LinearLayout ll05 = findViewById(R.id.start_dash_ll_05);
-                if(dashboard) {
-                    ll01.setVisibility(View.VISIBLE);
-                    ll02.setVisibility(View.VISIBLE);
-                    ll03.setVisibility(View.VISIBLE);
-                    ll04.setVisibility(View.VISIBLE);
-                    ll05.setVisibility(View.VISIBLE);
-                }else {
-                    ll01.setVisibility(View.GONE);
-                    ll02.setVisibility(View.GONE);
-                    ll03.setVisibility(View.GONE);
-                    ll04.setVisibility(View.GONE);
-                    ll05.setVisibility(View.GONE);
-                }
-                return true;
-            case R.id.mp3Player:
-                MP3.showPlayer(_ctx);
-                return true;
-            case R.id.stopMp3:
-                MP3.stop(_ctx);
-                return true;
-            case R.id.start_layout_select:
-                AlertDialog.Builder builder = new AlertDialog.Builder(Run4.this)
-                        .setItems(screen_layout, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                            }
-                        })
-                        .setTitle("Choose a layout");
-                AlertDialog mSportSelectDialog = builder.create();
-                mSportSelectDialog.show();
-                break;
             case R.id.imSetting:
                 Log.d(TAG, "-- Setting Activities!");
                 Intent configIntent = new Intent(Run4.this, ConfigActivity.class);
                 startActivity(configIntent);
-                break;
-            case R.id.action_map:
-                int i = 0;
-                break;
-            case R.id.record_video:
-                recordVideo();
-                break;
-            case R.id.view_pics:
-                showImages(0);
-                break;
-            case R.id.view_videos:
-                showVideos(0);
                 break;
         }
         return super.onOptionsItemSelected(item);
