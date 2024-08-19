@@ -183,17 +183,25 @@ public class Run4 extends Run implements
     }
 
     private void uploadToStrava() {
-        // Generate GPX file from the activity data
+        Log.d(TAG, "uploadToStrava() called");
         File gpxFile = generateGpxFile();
 
         if (gpxFile != null) {
+            Log.d(TAG, "GPX file generated successfully");
             String name = DateUtil.getActivityNameInEng(start_time);
             String description = "Uploaded from MOMENT";
-            String activityType = "run"; // or "ride" for cycling, etc.
+            String activityType = "run";
 
-            stravaUploader.authenticate(gpxFile, name, description, activityType);
+            if (stravaUploader != null) {
+                Log.d(TAG, "Calling stravaUploader.authenticate()");
+                stravaUploader.authenticate(gpxFile, name, description, activityType);
+            } else {
+                Log.e(TAG, "stravaUploader is null");
+                Toast.makeText(this, "Strava uploader not initialized", Toast.LENGTH_SHORT).show();
+            }
         } else {
-            Toast.makeText(this, "Failed to generate GPX file", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Failed to generate GPX file");
+            Toast.makeText(this, "Failed to generate GPX file", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -369,6 +377,7 @@ public class Run4 extends Run implements
 
 
         this._ctx = this;
+        stravaUploader = new StravaUploader(this._ctx);
 
         set_use_db(true);
         set_use_broadcast(false);

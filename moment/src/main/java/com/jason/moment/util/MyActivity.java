@@ -39,6 +39,14 @@ public class MyActivity implements Serializable {
         this.cr_time = StringUtil.DateToString(d,"HH:mm:ss");
     }
 
+    public String getCrdate() {
+        return cr_date;
+    }
+
+    public String getCrtime() {
+        return cr_time;
+    }
+
     public MyActivity(LatLng ll) {
         Date d = new Date();
         new MyActivity(ll.latitude, ll.longitude);
