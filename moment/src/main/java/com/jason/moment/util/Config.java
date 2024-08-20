@@ -26,7 +26,7 @@ public class Config {
     static String TAG                       = "Config";
     static String _ver                      = "1.0";
 
-    public static boolean _overwrite_when_exist   = false;
+    public static boolean _overwrite_when_exist   = true;
 
     public static long  _ONE_SEC            = 1000;
     public static long  _ONE_MIN            = _ONE_SEC * 60;

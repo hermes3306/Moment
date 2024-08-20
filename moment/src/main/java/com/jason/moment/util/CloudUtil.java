@@ -86,6 +86,57 @@ public class CloudUtil {
 
     private static void _download(String fileURL, File saveDir) {
         if(!C.cloud_dn) return;
+        Log.d(TAG, "-- Download URL:" + fileURL);
+        String fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1);
+
+        File actualSaveDir = getSaveDirForFile(fileURL);
+        File f = new File(actualSaveDir, fileName);
+
+        if(!Config._overwrite_when_exist && f.exists()) {
+            Log.d(TAG, "-- File ("+ fileName +") exists already!");
+            if(fileName.startsWith(DateUtil.today())) {
+                Log.d(TAG, "-- File ("+ fileName +") will be overwritten!");
+            } else {
+                Log.d(TAG, "-- Skipping download of existing file: " + fileName);
+                return;
+            }
+        }
+
+        try {
+            URL url = new URL(fileURL);
+            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+            int responseCode = httpConn.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                InputStream inputStream = httpConn.getInputStream();
+                String saveFilePath = actualSaveDir.getPath() + File.separator + fileName;
+
+                // Use FileOutputStream in append mode to avoid the EEXIST error
+                FileOutputStream outputStream = new FileOutputStream(saveFilePath, false);
+
+                int bytesRead;
+                byte[] buffer = new byte[BUFFER_SIZE];
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+
+                outputStream.close();
+                inputStream.close();
+
+                Log.d(TAG, "-- File downloaded to: " + saveFilePath);
+            } else {
+                Log.e(TAG, "-- No file to download. Server replied HTTP code: " + responseCode);
+            }
+            httpConn.disconnect();
+        } catch(Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            Log.e(TAG, "ERR:" + sw.toString());
+        }
+    }
+
+    private static void _download2(String fileURL, File saveDir) {
+        if(!C.cloud_dn) return;
         Log.e(TAG, "-- Download URL:" + fileURL);
         String fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1);
 
@@ -343,6 +394,132 @@ public class CloudUtil {
     }
 
     public void UploadAll(final Context context, int ftype) {
+        if(!C.cloud_up) return;
+        final String _serverUrl = Config._uploadURL;
+        new AsyncTask<Void, Integer, String>() {
+            final ProgressDialog asyncDialog = new ProgressDialog(context);
+            final String crlf = "\r\n";
+            final String twoHyphens = "--";
+            final String boundary =  "*****";
+
+            @Override
+            protected String doInBackground(Void... voids) {
+                List<File> fileList = new ArrayList<>();
+
+                if (ftype == Config._all) {
+                    addFilesToList(fileList, Config.mediaStorageDir4csv.listFiles());
+                    addFilesToList(fileList, Config.mediaStorageDir4mnt.listFiles());
+                    addFilesToList(fileList, Config.PIC_SAVE_DIR.listFiles());
+                    addFilesToList(fileList, Config.MOV_SAVE_DIR.listFiles());
+                    addFilesToList(fileList, Config.MP3_SAVE_DIR.listFiles());
+                } else {
+                    File[] tempFiles = null;
+                    switch (ftype) {
+                        case Config._csv: tempFiles = Config.mediaStorageDir4csv.listFiles(); break;
+                        case Config._ser: tempFiles = Config.mediaStorageDir4mnt.listFiles(); break;
+                        case Config._img: tempFiles = Config.PIC_SAVE_DIR.listFiles(); break;
+                        case Config._mov: tempFiles = Config.MOV_SAVE_DIR.listFiles(); break;
+                        case Config._mp3: tempFiles = Config.MP3_SAVE_DIR.listFiles(); break;
+                    }
+                    addFilesToList(fileList, tempFiles);
+                }
+
+                File[] flist = fileList.toArray(new File[0]);
+                asyncDialog.setMax(flist.length);
+
+                StringBuilder resultBuilder = new StringBuilder();
+                for (int i = 0; i < flist.length; i++) {
+                    File file = flist[i];
+                    String result = uploadFile(file);
+                    resultBuilder.append(file.getName()).append(": ").append(result).append("\n");
+                    publishProgress(i + 1);
+                }
+                return resultBuilder.toString();
+            }
+
+            private String uploadFile(File file) {
+                HttpURLConnection httpUrlConnection = null;
+                try {
+                    URL serverUrl = new URL(_serverUrl);
+                    httpUrlConnection = (HttpURLConnection) serverUrl.openConnection();
+                    httpUrlConnection.setUseCaches(false);
+                    httpUrlConnection.setDoInput(true);
+                    httpUrlConnection.setDoOutput(true);
+                    httpUrlConnection.setConnectTimeout(15000);
+                    httpUrlConnection.setReadTimeout(15000);
+
+                    httpUrlConnection.setRequestMethod("POST");
+                    httpUrlConnection.setRequestProperty("Connection", "Keep-Alive");
+                    httpUrlConnection.setRequestProperty("Cache-Control", "no-cache");
+                    httpUrlConnection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + this.boundary);
+
+                    DataOutputStream request = new DataOutputStream(httpUrlConnection.getOutputStream());
+
+                    request.writeBytes(twoHyphens + boundary + crlf);
+                    request.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"" + crlf);
+                    request.writeBytes("Content-Type: " + URLConnection.guessContentTypeFromName(file.getName()) + crlf);
+                    request.writeBytes("Content-Transfer-Encoding: binary" + crlf);
+                    request.writeBytes(crlf);
+
+                    FileInputStream fileInputStream = new FileInputStream(file);
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                        request.write(buffer, 0, bytesRead);
+                    }
+                    fileInputStream.close();
+
+                    request.writeBytes(crlf);
+                    request.writeBytes(twoHyphens + boundary + twoHyphens + crlf);
+                    request.flush();
+                    request.close();
+
+                    int responseCode = httpUrlConnection.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        BufferedReader in = new BufferedReader(new InputStreamReader(httpUrlConnection.getInputStream()));
+                        String inputLine;
+                        StringBuilder response = new StringBuilder();
+                        while ((inputLine = in.readLine()) != null) {
+                            response.append(inputLine);
+                        }
+                        in.close();
+                        return "Success: " + response.toString();
+                    } else {
+                        return "Failed: HTTP error code : " + responseCode;
+                    }
+                } catch (Exception e) {
+                    return "Error: " + e.getMessage();
+                } finally {
+                    if (httpUrlConnection != null) {
+                        httpUrlConnection.disconnect();
+                    }
+                }
+            }
+
+            @Override
+            protected void onPreExecute() {
+                asyncDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                asyncDialog.setMessage("Uploading...");
+                asyncDialog.show();
+                super.onPreExecute();
+            }
+
+            @Override
+            protected void onProgressUpdate(Integer... values) {
+                asyncDialog.setProgress(values[0]);
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                asyncDialog.dismiss();
+                Toast.makeText(context, "Upload completed", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "Upload results:\n" + result);
+            }
+        }.execute();
+    }
+
+
+    public void UploadAll2(final Context context, int ftype) {
         if(!C.cloud_up) return;
         final String _serverUrl = Config._uploadURL;
         new AsyncTask<Void,Void,Void>() {

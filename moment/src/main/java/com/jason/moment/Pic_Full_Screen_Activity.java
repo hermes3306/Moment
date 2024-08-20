@@ -142,7 +142,7 @@ public class Pic_Full_Screen_Activity extends AppCompatActivity implements View.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pic);
+        setContentView(R.layout.activity_pic_full_screen_activity);
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
