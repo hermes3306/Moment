@@ -439,6 +439,9 @@ public class CloudUtil {
 
             private String uploadFile(File file) {
                 HttpURLConnection httpUrlConnection = null;
+
+                Log.d(TAG, "Uploading file: " + file.getName() + ", size: " + file.length() + " bytes");
+
                 try {
                     URL serverUrl = new URL(_serverUrl);
                     httpUrlConnection = (HttpURLConnection) serverUrl.openConnection();
@@ -483,8 +486,10 @@ public class CloudUtil {
                             response.append(inputLine);
                         }
                         in.close();
+                        Log.d(TAG,"Success: " + file.getName() + response.toString());
                         return "Success: " + response.toString();
                     } else {
+                        Log.d(TAG,"Failed: HTTP error code : " + file.getName() + responseCode);
                         return "Failed: HTTP error code : " + responseCode;
                     }
                 } catch (Exception e) {
@@ -652,7 +657,7 @@ public class CloudUtil {
         }.execute();
     }
 
-    public void Upload(String filepath) {
+    public void Upload3(String filepath) {
         if(!C.cloud_up) return;
 
         final String _serverUrl = Config._uploadURL;
@@ -755,6 +760,103 @@ public class CloudUtil {
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
+            }
+        }.execute();
+    }
+
+    public void Upload(String filepath) {
+        if (!C.cloud_up) return;
+
+        final String _serverUrl = Config._uploadURL;
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... voids) {
+                HttpURLConnection connection = null;
+                DataOutputStream outputStream = null;
+                InputStream inputStream = null;
+                FileInputStream fileInputStream = null;
+
+                try {
+                    File folder = null;
+                    if (filepath.endsWith(Config._csv_ext)) folder = Config.CSV_SAVE_DIR;
+                    if (filepath.endsWith(Config._mnt_ext)) folder = Config.MNT_SAVE_DIR;
+                    if (filepath.endsWith(Config._pic_ext)) folder = Config.PIC_SAVE_DIR;
+                    if (filepath.endsWith(Config._mov_ext)) folder = Config.MOV_SAVE_DIR;
+                    File file = new File(folder, filepath);
+
+                    if (!file.exists()) {
+                        return "Upload File " + filepath + " not found!";
+                    }
+
+                    Log.d(TAG, "Uploading file: " + filepath + ", size: " + file.length() + " bytes");
+
+                    String boundary = "*****" + System.currentTimeMillis() + "*****";
+                    URL url = new URL(_serverUrl);
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setUseCaches(false);
+                    connection.setDoOutput(true);
+                    connection.setDoInput(true);
+                    connection.setConnectTimeout(15000);
+                    connection.setReadTimeout(15000);
+
+                    connection.setRequestMethod("POST");
+                    connection.setRequestProperty("Connection", "Keep-Alive");
+                    connection.setRequestProperty("Cache-Control", "no-cache");
+                    connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+
+                    outputStream = new DataOutputStream(connection.getOutputStream());
+                    outputStream.writeBytes("--" + boundary + "\r\n");
+                    outputStream.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"\r\n");
+                    outputStream.writeBytes("Content-Type: " + URLConnection.guessContentTypeFromName(file.getName()) + "\r\n");
+                    outputStream.writeBytes("Content-Transfer-Encoding: binary\r\n");
+                    outputStream.writeBytes("\r\n");
+
+                    fileInputStream = new FileInputStream(file);
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    long totalBytesRead = 0;
+                    while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                        totalBytesRead += bytesRead;
+                        int progress = (int) ((totalBytesRead * 100) / file.length());
+                        Log.d(TAG, "Upload progress: " + progress + "%");
+                    }
+
+                    outputStream.writeBytes("\r\n");
+                    outputStream.writeBytes("--" + boundary + "--\r\n");
+                    outputStream.flush();
+
+                    int responseCode = connection.getResponseCode();
+                    inputStream = (responseCode >= 400) ? connection.getErrorStream() : connection.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+
+                    Log.d(TAG, "Server response: " + response.toString());
+                    return "Upload completed. Response: " + response.toString();
+
+                } catch (Exception e) {
+                    Log.e(TAG, "Upload error: " + e.getMessage(), e);
+                    return "Upload failed: " + e.getMessage();
+                } finally {
+                    try {
+                        if (fileInputStream != null) fileInputStream.close();
+                        if (outputStream != null) outputStream.close();
+                        if (inputStream != null) inputStream.close();
+                        if (connection != null) connection.disconnect();
+                    } catch (IOException e) {
+                        Log.e(TAG, "Error closing resources: " + e.getMessage(), e);
+                    }
+                }
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                Log.d(TAG, "Upload result: " + result);
+                // You can handle the result here, e.g., show a toast or update UI
             }
         }.execute();
     }
