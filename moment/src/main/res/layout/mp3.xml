@@ -20,7 +20,7 @@
         android:layout_alignBottom="@id/dialog_imageview">
 
         <TextView
-            android:id="@+id/songNameTextView"
+            android:id="@+id/currentSongTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp"

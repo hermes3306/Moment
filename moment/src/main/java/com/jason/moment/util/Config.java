@@ -100,7 +100,7 @@ public class Config {
     public static String        _apkname        = "moment.apk";
     public static String        _apkurl         = _serverURL + "/apk/moment.apk";
     public static String        _apkver         = _serverURL + "/apk/version";
-  //DESKTOP1
+  //DESKTOP1 MP3_SAVE_DIR
     public static String        _serverFolder   = "/upload";
     public static String        _sererMP3Folder = "/mp3";
     public static String        _uploadURL      = _serverURL + "/upload.php";
