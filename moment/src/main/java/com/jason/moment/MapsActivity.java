@@ -20,10 +20,12 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +47,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.jason.moment.activity.Run4;
 import com.jason.moment.service.GPSLogger;
 import com.jason.moment.service.GPSLoggerServiceConnection;
+import com.jason.moment.service.MP3Service;
 import com.jason.moment.util.AddressUtil;
 import com.jason.moment.util.AlertDialogUtil;
 import com.jason.moment.util.C;
@@ -72,6 +75,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import android.content.ComponentName;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+import com.jason.moment.service.MP3Service;
+import android.widget.Button;
 
 
 public class MapsActivity extends AppCompatActivity implements
@@ -130,6 +138,23 @@ public class MapsActivity extends AppCompatActivity implements
     }
 
 
+    private MP3Service mp3Service;
+    private boolean mp3ServiceBound = false;
+
+    private ServiceConnection mp3ServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            MP3Service.LocalBinder binder = (MP3Service.LocalBinder) service;
+            mp3Service = binder.getService();
+            mp3ServiceBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mp3ServiceBound = false;
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,6 +164,12 @@ public class MapsActivity extends AppCompatActivity implements
 
         StartupBatch sb = new StartupBatch(_ctx);
         sb.execute();
+
+        // Start and bind to the MP3Service
+        Intent mp3ServiceIntent = new Intent(this, MP3Service.class);
+        startService(mp3ServiceIntent);
+        bindService(mp3ServiceIntent, mp3ServiceConnection, Context.BIND_AUTO_CREATE);
+
 
         registerLocationChangedReceiver();
 
@@ -228,6 +259,12 @@ public class MapsActivity extends AppCompatActivity implements
         if (gpsLoggerServiceIntent != null) stopService(gpsLoggerServiceIntent);
         if (receiver != null) unregisterReceiver(receiver);
         Log.e(TAG, "-- after onDestroy()");
+
+        if (mp3ServiceBound) {
+            unbindService(mp3ServiceConnection);
+            mp3ServiceBound = false;
+        }
+
         super.onDestroy();
     }
 
@@ -736,14 +773,25 @@ public class MapsActivity extends AppCompatActivity implements
                 mSportSelectDialog.show();
                 return true;
 
-
-            case R.id.mp3Player:
-                MP3.showPlayer(_ctx);
+            case R.id.playMp3:
+                if (mp3ServiceBound) {
+                    mp3Service.playNext();
+                    updateMp3PlayerUI();
+                }
                 return true;
 
             case R.id.stopMp3:
-                MP3.stop(_ctx);
+                if (mp3ServiceBound) {
+                    mp3Service.stop();
+                    updateMp3PlayerUI();
+                }
                 return true;
+
+            case R.id.OpenMp3Player:
+                openMp3Player();
+                return true;
+
+
 
             case R.id.ReportActivity:
                 Log.d(TAG,"-- Report Activity!");
@@ -793,6 +841,74 @@ public class MapsActivity extends AppCompatActivity implements
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+
+    private AlertDialog mp3Dialog;
+    private TextView currentSongTextView;
+    private Button playPauseButton, nextButton, previousButton;
+
+    private void openMp3Player() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.mp3, null);
+        builder.setView(dialogView);
+
+        currentSongTextView = dialogView.findViewById(R.id.currentSongTextView);
+        playPauseButton = dialogView.findViewById(R.id.playPauseButton);
+        nextButton = dialogView.findViewById(R.id.nextButton);
+        previousButton = dialogView.findViewById(R.id.previousButton);
+
+        playPauseButton.setOnClickListener(v -> {
+            if (mp3ServiceBound) {
+                if (mp3Service.isPlaying()) {
+                    mp3Service.pause();
+                    playPauseButton.setText("Play");
+                } else {
+                    mp3Service.resume();
+                    playPauseButton.setText("Stop");
+                }
+            }
+        });
+
+        nextButton.setOnClickListener(v -> {
+            if (mp3ServiceBound) {
+                mp3Service.playNext();
+                updateMp3PlayerUI();
+            }
+        });
+
+        previousButton.setOnClickListener(v -> {
+            if (mp3ServiceBound) {
+                mp3Service.playPrevious();
+                updateMp3PlayerUI();
+            }
+        });
+
+        mp3Dialog = builder.create();
+        mp3Dialog.setOnShowListener(dialog -> updateMp3PlayerUI());
+        mp3Dialog.show();
+    }
+
+    private void updateMp3PlayerUI() {
+        if (mp3ServiceBound && mp3Dialog != null && mp3Dialog.isShowing()) {
+            String currentSong = mp3Service.getCurrentSongName();
+            if (currentSongTextView != null) {
+                currentSongTextView.setText(currentSong);
+            }
+
+            if (playPauseButton != null) {
+                playPauseButton.setText(mp3Service.isPlaying() ? "Stop" : "Play");
+            }
+
+            if (nextButton != null) {
+                nextButton.setEnabled(mp3Service.hasNext());
+            }
+
+            if (previousButton != null) {
+                previousButton.setEnabled(mp3Service.hasPrevious());
+            }
         }
     }
 

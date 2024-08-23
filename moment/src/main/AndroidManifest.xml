@@ -143,6 +143,8 @@
             </intent-filter>
         </activity>
 
+        <service android:name=".service.MP3Service" />
+
         <service
             android:name=".service.GPSLogger"
             android:enabled="true"

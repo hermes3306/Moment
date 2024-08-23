@@ -50,13 +50,13 @@
         app:showAsAction="never">
         <menu>
             <item
-                android:id="@+id/play_all"
+                android:id="@+id/playMp3"
                 android:title="Play" />
             <item
                 android:id="@+id/stopMp3"
                 android:title="Stop" />
             <item
-                android:id="@+id/mp3Player"
+                android:id="@+id/OpenMp3Player"
                 android:title="Open Mp3 Player" />
         </menu>
     </item>
