@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -316,93 +317,93 @@ public class CloudUtil {
             @Override
             protected Void doInBackground(Void... voids) {
                 File[] flist = null;
-                if(ftype==Config._csv) {
+                if (ftype == Config._csv) {
                     flist = Config.mediaStorageDir4csv.listFiles();
-                } else if(ftype==Config._ser) {
+                } else if (ftype == Config._ser) {
                     flist = Config.mediaStorageDir4mnt.listFiles();
-                }else if(ftype==Config._img) {
+                } else if (ftype == Config._img) {
                     flist = Config.PIC_SAVE_DIR.listFiles();
-                }else if(ftype==Config._mov) {
+                } else if (ftype == Config._mov) {
                     flist = Config.MOV_SAVE_DIR.listFiles();
-                }else if(ftype==Config._mp3) {
+                } else if (ftype == Config._mp3) {
                     flist = Config.MP3_SAVE_DIR.listFiles();
+                }
+
+                if (flist == null || flist.length == 0) {
+                    Log.e(TAG, "No files found to upload");
+                    return null;
                 }
 
                 asyncDialog.setMax(flist.length);
 
                 for (int i = 0; i < flist.length; i++) {
-
                     File file = flist[i];
-                    attachmentName = attachmentFileName = flist[i].getName();
+                    attachmentName = attachmentFileName = file.getName();
+
+                    HttpURLConnection connection = null;
+                    DataOutputStream outputStream = null;
+                    InputStream inputStream = null;
 
                     try {
-                        URL serverUrl = new URL(_serverUrl);
-                        urlConnection = (HttpURLConnection) serverUrl.openConnection();
-
-                        // request 준비
-                        HttpURLConnection httpUrlConnection = null;
                         URL url = new URL(_serverUrl);
-                        httpUrlConnection = (HttpURLConnection) url.openConnection();
-                        httpUrlConnection.setUseCaches(false);
-                        httpUrlConnection.setDoInput(true);
-                        httpUrlConnection.setDoOutput(true);
-                        httpUrlConnection.setConnectTimeout(15000);
+                        connection = (HttpURLConnection) url.openConnection();
+                        connection.setUseCaches(false);
+                        connection.setDoOutput(true);
+                        connection.setDoInput(true);
+                        connection.setConnectTimeout(15000);
+                        connection.setReadTimeout(15000);
+                        connection.setRequestMethod("POST");
+                        connection.setRequestProperty("Connection", "Keep-Alive");
+                        connection.setRequestProperty("Cache-Control", "no-cache");
+                        connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
 
-                        httpUrlConnection.setRequestMethod("POST");
-                        httpUrlConnection.setRequestProperty("Connection", "Keep-Alive");
-                        httpUrlConnection.setRequestProperty("Cache-Control", "no-cache");
-                        httpUrlConnection.setRequestProperty(
-                                "Content-Type", "multipart/form-data;boundary=" + this.boundary);
+                        outputStream = new DataOutputStream(connection.getOutputStream());
 
+                        outputStream.writeBytes(twoHyphens + boundary + crlf);
+                        outputStream.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"" + crlf);
+                        outputStream.writeBytes("Content-Type: " + URLConnection.guessContentTypeFromName(file.getName()) + crlf);
+                        outputStream.writeBytes("Content-Transfer-Encoding: binary" + crlf);
+                        outputStream.writeBytes(crlf);
 
-                        // content wrapper시작
-                        DataOutputStream request = new DataOutputStream(
-                                httpUrlConnection.getOutputStream());
-
-                        request.writeBytes("--" + boundary + this.crlf);
-                        request.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"" + this.crlf);
-                        request.writeBytes("Content-Type: " + URLConnection.guessContentTypeFromName(file.getName()) + this.crlf);
-                        request.writeBytes("Content-Transfer-Encoding: binary" + this.crlf);
-                        request.writeBytes(this.crlf);
-                        request.flush();
-
-
-
-                        OutputStream out = httpUrlConnection.getOutputStream();
-                        FileInputStream fis = new FileInputStream(file);
-                        byte[] buffer = new byte[1024];
-                        int readcount = 0;
-                        while ((readcount = fis.read(buffer)) != -1) {
-                            //Log.e(TAG, "readcount:" + readcount);
-                            out.write(buffer, 0, readcount);
+                        FileInputStream fileInputStream = new FileInputStream(file);
+                        int bytesRead;
+                        byte[] buffer = new byte[4096];
+                        while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                            outputStream.write(buffer, 0, bytesRead);
                         }
-                        out.flush();
+                        fileInputStream.close();
 
-                        request.writeBytes(this.crlf);
-                        request.writeBytes(this.twoHyphens + this.boundary +
-                                this.twoHyphens + this.crlf);
+                        outputStream.writeBytes(crlf);
+                        outputStream.writeBytes(twoHyphens + boundary + twoHyphens + crlf);
+                        outputStream.flush();
 
-                        request.flush();
-                        request.close();
+                        int responseCode = connection.getResponseCode();
+                        Log.d(TAG, "Server response code: " + responseCode);
 
-                        Log.d(TAG,"-- end of write " + attachmentFileName + " to web server");
-
-                        //==============받기===============
-                        InputStream is = httpUrlConnection.getInputStream();
-                        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                        StringBuffer sbResult = new StringBuffer();
-                        String str = "";
-                        while ((str = br.readLine()) != null) {
-                            Log.d(TAG, "-- RESPONSE:" + str);
-                            sbResult.append(str);
+                        if (responseCode == HttpURLConnection.HTTP_OK) {
+                            inputStream = connection.getInputStream();
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                            String line;
+                            StringBuilder response = new StringBuilder();
+                            while ((line = reader.readLine()) != null) {
+                                response.append(line);
+                            }
+                            Log.d(TAG, "Server response: " + response.toString());
+                        } else {
+                            Log.e(TAG, "Server error response: " + connection.getResponseMessage());
                         }
 
-                        asyncDialog.setProgress(i);
-
+                        asyncDialog.setProgress(i + 1);
                     } catch (Exception e) {
                         StringWriter sw = new StringWriter();
                         e.printStackTrace(new PrintWriter(sw));
-                        Log.e(TAG,"Err:" + sw.toString());
+                        Log.e(TAG, "Error uploading file " + file.getName() + ": " + sw.toString());
+                    } finally {
+                        try {
+                            if (outputStream != null) outputStream.close();
+                            if (inputStream != null) inputStream.close();
+                        } catch (IOException ignored) {}
+                        if (connection != null) connection.disconnect();
                     }
                 }
                 return null;

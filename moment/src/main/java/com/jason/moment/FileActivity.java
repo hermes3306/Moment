@@ -570,13 +570,32 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu2, menu);
+        inflater.inflate(R.menu.mapsactivity_menu, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.download_activities:
+                CloudUtil.getInstance().DownloadAll(_ctx,Config._csv);
+            case R.id.download_images:
+                CloudUtil.getInstance().DownloadAll(_ctx,Config._img);
+            case R.id.download_videos:
+                CloudUtil.getInstance().DownloadAll(_ctx,Config._mov);
+            case R.id.download_musics:
+                CloudUtil.getInstance().DownloadAll(_ctx,Config._mp3);
+
+            case R.id.upload_activities:
+                CloudUtil.getInstance().DownloadAll(_ctx,Config._csv);
+            case R.id.upload_images:
+                CloudUtil.getInstance().DownloadAll(_ctx,Config._img);
+            case R.id.upload_videos:
+                CloudUtil.getInstance().DownloadAll(_ctx,Config._mov);
+            case R.id.upload_musics:
+                CloudUtil.getInstance().DownloadAll(_ctx,Config._mp3);
+
             case R.id.mp3Player:
                 MP3.showPlayer(_ctx);
                 return true;
@@ -597,24 +616,11 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(reportActivity, Config.CALL_REPORT_ACTIVITY);
                 return true;
 
-//            case R.id.quote_activity:
-//                Log.d(TAG,"-- Quote Activity!");
-//                Intent quoteIntent = new Intent(this, QuoteActivity.class);
-//                quoteIntent.putExtra("1", 1);
-//                startActivityForResult(quoteIntent, Config.CALL_QUOTE_ACTIVITY);
-//                return true;
-
             case R.id.scrollpic_activity:
                 Log.d(TAG,"-- Scroll Pic Activity!");
                 Intent scrollPicIntent = new Intent(this, ScrollPicActivity.class);
                 startActivityForResult(scrollPicIntent, Config.CALL_SCROLL_PIC_ACTIVITY);
                 return true;
-
-//            case R.id.scrollAllpic_activity:
-//                Log.d(TAG,"-- Scroll Pic Activity!");
-//                Intent scrollAllPicIntent = new Intent(this, ScrollAllPicActivity.class);
-//                startActivityForResult(scrollAllPicIntent, Config.CALL_SCROLL_ALL_PIC_ACTIVITY);\
-//                return true;
 
             case R.id.pic_activity:
                 Log.d(TAG,"-- Pic Activity!");

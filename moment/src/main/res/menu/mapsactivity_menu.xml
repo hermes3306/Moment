@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.jason.moment.MapsActivity">
+
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="101"
+        android:title="Setting..."
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_file"
+        android:orderInCategory="100"
+        android:title="File"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/download_activities"
+                android:title="Download Activities" />
+            <item
+                android:id="@+id/download_images"
+                android:title="Download Images" />
+            <item
+                android:id="@+id/download_videos"
+                android:title="Download Videos" />
+            <item
+                android:id="@+id/download_musics"
+                android:title="Download Musics" />
+            <item
+                android:id="@+id/upload_activities"
+                android:title="Upload Activities" />
+            <item
+                android:id="@+id/upload_images"
+                android:title="Upload Images" />
+            <item
+                android:id="@+id/upload_videos"
+                android:title="Upload Videos" />
+            <item
+                android:id="@+id/upload_musics"
+                android:title="Upload Musics" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/action_mp3"
+        android:orderInCategory="102"
+        android:title="MP3"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/play_all"
+                android:title="Play" />
+            <item
+                android:id="@+id/stopMp3"
+                android:title="Stop" />
+            <item
+                android:id="@+id/mp3Player"
+                android:title="Open Mp3 Player" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/activityList"
+        android:orderInCategory="103"
+        android:title="Activity List"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/rebuild_rank"
+        android:orderInCategory="104"
+        android:title="Rebuild Rank"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/scrollpic_activity"
+        android:orderInCategory="105"
+        android:title="Picture"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/ReportActivity"
+        android:orderInCategory="106"
+        android:title="Report Activity"
+        app:showAsAction="never" />
+</menu>

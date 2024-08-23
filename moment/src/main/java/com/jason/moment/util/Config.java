@@ -96,14 +96,11 @@ public class Config {
     public static File JSN_SAVE_DIR         = null;
 
 
-    public static String        _serverURL      = "http://ezehub.club/moment";        //Z
+    public static String        _serverURL      = "http://58.233.69.198:8080/moment";        //Z
     public static String        _apkname        = "moment.apk";
     public static String        _apkurl         = _serverURL + "/apk/moment.apk";
     public static String        _apkver         = _serverURL + "/apk/version";
-
-    //public static String        _serverURL      = "http://ezehub.club:8080/moment";   //W
-    //public static String        _serverURL      = "http://ezehub.club:8888/moment";   //M
-    //public static String        _serverURL      = "http://ezehub.club:8899/moment";     //DESKTOP1
+  //DESKTOP1
     public static String        _serverFolder   = "/upload";
     public static String        _sererMP3Folder = "/mp3";
     public static String        _uploadURL      = _serverURL + "/upload.php";
@@ -113,7 +110,7 @@ public class Config {
     public static String        _listCSVFiles   = _serverURL + "/list.php?dir=upload&&ext=csv";
     //public static String        _listCSVFiles   = _serverURL + "/list.php?dir=tmp&&ext=csv";
     public static String        _listSerFiles   = _serverURL + "/list.php?dir=upload&&ext=mnt";
-    public static String        _listMP3Files   = _serverURL + "/list.php?dir=mp3&&ext=mp3";
+    public static String        _listMP3Files   = _serverURL + "/list.php?dir=upload&&ext=mp3";
 
     public static final int     _csv            = 0;
     public static final int     _ser            = 1;
