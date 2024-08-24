@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/strava"
@@ -19,12 +20,27 @@
     <item
         android:id="@+id/broadcastNewStart"
         android:title="Broadcast a new run" />
+
+
     <item
-        android:id="@+id/mp3Player"
-        android:title="MP3 Player" />
-    <item
-        android:id="@+id/stopMp3"
-        android:title="Stop MP3 Player" />
+        android:id="@+id/action_mp3"
+        android:orderInCategory="102"
+        android:title="MP3"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/playMp3"
+                android:title="Play" />
+            <item
+                android:id="@+id/stopMp3"
+                android:title="Stop" />
+            <item
+                android:id="@+id/mp3Player"
+                android:title="Open Mp3 Player" />
+        </menu>
+    </item>
+
+
     <item
         android:id="@+id/view_pics"
         android:title="View Pics" />

@@ -748,47 +748,12 @@ public class MapsActivity extends AppCompatActivity implements
                 mSportSelectDialog.show();
                 return true;
 
-            case R.id.ReportActivity:
-                Log.d(TAG,"-- Report Activity!");
-                Intent reportActivity = new Intent(MapsActivity.this, MyReportActivity.class);
-                reportActivity.putExtra("activity_file_name", "20210522_110818");
-                startActivityForResult(reportActivity, Config.CALL_REPORT_ACTIVITY);
-                return true;
-
-
             case R.id.scrollpic_activity:
                 Log.d(TAG,"-- Scroll Pic Activity!");
                 Intent scrollPicIntent = new Intent(MapsActivity.this, Pic_Full_Screen_Activity.class);
                 startActivityForResult(scrollPicIntent, Config.CALL_SCROLL_PIC_ACTIVITY);
                 return true;
 
-
-            case R.id.pic_activity:
-                Log.d(TAG,"-- Pic Activity!");
-                File folder= Config.PIC_SAVE_DIR;
-
-                File[] files = folder.listFiles(new FilenameFilter() {
-                    @Override
-                    public boolean accept(File dir, String name) {
-                        return name.endsWith("jpeg");
-                    }
-                });
-
-                if(files==null) {
-                    Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
-                    return false;
-                } else if (files.length==0) {
-                    Toast.makeText(_ctx, "No Pictures in " + folder.getAbsolutePath(), Toast.LENGTH_LONG).show();
-                    return false;
-                }
-                Intent picIntent = new Intent(MapsActivity.this, PicActivity.class);
-                ArrayList<File> fileArrayList= new ArrayList<File>();
-                for(int i=0;i< files.length;i++) {
-                    fileArrayList.add(files[i]);
-                }
-                picIntent.putExtra("files", fileArrayList);
-                startActivity(picIntent);
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

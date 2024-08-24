@@ -130,7 +130,7 @@ public class Run1 extends Run implements
             case R.id.imb_start_list:
                 //recordVideo();
                 PopupMenu p = new PopupMenu(Run1.this, v);
-                getMenuInflater().inflate(R.menu.start_menu, p.getMenu());
+                getMenuInflater().inflate(R.menu.menu_run4, p.getMenu());
                 p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {

@@ -76,9 +76,5 @@
         android:orderInCategory="105"
         android:title="Picture"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/ReportActivity"
-        android:orderInCategory="106"
-        android:title="Report Activity"
-        app:showAsAction="never" />
+
 </menu>

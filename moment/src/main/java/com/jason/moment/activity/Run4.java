@@ -47,14 +47,8 @@ import com.jason.moment.util.StringUtil;
 import com.jason.moment.util.db.MyRun;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
-import java.util.Random;
-import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 import com.jason.moment.util.StravaUploader;
@@ -158,7 +152,7 @@ public class Run4 extends Run implements
             case R.id.imb_start_list:
                 //recordVideo();
                 PopupMenu p = new PopupMenu(Run4.this, v);
-                getMenuInflater().inflate(R.menu.start_menu, p.getMenu());
+                getMenuInflater().inflate(R.menu.menu_run4, p.getMenu());
                 p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
@@ -229,12 +223,19 @@ public class Run4 extends Run implements
                     ll05.setVisibility(View.GONE);
                 }
                 return true;
-            case R.id.mp3Player:
-                MP3.showPlayer(_ctx);
-                return true;
+
+
+            case R.id.playMp3:
+                MP3.playNext(_ctx);
+
             case R.id.stopMp3:
                 MP3.stop(_ctx);
                 return true;
+
+            case R.id.mp3Player:
+                MP3.showPlayer(_ctx);
+                return true;
+
             case R.id.start_layout_select:
                 AlertDialog.Builder builder = new AlertDialog.Builder(Run4.this)
                         .setItems(screen_layout, new DialogInterface.OnClickListener() {
