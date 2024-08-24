@@ -674,7 +674,7 @@ public class MapsActivity extends AppCompatActivity implements
 
             case R.id.action_settings:
                 Log.d(TAG,"-- Setting Activities!");
-                Intent configIntent = new Intent(MapsActivity.this, ConfigActivity.class);
+                Intent configIntent = new Intent(_ctx, ConfigActivity.class);
                 startActivity(configIntent);
                 return true;
 
@@ -735,7 +735,7 @@ public class MapsActivity extends AppCompatActivity implements
                 for(int i=0;i<_flist.length;i++) {
                     fnamelist[i] = _flist[i].getName().substring(0,_flist[i].getName().length()-4);
                 }
-                AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this )
+                AlertDialog.Builder builder = new AlertDialog.Builder(_ctx)
                         .setItems(fnamelist, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -751,7 +751,7 @@ public class MapsActivity extends AppCompatActivity implements
 
             case R.id.scrollpic_activity:
                 Log.d(TAG,"-- Scroll Pic Activity!");
-                Intent scrollPicIntent = new Intent(MapsActivity.this, Pic_Full_Screen_Activity.class);
+                Intent scrollPicIntent = new Intent(_ctx, Pic_Full_Screen_Activity.class);
                 startActivityForResult(scrollPicIntent, Config.CALL_SCROLL_PIC_ACTIVITY);
                 return true;
 

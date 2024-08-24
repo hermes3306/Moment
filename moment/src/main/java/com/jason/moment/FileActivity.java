@@ -38,6 +38,7 @@ import com.jason.moment.util.MyActivity;
 import com.jason.moment.util.MyActivityUtil;
 import com.jason.moment.util.PermissionUtil;
 import com.jason.moment.util.Progress;
+import com.jason.moment.util.StartupBatch;
 import com.jason.moment.util.StringUtil;
 import com.jason.moment.util.db.MyActiviySummary;
 
@@ -577,6 +578,45 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
+            case R.id.action_settings:
+                Log.d(TAG,"-- Setting Activities!");
+                Intent configIntent = new Intent(_ctx, ConfigActivity.class);
+                startActivity(configIntent);
+                return true;
+
+            case R.id.download_activities:
+                new CloudUtil().DownloadAll(_ctx, Config._default_ext);
+                return true;
+
+            case R.id.download_images:
+                new CloudUtil().DownloadAll(_ctx, Config._img);
+                return true;
+
+            case R.id.download_videos:
+                new CloudUtil().DownloadAll(_ctx, Config._mov);
+                return true;
+
+            case R.id.download_musics:
+                new CloudUtil().DownloadAll(_ctx, Config._mp3);
+                return true;
+
+            case R.id.upload_activities:
+                new CloudUtil().UploadAll(_ctx, Config._default_ext);
+                return true;
+
+            case R.id.upload_images:
+                new CloudUtil().UploadAll(_ctx, Config._img);
+                return true;
+
+            case R.id.upload_videos:
+                new CloudUtil().UploadAll(_ctx, Config._mov);
+                return true;
+
+            case R.id.upload_musics:
+                new CloudUtil().UploadAll(_ctx, Config._mp3);
+                return true;
+
             case R.id.playMp3:
                 MP3.shuffleAndPlay(_ctx);
                 return true;
@@ -589,16 +629,36 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
                 MP3.showPlayer(_ctx);
                 return true;
 
-            case R.id.action_settings:
-                Log.d(TAG,"-- Setting Activities!");
-                Intent configIntent = new Intent(this, ConfigActivity.class);
-                configIntent.putExtra("1", 1);
-                startActivityForResult(configIntent, Config.CALL_SETTING_ACTIVITY);
+            case R.id.rebuild_rank:
+                new StartupBatch(_ctx).rebuildActivitySummaries(_ctx);
+                return true;
+
+            case R.id.activityList:
+                File dir = null;
+                if(Config._default_ext == Config._csv) dir = Config.CSV_SAVE_DIR;
+                else dir = Config.MNT_SAVE_DIR;
+                File[] _flist = dir.listFiles();
+                String[] fnamelist = new String[_flist.length];
+                for(int i=0;i<_flist.length;i++) {
+                    fnamelist[i] = _flist[i].getName().substring(0,_flist[i].getName().length()-4);
+                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(_ctx )
+                        .setItems(fnamelist, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(_ctx, MyReportActivity.class);
+                                intent.putExtra("activity_file_name", fnamelist[i]);
+                                startActivity(intent);
+                            }
+                        })
+                        .setTitle("Choose an activity");
+                AlertDialog mSportSelectDialog = builder.create();
+                mSportSelectDialog.show();
                 return true;
 
             case R.id.scrollpic_activity:
                 Log.d(TAG,"-- Scroll Pic Activity!");
-                Intent scrollPicIntent = new Intent(this, ScrollPicActivity.class);
+                Intent scrollPicIntent = new Intent(_ctx, Pic_Full_Screen_Activity.class);
                 startActivityForResult(scrollPicIntent, Config.CALL_SCROLL_PIC_ACTIVITY);
                 return true;
 
