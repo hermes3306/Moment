@@ -279,7 +279,7 @@ public class Run extends AppCompatActivity{
                 MP3.showPlayer(_ctx);
                 return true;
             case R.id.stopMp3:
-                MP3.stop(_ctx);
+                MP3.stop();
                 return true;
             case R.id.start_layout_select:
                 AlertDialog.Builder builder = new AlertDialog.Builder(Run.this)

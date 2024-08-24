@@ -224,12 +224,12 @@ public class Run4 extends Run implements
                 }
                 return true;
 
-
             case R.id.playMp3:
-                MP3.playNext(_ctx);
+                MP3.shuffleAndPlay(_ctx);
+                return true;
 
             case R.id.stopMp3:
-                MP3.stop(_ctx);
+                MP3.stop();
                 return true;
 
             case R.id.mp3Player:

@@ -20,210 +20,168 @@ import com.jason.moment.R;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class MP3 {
-    static String TAG = "MP3";
-    static File[] playlist1 = null;
-    static MediaPlayer mediaPlayer = null;
-    static Timer timer = null;
-    static int pos=0;
-    static boolean played = false;
-    static TextView tv = null;
-    static Context context;
-
-    public static int current() {
-        return pos;
-    }
+    private static final String TAG = "MP3";
+    private static File[] playlist = null;
+    private static MediaPlayer mediaPlayer = null;
+    private static Timer timer = null;
+    private static int currentPosition = 0;
+    private static boolean isPlaying = false;
+    private static TextView titleTextView = null;
+    private static ArrayList<Integer> shuffledIndices = new ArrayList<>();
+    private static int shuffleIndex = 0;
+    private static boolean isShuffleMode = false;
 
     public static void showPlayer(Context context) {
-        AlertDialog.Builder alertadd = new AlertDialog.Builder(context);
-        LayoutInflater factory = LayoutInflater.from(context);
-        if(!played) playRN(context,pos);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View view = inflater.inflate(R.layout.layout_mp3view, null);
+        ImageView imageView = view.findViewById(R.id.dialog_imageview);
+        titleTextView = view.findViewById(R.id.view_title);
 
-        View view1 = factory.inflate(R.layout.layout_mp3view, null);
-        ImageView iv = view1.findViewById(R.id.dialog_imageview);
-        tv = view1.findViewById(R.id.view_title);
-
-        playlist1 = list();
-        if(playlist1==null) {
-            Toast.makeText(context,"No musics!",Toast.LENGTH_SHORT).show();
+        playlist = list();
+        if (playlist == null || playlist.length == 0) {
+            Toast.makeText(context, "No music files available", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if(playlist1.length==0 ) {
-            Toast.makeText(context,"No musics!",Toast.LENGTH_SHORT).show();
-            return;
+        if (!isPlaying) {
+            playCurrentSong(context);
         }
-        //tv.setText("" + (pos+1) + "/" + playlist1.length);
-        tv.setText(playlist1[pos].getName());
-        alertadd.setView(view1);
-        if(playlist1.length > pos+1 ) {
-            alertadd.setPositiveButton("Next", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dlg, int sumthin) {
-                    playRN(context, pos+1);
-                    showPlayer(context);
-                }
+
+        updateTitleDisplay();
+        alertDialog.setView(view);
+
+        if (playlist.length > currentPosition + 1) {
+            alertDialog.setPositiveButton("Next", (dialog, which) -> {
+                playNext(context);
+                showPlayer(context);
             });
         }
 
-        if(0 < pos) {
-            alertadd.setNegativeButton("Prev", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dlg, int sumthin) {
-                    playRN(context, pos-1);
-                    showPlayer(context);
-                }
+        if (currentPosition > 0) {
+            alertDialog.setNegativeButton("Prev", (dialog, which) -> {
+                playPrevious(context);
+                showPlayer(context);
             });
         }
 
-        if(playlist1.length > 0) {
-            alertadd.setNeutralButton("Play All", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dlg, int sumthin) {
-                    playNext(context);
-                }
-            });
+        alertDialog.setNeutralButton("Play All", (dialog, which) -> {
+            isShuffleMode = false;
+            playNext(context);
+        });
+
+        alertDialog.setNeutralButton("Shuffle", (dialog, which) -> {
+            isShuffleMode = true;
+            shuffleAndPlay(context);
+        });
+
+        alertDialog.show();
+    }
+
+    private static File[] list() {
+        if (playlist == null) {
+            playlist = Config.MP3_SAVE_DIR.listFiles();
+            Log.d(TAG, "Number of MP3 files: " + (playlist != null ? playlist.length : 0));
         }
-        alertadd.show();
+        return playlist;
     }
 
-    public static File[] list() {
-        if (playlist1 == null) {
-            playlist1 = Config.MP3_SAVE_DIR.listFiles();
-            Log.d(TAG, "-- # of MP3:" + playlist1.length);
+
+    public static void stop() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
         }
-        return playlist1;
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+        isPlaying = false;
     }
 
-    public static void stop(Context context) {
-        if(timer!=null) timer.cancel();
-        timer=null;
-        mediaPlayer.stop();
-        mediaPlayer=null;
-        played=false;
-    }
-
-    public static void playRN(Context context, int new_pos) {
-        pos = new_pos;
-        if(timer!=null) timer.cancel();
-        if(mediaPlayer == null) {
+    public static void playCurrentSong(Context context) {
+        if (mediaPlayer == null) {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            return;
-        }
-
-        if (playlist1 != null) {
-            playlist1 = Config.MP3_SAVE_DIR.listFiles();
-            Log.d(TAG, "-- # of MP3:" + playlist1.length);
         } else {
-            Toast.makeText(context,"No mp3 files", Toast.LENGTH_SHORT).show();
-            return;
+            mediaPlayer.reset();
         }
 
-        mediaPlayer.reset();
-        Uri myUri = FileProvider.getUriForFile(context,
-                "com.jason.moment.file_provider", playlist1[pos]);
-        Log.d(TAG,"-- MP3 players will play:" + playlist1[pos].getName());
+        Uri songUri = FileProvider.getUriForFile(context,
+                "com.jason.moment.file_provider", playlist[currentPosition]);
+        Log.d(TAG, "Playing: " + playlist[currentPosition].getName());
 
         try {
-            mediaPlayer.setDataSource(context, myUri);
+            mediaPlayer.setDataSource(context, songUri);
             mediaPlayer.prepare();
-        }catch(Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Log.e(TAG,"Err:" + sw.toString());
+            mediaPlayer.start();
+            isPlaying = true;
+        } catch (Exception e) {
+            logError(e);
         }
-        mediaPlayer.start();
-        played = true;
-    }
-
-    public static void play(Context context, int new_pos) {
-        pos = new_pos;
-        if(timer==null) timer = new Timer();
-        if(mediaPlayer == null) {
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        }
-
-        if (playlist1 == null) {
-            playlist1 = Config.MP3_SAVE_DIR.listFiles();
-            Log.d(TAG, "-- # of MP3:" + playlist1.length);
-        }
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                mediaPlayer.reset();
-                Uri myUri = FileProvider.getUriForFile(context,
-                        "com.jason.moment.file_provider", playlist1[pos]);
-                Log.d(TAG,"-- MP3 players will play:" + playlist1[pos].getName());
-
-                try {
-                    mediaPlayer.setDataSource(context, myUri);
-                    mediaPlayer.prepare();
-                }catch(Exception e) {
-                    StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw));
-                    Log.e(TAG,"Err:" + sw.toString());
-                }
-                mediaPlayer.start();
-
-                played = true;
-                if (playlist1.length > pos+1) {
-                    playNext(context);
-                }
-            }
-        },mediaPlayer.getDuration()+100);
     }
 
     public static void playNext(Context context) {
-        play(context, ++pos);
+        currentPosition = (currentPosition + 1) % playlist.length;
+        playAndScheduleNext(context);
     }
 
-    public static void playPrev(Context context) {
-        play(context, --pos);
+    private static void playPrevious(Context context) {
+        currentPosition = (currentPosition - 1 + playlist.length) % playlist.length;
+        playAndScheduleNext(context);
     }
 
-    // below is for just TEST
-    public static void play(Context context, File file) {
-        if(mediaPlayer == null) {
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+    public static void shuffleAndPlay(Context context) {
+        if (shuffledIndices.isEmpty() || shuffleIndex >= shuffledIndices.size()) {
+            shuffledIndices.clear();
+            for (int i = 0; i < playlist.length; i++) {
+                shuffledIndices.add(i);
+            }
+            Collections.shuffle(shuffledIndices);
+            shuffleIndex = 0;
         }
 
-        Uri myUri = FileProvider.getUriForFile(context,
-                "com.jason.moment.file_provider", file);
-        Log.d(TAG,"-- MP3 players will play:" + file.getName());
+        currentPosition = shuffledIndices.get(shuffleIndex);
+        shuffleIndex++;
+        playAndScheduleNext(context);
+    }
 
-        try {
-            mediaPlayer.stop();
-            mediaPlayer.setDataSource(context, myUri);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-        } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Log.e(TAG,"Err:" + sw.toString());
+    private static void playAndScheduleNext(Context context) {
+        playCurrentSong(context);
+        updateTitleDisplay();
+
+        if (timer != null) {
+            timer.cancel();
+        }
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (isShuffleMode) {
+                    shuffleAndPlay(context);
+                } else {
+                    playNext(context);
+                }
+            }
+        }, mediaPlayer.getDuration() + 100);
+    }
+
+    private static void updateTitleDisplay() {
+        if (titleTextView != null) {
+            titleTextView.setText(playlist[currentPosition].getName());
         }
     }
 
-    public static void play(Context context, String filename) {
-        File f = new File(Config.MP3_SAVE_DIR, filename);
-        play(context, f);
+    private static void logError(Exception e) {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        Log.e(TAG, "Error: " + sw.toString());
     }
-
-    public static void test2(Context ctx) {
-        String url = "http://ezehub.club/moment/mp3/A%20Time%20For%20Us.mp3"; // your URL here
-        MediaPlayer mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        try {
-            mediaPlayer.setDataSource(url);
-            mediaPlayer.prepare(); // might take long! (for buffering, etc)
-            mediaPlayer.start();
-        }catch(Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            Log.e(TAG,"Err:" + sw.toString());
-        }
-    }
-
 }

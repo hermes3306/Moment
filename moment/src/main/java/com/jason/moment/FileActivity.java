@@ -577,12 +577,18 @@ public class FileActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.playMp3:
+                MP3.shuffleAndPlay(_ctx);
+                return true;
+
+            case R.id.stopMp3:
+                MP3.stop();
+                return true;
+
             case R.id.mp3Player:
                 MP3.showPlayer(_ctx);
                 return true;
-            case R.id.stopMp3:
-                MP3.stop(_ctx);
-                return true;
+
             case R.id.action_settings:
                 Log.d(TAG,"-- Setting Activities!");
                 Intent configIntent = new Intent(this, ConfigActivity.class);
