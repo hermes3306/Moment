@@ -34,7 +34,8 @@ public class StravaUploader {
     private static final String UPLOAD_URL = "https://www.strava.com/api/v3/uploads";
     private static final String ACTIVITIES_URL = "https://www.strava.com/api/v3/activities";
     private static final String SCOPE = "activity:write,activity:read_all";
-    public static final String REDIRECT_URI ="http://localhost:8080/callback";
+    static final String REDIRECT_URI ="http://localhost:8080/callback";
+
 
     private Context context;
     private File gpxFile;
