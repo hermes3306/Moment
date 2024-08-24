@@ -113,7 +113,7 @@ public class Config {
     public static String        _listCSVFiles   = _serverURL + "/list.php?dir=upload&&ext=csv";
     //public static String        _listCSVFiles   = _serverURL + "/list.php?dir=tmp&&ext=csv";
     public static String        _listSerFiles   = _serverURL + "/list.php?dir=upload&&ext=mnt";
-    public static String        _listMP3Files   = _serverURL + "/list.php?dir=mp3&&ext=mp3";
+    public static String        _listMP3Files   = _serverURL + "/list.php?dir=upload&&ext=mp3";
 
     public static final int     _csv            = 0;
     public static final int     _ser            = 1;
